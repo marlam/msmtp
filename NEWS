@@ -1,0 +1,249 @@
+Version 1.4.5:
+- Only minor tweaks.
+
+Version 1.4.4:
+- Support for the sendmail -F option (accepted but ignored).
+- Removed the OpenSSL exception note from the license information.
+
+Version 1.4.3:
+- Automatic envelope-from addresses are only generated when auto_from is enabled
+  with the new auto_from command or --auto-from option.
+  This allow empty envelope from addresses to be set with the from command or 
+  --from option.
+
+Version 1.4.2:
+- The 'connect_timeout' setting was replaced by a 'timeout' setting that applies
+  to all network operations. The old option and command are still accepted, but 
+  they are not restricted to connection attempts anymore.
+- Native language support (NLS) was added. Currently the only supported language
+  besides english is german, but it is easy to add more translations (hint, 
+  hint)!
+
+Version 1.4.1:
+- Only bug fixes, no new features.
+
+Version 1.4.0:
+- This is the new stable release of msmtp.
+  BEWARE: When upgrading from 1.2.4, note that
+  - Authentication is not enabled automatically anymore! Insert the command
+    "auth on" into account definitions that need it.
+  - Some command line options have changed!
+- Summary of new features since 1.2.4:
+  - Sendmail compatible command line options, including -t, -N, and -R
+  - New long options to configure almost everything on the command line
+  - Optional account selection with -f/--from
+  - Support for a system wide configuration file
+  - Optional automatic construction of envelope from addresses
+  - More flexible account definitions
+  - Configurable connection timeouts
+  - Improved log file logging
+  - Syslog logging
+  - Improved TLS/SSL support
+  - Support for LMTP
+  - Support for the EXTERNAL and GSSAPI authentication methods
+  - Support for .netrc and password prompting
+  - Rewritten documentation, available in various formats
+- New since 1.3.9:
+  - No new features, but minor improvements mainly regarding interoperability
+    and performance. And some minor bug fixes.
+
+Version 1.3.9:
+- Added support for the .netrc file: If a password is needed but none is given, 
+  msmtp will try to find it in ~/.netrc, and if that fails, msmtp will prompt 
+  you for it.
+- The authentication user name is included in the log if authentication is used.
+  Suggested by Jim Fohlin.
+- An account from the system configuration file cannot be partially changed in
+  the user configuration file anymore; it must be replaced completely instead.
+- Added LMTP support.
+
+Version 1.3.8:
+- The default values from a defaults section in a system configuration file
+  are not valid in the user configuration file anymore, to prevent changes in 
+  the system configuration file from breaking user setups.
+
+Version 1.3.7:
+- The user configuration file is required to have no more permissions than 
+  0600 (user read/write).
+- Added specialisation to account definitions. See documentation of the
+  account command and the example files.
+- Added the new connect_timeout command and --connect-timeout option.
+- The password will be prompted for if none is given in the configuration file.
+
+Version 1.3.6:
+- New documentation!
+  It was rewritten using texinfo, which allows easy generation of html and pdf
+  documents.
+  The man page is still up to date and will not be dropped.
+- A new configuration file command ("defaults") to set default values for all 
+  following accounts was added. Suggested by Jim Fohlin.
+- Support for EXTERNAL authentication was added.
+- You need GnuTLS >= 1.2.0 now if you want GnuTLS support.
+- bug fixes!
+
+Version 1.3.5:
+- A system wide configuration file SYSCONFDIR/msmtprc will be used if it exists.
+  It's settings will be overridden by the the user configuration file.
+  Use the --sysconfdir configure option to set SYSCONFDIR to something other 
+  than /usr/local/etc.
+- If no envelope from address is given, msmtp will construct one using the user
+  name and the mail domain (if given).
+- New command/options pairs:
+  - maildomain/--maildomain to set the domain part of constructed envelope from
+    addresses
+  - syslog/--syslog to enable logging to syslog
+
+Version 1.3.4:
+- Just some cleanups and bugfixes. The built-in CRAM-MD5 code works again.
+
+Version 1.3.3:
+- support for Remote Message Queue Starting (RMQS) was added, see option --rmqs
+- msmtp can now print information about the peer's TLS certificate.
+  Use --serverinfo (or --debug) to see it
+- If you want GnuTLS as your TLS library, you need a version >= 1.1.23 now
+
+Version 1.3.2:
+- You need gsasl or libgsasl >= 0.2.4 if you want GNU SASL support
+- Various bugfixes
+
+Version 1.3.1:
+- fixed the -t option
+
+Version 1.3.0:
+- INCOMPATIBLE CHANGES:
+  - configuration file:
+    - The auth command is now *required* to activate authentication. Just 
+      setting user name and password is not enough anymore
+    - The tls_nostarttls command should be changed to "tls_starttls off",
+      though the old command is still supported
+    - The tls_nocertcheck command should be changed to "tls_certcheck off",
+      though the old command is still supported
+  - command line:
+    - Changed short options (because of collision with sendmail options):
+      -p is now -P
+      -F is now -C
+      -v is not available anymore, use --version
+      -h is not available anymore, use --help
+    - If you used -f/--from without -a/--account to override the envelope from
+      address of the default account, you have to use --account=default 
+      explicitly now, because otherwise msmtp tries to find an account matching
+      the from address
+- NEW FEATURES:
+  - Sendmail compatible interface
+  - Almost all options can now be set on the command line
+  - Support for the sendmail -t option (read additional recipient addresses 
+    from the To, Cc, and Bcc headers of the mail)
+  - You can choose the account using the -f/--from option:
+    If you use -f/--from but not -a/--account, the first account of the
+    configuration file that has a matching envelope from address will be used
+  - GSSAPI authentication (you need GNU SASL >= 0.2.3 with GSSAPI support)
+  - New command ntlmdomain to set the domain parameter for NTLM authentication
+- CHANGES:
+  - Long option support on all platforms (thanks to gnulib)
+  - Enhanced almost all commands to allow unsetting of features
+  - Changed log file information: Instead of conffile/account, log
+    information about host, tls, auth, and from.
+
+Version 1.2.4:
+- No new features.
+
+Version 1.2.3:
+- IPv6 support on Windows systems
+- The configuration file supports all commands and arguments related to
+  TLS and authentication, even if TLS and/or GNU SASL support is not 
+  compiled in
+- The GNU SASL library is not required to support DIGEST-MD5 and NTLM 
+  anymore. This means you can now use the packaged versions of the library 
+  from Gentoo or Debian sarge.
+- You can use the -v/--version option to find out which authentication
+  methods are supported.
+
+Version 1.2.2:
+- Enhancements to the logfile command:
+  - All available information is now written to the logfile (new fields: 
+    mailsize=..., smtpmsg='...', errormsg='...').
+  - Logging to standard output is possible by using "logfile -"
+
+Version 1.2.1:
+- No new features.
+
+Version 1.2.0:
+- This version can be compiled without TLS/SSL support; use 
+  --disable-ssl if you really want that.
+- Read the entries for versions 1.1.x for more changes since the last 
+  stable version 1.0.0.
+
+Version 1.1.3:
+- New option -i for compatibility with mail(1).
+- New 'logfile' command; see man page for details.
+
+Version 1.1.2:
+- No user visible changes.
+
+Version 1.1.1:
+- The tls_nostarttls command now sets the default port to 465 (ssmtp).
+
+Version 1.1.0:
+- Support for SMTP command pipelining. On high latency networks, this 
+  may increase transmission speed, especially when sending to many
+  recipients.
+- The short option for --file, -f, has changed to -F
+- A new option --from/-f is available to set the envelope from address.
+- A new option --serverinfo/-S is available to print information
+  about the capabilities and limitations of an SMTP server
+
+Version 1.0.0:
+- New feature: tilde expansion for filenames in the configuration file
+
+Version 0.7.2:
+- This version adds native support for Windows 9x/ME/NT/2000/XP/2003
+  (with MinGW) and DOS (with DJGPP and the Watt32 library).
+
+Version 0.7.1:
+- New command: 'domain'
+- New options: --pretend and --debug
+
+Version 0.7.0:
+- Support for DSN (Delivery Status Notifications) was added via
+  the new commands 'dsn_notify' and 'dsn_return'.
+- The 'tls_nocertcheck' command was added. It disables all server 
+  certificate checks. Use it if you get certificate check errors but
+  still want to use the SMTP server with TLS/SSL.
+- The 'nostarttls' command is now called 'tls_nostarttls'. 
+  Please update your configuration file.
+
+Version 0.6.5:
+- License clarification:
+  msmtp is released under the GPL with the additional exemption that
+  compiling, linking, and/or using OpenSSL is allowed.
+- If you want to use GnuTLS instead of OpenSSL, you will now need 
+  GnuTLS >= 1.0.0 and libgcrypt >= 1.1.90!
+- msmtp now works on systems that lack IPv6 support
+- msmtp now accepts arbitrary long lines in mails
+
+Version 0.6.4:
+- fixed configuration file code
+
+Version 0.6.3:
+- portability fix for Mac OS X (Randolph Fritz)
+- fixed --disable-gsasl configure option
+- man page improvements
+
+Version 0.6.2:
+- use GNU Autotools (Christophe Nowicki)
+- fixed wildcard support in server certificate's Common Name field
+
+Version 0.6.1:
+- improved certificate check/verification with OpenSSL
+- code cleanups
+
+Version 0.6.0:
+- Added sanity checks of server certificate when using TLS
+- Strict server certificate verification with tls_trust_file command
+- Possibility to send client certificate if requested (tls_key_file and  
+  tls_cert_file commands)
+- Optional support for GnuTLS instead of OpenSSL
+- Optional support for GSASL (adds DIGEST-MD5 and NTLM authentication methods)
+- Arguments in the configuration file may now contain blanks
+- Removed the possibility to choose the TLS version with the tls command
+- Proper recognition of server capabilities (EHLO response)

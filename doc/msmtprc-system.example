@@ -1,0 +1,20 @@
+# Example for a system wide configuration file
+
+# A system wide configuration file is optional.
+# If it exists, it usually defines a default account.
+# This allows msmtp to be used like /usr/sbin/sendmail.
+account default
+
+# The SMTP smarthost.
+host mailhub.oursite.example
+
+# Construct envelope-from addresses of the form "user@oursite.example".
+#auto_from on
+#maildomain oursite.example
+
+# Use TLS.
+#tls on
+#tls_trust_file /etc/ssl/certs/ca.pem
+
+# Syslog logging with facility LOG_MAIL instead of the default LOG_USER.
+syslog LOG_MAIL

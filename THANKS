@@ -1,0 +1,14 @@
+Thanks go to:
+
+- R.I.Pienaar for pointing out the Bcc header issue.
+- Kai for the --nostarttls patch and man page corrections.
+- Tommy for the bugfixes made in 0.5.3
+- Jess Mahan for debian packages and tips for GNU Autotools support
+- Christophe Nowicki for GNU Autotools support
+- David MacMahon for the original --pretend and --debug patch
+- Dave Librik for suggesting the -i option for mail(1) compatibiliy
+- Martin Hauke for help with the logfile command, testing, suggestions,
+  bug reports, README.hpux and more
+- Jim Fohlin for good suggestions and lots of testing
+
+- all senders of bug reports and problem descriptions

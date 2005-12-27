@@ -1,0 +1,49 @@
+This file describes how to use msmtp 1.4.0 or newer with Mutt.
+
+
+1. Install msmtp:
+
+     $ ./configure
+     $ make
+     $ make install
+
+
+2. Configure msmtp:
+
+   Create the file .msmtprc in your home directory, with no more permissions
+   than user read/write (0600, -rw-------).
+   Create a default SMTP account by putting the following commands in it:
+
+     account default
+     host smtp.yourprovider.example
+     from you@yourprovider.example
+
+   This is sufficient, but you may want to use SMTP authentication (instead of
+   POP-before-SMTP for example). Simply add
+
+     auth on
+     user JoeExample
+     password Secret
+
+   to the same file.
+   Using TLS encryption is always a good idea, so add the line
+
+     tls on
+
+   If you are not sure whether the SMTP server supports authentication and/or
+   TLS encryption, find it out with
+
+     msmtp --host=smtp.yourprovider.example --serverinfo
+
+
+3. Tell Mutt to call msmtp instead of /usr/sbin/sendmail:
+
+   Add the following lines to your Mutt configuration file:
+
+     set sendmail="/usr/local/bin/msmtp"
+     set from=you@example.com
+
+
+4. If you want to know how to set up multiple accounts, advanced TLS options, 
+   DSN, and other more or less useful stuff, read the msmtp manual. There's a 
+   "Using msmtp with Mutt" paragraph in the Examples section.

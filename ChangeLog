@@ -1,0 +1,831 @@
+Version 1.4.5:
+- gnulib update.
+- adapted configure.ac for new pkg-config version
+- Use gnulib socklen module for socklen_t.
+- Lock the logfile.
+- W32/DJGPP: Use all files/streams in binary mode.
+- W32: Allow %HOME% to override default user configuration directory.
+- W32: Enable getpass and netrc functionality.
+- Use gnulib getpass module since it now works on Win32.
+- Shut down a GnuTLS TLS session with GNUTLS_SHUT_WR instead of
+  GNUTLS_SHUT_RDWR. This prevents session hangs in certain situations.
+  It is safe to do this because we never reuse a connection when TLS was shut
+  down. Thanks to Jens Kammler for the problem report!
+- Do not rely on a failing malloc setting errno in xalloc_die()
+- Make the GnuTLS code accept old version 1 CA certificates when verifying
+  certificates.
+- Renamed LOCK_(READ|WRITE) to OSENV_LOCK_(READ|WRITE) in os_env.[ch] to avoid
+  name clashes with <fcntl.h>
+
+Version 1.4.4:
+- gnulib update
+- Renamed the --disable-win32-ipv6 configure option to
+  --enable-win2000-and-older, because it applies to more than just IPv6
+  support.
+- Retry gnutls_handshake() when the non-fatal error E_INTERRUPTED occurs.
+- Properly handle OpenSSL errors that occur due to interrupted system calls:
+  retry the operation.
+- Removed the OpenSSL exception note from the license information. This was
+  necessary because msmtp uses GPL'ed gnulib modules.
+- Added "accepted but ignored" support for the sendmail -F option (set real 
+  name of sender). Vixie-cron uses this. Reported by Luca Graf.
+- Updated README. Removed README.gsasl.
+- Removed README.hpux because it was outdated (the getaddrinfo() problems were
+  patched long ago).
+- Reduce calls to net_puts()/tls_puts() by avoiding to send "\r\n" in an extra
+  call. Append "\r\n" to the string instead (if necessary).
+  A side effect is that the TCP CRLF ("\r\n") appears in the --debug output.
+  This was done for smtp_get_msg(), too, for consistency.
+- Avoid system call in net_puts() when there's no data to send
+- Whitespace fixes
+
+Version 1.4.3:
+- gnulib update
+- Allow empty envelope from addresses. --from="" does not unset the 
+  envelope-from address anymore. An envelope-from address will only be created
+  automatically when the new command auto_from (or option --auto-from) is set
+  to "on".
+  This closes Debian bug #318138, reported by Richard Thrippleton. The fix was
+  suggested by Julien Louis. Thanks!
+- Update netrc.c from fetchmail-6.2.6pre4 (no significant changes)
+- msmtp.1, msmtp.texi: Explicitly state that authentication must be activated
+  in the documentation of the user and password commands.
+
+Version 1.4.2:
+- gnulib update
+- Fixed memory leaks in msmtp_read_recipients() and msmtp_get_loginfo().
+- Big merge from mpop:
+  - Fix error messages for network input/output timeouts. This affects reading
+    and writing raw sockets, OpenSSL connections, and GnuTLS connections.
+  - Replace the connect_timeout setting with a timeout setting that not only
+    applies to connection attempts but also to input/output operations.
+    msmtp still accepts the --connect-timeout option and connect_timeout
+    command as aliases, though they were restricted to connection attempts.
+  - Added a new function lock_file() to os_env.[ch], used for platform 
+    independent file locking. [Not used in msmtp].
+  - Added gnulib module xvasprintf. Use xasprintf where appropriate to
+    avoid the need for static buffers with unknown required length.
+  - Simplifications:
+    - eliminate some error conditions by using safe fallbacks
+    - don't print special error messages when the system setup is
+      obviously completely broken
+  - Updated all occurrences of the address of the FSF (all .h and .c files,
+    configure.ac, COPYING, msmtp.texi)
+  - Added german translation
+  - Improved some error messages
+  - Added gettext support
+  - Let gcc know about unused variables to suppress warnings. The UNUSED macro
+    used for this purpose is written into config.h. The logic that defines it
+    to be empty when the compiler is not a recent gcc was taken from 
+    coreutils-5.2.1.
+  - Show the canonical hostname and network address of the server in 
+    --serverinfo output (only if these informations are available).
+  - Renamed paths.[ch] to os_env.[ch] and added new function get_username().
+    This function is now used by msmtp_construct_env_from().
+- Added an advanced example of Mutt macros for switching accounts, 
+  contributed by Thomas Baruchel
+- Minor documentation improvements
+- Let gcc print format warnings for print_error() in msmtp.c and
+  smtp_send_cmd() in smtp.c
+- Remove superfluous password nulling in msmtp_password_callback()
+- Some whitespace / style fixes
+- Clarification and fixes of comments in paths.c
+- Fixed error detection for strtol(): LONG_MAX is a valid return value if
+  errno != ERANGE (errno must be reset before strtol).
+- When the protocol is LMTP and the server does not accept the LHLO command,
+  don't fall back to HELO. HELO is for old SMTP servers only; LMTP servers 
+  must support LHLO.
+
+Version 1.4.1:
+- gnulib update
+- Don't call gnutls_record_send() in the GnuTLS version of tls_puts() when
+  there is no data to send, and properly detect failing tls_puts() and
+  net_puts() calls in smtp_put().
+  This fixes a bug where msmtp silently strips blank lines from mails when
+  compiled with GnuTLS. The bug also prevented msmtp from detecting certain
+  output errors.
+  Thanks to Jesse Michael for identifying, reporting, and fixing this bug.
+- Some typo fixes in the documentation
+- Updated README.dos to reflect recent improvements in the DJGPP port of
+  OpenSSL.
+- Removed the requirement for the configuration file to be a regular file.
+  This allows tricks like msmtp -C<(echo "host ..."...) again.
+  Closes Debian bug #306904.
+- Changed read buffer counter in net.[ch] from ssize_t to int. This fixes
+  compilation on FreeBSD (ssize_t was unkown in net.h; unistd.h had to be
+  included). Reported by Roman Bogorodskiy.
+- Corrected documentation: the netrc syntax is described in netrc(5) or
+  ftp(1).
+- Fixed a problem when using an IP address as a host name on certain old
+  Windows systems without configured DNS: The gethostbyname() function may not
+  be able to handle IP addresses. Work around this by trying inet_addr()
+  first. Original report and patch by Dirk Heinemann.
+  Note that newer Windows systems (XP and up) have getaddrinfo() and are 
+  therefore not affected by this problem.
+
+Version 1.4.0:
+- gnulib update
+- Correctly handle null characters in the input by replacing fgets() with
+  stream_gets() and fputs() with fwrite()
+- Do tilde expansion for the following options, in case the shell did not do
+  it: --tls-trust-file, --tls-key-file, --tls-cert-file, --logfile
+- Make the OpenSSL code accept self signed certificates in the default mode
+  (tls_cert_check on, tls_trust_file unset). This should have been in 1.3.6, but
+  I forgot one case. The GnuTLS code always did this. 
+  Reported by Luis A. Florit.
+- Fixed a memory leak in the tempfile() function.
+- Improved SMTP command pipelining:
+  1. Limited the number of pipelined SMTP commands to SMTP_PIPELINE_LIMIT
+     (currently 100) to avoid exceeding the TCP windows size when sending 
+     to *lots* of recipients. 
+  2. Pipeline the DATA command in addition to MAIL FROM and RCPT TO.
+     This saves one round trip. Hooray!
+  Both changes affect smtp_send_envelope() only. This function was rewritten.
+- Only send the QUIT command in the following two situations:
+  - the SMTP session ended normally
+  - msmtp cannot proceed with the SMTP session because the SMTP server lacks a
+    feature
+  On all other errors, don't bother to send QUIT, just abort the session.
+- Handle To, Cc, and Bcc headers case insensitive (allow for example CC and
+  BCC). Reported by Michael D Henderson. Thanks!
+- Accept CRLF line ends in the mail (both header and body). Suggested by
+  Michael D Henderson. Thanks!
+- Accept CRLF line ends in the configuration files.
+- Fixed --read-recipients long option: it wrongly required an argument.
+  Reported by Michael D Henderson. Thanks!
+- Fixed the dsn_return and dsn_notify commands: they now accept the argument
+  "off", as documented. Patch by Maciej Bliziński. Thanks!
+- Minor documentation changes
+- Changes taken from mpop:
+  - Improved network input/output, including input buffering. Initiated by
+    Dimitris Apostolou.
+  - net_gets()/tls_gets() now return the length of the string, and
+    net_puts()/tls_puts() now take a length argument. This saves some strlen()
+    calls. Original patch by Dimitris Apostolou.
+
+Version 1.3.9:
+- Added support for .netrc
+- Minor documentation changes
+- Log user name if authentication is used (suggested by Jim Fohlin)
+- An account from the system configuration file cannot be partially changed in
+  the user configuration file anymore; it must be replaced completely instead.
+- Added missing connection timeout documentation.
+- Implemented LMTP. LMTP can be activated with the protocol command or 
+  --protocol option. Adapted the setting of the default port. Removed "SMTP" 
+  from some error strings that are also valid for LMTP.
+- Minor fix in net.c: net_open_socket() could have wrongly reported success in
+  very obscure situations.
+- Allow an empty string as domain parameter; don't use NULL
+- Updated AUTHORS
+
+Version 1.3.8:
+- Moved setting of default port from conf.c to msmtp.c. Setting a port in a
+  "defaults" section should now work correctly.
+- For all commands and options that accept the argument "on": also accept
+  no argument, an treat that the same as "on".
+- Moved lib to gnulib and m4 to gnulib/m4
+- Use gnulib module sysexits.h
+- Replace xmalloc.[ch] with gnulib module xalloc
+- Simplify crypto.[ch]: Always use gnulib md5. This avoids error checking that
+  was necessary because of the libgcrypt code.
+- Fixed some pedantic compiler/lint warnings
+- Minor output format changes
+- Rewrote the OpenSSL specific hostname matching code:
+  - It only allows one form of wildcard in the certificate name: "*." as the
+    two leftmost characters. See the comment for hostname_match() in tls.c
+    for the reasons for this.
+  - It does not require memrchr() anymore, therefore the gnulib memrchr module
+    was removed.
+  - It does not break with "tcc -b" anymore.
+- Close the temporary file as soon as possible in msmtp_sendmail()
+- Only replace characters for which iscntrl() returns true with question marks
+  in msmtp_sanitize(). Replacing every character for which isprint() is false
+  is too restrictive. Now UTF-8 is passed through.
+- Minor documentation improvements. The texinfo documentation now contains
+  a section "Environment / Files", which was previously only in the man page.
+- Added missing const qualifiers
+- Fixed temporary file handling on Win32. This means that -t/--read-recipient
+  now works properly on Win32.
+- Fixed error handling for the temp file used by msmtp_read_recipient().
+  One fix is for a potential segfault in case of temp file io errors.
+- Changed the tempfile() function to create a file that is automatically
+  deleted when closed, thus eliminating the need to return the file name.
+  This required a mkstemp+unlink replacement for DOS/Windows (see paths.c).
+- Replaced the DEFAULT_SYSLOG_FACILITY macro with the
+  get_default_syslog_facility() function.
+- The default values from a defaults section in a system configuration file
+  are not valid in the user configuration file anymore, to prevent changes in 
+  the system configuration file from breaking user setups.
+- sanitize more strings before printing or logging them
+- fixed compilation on systems that don't have socklen_t, for example MacOS X
+
+Version 1.3.7:
+- Better authentication error messages
+- Be more strict when checking the port/--port argument
+- Added the new connect_timeout command and --connect-timeout option. Suggested
+  by Jim Fohlin.
+- configure.ac: only try to find GNU SASL manually if pkgconfig is not found
+- Added specialisation to account definitions. See documentation of the
+  account command and the example files. Suggested by Jim Fohlin.
+- Added a password callback function that reads a password via getpass() if
+  needed. Suggested by lots of people.
+- Added a user configuration file permission check: It must have no more
+  permissions than 0600. Suggested by lots of people.
+
+Version 1.3.6:
+- Added new, completely rewritten documentation in texinfo format.
+  Also distribute the generated html and pdf formats.
+- Added a "defaults" command. Suggested by Jim Fohlin.
+- Accept "AUTH=" as an alternative to "AUTH " in EHLO response. There are
+  still some broken servers that use "AUTH=". Reported by Multik.
+- Added authentication mechanism EXTERNAL (both built-in and via GSASL).
+- Updated GnuTLS dependency to 1.2.0.
+- Accept self-signed certificates in the certificate chain in the default
+  settings (tls_cert_check on, tls_trust_file unset).
+  This only affects the OpenSSL code; the GnuTLS code did it already.
+- Improved the OpenSSL certificate name check (host name versus the
+  subjectAltNames or the common name of the peer certificate). The
+  improvements were partially taken from libesmtp-1.0.3r1, Copyright 2001-2004
+  Brian Stafford, Released under the LGPL.
+- Fixed ACC_SYSLOG constant in conf.h. (Jim Fohlin)
+- Add SSL_CFLAGS and GSASL_CFLAGS to CFLAGS in configure.ac. Should fix
+  compilation on various systems, including RH9. (Jim Fohlin)
+- the --dsn-notify and --dsn-return options don't accept empty arguments
+  anymore
+- moved md5_hmac function from smtp.c to the new crypto.c file
+- When neither GnuTLS nor OpenSSL is used, always use the gnulib MD5
+  implementation, even if the BSD MD5 API is available. The gnulib md5.h
+  header shadows the system md5.h header, and trying to solve this results in
+  a mess that isn't worth it.
+  This fixes compilation with --disable-ssl on a system with the BSD MD5 API.
+- changed the --from option: an empty argument unsets the envelope from
+  address now
+- Do not ignore open errors on user configuration files specified with
+  -C/--file.
+- Display configuration file loading information with --pretend, too (not just
+  with --debug). Fixed display of this information in case of an unknown home
+  directory.
+- gnulib update
+- use automake 1.9.4
+
+Version 1.3.5:
+- minor man page cleanups
+- forbid empty arguments for the following commands: auth, tls,
+  tls_certcheck, tls_starttls, keepbcc, dsn_notify, dsn_return
+- removed unnecessary and broken detection of DJGPP systems in configure.ac
+- changed the following options from having an optional argument to having a
+  required argument: --auth, --tls, --tls-certcheck, --tls-starttls, --keepbcc
+- changed the from command: an empty argument is now accepted and unsets the
+  envelope from address
+- changed the domain command: an empty argument is now accepted and unsets the
+  EHLO domain
+- always contruct an envelope from address if none is given
+- added a maildomain command and --maildomain option
+- added a sylog command and --syslog option
+- added a system wide configuration file: SYSCONFDIR/msmtprc. Set SYSCONFDIR
+  with the --sysconfdir configure option.
+- check if DSN is available as soon as possible in msmtp_sendmail()
+- fixed a bug in the dsn_notify configuration file command: it stopped parsing
+  of the configuration file
+- allow empty configuration files
+- don't require recipients when --pretend is used
+- splitted main() in parts
+
+Version 1.3.4:
+- Fixed built-in CRAM-MD5 authentication. The error was introduced when
+  switching to the gnulib base64 implementation. Reported by Martin Hauke.
+- Use getservbyname() to get the default port for smtp or ssmtp. Use
+  25/465 as fallback.
+- added authentication to msmtp_rmqs()
+- don't test if requested auth mech is compiled in when --serverinfo is used,
+  because --serverinfo does not use auth
+- the SHA1 and MD5 fingerprints of the peer's certificate were added to the
+  certificate information output
+- --serverinfo: always print port number
+- cleanups in conf.[ch]
+- fixed the setting of the default port
+- fixed several memory leaks reported by valgrind
+- minor changes in the man page
+- killed prototype for nonexistant function from conf.h
+- use AM_CPPFLAGS = -I$(top_srcdir)/lib in src/Makefile.am and change 
+  #include <md5.h> to #include "md5.h" in smtp.c to solve the MD5 build
+  issues. Also replaced #include "../lib/base64.h" with #include "base64.h"
+  and killed the #ifdef'ed inclusion of "getopt.h" in msmtp.c: always include
+  <getopt.h>
+
+Version 1.3.3:
+- replaced the GnuTLS check in configure.ac with the AM_PATH_LIBGNUTLS macro
+  that comes with GnuTLS
+- reorganized the man page
+- added the Remote Message Queue Starting mode of operation (--rmqs, RFC 1985)
+- fixed the --pretend option:
+  - it now prohibits the execution of msmtp_serverinfo() even if --serverinfo
+    was given
+  - the printed configuration contains only the information that is actually
+    used: DSN settings, envelope from address and other information is only
+    printed when sendmail mode is active
+- Added functions to get information about peer's certificate.
+  This information is printed by --serverinfo and if --debug is used.
+  This code requires a fix in gnutls_x509_crt_get_dn_by_oid() that is only
+  available in GnuTLS newer than the 2005-01-05 snapshot of what will become
+  1.1.23.
+- OpenSSL code in tls.c: allow Common Names of arbitrary length during 
+  certificate check
+- minor cleanups in net.c, tls.c, and msmtp.c
+- improvements to the Windows mkstemp() replacement function in paths.c
+- fixed a potential segmentation fault in DOS/DJGPP specific code in tempfile() 
+
+Version 1.3.2:
+- fixed segfault bug in find_account_by_envelope_from(): it was not checked 
+  if the from address of an account is != NULL before doing a string comparison.
+  Reported by Jan Kanty Palus.
+- minor cleanup in find_account*() functions
+- Removed TODO from distribution
+- added the field 'conffile' to account_t for better error messages in
+  msmtp.c
+- added the field 'mask' to account_t and adjusted conf.c and msmtp.c
+  accordingly
+- Do not set GSASL_AUTHZID in GNU SASL authentication code. Only use
+  GSASL_AUTHID. GSASL_AUTHZID caused DIGEST-MD5 to fail.
+- Require GNU SASL >= 0.2.4, because it contains a new DIGEST-MD5
+  implementation.
+- Replaced base64.[ch] and md5_algo.[ch] with the gnulib modules base64 and
+  md5. Moved md5_hmac() from md5_apps.c into smtp.c and removed md5_apps.[ch].
+  Updated man page and AUTHORS accordingly. Removed README.md5.
+- fixed interpretation of the SIZE SMTP service extension: no number means no
+  information, 0 means no limit (RFC 1653).
+- updated print_conf output (printed with --debug and --pretend) to match new
+  configuration scheme
+- added info about required libraries to README
+- updated TODO
+- fixed comment on msmtp_read_recipients() in msmtp.c
+
+Version 1.3.1:
+- fixed -t option address parsing; it was completely broken and didn't even
+  catch all example cases from the RFC 2822 Appendix.
+  
+Version 1.3.0:
+- minor changes to some documentation files (AUTHORS, README.dos, ...)
+- The auth command is now required to activate authentication. It is not
+  sufficient to use user/password anymore. This allows switching off
+  authentication with --auth=off
+- The tls_* properties can now be changed without activating tls. This allows
+  switching TLS off with --tls=off.
+- Added a command line long option for every configuration file command
+- Changed log file information: Instead of conffile/account (which can now be
+  overridden on the command line and thus has no meaning anymore), print
+  host=%s tls=on|off auth=on|off from=%s
+- Imported the gnulib module getopt: long option support for all platforms
+- reactivated xmalloc.c to make the code more readable
+- Support for the sendmail -t option (read additional recipients from the
+  To, Cc, Bcc headers of the mail). This needs to create a temporary file for
+  the mail headers.
+- Use the same version of md5_apps.* that mpop uses
+- Accept sendmail options.
+  1. msmtp options that had to be changed because they collided with sendmail
+     options:
+     -p => -P
+     -F => -C
+     -v and -h were deleted.
+  2. additional supported sendmail options:
+     -t (read additional recipients from To, Cc, Bcc)
+     -N (dsn_notify)
+     -R (dsn_return)
+     -X (set logfile)
+  3. ignored options: a lot.
+- Rewrote the "Using msmtp with Mutt" section of the man page. Updated
+  Mutt+msmtp.txt and msmtprc.example.
+- You can choose the account using the -f/--from option:
+  If you use -f/--from but not -a/--account, the first account of the
+  configuration file that has a matching envelope from address will be used.
+  Thanks to Bernhard Walle and others for the idea.
+- Rewrote expand_tilde() (from paths.c)
+- Error handling: eliminated merror.[ch]. Replaced it by an int return value
+  and an additional argument 'char *errstr' where necessary. Various minor 
+  changes to error messages. Eliminated static buffer in tls.c.
+- Allow sending of SMTP commands longer than 510 characters (SMTP_MAXCMDLEN).
+  This is necessary for GSSAPI authentication.
+- Added support for GSSAPI authentication with GNU SASL
+- Added support for the ntlmdomain configuration command used by NTLM
+  authentication.
+- Check if the SMTP server supports a requested AUTH mechanism before sending
+  an AUTH command. Changed both GNU SASL and built-in code.
+- Updated the GNU SASL code in smtp.c to use the new API of GNU SASL 0.2.0. 
+  The code will not work with 0.1.x anymore.
+- Improved error message when the SMTP server sends an invalid reply
+- Updated Mutt+msmtp.txt and msmtp.1
+- Portability improvement: added missing declaration of h_errno to net.c. 
+  Thanks to Marco for reporting this.
+- New configure option --disable-win32-ipv6 to disable IPv6 on Windows and thus
+  build binaries that run on any Windows version, not just XP and newer. See 
+  the updated README.win32 file. Thanks to Thomas Davies for pointing out this 
+  problem.
+
+Version 1.2.4:
+- Changed return code in case of authentication error from EX_DATAERR 
+  to EX_NOPERM
+- Changed return code in case of missing/invalid configuration file or 
+  nonexistent account from EX_NOINPUT/EX_DATAERR to EX_CONFIG
+- Test return value of localtime(3) in msmtp_log()
+- Windows specific code in net.c: moved translation of error code from 
+  WSAStartup() from net_lib_init() to wsa_strerror()
+- OpenSSL specific code in tls.c: minor cleanup in openssl_io_error()
+- Always keep control of the format string in calls to merror(). (There
+  were four cases where the result of strerror() was passed as the format
+  string in smtp.c.)  
+- Clarified usage instructions of merror() in merror.h
+- Check at initialization time whether support for a manually requested
+  authentication mechanism is compiled, *before* establishing a network
+  connection.
+  This required a change from smtp_auth_caps() to the (equally trivial)
+  smtp_authmech_is_supported() function.
+  Made the output of both "not compiled in" messages (TLS and auth mech)
+  consistent.
+  The return code for these error conditions is EX_UNAVAILABLE now.
+- Make the output of -h/--help and -v/--version consistent with the GNU 
+  utilities by including copyright and no-warranty notice (version) and
+  a short description and the bug report address (--help).
+- Add missing declarations of optarg and optind to msmtp.c, needed for
+  getopt() handling. No compiler complained so far, though.
+- Fixed stupid error in smtp.c that prevented the detection of output 
+  errors when sending the RCPT TO command (highly unlikely to occur).
+- Cosmetic change in -v/--version output that avoids lines longer than 
+  80 characters
+- Fixed some man page typos
+- Fixed typos in conffile.c error message
+- Fixed typo in tls.c error message (OpenSSL code only)
+- Changed error messages: "bla [blub]" -> "bla: blub"
+- Improved some TLS error messages
+- Corrected short description in man page, README and code comments
+- Updated README.dos
+
+Version 1.2.3:
+- documentation updates
+- The -v/--version option now prints information about the supported 
+  authentication methods
+- The tls_* commands and the auth mechanisms ntlm and digest-md5 are now
+  allowed in the configuration file even if msmtp is compiled without
+  support for TLS or GSASL. An error message will only appear only if you
+  actually try to make use of a feature not compiled in.
+- The GNU SASL code does not expect support for digest-md5 or ntlm (or 
+  any other mechanism) in the library anymore. It just works with what's 
+  supported. This means you can now use the packaged versions of GNU SASL
+  from Gentoo and Debian sarge.
+- Switch from gsasl_client_step_base64() to the newer gsasl_step64()
+  in the GNU SASL authentication code
+- Martin Hauke added README.hpux
+- updated automake files to version 1.8.5
+- configure.ac: check that pkg-config exists before trying to use it
+- configure.ac: try to check for GNU SASL using pkg-config (if available)
+- configure.ac: improved detection of network settings.
+- configure.ac: improved checks for OpenSSL and GnuTLS
+- configure.ac: fixed display of warning when neither OpenSSL nor GnuTLS 
+  is found and --disable-ssl was not explicitly used
+- updated README.win32, README.dos
+- Use getaddrinfo() on Windows (but not gai_strerror()). This enables 
+  IPv6 support for Windows.
+- clarified an error message in tls.c (only OpenSSL affected):
+  "cannot establish TLS connection" changed to "TLS handshake failed"
+
+Version 1.2.2:
+- set *error_msg to NULL in smtp_auth() and smtp_send_mail() to prevent 
+  possible segfaults in the calling function
+- correctly handle mails whose last line lacks a newline character (the 
+  missing character will be added)
+- smtp error messages are sanitized before printed in an error message or 
+  to the logfile: non-printable characters (!isprint(c)) are replaced with
+  a question mark.
+- corrected a problem where the "exitcode=..." field in the logfile said 
+  EX_SOFTWARE though the exitcode was in fact something different
+- do not expect an SMTP response to end with '\n'; clarified comment about 
+  smtp_get_msg() (Ralph Siemsen)
+- added a "mailsize=..." field to the logfile
+- added a "smtpmsg='...'" field to the logfile
+- added a "errormsg='...'" field to the logfile
+- the dash (-) as a logfile name causes logging to standard output
+- removed all `...' quoting from error messages: `bla' -> bla
+- updated documentation
+  
+Version 1.2.1:
+- don't use -n option for echo in configure.ac, because it is not portable
+- reduce calls to printf() in msmtp_serverinfo()
+- correctly handle configuration files in which the last line does not end
+  with a newline character
+- update MD5 implementation to the version from popa3d-0.6.4.1, which has 
+  a small fix (msmtp was not affected).
+
+Version 1.2.0:
+- changed output of -v,--version
+- made TLS/SSL support optional: --disable-ssl disables it.
+- moved md5.[ch] to md5_apps.[ch]
+- added MD5 implementation by Solar Designer (files md5_algo.c and 
+  md5_algo.h). It only gets used when
+  - GNU SASL is not used and 
+  - GnuTLS is not used and 
+  - OpenSSL is not used and 
+  - the C library does not implement MD5.
+  See README.md5.
+- print all debugging info to stdout (the SMTP session was printed to 
+  stderr before).
+
+Version 1.1.3:
+- cosmetic changes in configure.ac
+- cosmetic change in --serverinfo output
+- new command: logfile (see man page)
+- new option -i, which is ignored for compatibility with mail(1)
+- made smtp_msg_status() available through smtp.h because the new 
+  logging code needs it
+- documentation updates
+- translate SMTP_EINVAL to EX_DATAERR instead of EX_SOFTWARE in 
+  exitcode_smtp() in msmtp.c
+
+Version 1.1.2:
+- changed the net_getline() and tls_getline() funtions to the slightly 
+  different net_gets()/tls_gets() functions to clean things up and 
+  prevent minor possible bugs
+- various minor cleanups and portability improvements
+- updated documentation. msmtp now accepts the example configuration 
+  file ;-)
+
+Version 1.1.1:
+- many minor cleanups
+- fixed a bug where error messages might get overwriten by further 
+  error messages in msmtp.c
+- tls_nostarttls now also changes the default port to 465 (ssmtp).
+
+Version 1.1.0:
+- restructured everything to use a new error handling scheme
+- restructured TLS interface
+- rewrote SMTP protocol implementation
+- added SMTP PIPELINING support
+- added new option -S, --serverinfo, which prints information about the
+  SMTP server.
+- changed option -f, --file to -F, --file
+- added new option -f, --from to set the envelope from address. The from
+  address does not need to be set in the configuration file anymore.
+  The command line address overrides the configuration file setting.  
+- removed check for vasprintf() in configure.ac; it is not used anymore
+- removed check for strcasecmp() in configure.ac
+- the tilde expansion now uses getpwuid() when $HOME is not set on UNIX
+
+Version 1.0.0:
+- correctly handle certificate chains in tls.c GnuTLS code
+- added tilde expansion to configuration file filenames (expand_tilde() 
+  in path.c)
+- return EX_IOERR instead of other exit codes on read errors in esmtp.c
+- case insensitive parsing of EHLO response
+- fall back to HELO if EHLO fails
+- removed check for vsnprintf() in configure.ac
+- updated automake
+- removed names of failed functions from error messages (Example:
+  "cannot get system time [time(): %s]" -> "cannot get system time [%s]")
+- slightly improved error messages in net.c
+- minor man page improvements
+- updated README.gsasl
+
+Version 0.7.2:
+- minor man page improvements
+- additional eror check in smtp_copy_mail()
+- removed unneeded msmtp.h
+- moved cram_md5.* to md5.* and renamed cram_md5() to hmac_md5()
+- cleaned up conditional compilation of base64.c and md5.c
+- documentation updates
+- cleaned up configure.ac
+- new files paths.[ch] for OS dependend path functions
+- added support for MinGW to build native Win32 application -- see README.win32
+- added support for DJGPP to build native DOS application -- see README.dos
+- fixed a bug in tls.c: wrong test for RAND_status() (OpenSSL code).
+  This only affected the new DOS port (see next point).
+- added code to seed the OpenSSL pseudo random number generator. This code is
+  only used when OpenSSL cannot seed the PRNG itself. This means the code is
+  probably only ever used on DOS.
+
+Version 0.7.1:
+- new command 'domain' to set the EHLO parameter
+- new options --pretend and --debug (thanks to David MacMahon)
+- minimal change in --version behaviour: print package name, not name of binary
+  file
+
+Version 0.7.0:
+- Added support for DSN (Delivery Status Notification) via the new configuration
+  commands 'dsn_return' and 'dsn_notify' (changes in conffile.[ch], msmtp.c,
+  esmtp.[ch])
+- configuration: added 'tls_nocertcheck' which disables all server 
+  certificate checks (changes in conffile.[ch], msmtp.c, esmtp.[ch], tls.[ch]).
+- configuration: renamed 'nostarttls' to 'tls_nostarttls'
+- documentation updates
+- fixed a minor bug in an OpenSSL error report
+- minor --help text change
+- minor cleanups in conffile.c
+
+Version 0.6.6:
+- fixed building on Solaris (and maybe other systems)
+
+Version 0.6.5:
+- License clarification: msmtp is released under the GPL with the additional
+  exemption that compiling, linking, and/or using OpenSSL is allowed.
+- Updated tls.c and cram_md5.c to work with gnutls >=1.0.0 and libgcrypt 
+  >=1.1.90. The code will not work with older versions anymore!
+- Use gethostbyname() in net.c if getaddrinfo() is not available. This allows
+  msmtp to be compiled on older systems and systems that don't have proper IPv6
+  support, for example Cygwin.
+- Accept arbitrary long input lines in the mail (new function smtp_copy_mail()).
+  The MUA is responsible for the RFC conformance of mails (no line longer than 
+  998 characters).
+- improved error messages in case of SMTP responses that are too long
+- improved error messages in tls.c
+- increased SMTP buffer size in esmtp.c
+- Make check of return code of vasprintf() more portable in xmalloc.c
+- cleaned up esmtp.h
+- changed --help text
+
+Version 0.6.4:
+- fixed a bug in conffile.c
+- report missing arguments in conffile.c
+
+Version 0.6.3:
+- man page improvements
+- reset error_lines to NULL in merror.c in print_error_lines() to allow
+  further calls to add_error_line() (not yet needed in msmtp)
+- free memory in case of tls_init() failure in msmtp.c
+- fixed --disable-gsasl configure option
+- #include <unistd.h> in msmtp.c because Mac OS X has getopt() there (Randolph
+  Fritz). (This applies to all systems that don't have getopt.h).
+- return EX_OK instead of 0 in some functions in esmtp.c
+
+Version 0.6.2:
+- added support for GNU Autotools (Christophe Nowicki)
+- the GNU getopt sources are no longer included; msmtp will fall back to short 
+  options when getopt_long is not available (Christophe Nowicki)
+- fixed a bug in the certificate check/verification code that prevented 
+  msmtp from accepting a wildcard in the Common Name (CN) field (this 
+  affected only the OpenSSL version of the code)
+- wrapped some lines in the man page (example section)
+- updated documentation
+  
+Version 0.6.1:
+- free x509_cert in OpenSSL code of tls_cert_check()
+- always check x509_subject common name for hostname matching in OpenSSL code
+  of tls_cert_check() (like the GnuTLS code does).
+- improved CN/hostname matching in OpenSSL code: it is now case insensitive
+  and allows the * wildcard as the left-most character in the CN (RFC 2595)
+- check for x509_subject == NULL in OpenSSL code of tls_cert_check()
+- moved tls_init()/tls_deinit() from smtp_send() to main()
+- removed tls dependencies from net.c
+- change comments/code/documentation to read GSASL instead of GnuSASL
+
+Version 0.6.0:
+- Added GnuTLS/libgcrypt support to tls.c and cram_md5.c
+  You can now choose whether you want to use GnuTLS/libgcrypt or OpenSSL 
+  for TLS support and CRAM-MD5 authentication (see Makefile).
+- Added sanity checks of server certificate when using TLS.
+- Added the tls_trust_file command.
+  This enables strict verification of the server certificate.
+- Added tls_key_file/tls_cert_file commands.
+  These commands enable msmtp to send a client certificate to the server if 
+  requested.
+- Optional support for GSASL. When used, it replaces the built-in
+  PLAIN, LOGIN and CRAM-MD5 authentication code and adds support for
+  DIGEST-MD5 and NTLM.
+- The EHLO response is now taken into account:
+  - The STARTTLS command will only be sent if the server supports it
+  - If no authentication method was specified, the best one that is supported
+    by the server will be chosen.
+- Removed the ability to choose the TLS method with the tls command. This was
+  not completely implementable with GnuTLS (since it lacks SSLv2 support afaik)
+  and is unnecessary anyway. The best method available is automatically chosen.
+- Changed configuration file parsing: Now arguments may contain spaces and may
+  be enclosed in double quotes (to allow leading or ending blanks in an 
+  argument).
+- Reorganized Makefile to support the new configuration options (GSASL/GnuTLS).
+- Removed unnecessary #includes from cram_md5.c
+- Updated documentation
+
+Version 0.5.3:
+- Fixed RFC2821 violations in the "MAIL FROM:" and "RCPT TO:" commands.
+- Fixed RFC2487 SHOULD-clause violation: Now send EHLO again after
+  successful TLS handshake.
+
+Version 0.5.2:
+- fixed stupid bugs in base64dec() and cram_md5() that sometimes caused
+  CRAM-MD5 authentication to fail.
+
+Version 0.5.1:
+- man page corrections and improvements
+- improved error messages
+- moved msmtp.html to msmtp.1.html
+
+Version 0.5.0:
+- Switched from commandline configuration to a configuration file
+  (~/.msmtprc). This improves security (no authentication data on the
+  commandline) and allows easy setup of multiple accounts.  
+  The only options are --help, --version, --file, --account now.
+
+Version 0.4.2:
+- Security fix: delete username and password information from the commandline
+  after they have been extracted, so that this information is not visible per
+  ps / top anymore.
+  It is still possible to see the length of the authentication information via
+  /proc/pid/cmdline in Linux.
+  The real fix is to move all sensitive data into a configuration file. This
+  is planned for 0.5.0.
+  
+Version 0.4.1:
+- improved error handling in non-TLS net i/o
+- the code that removes the Bcc header was updated to conform to RFC 2822,
+  section 2.2.3. It now allows continued Bcc header lines to start with ' ' or
+  '\t' (previously only '\t' was allowed).
+- properly close TLS connection at the end of smtp_send()
+- minor cleanups
+- minor man page improvements
+
+Version 0.4.0:
+- changed the short version of --keep-bcc to -k (as documented in the man page)
+- cleaned up the choice of the authentication method in msmtp.c
+- changed tls_start() to use tls_io_error() for SSL_connect() errors
+- fixed a segfault bug with failing tls_start() that was introduced in 0.3.1
+- added --nostarttls option (Kai)
+- updated man page to clarify the use of optional arguments (Kai)
+
+Version 0.3.1:
+- code cleanups
+- documentation improvements
+- --help text improvements
+- added instructions on how to find out system specific settings to the 
+  Makefile
+- changed tls.[ch] to hide OpenSSL specific details.
+- improved TLS input/output error reporting
+- fixed a minor bug in the error handling of tls_start()
+- improved error reporting in smtp_get_response()
+- fixed minor off-by-one bug in smtp_put() (the check for the return value of 
+  vsnprintf() was wrong). This bug would have been triggered if you used an 
+  extremely long username for authentication (longer than ca. 950 characters).
+
+Version 0.3.0:
+- remove Bcc header by default
+- added --keep-bcc to keep the Bcc header.
+- fixed handling of lines beginning with a dot
+- added GNU getopt source for systems that don't have it
+- added xvasprintf/xasprintf() to xmalloc.c
+- cleaned up xmalloc.c
+- changed merror.c to use xvasprintf()
+- open_socket() improvements (now uses getaddrinfo() for protocol independence
+  and portability)
+- Makefile changes (support for more platforms)
+- documentation updates
+
+Version 0.2.6:
+- added support for IPv6
+- documentation update
+
+Version 0.2.5:
+- fixed handling of optional arguments for short options
+- fixed error handling for gethostbyname()
+- minor documentation changes
+- renamed smtp.[ch] to esmtp.[ch]
+- improved error reporting in smtp_auth_plain()
+
+Version 0.2.4:
+- minor error message changes
+- minor documentation changes
+- cleanups in tls.c
+- error handling changes and fixes in tls.c
+- fixed potential problems reported by NetBSD's lint(1)
+- moved choice of secure authentication method from smtp.c to msmtp.c
+
+Version 0.2.3:
+- changed behaviour of --auth: does not accept 'none' anymore,
+  no argument means choose a *secure* method.
+- changed behaviour of --tls: does not accept 'any', 'none'
+  anymore, no argument means choose best method available.
+- documentation updates and minor changes
+- minor Makefile tweaks
+- now use die() to exit in case of memory allocation failure 
+- minor tls.c cleanups
+- fixed stupid minor bug regarding base64dec()
+
+Version 0.2.2:
+- minor change to the Makefile
+- minor change to the man page
+- minor changes to unify error messages
+- close connection on errors in smtp_send()
+
+Version 0.2.1:
+- support for AUTH PLAIN
+- documentation fixes, updates and cleanups.
+- fixed memory leak in smtp_auth_login()
+- fixed stupid bug regarding base64enc()
+- clean up smtp_auth_cram_md5()
+
+Version 0.2.0:
+- AUTH CRAM-MD5 support
+- new option (--auth) to choose the authentication method
+- support for --version and --help if one of them is the only argument
+- documentation fixes / improvements
+- better error messages
+- Makefile fixes
+
+Version 0.1.1:
+- documentation updates / fixes
+- better error handling in start_tls()
+- adjust MAX_SMTP_LINELEN in smtp.c

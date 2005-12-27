@@ -1,0 +1,30 @@
+# Example for a user configuration file
+
+# Set default values for all following accounts.
+defaults
+tls on
+tls_trust_file /etc/ssl/certs/ca-certificates.crt
+logfile ~/.msmtp.log
+
+# A freemail service
+account freemail
+host smtp.freemail.example
+from joe_smith@freemail.example
+auth on
+user joe.smith
+password secret
+
+# A second mail address at the same freemail service
+account freemail2 : freemail
+from joey@freemail.example
+
+# The SMTP server of the provider.
+account provider
+host mail.provider.example
+from smithjoe@provider.example
+auth on
+user 123456789
+password my_password
+
+# Set a default account
+account default : provider

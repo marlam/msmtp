@@ -1,3 +1,10 @@
+Version 1.4.6 (not yet released):
+- Use a locally modified version of gnulibs sysexit_.h that defines EX_OK to
+  0, since the gnulib maintainers apparently won't fix this file.
+  Include the sysexits.h header after all other system headers to override 
+  previous definitions of EX_OK on systems that use EX_OK for other purposes.
+  This is needed on Interix, reported by Ben Collver.
+
 Version 1.4.5:
 - gnulib update.
 - adapted configure.ac for new pkg-config version

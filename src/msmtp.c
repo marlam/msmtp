@@ -39,10 +39,6 @@ extern int optind;
 #ifdef ENABLE_NLS
 #include <locale.h>
 #endif
-#include <sysexits.h>
-#ifndef EX_OK
-#define EX_OK 0
-#endif
 #ifdef HAVE_SYSLOG
 #include <syslog.h>
 #endif
@@ -62,6 +58,7 @@ extern int optind;
 #include <netdb.h>
 #include <arpa/inet.h>
 #endif
+#include <sysexits.h>
 
 #include "getpass.h"
 #include "gettext.h"

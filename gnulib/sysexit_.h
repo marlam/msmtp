@@ -20,6 +20,7 @@
 #ifndef _SYSEXITS_H
 #define _SYSEXITS_H
 
+#define EX_OK 0
 #define EX_USAGE 64
 #define EX_DATAERR 65
 #define EX_NOINPUT 66

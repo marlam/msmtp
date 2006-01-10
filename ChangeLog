@@ -1,4 +1,6 @@
 Version 1.4.6 (not yet released):
+- Gnulibs sysexit_.h now defines EX_OK; there's no need to use a locally
+  modified version anymore.
 - Use a locally modified version of gnulibs sysexit_.h that defines EX_OK to
   0, since the gnulib maintainers apparently won't fix this file.
   Include the sysexits.h header after all other system headers to override 

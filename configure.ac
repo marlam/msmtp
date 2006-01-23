@@ -151,12 +151,6 @@ AC_ARG_ENABLE(gsasl, AC_HELP_STRING([--disable-gsasl], [disable GNU SASL]),
 if test "$want_gsasl" != "no" ; then
     PKG_CHECK_MODULES(GSASL, libgsasl >= 0.2.4, 
         [have_gsasl=yes], [have_gsasl=no])
-    if test "$have_gsasl" = "no"; then
-        AC_CHECK_HEADER(gsasl.h, 
-	    AC_CHECK_LIB(gsasl, gsasl_check_version,
-                [have_gsasl=yes AC_SUBST(GSASL_LIBS, -lgsasl)], 
-		have_gsasl=no), have_gsasl=no)
-    fi
 fi
 if test "$have_gsasl" = "yes"; then
     CFLAGS="$CFLAGS $GSASL_CFLAGS"

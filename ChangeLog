@@ -1,4 +1,5 @@
 Version 1.4.6 (not yet released):
+- Minor Win32 portability/cross-compilation updates.
 - configure.ac: Rely on PKG_CHECK_MODULES to find GSASL, do not fall back to
   manual detection, to prevent using an incompatible version of GSASL.
   Problem reported by Jari Aalto.

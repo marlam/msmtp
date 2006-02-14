@@ -30,11 +30,10 @@
 #include <stdio.h>
 #include <string.h>
 
-#ifdef __MINGW32__
+#ifdef _WIN32
+#define WINVER 0x0501
 #include <winsock2.h>
-#ifdef HAVE_GETADDRINFO
 #include <ws2tcpip.h>
-#endif
 #elif defined (DJGPP)
 #include <unistd.h>
 #include <tcp.h>
@@ -77,7 +76,7 @@ extern int errno;
  * recv(), send()
  */
 
-#ifdef __MINGW32__
+#ifdef _WIN32
 const char *wsa_strerror(int error_code)
 {
     switch (error_code)
@@ -167,7 +166,7 @@ const char *wsa_strerror(int error_code)
     	    return _("unknown error");
     }
 }
-#endif /* __MINGW32__ */
+#endif /* _WIN32 */
 
 
 /*
@@ -176,7 +175,7 @@ const char *wsa_strerror(int error_code)
  * see net.h
  */
 
-#ifdef __MINGW32__
+#ifdef _WIN32
 int net_lib_init(char **errstr)
 {
     WORD wVersionRequested;
@@ -212,7 +211,7 @@ int net_lib_init(char **errstr UNUSED)
 
 void net_close_socket(int fd)
 {
-#ifdef __MINGW32__
+#ifdef _WIN32
     (void)closesocket(fd);
 #else
     (void)close(fd);
@@ -233,7 +232,7 @@ void net_close_socket(int fd)
 int net_connect(int fd, const struct sockaddr *serv_addr, socklen_t addrlen,
 	int timeout)
 {
-#ifdef __MINGW32__
+#ifdef _WIN32
     /* TODO: I don't know how to do this on Win32. Please send a patch. */
     return connect(fd, serv_addr, addrlen);
 #elif defined DJGPP
@@ -325,7 +324,7 @@ void net_set_io_timeout(int socket, int seconds)
      * en-us/winsock/winsock/setsockopt_2.asp
      * We activate these timeouts only for Windows systems that also have
      * getaddrinfo(), which means XP or newer, to work around this problem. */
-#if defined __MINGW32__ && !defined HAVE_GETADDRINFO
+#if defined _WIN32 && !defined HAVE_GETADDRINFO
     /* do nothing */
 #else
     struct timeval tv;
@@ -375,7 +374,7 @@ int net_open_socket(const char *hostname, int port, int timeout, int *ret_fd,
     if (error_code)
     {
 	*errstr = xasprintf(_("cannot locate host %s: %s"), hostname,
-#ifdef __MINGW32__
+#ifdef _WIN32
 		wsa_strerror(error_code)
 #else
 		gai_strerror(error_code)
@@ -439,7 +438,7 @@ int net_open_socket(const char *hostname, int port, int timeout, int *ret_fd,
 	if (cause == 1)
 	{
 	    *errstr = xasprintf(_("cannot create socket: %s"), 
-#ifdef __MINGW32__
+#ifdef _WIN32
 		    wsa_strerror(WSAGetLastError())
 #else
 		    strerror(errno)
@@ -451,7 +450,7 @@ int net_open_socket(const char *hostname, int port, int timeout, int *ret_fd,
 	{
 	    *errstr = xasprintf(_("cannot connect to %s, port %d: %s"), 
 		    hostname, port,
-#ifdef __MINGW32__
+#ifdef _WIN32
 		    wsa_strerror(WSAGetLastError())
 #else
 		    strerror(errno)
@@ -470,13 +469,13 @@ int net_open_socket(const char *hostname, int port, int timeout, int *ret_fd,
     int fd;
     struct sockaddr_in sock;
     struct hostent *remote_host;
-#ifdef __MINGW32__
+#ifdef _WIN32
     unsigned long inaddr;
-#endif /* __MINGW32__ */
+#endif /* _WIN32 */
     struct in_addr addr;
     char *p;
     
-#ifdef __MINGW32__
+#ifdef _WIN32
     /* Work around a broken gethostbyname() function on old Windows systems that
      * cannot handle IP addresses. */
     if ((inaddr = inet_addr(hostname)) != INADDR_NONE
@@ -487,11 +486,11 @@ int net_open_socket(const char *hostname, int port, int timeout, int *ret_fd,
 	 * a struct hostent. No need to call gethostbyname() anymore. */
     }
     else
-#endif /* __MINGW32__ */
+#endif /* _WIN32 */
     if (!(remote_host = gethostbyname(hostname)))
     {
 	*errstr = xasprintf(_("cannot locate host %s: %s"), hostname,
-#ifdef __MINGW32__
+#ifdef _WIN32
 		wsa_strerror(WSAGetLastError())
 #else
 		hstrerror(h_errno)
@@ -503,7 +502,7 @@ int net_open_socket(const char *hostname, int port, int timeout, int *ret_fd,
     if ((fd = socket(PF_INET, SOCK_STREAM, 0)) < 0)
     {
 	*errstr = xasprintf(_("cannot create socket: %s"), 
-#ifdef __MINGW32__
+#ifdef _WIN32
 		wsa_strerror(WSAGetLastError())
 #else
 		strerror(errno)
@@ -521,7 +520,7 @@ int net_open_socket(const char *hostname, int port, int timeout, int *ret_fd,
     {
 	*errstr = xasprintf(_("cannot connect to %s, port %d: %s"),
 		hostname, port,
-#ifdef __MINGW32__
+#ifdef _WIN32
 		wsa_strerror(WSAGetLastError())
 #else
 		strerror(errno)
@@ -586,7 +585,7 @@ void net_readbuf_init(net_readbuf_t *readbuf)
 int net_readbuf_read(int fd, net_readbuf_t *readbuf, char *ptr, 
 	char **errstr)
 {
-#ifdef __MINGW32__
+#ifdef _WIN32
     
     int e;
     
@@ -618,7 +617,7 @@ int net_readbuf_read(int fd, net_readbuf_t *readbuf, char *ptr,
     *ptr = *((readbuf->ptr)++);
     return 1;
     
-#else /* !__MINGW32__ */
+#else /* !_WIN32 */
 
     if (readbuf->count <= 0)
     {
@@ -652,7 +651,7 @@ int net_readbuf_read(int fd, net_readbuf_t *readbuf, char *ptr,
     *ptr = *((readbuf->ptr)++);
     return 1;
 
-#endif /* !__MINGW32__ */
+#endif /* !_WIN32 */
 }
 
 
@@ -703,7 +702,7 @@ int net_gets(int fd, net_readbuf_t *readbuf,
 
 int net_puts(int fd, const char *s, size_t len, char **errstr)
 {
-#ifdef __MINGW32__
+#ifdef _WIN32
 
     int e, ret;
 
@@ -736,7 +735,7 @@ int net_puts(int fd, const char *s, size_t len, char **errstr)
 	return NET_EIO;
     }
 
-#else /* !__MINGW32__ */
+#else /* !_WIN32 */
     
     ssize_t ret;
 
@@ -773,7 +772,7 @@ int net_puts(int fd, const char *s, size_t len, char **errstr)
 	return NET_EIO;
     }
 
-#endif /* !__MINGW32__ */
+#endif /* !_WIN32 */
 }
 
 
@@ -839,7 +838,7 @@ char *net_get_canonical_hostname(void)
 
 void net_lib_deinit(void)
 {
-#ifdef __MINGW32__
+#ifdef _WIN32
     (void)WSACleanup();
 #endif
 }

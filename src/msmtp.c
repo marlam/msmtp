@@ -45,7 +45,7 @@ extern int optind;
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
-#ifdef __MINGW32__
+#ifdef _WIN32
 #include <io.h>
 #include <fcntl.h>
 #include <windows.h>
@@ -76,7 +76,7 @@ extern int optind;
 #endif /* HAVE_SSL */
 
 /* Default file names. */
-#ifdef __MINGW32__
+#ifdef _WIN32
 #define SYSCONFFILE	"msmtprc.txt"
 #define USERCONFFILE	"msmtprc.txt"
 #define NETRCFILE	"netrc.txt"
@@ -2997,7 +2997,7 @@ int main(int argc, char *argv[])
 
     
     /* Avoid the side effects of text mode interpretations on DOS systems. */
-#ifdef __MINGW32__
+#ifdef _WIN32
     _setmode(_fileno(stdin), _O_BINARY);
 #elif defined DJGPP
     setmode(fileno(stdin), O_BINARY);

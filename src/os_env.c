@@ -34,7 +34,7 @@ extern int errno;
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#ifdef __MINGW32__
+#ifdef _WIN32
 #include <windows.h>
 #include <io.h>
 #include <time.h>
@@ -95,7 +95,7 @@ const char *get_prgname(const char *argv0)
 
 char *get_sysconfdir(void)
 {
-#ifdef __MINGW32__
+#ifdef _WIN32
 
     BYTE sysconfdir[MAX_PATH + 1];
     HKEY hkey;
@@ -143,7 +143,7 @@ char *get_sysconfdir(void)
 char *get_username(void)
 {
     char *username;
-#ifdef __MINGW32__
+#ifdef _WIN32
     DWORD size = UNLEN + 1;
     TCHAR buf[UNLEN + 1];
 #elif defined DJGPP
@@ -165,7 +165,7 @@ char *get_username(void)
 	}
 	else
 	{
-#ifdef __MINGW32__
+#ifdef _WIN32
 	    if (GetUserName(buf, &size))
 	    {
 		username = xstrdup((char *)buf);
@@ -216,7 +216,7 @@ char *get_username(void)
 
 char *get_homedir(void)
 {
-#ifdef __MINGW32__
+#ifdef _WIN32
 
     char *home;
     BYTE homebuf[MAX_PATH + 1];
@@ -355,7 +355,7 @@ char *expand_tilde(const char *filename)
 
 int check_secure(const char *pathname)
 {
-#if defined(__MINGW32__) || defined(DJGPP)
+#if defined(_WIN32) || defined(DJGPP)
     
     return 0;
 
@@ -400,7 +400,7 @@ int check_secure(const char *pathname)
  * Return value: file descriptor, or -1 on error (errno will be set).
  */
 
-#if defined(__MINGW32__) || defined(DJGPP)
+#if defined(_WIN32) || defined(DJGPP)
 int mkstemp_unlink(char *template)
 {
     size_t templatelen;
@@ -433,7 +433,7 @@ int mkstemp_unlink(char *template)
 	{
 	    X[i] = alnum[rand() % 36];
 	}
-#ifdef __MINGW32__
+#ifdef _WIN32
 	ret = _open(template, _O_CREAT | _O_EXCL | _O_RDWR | _O_TEMPORARY | _O_BINARY, 
 		_S_IREAD | _S_IWRITE);
 #else /* DJGPP */
@@ -444,7 +444,7 @@ int mkstemp_unlink(char *template)
 
     return ret;
 }
-#endif /* __MINGW32__ or DJGPP */
+#endif /* _WIN32 or DJGPP */
 
 
 /*
@@ -472,7 +472,7 @@ FILE *tempfile(const char *base)
     if (!(dir = getenv("TMPDIR")))
     {
 	/* system dependent default location */
-#ifdef __MINGW32__
+#ifdef _WIN32
 	/* there is no registry key for this (?) */
 	if (!(dir = getenv("TEMP")))
 	{
@@ -516,7 +516,7 @@ FILE *tempfile(const char *base)
     strcpy(template + dirlen + baselen, "XXXXXX");
 
     /* create the file */
-#if defined(__MINGW32__) || defined(DJGPP)
+#if defined(_WIN32) || defined(DJGPP)
     if ((fd = mkstemp_unlink(template)) == -1)
 #else /* UNIX */
     if ((fd = mkstemp(template)) == -1)
@@ -528,7 +528,7 @@ FILE *tempfile(const char *base)
     /* UNIX only: set the permissions (not every mkstemp() sets them to 0600)
      * and unlink the file so that it gets deleted when the caller closes it */
 #ifndef DJGPP
-#ifndef __MINGW32__
+#ifndef _WIN32
     if (fchmod(fd, S_IRUSR | S_IWUSR) == -1)
     {
 	goto error_exit;
@@ -537,7 +537,7 @@ FILE *tempfile(const char *base)
     {
 	goto error_exit;
     }
-#endif /* not __MINGW32__ */
+#endif /* not _WIN32 */
 #endif /* not DJGPP */
 
     /* get the stream from the filedescriptor */
@@ -576,21 +576,21 @@ int lock_file(FILE *f, int lock_type, int timeout)
     int fd;
     int seconds;
     int lock_success;
-#ifndef __MINGW32__
+#ifndef _WIN32
     struct flock lock;
-#endif /* not __MINGW32__ */
+#endif /* not _WIN32 */
 
     fd = fileno(f);
-#ifndef __MINGW32__   
+#ifndef _WIN32   
     lock.l_type = (lock_type == OSENV_LOCK_WRITE) ? F_WRLCK : F_RDLCK;
     lock.l_whence = SEEK_SET;
     lock.l_start = 0;
     lock.l_len = 0;
-#endif /* not __MINGW32__ */
+#endif /* not _WIN32 */
     seconds = 0;
     for (;;)
     {
-#ifdef __MINGW32__
+#ifdef _WIN32
 	lock_success = (_locking(fd, _LK_NBLCK, LONG_MAX) != -1);
 #else /* UNIX, DJGPP */
 	lock_success = (fcntl(fd, F_SETLK, &lock) != -1);
@@ -601,7 +601,7 @@ int lock_file(FILE *f, int lock_type, int timeout)
 	}
 	else
 	{
-#ifdef __MINGW32__
+#ifdef _WIN32
 	    Sleep(1000);
 #else /* UNIX, DJGPP */
 	    sleep(1);

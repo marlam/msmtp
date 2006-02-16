@@ -1,4 +1,5 @@
 Version 1.4.6 (not yet released):
+- Update copyright message.
 - Gnulib update.
 - Minor Win32 portability/cross-compilation updates.
 - configure.ac: Rely on PKG_CHECK_MODULES to find GSASL, do not fall back to

@@ -18,6 +18,7 @@
 # any checks for libraries, header files, types and library functions.
 AC_DEFUN([gl_EARLY],
 [
+  AC_REQUIRE([AC_PROG_RANLIB])
   AC_REQUIRE([AC_GNU_SOURCE])
 ])
 
@@ -25,7 +26,7 @@ AC_DEFUN([gl_EARLY],
 # "Check for header files, types and library functions".
 AC_DEFUN([gl_INIT],
 [
-AM_CONDITIONAL([GL_COND_LIBTOOL], [false])
+  AM_CONDITIONAL([GL_COND_LIBTOOL], [false])
   gl_FUNC_ALLOCA
   gl_FUNC_BASE64
   gl_FUNC_GETDELIM
@@ -33,12 +34,14 @@ AM_CONDITIONAL([GL_COND_LIBTOOL], [false])
   gl_GETOPT
   gl_FUNC_GETPASS
   dnl you must add AM_GNU_GETTEXT([external]) or similar to configure.ac.
+  AM_GNU_GETTEXT_VERSION([0.14.5])
   gl_MD5
   gl_C_RESTRICT
   gl_SIZE_MAX
   gl_TYPE_SOCKLEN_T
   AM_STDBOOL_H
   gl_STDINT_H
+  gl_HEADER_SYS_SOCKET
   gl_SYSEXITS
   gl_FUNC_VASNPRINTF
   gl_FUNC_VASPRINTF
@@ -73,6 +76,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/printf-parse.c
   lib/printf-parse.h
   lib/size_max.h
+  lib/socket_.h
   lib/stdbool_.h
   lib/stdint_.h
   lib/sysexit_.h
@@ -124,6 +128,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/stdbool.m4
   m4/stdint.m4
   m4/stdint_h.m4
+  m4/sys_socket_h.m4
   m4/sysexits.m4
   m4/uintmax_t.m4
   m4/ulonglong.m4

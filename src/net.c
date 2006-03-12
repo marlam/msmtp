@@ -807,12 +807,14 @@ char *net_get_canonical_hostname(void)
 	hints.ai_canonname = NULL;
 	hints.ai_addr = NULL;
 	hints.ai_next = NULL;
-	if (getaddrinfo(hostname, NULL, &hints, &res0) == 0 
-		&& res0->ai_canonname)
+	if (getaddrinfo(hostname, NULL, &hints, &res0) == 0)
 	{
-	    canonname = xstrdup(res0->ai_canonname);
+	    if (res0->ai_canonname)
+	    {
+		canonname = xstrdup(res0->ai_canonname);
+	    }
+	    freeaddrinfo(res0);
 	}
-	freeaddrinfo(res0);
 #else /* !HAVE_GETADDRINFO */
 	if ((hostent = gethostbyname(hostname)) && hostent->h_name)
 	{

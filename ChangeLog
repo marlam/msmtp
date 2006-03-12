@@ -1,4 +1,5 @@
 Version 1.4.6 (not yet released):
+- Fixed comment in net.h.
 - Update copyright message.
 - Gnulib update.
 - Minor Win32 portability/cross-compilation updates.

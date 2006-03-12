@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2000, 2003, 2004, 2005
+ * Copyright (C) 2000, 2003, 2004, 2005, 2006
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -120,8 +120,7 @@ void net_close_socket(int fd);
  * net_get_canonical_hostname()
  *
  * Get a canonical name of this host. This means that the name is meaningful to
- * other hosts. It does not mean that the name is the full qualified domain name
- * of this host: the domain part is usually missing.
+ * other hosts. Usually, it is the fully qualified domain name of this host.
  */
 char *net_get_canonical_hostname(void);
 

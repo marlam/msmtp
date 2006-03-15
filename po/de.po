@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: msmtp 1.4.4\n"
 "Report-Msgid-Bugs-To: marlam@marlam.de\n"
-"POT-Creation-Date: 2006-02-16 06:35+0100\n"
+"POT-Creation-Date: 2006-03-15 18:48+0100\n"
 "PO-Revision-Date: 2005-06-20 22:15+0200\n"
 "Last-Translator: Martin Lambers <marlam@marlam.de>\n"
 "Language-Team: German\n"
@@ -837,41 +837,47 @@ msgstr "Grenze der Anzahl der Abläufe wurde erreicht"
 msgid "invalid request"
 msgstr "ungültige Anfrage"
 
-#: src/net.c:166 src/tls.c:1054 src/tls.c:1078 src/tls.c:1369
+#: src/net.c:166 src/tls.c:1054 src/tls.c:1078 src/tls.c:1368
 msgid "unknown error"
 msgstr "unbekannter Fehler"
 
-#: src/net.c:376 src/net.c:492
+#: src/net.c:379 src/net.c:464 src/net.c:541 src/net.c:654 src/net.c:774
+#: src/tls.c:1103 src/tls.c:1162 src/tls.c:1225 src/tls.c:1264 src/tls.c:1345
+#: src/tls.c:1391
+msgid "operation aborted"
+msgstr "Operation abgebrochen"
+
+#: src/net.c:383 src/net.c:510
 #, c-format
 msgid "cannot locate host %s: %s"
 msgstr "kann Host %s nicht finden: %s"
 
-#: src/net.c:440 src/net.c:504
+#: src/net.c:451 src/net.c:522
 #, c-format
 msgid "cannot create socket: %s"
 msgstr "kann Socket nicht erstellen: %s"
 
-#: src/net.c:451 src/net.c:521
+#: src/net.c:468 src/net.c:545
 #, c-format
 msgid "cannot connect to %s, port %d: %s"
 msgstr "kann keine Verbindung zu %s, Port %d herstellen: %s"
 
-#: src/net.c:600 src/net.c:605 src/net.c:634 src/net.c:639
+#: src/net.c:625 src/net.c:630 src/net.c:658 src/net.c:663
 #, c-format
 msgid "network read error: %s"
 msgstr "Netzwerk Lesefehler: %s"
 
-#: src/net.c:601 src/net.c:635 src/net.c:719 src/net.c:756 src/tls.c:1073
-#: src/tls.c:1113 src/tls.c:1232 src/tls.c:1353
+#: src/net.c:626 src/net.c:659 src/net.c:743 src/net.c:779 src/tls.c:1073
+#: src/tls.c:1110 src/tls.c:1232 src/tls.c:1352
 msgid "the operation timed out"
 msgstr "die Wartezeit ist abgelaufen"
 
-#: src/net.c:718 src/net.c:723 src/net.c:755 src/net.c:760
+#: src/net.c:742 src/net.c:747 src/net.c:778 src/net.c:783
 #, c-format
 msgid "network write error: %s"
 msgstr "Netzwerk Ausgabefehler: %s"
 
-#: src/net.c:734 src/net.c:771
+#: src/net.c:758 src/net.c:794
 msgid "network write error"
 msgstr "Netzwerk Ausgabefehler"
 
@@ -1049,22 +1055,22 @@ msgstr "%s: kann nicht auf SHA1 Fingerabdruck zugreifen"
 msgid "%s: error getting MD5 fingerprint"
 msgstr "%s: kann nicht auf MD5 Fingerabdruck zugreifen"
 
-#: src/tls.c:405 src/tls.c:515
+#: src/tls.c:405 src/tls.c:513
 #, c-format
 msgid "%s: cannot get activation time"
 msgstr "%s: kann nicht auf Aktivierungszeitpunkt zugreifen"
 
-#: src/tls.c:410 src/tls.c:525
+#: src/tls.c:410 src/tls.c:523
 #, c-format
 msgid "%s: cannot get expiration time"
 msgstr "%s: kann nicht auf Ablaufzeitpunkt zugreifen"
 
-#: src/tls.c:485 src/tls.c:846
+#: src/tls.c:484 src/tls.c:845
 #, c-format
 msgid "%s: cannot get certificate subject"
 msgstr "%s: kann nicht auf Zertifikatobjekt zugreifen"
 
-#: src/tls.c:491
+#: src/tls.c:490
 #, c-format
 msgid "%s: cannot get certificate issuer"
 msgstr "%s: kann nicht auf Zertifikatsaussteller zugreifen"
@@ -1133,7 +1139,7 @@ msgstr "%s: Zertifikat %u von %u ist abgelaufen"
 msgid "%s: no certificate was sent"
 msgstr "%s: kein Zertifikat gefunden"
 
-#: src/tls.c:859
+#: src/tls.c:857
 #, c-format
 msgid "%s: cannot get certificate common name"
 msgstr "%s: kann nicht auf allgemeinen Namen des Zertifikats zugreifen"
@@ -1143,17 +1149,17 @@ msgstr "%s: kann nicht auf allgemeinen Namen des Zertifikats zugreifen"
 msgid "cannot initialize TLS Session: %s"
 msgstr "kann TLS Sitzung nicht initialisieren: %s"
 
-#: src/tls.c:902
+#: src/tls.c:901
 #, c-format
 msgid "cannot set priorities on TLS Session: %s"
 msgstr "kann Prioritäten der TLS Sitzung nicht setzen: %s"
 
-#: src/tls.c:910
+#: src/tls.c:909
 #, c-format
 msgid "cannot allocate certificate for TLS Session: %s"
 msgstr "kann kein Zertifikat für TLS Sitzung reservieren: %s"
 
-#: src/tls.c:921
+#: src/tls.c:919
 #, c-format
 msgid ""
 "cannot set X509 key file %s and/or X509 cert file %s for TLS Session: %s"
@@ -1161,12 +1167,12 @@ msgstr ""
 "kann X509 Schlüsseldatei %s und/oder X509 Zertifikatdatei %s für TLS Sitzung "
 "nicht setzen: %s"
 
-#: src/tls.c:935
+#: src/tls.c:933
 #, c-format
 msgid "cannot set X509 trust file %s for TLS Session: %s"
 msgstr "kann X509 Vertrauensdatei %s für TLS Sitzung nicht setzen: %s"
 
-#: src/tls.c:946
+#: src/tls.c:944
 #, c-format
 msgid "cannot set credentials for TLS Session: %s"
 msgstr "kann Berechtigungsnachweise für TLS Sitzung nicht setzen: %s"
@@ -1180,22 +1186,22 @@ msgstr "kann TLS Methode nicht setzen"
 msgid "cannot create TLS context: %s"
 msgstr "kann keinen TLS Kontext erzeugen: %s"
 
-#: src/tls.c:977
+#: src/tls.c:975
 #, c-format
 msgid "cannot load key file %s: %s"
 msgstr "kann Schlüsseldatei %s nicht laden: %s"
 
-#: src/tls.c:985
+#: src/tls.c:983
 #, c-format
 msgid "cannot load certificate file %s: %s"
 msgstr "kann Zertifikatdatei %s nicht laden: %s"
 
-#: src/tls.c:996
+#: src/tls.c:994
 #, c-format
 msgid "cannot load trust file %s: %s"
 msgstr "kann Vertrauensdatei %s nicht laden: %s"
 
-#: src/tls.c:1006
+#: src/tls.c:1004
 #, c-format
 msgid "cannot create a TLS structure: %s"
 msgstr "kann keine TLS Struktur erzeugen: %s"
@@ -1208,17 +1214,17 @@ msgstr "erwartete Daten waren nicht verfügbar"
 msgid "the connection was closed unexpectedly"
 msgstr "die Verbindung wurde unerwartet getrennt"
 
-#: src/tls.c:1112 src/tls.c:1117
+#: src/tls.c:1109 src/tls.c:1114
 #, c-format
 msgid "TLS handshake failed: %s"
 msgstr "TLS Aushandlung fehlgeschlagen: %s"
 
-#: src/tls.c:1152
+#: src/tls.c:1149
 #, c-format
 msgid "cannot set the file descriptor for TLS: %s"
 msgstr "kann Dateideskriptor für TLS nicht setzen: %s"
 
-#: src/tls.c:1170
+#: src/tls.c:1168
 msgid "TLS handshake failed"
 msgstr "TLS Aushandlung fehlgeschlagen"
 
@@ -1231,11 +1237,11 @@ msgstr "Lesefehler in TLS Verbindung: %s"
 msgid "cannot read from TLS connection"
 msgstr "Lesefehler in TLS Verbindung"
 
-#: src/tls.c:1352 src/tls.c:1357 src/tls.c:1368
+#: src/tls.c:1351 src/tls.c:1356 src/tls.c:1367
 #, c-format
 msgid "cannot write to TLS connection: %s"
 msgstr "Schreibfehler in TLS Verbindung: %s"
 
-#: src/tls.c:1398
+#: src/tls.c:1397
 msgid "cannot write to TLS connection"
 msgstr "Schreibfehler in TLS Verbindung"

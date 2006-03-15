@@ -4,6 +4,7 @@ Version 1.4.6 (not yet released):
   - Gnulib update. Add hmac-md5 module.
   - net.c, tls.c: allow all network operations to be interrupted with CTRL+C,
     and print an appropriate error message in this case.
+    (This change does not affect msmtp.)
   - tls.c: if an error occurs, clean up *after* building the error message. This
     fixes a potential segfault in the OpenSSL version of tls_start().
   - net_open_socket(): don't let net_close_socket() clobber errno.
@@ -12,6 +13,7 @@ Version 1.4.6 (not yet released):
   - Fixed comment in net.h.
   - net_get_canonical_hostname(): Only call freeaddrinfo() if getaddrinfo()
     succeeded. Reported and fixed by Raúl Núñez de Arenas Coronado.
+    (This change does not affect msmtp.)
 - Update copyright message.
 - Gnulib update.
 - Minor Win32 portability/cross-compilation updates.

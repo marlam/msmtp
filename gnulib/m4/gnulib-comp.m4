@@ -35,7 +35,9 @@ AC_DEFUN([gl_INIT],
   gl_FUNC_GETPASS
   dnl you must add AM_GNU_GETTEXT([external]) or similar to configure.ac.
   AM_GNU_GETTEXT_VERSION([0.14.5])
+  gl_HMAC_MD5
   gl_MD5
+  gl_MEMXOR
   gl_C_RESTRICT
   gl_SIZE_MAX
   gl_TYPE_SOCKLEN_T
@@ -43,6 +45,7 @@ AC_DEFUN([gl_INIT],
   gl_STDINT_H
   gl_HEADER_SYS_SOCKET
   gl_SYSEXITS
+  gl_HEADER_UNISTD
   gl_FUNC_VASNPRINTF
   gl_FUNC_VASPRINTF
   gl_XALLOC
@@ -69,8 +72,12 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/getpass.c
   lib/getpass.h
   lib/gettext.h
+  lib/hmac-md5.c
+  lib/hmac.h
   lib/md5.c
   lib/md5.h
+  lib/memxor.c
+  lib/memxor.h
   lib/printf-args.c
   lib/printf-args.h
   lib/printf-parse.c
@@ -101,6 +108,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/gettext.m4
   m4/glibc2.m4
   m4/glibc21.m4
+  m4/hmac-md5.m4
   m4/iconv.m4
   m4/intdiv0.m4
   m4/intmax.m4
@@ -116,6 +124,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/longdouble.m4
   m4/longlong.m4
   m4/md5.m4
+  m4/memxor.m4
   m4/nls.m4
   m4/onceonly_2_57.m4
   m4/po.m4
@@ -132,6 +141,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/sysexits.m4
   m4/uintmax_t.m4
   m4/ulonglong.m4
+  m4/unistd_h.m4
   m4/vasnprintf.m4
   m4/vasprintf.m4
   m4/wchar_t.m4

@@ -1,4 +1,6 @@
 Version 1.4.6 (not yet released):
+- Sync from mpop:
+  - Gnulib update. Add hmac-md5 module.
 - Sync from mpop (the changed code is not used by msmtp):
   - Fixed comment in net.h.
   - net_get_canonical_hostname(): Only call freeaddrinfo() if getaddrinfo()

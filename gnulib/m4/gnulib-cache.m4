@@ -14,10 +14,10 @@
 
 
 # Specification in the form of a command-line invocation:
-#   gnulib-tool --import --dir=. --lib=libgnu --source-base=gnulib --m4-base=gnulib/m4 --aux-dir=. --avoid=xalloc-die --macro-prefix=gl base64 getopt getpass gettext md5 socklen sysexits xalloc xvasprintf
+#   gnulib-tool --import --dir=. --lib=libgnu --source-base=gnulib --m4-base=gnulib/m4 --aux-dir=. --avoid=xalloc-die --macro-prefix=gl base64 getopt getpass gettext hmac-md5 md5 socklen sysexits xalloc xvasprintf
 
 # Specification in the form of a few gnulib-tool.m4 macro invocations:
-gl_MODULES([base64 getopt getpass gettext md5 socklen sysexits xalloc xvasprintf])
+gl_MODULES([base64 getopt getpass gettext hmac-md5 md5 socklen sysexits xalloc xvasprintf])
 gl_AVOID([xalloc-die])
 gl_SOURCE_BASE([gnulib])
 gl_M4_BASE([gnulib/m4])

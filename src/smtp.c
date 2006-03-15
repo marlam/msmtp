@@ -39,7 +39,7 @@ extern int errno;
 #include <gsasl.h>
 #else
 #include "base64.h"
-#include "crypto.h"
+#include "hmac.h"
 #endif
 
 #include "gettext.h"
@@ -790,7 +790,7 @@ int smtp_auth_cram_md5(smtp_server_t *srv, const char *user,
 	return SMTP_EPROTO;
     }
     list_xfree(msg, free);
-    md5_hmac(password, strlen(password), b64, len, digest);
+    hmac_md5(password, strlen(password), b64, len, digest);
     free(b64);
     
     /* construct username + ' ' + digest_in_hex */

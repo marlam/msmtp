@@ -1,7 +1,7 @@
 Version 1.4.6 (not yet released):
 - Sync from mpop:
+  - Replace crypto.[ch] with gnulib hmac-md5 module.
   - Gnulib update. Add hmac-md5 module.
-- Sync from mpop (the changed code is not used by msmtp):
   - Fixed comment in net.h.
   - net_get_canonical_hostname(): Only call freeaddrinfo() if getaddrinfo()
     succeeded. Reported and fixed by Raúl Núñez de Arenas Coronado.

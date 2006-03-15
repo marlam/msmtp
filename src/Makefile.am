@@ -10,11 +10,11 @@ msmtp_SOURCES = \
 	smtp.c smtp.h \
 	stream.c stream.h
 
-msmtp_LDADD = @LIBINTL@ @crypto_obj@ @tls_obj@ $(SSL_LIBS) $(GSASL_LIBS) ../gnulib/libgnu.a
+msmtp_LDADD = @LIBINTL@ @tls_obj@ $(SSL_LIBS) $(GSASL_LIBS) ../gnulib/libgnu.a
 
-msmtp_DEPENDENCIES = @crypto_obj@ @tls_obj@
+msmtp_DEPENDENCIES = @tls_obj@
 
-EXTRA_msmtp_SOURCES = crypto.c crypto.h tls.c tls.h
+EXTRA_msmtp_SOURCES = tls.c tls.h
 
 AM_CPPFLAGS = -I$(top_srcdir)/gnulib
 

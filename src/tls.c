@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2000, 2003, 2004, 2005
+ * Copyright (C) 2000, 2003, 2004, 2005, 2006
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -481,14 +481,14 @@ int tls_cert_info_get(tls_t *tls, tls_cert_info_t *tci, char **errstr)
     }
     if (!(x509_subject = X509_get_subject_name(x509cert)))
     {
-	X509_free(x509cert);
 	*errstr = xasprintf(_("%s: cannot get certificate subject"), errmsg);
+	X509_free(x509cert);
 	return TLS_ECERT;
     }
     if (!(x509_issuer = X509_get_issuer_name(x509cert)))
     {
-	X509_free(x509cert);
 	*errstr = xasprintf(_("%s: cannot get certificate issuer"), errmsg);
+	X509_free(x509cert);
 	return TLS_ECERT;
     }
 
@@ -510,9 +510,9 @@ int tls_cert_info_get(tls_t *tls, tls_cert_info_t *tci, char **errstr)
 		(asn1time->type != V_ASN1_GENERALIZEDTIME), 
 		&(tci->activation_time)) != 0)
     {
+	*errstr = xasprintf(_("%s: cannot get activation time"), errmsg);
 	X509_free(x509cert);
 	tls_cert_info_free(tci);
-	*errstr = xasprintf(_("%s: cannot get activation time"), errmsg);
 	return TLS_ECERT;
     }
     asn1time = X509_get_notAfter(x509cert);
@@ -520,9 +520,9 @@ int tls_cert_info_get(tls_t *tls, tls_cert_info_t *tci, char **errstr)
 		(asn1time->type != V_ASN1_GENERALIZEDTIME), 
 		&(tci->expiration_time)) != 0)
     {
+	*errstr = xasprintf(_("%s: cannot get expiration time"), errmsg);
 	X509_free(x509cert);
 	tls_cert_info_free(tci);
-	*errstr = xasprintf(_("%s: cannot get expiration time"), errmsg);
 	return TLS_ECERT;
     }
 
@@ -808,9 +808,9 @@ int tls_check_cert(tls_t *tls, const char *hostname, int verify, char **errstr)
 		    && status != X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT
 		    && status != X509_V_ERR_SELF_SIGNED_CERT_IN_CHAIN))
 	{
-	    X509_free(x509cert);
 	    *errstr = xasprintf("%s: %s", error_msg, 
 		    X509_verify_cert_error_string(status));
+	    X509_free(x509cert);
 	    return TLS_ECERT;
 	}
     }
@@ -842,9 +842,9 @@ int tls_check_cert(tls_t *tls, const char *hostname, int verify, char **errstr)
 	/* Try the common name */    
 	if (!(x509_subject = X509_get_subject_name(x509cert)))
 	{
-	    X509_free(x509cert);
 	    *errstr = xasprintf(_("%s: cannot get certificate subject"),
 		    error_msg);
+	    X509_free(x509cert);
 	    return TLS_ECERT;
 	}
 	bufsize = X509_NAME_get_text_by_NID(x509_subject, NID_commonName, 
@@ -854,10 +854,10 @@ int tls_check_cert(tls_t *tls, const char *hostname, int verify, char **errstr)
 	if (X509_NAME_get_text_by_NID(x509_subject, NID_commonName, 
 		    buf, bufsize) == -1)
 	{
-	    X509_free(x509cert);
-	    free(buf);
 	    *errstr = xasprintf(_("%s: cannot get certificate common name"),
 		    error_msg);
+	    X509_free(x509cert);
+	    free(buf);
 	    return TLS_ECERT;
 	}
 	match_found = hostname_match(hostname, buf);
@@ -898,17 +898,17 @@ int tls_init(tls_t *tls, const char *key_file, const char *cert_file,
     }
     if ((error_code = gnutls_set_default_priority(tls->session)) != 0)
     {
-	gnutls_deinit(tls->session);
 	*errstr = xasprintf(_("cannot set priorities on TLS Session: %s"),
 		gnutls_strerror(error_code));
+	gnutls_deinit(tls->session);
 	return TLS_ELIBFAILED;
     }
     if ((error_code = gnutls_certificate_allocate_credentials(&tls->cred)) < 0)
     {
-	gnutls_deinit(tls->session);
 	*errstr = xasprintf(
 		_("cannot allocate certificate for TLS Session: %s"),
 		gnutls_strerror(error_code));
+	gnutls_deinit(tls->session);
 	return TLS_ELIBFAILED;
     }
     if (key_file && cert_file)
@@ -916,11 +916,11 @@ int tls_init(tls_t *tls, const char *key_file, const char *cert_file,
 	if ((error_code = gnutls_certificate_set_x509_key_file(tls->cred, 
 		       	cert_file, key_file, GNUTLS_X509_FMT_PEM)) < 0)
 	{
-	    gnutls_deinit(tls->session);
-	    gnutls_certificate_free_credentials(tls->cred);
 	    *errstr = xasprintf(_("cannot set X509 key file %s and/or "
 			"X509 cert file %s for TLS Session: %s"),
 	    	    key_file, cert_file, gnutls_strerror(error_code));
+	    gnutls_deinit(tls->session);
+	    gnutls_certificate_free_credentials(tls->cred);
 	    return TLS_EFILE;
 	}
     }
@@ -929,11 +929,11 @@ int tls_init(tls_t *tls, const char *key_file, const char *cert_file,
 	if ((error_code = gnutls_certificate_set_x509_trust_file(
 			tls->cred, trust_file, GNUTLS_X509_FMT_PEM)) <= 0)
 	{
-	    gnutls_deinit(tls->session);
-	    gnutls_certificate_free_credentials(tls->cred);
 	    *errstr = xasprintf(
 		    _("cannot set X509 trust file %s for TLS Session: %s"),
 	    	    trust_file, gnutls_strerror(error_code));
+	    gnutls_deinit(tls->session);
+	    gnutls_certificate_free_credentials(tls->cred);
 	    return TLS_EFILE;
 	}
 	tls->have_trust_file = 1;
@@ -941,10 +941,10 @@ int tls_init(tls_t *tls, const char *key_file, const char *cert_file,
     if ((error_code = gnutls_credentials_set(tls->session, 
 		    GNUTLS_CRD_CERTIFICATE, tls->cred)) < 0)
     {
-	gnutls_deinit(tls->session);
-	gnutls_certificate_free_credentials(tls->cred);
 	*errstr = xasprintf(_("cannot set credentials for TLS Session: %s"),
 		gnutls_strerror(error_code));
+	gnutls_deinit(tls->session);
+	gnutls_certificate_free_credentials(tls->cred);
 	return TLS_ELIBFAILED;
     }
     return TLS_EOK;
@@ -972,18 +972,18 @@ int tls_init(tls_t *tls, const char *key_file, const char *cert_file,
 	if (SSL_CTX_use_PrivateKey_file(
 		    tls->ssl_ctx, key_file, SSL_FILETYPE_PEM) != 1)
 	{
-	    SSL_CTX_free(tls->ssl_ctx);
-	    tls->ssl_ctx = NULL;
 	    *errstr = xasprintf(_("cannot load key file %s: %s"), 
 		    key_file, ERR_error_string(ERR_get_error(), NULL));
+	    SSL_CTX_free(tls->ssl_ctx);
+	    tls->ssl_ctx = NULL;
 	    return TLS_EFILE;
 	}
 	if (SSL_CTX_use_certificate_chain_file(tls->ssl_ctx, cert_file) != 1)
 	{
-	    SSL_CTX_free(tls->ssl_ctx);
-	    tls->ssl_ctx = NULL;
 	    *errstr = xasprintf(_("cannot load certificate file %s: %s"), 
 		    cert_file, ERR_error_string(ERR_get_error(), NULL));
+	    SSL_CTX_free(tls->ssl_ctx);
+	    tls->ssl_ctx = NULL;
 	    return TLS_EFILE;
 	}
     }
@@ -991,20 +991,20 @@ int tls_init(tls_t *tls, const char *key_file, const char *cert_file,
     {
 	if (SSL_CTX_load_verify_locations(tls->ssl_ctx, trust_file, NULL) != 1)
 	{
-	    SSL_CTX_free(tls->ssl_ctx);
-	    tls->ssl_ctx = NULL;
 	    *errstr = xasprintf(_("cannot load trust file %s: %s"), 
 		    trust_file, ERR_error_string(ERR_get_error(), NULL));
+	    SSL_CTX_free(tls->ssl_ctx);
+	    tls->ssl_ctx = NULL;
 	    return TLS_EFILE;
 	}
 	tls->have_trust_file = 1;
     }
     if (!(tls->ssl = SSL_new(tls->ssl_ctx)))
     {
-	SSL_CTX_free(tls->ssl_ctx);
-	tls->ssl_ctx = NULL;
 	*errstr = xasprintf(_("cannot create a TLS structure: %s"), 
 		ERR_error_string(ERR_get_error(), NULL));
+	SSL_CTX_free(tls->ssl_ctx);
+	tls->ssl_ctx = NULL;
 	return TLS_ELIBFAILED;
     }
     return TLS_EOK;
@@ -1096,16 +1096,13 @@ int tls_start(tls_t *tls, int fd, const char *hostname, int no_certcheck,
     int error_code;
     
     gnutls_transport_set_ptr(tls->session, (gnutls_transport_ptr_t)fd);
-    do
+    if ((error_code = gnutls_handshake(tls->session)) < 0)
     {
-	error_code = gnutls_handshake(tls->session);
-    }
-    while (error_code == GNUTLS_E_INTERRUPTED);
-    if (error_code < 0)
-    {
-	gnutls_deinit(tls->session);
-	gnutls_certificate_free_credentials(tls->cred);
-	if (error_code == GNUTLS_E_AGAIN)
+	if (error_code == GNUTLS_E_INTERRUPTED)
+	{
+	    *errstr = xasprintf(_("operation aborted"));
+	}
+	else if (error_code == GNUTLS_E_AGAIN)
 	{
 	    /* This error message makes more sense than what
 	     * gnutls_strerror() would return. */
@@ -1117,6 +1114,8 @@ int tls_start(tls_t *tls, int fd, const char *hostname, int no_certcheck,
 	    *errstr = xasprintf(_("TLS handshake failed: %s"), 
 	    	    gnutls_strerror(error_code));
 	}
+	gnutls_deinit(tls->session);
+	gnutls_certificate_free_credentials(tls->cred);
 	return TLS_EHANDSHAKE;
     }
     if (tci)
@@ -1147,27 +1146,29 @@ int tls_start(tls_t *tls, int fd, const char *hostname, int no_certcheck,
     
     if (!SSL_set_fd(tls->ssl, fd))
     {
-	SSL_free(tls->ssl);
-	SSL_CTX_free(tls->ssl_ctx);
 	*errstr = xasprintf(_("cannot set the file descriptor for TLS: %s"), 
 		ERR_error_string(ERR_get_error(), NULL));
-	return TLS_ELIBFAILED;
-    }
-    do
-    {
-	error_code = SSL_connect(tls->ssl);
-    }
-    while (error_code < 1 
-	    && ((SSL_get_error(tls->ssl, error_code) == SSL_ERROR_WANT_READ
-		    || SSL_get_error(tls->ssl, error_code)
-		    == SSL_ERROR_WANT_WRITE)
-		&& errno == EINTR));
-    if (error_code < 1)
-    {
 	SSL_free(tls->ssl);
 	SSL_CTX_free(tls->ssl_ctx);
-	*errstr = openssl_io_error(error_code, 
-		SSL_get_error(tls->ssl, error_code), _("TLS handshake failed"));
+	return TLS_ELIBFAILED;
+    }
+    if ((error_code = SSL_connect(tls->ssl)) < 1)
+    {
+	if (errno == EINTR 
+		&& (SSL_get_error(tls->ssl, error_code) == SSL_ERROR_WANT_READ
+		    || SSL_get_error(tls->ssl, error_code) 
+		    == SSL_ERROR_WANT_WRITE))
+	{
+	    *errstr = xasprintf(_("operation aborted"));
+	}
+	else
+	{
+	    *errstr = openssl_io_error(error_code, 
+		    SSL_get_error(tls->ssl, error_code), 
+		    _("TLS handshake failed"));
+	}
+	SSL_free(tls->ssl);
+	SSL_CTX_free(tls->ssl_ctx);
 	return TLS_EIO;
     }
     if (tci)
@@ -1206,12 +1207,7 @@ int tls_getchar(tls_t *tls, char *c, int *eof, char **errstr)
 #ifdef HAVE_GNUTLS
     ssize_t ret;
     
-    do
-    {
-	ret = gnutls_record_recv(tls->session, c, 1);
-    }
-    while (ret == GNUTLS_E_INTERRUPTED);
-
+    ret = gnutls_record_recv(tls->session, c, 1);
     if (ret == 1)
     {
 	*eof = 0;
@@ -1224,7 +1220,11 @@ int tls_getchar(tls_t *tls, char *c, int *eof, char **errstr)
     }
     else
     {
-	if (ret == GNUTLS_E_AGAIN)
+	if (ret == GNUTLS_E_INTERRUPTED)
+	{
+	    *errstr = xasprintf(_("operation aborted"));
+	}
+	else if (ret == GNUTLS_E_AGAIN)
 	{
 	    /* This error message makes more sense than what
 	     * gnutls_strerror() would return. */
@@ -1246,16 +1246,7 @@ int tls_getchar(tls_t *tls, char *c, int *eof, char **errstr)
     int error_code;
     int error_code2;
     
-    do
-    {
-	error_code = SSL_read(tls->ssl, c, 1);
-    }
-    while (error_code < 1 
-	    && ((SSL_get_error(tls->ssl, error_code) == SSL_ERROR_WANT_READ
-		    || SSL_get_error(tls->ssl, error_code) 
-		    == SSL_ERROR_WANT_WRITE)
-		&& errno == EINTR));
-    if (error_code < 1)
+    if ((error_code = SSL_read(tls->ssl, c, 1)) < 1)
     {
 	if ((error_code2 = SSL_get_error(tls->ssl, error_code)) 
 		== SSL_ERROR_NONE)
@@ -1265,8 +1256,18 @@ int tls_getchar(tls_t *tls, char *c, int *eof, char **errstr)
 	}
 	else
 	{
-	    *errstr = openssl_io_error(error_code, error_code2, 
-		    _("cannot read from TLS connection"));
+	    if (errno == EINTR &&
+	    	    (SSL_get_error(tls->ssl, error_code) == SSL_ERROR_WANT_READ
+		     || SSL_get_error(tls->ssl, error_code) 
+		     == SSL_ERROR_WANT_WRITE))
+	    {
+		*errstr = xasprintf(_("operation aborted"));
+	    }
+	    else
+    	    {
+    		*errstr = openssl_io_error(error_code, error_code2, 
+    			_("cannot read from TLS connection"));
+    	    }
 	    return TLS_EIO;
 	}
     }
@@ -1337,15 +1338,13 @@ int tls_puts(tls_t *tls, const char *s, size_t len, char **errstr)
 	return TLS_EOK;
     }
     
-    do
+    if ((ret = gnutls_record_send(tls->session, s, len)) < 0)
     {
-	ret = gnutls_record_send(tls->session, s, len);
-    }
-    while (ret == GNUTLS_E_INTERRUPTED);
-    
-    if (ret < 0)
-    {
-	if (ret == GNUTLS_E_AGAIN)
+	if (ret == GNUTLS_E_INTERRUPTED)
+	{
+	    *errstr = xasprintf(_("operation aborted"));
+	}
+	else if (ret == GNUTLS_E_AGAIN)
 	{
 	    /* This error message makes more sense than what
 	     * gnutls_strerror() would return. */
@@ -1382,20 +1381,21 @@ int tls_puts(tls_t *tls, const char *s, size_t len, char **errstr)
 	return TLS_EOK;
     }
     
-    do
+    if ((error_code = SSL_write(tls->ssl, s, (int)len)) != (int)len)
     {
-	error_code = SSL_write(tls->ssl, s, (int)len);
-    }
-    while (error_code != (int)len 
-	    && ((SSL_get_error(tls->ssl, error_code) == SSL_ERROR_WANT_READ
-		    || SSL_get_error(tls->ssl, error_code) 
-		    == SSL_ERROR_WANT_WRITE)
-		&& errno == EINTR));
-    if (error_code != (int)len)
-    {
-	*errstr = openssl_io_error(error_code,
-		SSL_get_error(tls->ssl, error_code),
-		_("cannot write to TLS connection"));
+	if (errno == EINTR 
+		&& ((SSL_get_error(tls->ssl, error_code) == SSL_ERROR_WANT_READ
+		       	|| SSL_get_error(tls->ssl, error_code) 
+			== SSL_ERROR_WANT_WRITE)))
+	{
+	    *errstr = xasprintf(_("operation aborted"));	    
+	}
+	else
+	{
+	    *errstr = openssl_io_error(error_code,
+	    	    SSL_get_error(tls->ssl, error_code),
+	    	    _("cannot write to TLS connection"));
+	}
 	return TLS_EIO;
     }
 

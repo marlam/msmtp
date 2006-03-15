@@ -2,6 +2,13 @@ Version 1.4.6 (not yet released):
 - Sync from mpop:
   - Replace crypto.[ch] with gnulib hmac-md5 module.
   - Gnulib update. Add hmac-md5 module.
+  - net.c, tls.c: allow all network operations to be interrupted with CTRL+C,
+    and print an appropriate error message in this case.
+  - tls.c: if an error occurs, clean up *after* building the error message. This
+    fixes a potential segfault in the OpenSSL version of tls_start().
+  - net_open_socket(): don't let net_close_socket() clobber errno.
+  - net_open_socket(): print correct error message if getaddrinfo() returns 
+    EAI_SYSTEM.
   - Fixed comment in net.h.
   - net_get_canonical_hostname(): Only call freeaddrinfo() if getaddrinfo()
     succeeded. Reported and fixed by Raúl Núñez de Arenas Coronado.

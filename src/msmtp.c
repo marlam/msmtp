@@ -2416,6 +2416,7 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
 		}
 		else
 		{
+		    conf->cmdline_account->auth_mech = NULL;
 		    print_error(_("invalid argument %s for %s"), 
 			    optarg, "--auth");
 		    error_code = 1;

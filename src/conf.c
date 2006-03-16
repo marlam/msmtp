@@ -1043,6 +1043,7 @@ int read_conffile(const char *conffile, FILE *f, list_t **acc_list,
 	    }
 	    else
 	    {
+		acc->auth_mech = NULL;
 		*errstr = xasprintf(
 	    		_("line %d: invalid argument %s for command %s"),
     			line, arg, cmd);

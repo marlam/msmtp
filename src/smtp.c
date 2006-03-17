@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2000, 2003, 2004, 2005
+ * Copyright (C) 2000, 2003, 2004, 2005, 2006
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -983,7 +983,7 @@ int smtp_auth(smtp_server_t *srv,
     char *outbuf;
     int error_code;
     int auth_plain_special;
-    char *callback_password;
+    char *callback_password = NULL;
 
 
     *error_msg = NULL;
@@ -1067,6 +1067,32 @@ int smtp_auth(smtp_server_t *srv,
 	return SMTP_EUNAVAIL;
     }
     
+    /* Check availability of required authentication data */
+    if (strcmp(auth_mech, "EXTERNAL") != 0)
+    {
+	/* GSSAPI, DIGEST-MD5, CRAM-MD5, PLAIN, LOGIN, NTLM all need a user 
+	 * name */
+	if (!user)
+	{
+	    *errstr = xasprintf(_("authentication method %s needs a user name"),
+		    auth_mech);
+	    return SMTP_EUNAVAIL;
+	}
+	/* DIGEST-MD5, CRAM-MD5, PLAIN, LOGIN, NTLM all need a password */
+	if (strcmp(auth_mech, "GSSAPI") != 0 && !password)
+	{
+	    if (!password_callback 
+		    || !(callback_password = password_callback(hostname, user)))
+	    {
+		*errstr = xasprintf(
+			_("authentication method %s needs a password"),
+			auth_mech);
+		return SMTP_EUNAVAIL;
+	    }
+	    password = callback_password;
+	}
+    }
+
     if ((error_code = gsasl_client_start(ctx, auth_mech, &sctx)) != GSASL_OK)
     {
 	gsasl_done(ctx);
@@ -1090,22 +1116,7 @@ int smtp_auth(smtp_server_t *srv,
     {
 	gsasl_property_set(sctx, GSASL_PASSWORD, password);
     }
-    /* If the callback fails, or there is none, leave the error message about a
-     * missing password to GSASL. */
-    else if (password_callback)
-    {
-	if (strcmp(auth_mech, "GSSAPI") != 0
-		&& strcmp(auth_mech, "EXTERNAL") != 0)
-	{
-	    /* All others (PLAIN, LOGIN, CRAM-MD5, DIGEST-MD5, NTLM) need a
-	     * password. */
-	    if ((callback_password = password_callback(hostname, user)))
-	    {
-		gsasl_property_set(sctx, GSASL_PASSWORD, callback_password);
-		free(callback_password);
-	    }	    
-	}
-    }
+    free(callback_password);
     /* For DIGEST-MD5 and GSSAPI */
     gsasl_property_set(sctx, GSASL_SERVICE, "smtp");
     if (hostname)

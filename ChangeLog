@@ -1,5 +1,10 @@
 Version 1.4.6 (not yet released):
 - Sync from mpop:
+  - pop3_auth(), GNU SASL variant: 
+    - Check if authentication data is complete before trying to start
+      authentication.
+    - Never call password_callback() when no user name is given.
+    (This change applies to smtp_auth(), GNU SASL variant.)
   - Prevent a double free if an invalid argument to the auth command is given.
   - Prevent a double free if an invalid argument to --auth is given.
   - Replace crypto.[ch] with gnulib hmac-md5 module.

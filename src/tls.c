@@ -855,7 +855,7 @@ int tls_check_cert(tls_t *tls, const char *hostname, int verify, char **errstr)
 	hostname_ascii = xstrdup(hostname);
     }
 #else
-    hostname_ascii = hostname;
+    hostname_ascii = xstrdup(hostname);
 #endif
     
     /* Try the DNS subjectAltNames. */
@@ -904,9 +904,7 @@ int tls_check_cert(tls_t *tls, const char *hostname, int verify, char **errstr)
 	free(buf);
     }
     X509_free(x509cert);
-#ifdef USE_LIBIDN
     free(hostname_ascii);
-#endif
 
     if (!match_found)
     {

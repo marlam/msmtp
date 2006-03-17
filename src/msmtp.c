@@ -450,6 +450,13 @@ int msmtp_rmqs(account_t *acc, int debug, const char *rmqs_argument,
     /* create a new smtp_server_t */
     srv = smtp_new(debug ? stdout : NULL, acc->protocol);
 
+    /* connect */
+    if ((e = smtp_connect(&srv, acc->host, acc->port, acc->timeout,
+		    NULL, NULL, errstr)) != NET_EOK)
+    {
+	return exitcode_net(e);
+    }
+
     /* prepare tls */
 #ifdef HAVE_SSL
     if (acc->tls)
@@ -461,13 +468,6 @@ int msmtp_rmqs(account_t *acc, int debug, const char *rmqs_argument,
 	}
     }
 #endif /* HAVE_SSL */
-
-    /* connect */
-    if ((e = smtp_connect(&srv, acc->host, acc->port, acc->timeout,
-		    NULL, NULL, errstr)) != NET_EOK)
-    {
-	return exitcode_net(e);
-    }
 
     /* start tls for ssmtp servers */
 #ifdef HAVE_SSL
@@ -620,6 +620,15 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
     /* create a new smtp_server_t */
     srv = smtp_new(debug ? stdout : NULL, acc->protocol);
 
+    /* connect */
+    if ((e = smtp_connect(&srv, acc->host, acc->port, acc->timeout,
+		    &server_canonical_name, &server_address, errstr))
+	    != NET_EOK)
+    {
+	e = exitcode_net(e);
+       	goto error_exit;
+    }
+
     /* prepare tls */
 #ifdef HAVE_SSL
     if (acc->tls)
@@ -633,15 +642,6 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
 	}
     }
 #endif /* HAVE_SSL */
-
-    /* connect */
-    if ((e = smtp_connect(&srv, acc->host, acc->port, acc->timeout,
-		    &server_canonical_name, &server_address, errstr))
-	    != NET_EOK)
-    {
-	e = exitcode_net(e);
-       	goto error_exit;
-    }
 
     /* start tls for ssmtp servers */
 #ifdef HAVE_SSL

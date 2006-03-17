@@ -86,6 +86,9 @@ const char *wsa_strerror(int error_code)
 	case WSA_NOT_ENOUGH_MEMORY:
 	    return _("not enough memory");
 	    
+	case WSAEINTR:
+	    return _("operation aborted");
+
 	case WSAEINVAL:
 	    return _("invalid argument");
 	    
@@ -388,6 +391,10 @@ int net_open_socket(const char *hostname, int port, int timeout, int *ret_fd,
     free(port_string);
     if (error_code)
     {
+#ifdef _WIN32
+	*errstr = xasprintf(_("cannot locate host %s: %s"), 
+		hostname, wsa_strerror(WSAGetLastError()));
+#else
 	if (error_code == EAI_SYSTEM && errno == EINTR)
 	{
 	    *errstr = xasprintf(_("operation aborted"));
@@ -395,14 +402,10 @@ int net_open_socket(const char *hostname, int port, int timeout, int *ret_fd,
 	else
 	{
 	    *errstr = xasprintf(_("cannot locate host %s: %s"), hostname,
-#ifdef _WIN32
-	    	    wsa_strerror(error_code)
-#else
-	    	    error_code == EAI_SYSTEM ? strerror(errno) 
-    		        : gai_strerror(error_code)
-#endif
-		    );
+		    error_code == EAI_SYSTEM ? strerror(errno) 
+		    : gai_strerror(error_code));
 	}
+#endif
 	return NET_EHOSTNOTFOUND;
     }
 
@@ -473,6 +476,10 @@ int net_open_socket(const char *hostname, int port, int timeout, int *ret_fd,
 	}
 	else /* cause == 2 */
 	{
+#ifdef _WIN32
+	    *errstr = xasprintf(_("cannot connect to %s, port %d: %s"), 
+		    hostname, port, wsa_strerror(WSAGetLastError()));
+#else
 	    if (errno == EINTR)
 	    {
 		*errstr = xasprintf(_("operation aborted"));
@@ -480,14 +487,9 @@ int net_open_socket(const char *hostname, int port, int timeout, int *ret_fd,
 	    else
 	    {
 		*errstr = xasprintf(_("cannot connect to %s, port %d: %s"), 
-			hostname, port,
-#ifdef _WIN32
-			wsa_strerror(WSAGetLastError())
-#else
-    			strerror(errno)
-#endif
-    			);
+			hostname, port, strerror(errno));
 	    }
+#endif
 	    return NET_ECONNECT;
 	}
     }
@@ -567,6 +569,10 @@ int net_open_socket(const char *hostname, int port, int timeout, int *ret_fd,
 
     if (net_connect(fd, (struct sockaddr *)(&sock), sizeof(sock), timeout) < 0)
     {
+#ifdef _WIN32
+	*errstr = xasprintf(_("cannot connect to %s, port %d: %s"),
+		hostname, port, wsa_strerror(WSAGetLastError()));
+#else
 	if (errno == EINTR)
 	{
 	    *errstr = xasprintf(_("operation aborted"));
@@ -574,14 +580,9 @@ int net_open_socket(const char *hostname, int port, int timeout, int *ret_fd,
 	else
 	{
 	    *errstr = xasprintf(_("cannot connect to %s, port %d: %s"),
-		    hostname, port,
-#ifdef _WIN32
-		    wsa_strerror(WSAGetLastError())
-#else
-    		    strerror(errno)
-#endif
-    		    );
+		    hostname, port, strerror(errno));
 	}
+#endif
 	return NET_ECONNECT;
     }
 

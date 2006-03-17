@@ -157,10 +157,8 @@ if test "$have_gsasl" = "yes"; then
     CFLAGS="$CFLAGS $GSASL_CFLAGS"
     LIBS="$LIBS $GSASL_LIBS"
     AC_DEFINE(USE_GSASL,, Build with GNU SASL support)
-else
-    if test "$want_gsasl" = "yes"; then
-        AC_MSG_WARN([Cannot find GNU SASL, disabling])
-    fi
+elif test "$want_gsasl" = "yes"; then
+    AC_MSG_WARN([Cannot find GNU SASL, disabling])
 fi
 
 

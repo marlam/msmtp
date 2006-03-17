@@ -29,7 +29,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-
 #ifdef _WIN32
 #define WINVER 0x0501
 #include <winsock2.h>
@@ -58,6 +57,9 @@ extern int h_errno;
 #include <errno.h>
 extern int errno;
 #endif /* UNIX */
+#ifdef USE_LIBIDN
+#include <idna.h>
+#endif
 
 #include "gettext.h"
 #include "xvasprintf.h"
@@ -360,6 +362,9 @@ int net_open_socket(const char *hostname, int port, int timeout, int *ret_fd,
     int saved_errno;
     int cause;
     char nameinfo_buffer[NI_MAXHOST];
+#ifdef USE_LIBIDN
+    char *hostname_ascii;
+#endif
     
     hints.ai_family = PF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
@@ -370,7 +375,16 @@ int net_open_socket(const char *hostname, int port, int timeout, int *ret_fd,
     hints.ai_addr = NULL;
     hints.ai_next = NULL;
     port_string = xasprintf("%d", port);
+#ifdef USE_LIBIDN
+    if (idna_to_ascii_lz(hostname, &hostname_ascii, 0) != IDNA_SUCCESS)
+    {
+	hostname_ascii = xstrdup(hostname);
+    }
+    error_code = getaddrinfo(hostname_ascii, port_string, &hints, &res0);
+    free(hostname_ascii);
+#else
     error_code = getaddrinfo(hostname, port_string, &hints, &res0);
+#endif
     free(port_string);
     if (error_code)
     {
@@ -492,6 +506,9 @@ int net_open_socket(const char *hostname, int port, int timeout, int *ret_fd,
 #endif /* _WIN32 */
     struct in_addr addr;
     char *p;
+#ifdef USE_LIBIDN
+    char *hostname_ascii;
+#endif
     
 #ifdef _WIN32
     /* Work around a broken gethostbyname() function on old Windows systems that
@@ -504,8 +521,22 @@ int net_open_socket(const char *hostname, int port, int timeout, int *ret_fd,
 	 * a struct hostent. No need to call gethostbyname() anymore. */
     }
     else
+    {
 #endif /* _WIN32 */
-    if (!(remote_host = gethostbyname(hostname)))
+#ifdef USE_LIBIDN
+	if (idna_to_ascii_lz(hostname, &hostname_ascii, 0) != IDNA_SUCCESS)
+	{
+	    hostname_ascii = xstrdup(hostname);
+	}
+	remote_host = gethostbyname(hostname_ascii);
+	free(hostname_ascii);
+#else
+	remote_host = gethostbyname(hostname);
+#endif
+#ifdef _WIN32
+    }
+#endif /* _WIN32 */
+    if (!remote_host)
     {
 	*errstr = xasprintf(_("cannot locate host %s: %s"), hostname,
 #ifdef _WIN32

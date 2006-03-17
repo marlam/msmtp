@@ -164,6 +164,26 @@ else
 fi
 
 
+dnl GNU Libidn
+AC_ARG_WITH(libidn, AC_HELP_STRING([--with-libidn=[DIR]],
+	[Support IDN (needs GNU Libidn)]),
+    libidn=$withval, libidn=yes)
+if test "$libidn" != "no"; then
+    if test "$libidn" != "yes"; then
+        LDFLAGS="${LDFLAGS} -L$libidn/lib"
+        CPPFLAGS="${CPPFLAGS} -I$libidn/include"
+    fi
+    AC_CHECK_HEADER(idna.h,
+        AC_CHECK_LIB(idn, stringprep_check_version,
+            [libidn=yes LIBS="${LIBS} -lidn"], libidn=no), libidn=no)
+fi
+if test "$libidn" != "no" ; then
+    AC_DEFINE(USE_LIBIDN, 1, [Build with IDN support.])
+else
+    AC_MSG_WARN([Cannot find GNU Libidn, disabling])
+fi
+
+
 dnl Global #defines for all source files
 AH_VERBATIM([UNUSED],
 [/* Let gcc know about unused variables to suppress warnings.
@@ -187,7 +207,8 @@ AC_CONFIG_FILES(Makefile doc/Makefile gnulib/Makefile po/Makefile.in src/Makefil
 AC_OUTPUT
 
 echo
-echo "Install prefix ..... : $prefix"
-echo "NLS support ........ : $USE_NLS"
-echo "TLS/SSL support .... : $have_tls (Library: $tls_lib)"
-echo "GNU SASL support ... : $have_gsasl"
+echo "Install prefix ....... : $prefix"
+echo "TLS/SSL support ...... : $have_tls (Library: $tls_lib)"
+echo "GNU SASL support ..... : $have_gsasl"
+echo "GNU Libidn support ... : $libidn"
+echo "NLS support .......... : $USE_NLS"

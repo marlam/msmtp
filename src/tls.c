@@ -48,6 +48,10 @@ extern int errno;
 #include <openssl/evp.h>
 #endif /* HAVE_OPENSSL */
 
+#ifdef USE_LIBIDN
+#include <idna.h>
+#endif
+
 #include "gettext.h"
 #include "xalloc.h"
 #include "xvasprintf.h"
@@ -651,6 +655,9 @@ int tls_check_cert(tls_t *tls, const char *hostname, int verify, char **errstr)
     unsigned int i;
     gnutls_x509_crt_t cert;
     time_t t1, t2;
+#ifdef USE_LIBIDN
+    char *hostname_ascii;
+#endif
     
     if (verify)
     {
@@ -733,12 +740,28 @@ int tls_check_cert(tls_t *tls, const char *hostname, int verify, char **errstr)
 	    return TLS_ECERT;
 	}
 	/* Check hostname */
-	if (i == 0 && !gnutls_x509_crt_check_hostname(cert, hostname)) 
+	if (i == 0)
 	{
-	    *errstr = xasprintf(
-		    _("%s: the certificate owner does not match hostname %s"), 
-		    error_msg, hostname);
-    	    return TLS_ECERT; 
+#ifdef USE_LIBIDN
+	    if (idna_to_ascii_lz(hostname, &hostname_ascii, 0) == IDNA_SUCCESS)
+	    {
+    		if (!gnutls_x509_crt_check_hostname(cert, hostname_ascii)) 
+    		{
+    		    *errstr = xasprintf(_("%s: the certificate owner does not "
+				"match hostname %s"), error_msg, hostname);
+		    free(hostname_ascii);
+	    	    return TLS_ECERT; 
+		}
+    		free(hostname_ascii);
+	    }
+	    else
+#endif
+	    if (!gnutls_x509_crt_check_hostname(cert, hostname)) 
+	    {
+	    	*errstr = xasprintf(_("%s: the certificate owner does not "
+    			    "match hostname %s"), error_msg, hostname);
+		return TLS_ECERT; 
+	    }
 	}
 	/* Check certificate times */
 	if ((t2 = gnutls_x509_crt_get_activation_time(cert)) < 0)
@@ -779,6 +802,8 @@ int tls_check_cert(tls_t *tls, const char *hostname, int verify, char **errstr)
     long status;
     const char *error_msg;
     int i;
+    /* hostname in ASCII format: */
+    char *hostname_ascii;
     /* needed to get the common name: */
     X509_NAME *x509_subject;
     char *buf;
@@ -824,6 +849,15 @@ int tls_check_cert(tls_t *tls, const char *hostname, int verify, char **errstr)
     /* Check if 'hostname' matches the one of the subjectAltName extensions of
      * type DNS or the Common Name (CN). */
     
+#ifdef USE_LIBIDN
+    if (idna_to_ascii_lz(hostname, &hostname_ascii, 0) != IDNA_SUCCESS)
+    {
+	hostname_ascii = xstrdup(hostname);
+    }
+#else
+    hostname_ascii = hostname;
+#endif
+    
     /* Try the DNS subjectAltNames. */
     match_found = 0;
     if ((subj_alt_names = 
@@ -835,7 +869,7 @@ int tls_check_cert(tls_t *tls, const char *hostname, int verify, char **errstr)
 	    subj_alt_name = sk_GENERAL_NAME_value(subj_alt_names, i);
 	    if (subj_alt_name->type == GEN_DNS) 
 	    {
-		if ((match_found = hostname_match(hostname, 
+		if ((match_found = hostname_match(hostname_ascii, 
 				(char *)(subj_alt_name->d.ia5->data))))
 		{
 		    break;
@@ -866,10 +900,13 @@ int tls_check_cert(tls_t *tls, const char *hostname, int verify, char **errstr)
 	    free(buf);
 	    return TLS_ECERT;
 	}
-	match_found = hostname_match(hostname, buf);
+	match_found = hostname_match(hostname_ascii, buf);
 	free(buf);
     }
     X509_free(x509cert);
+#ifdef USE_LIBIDN
+    free(hostname_ascii);
+#endif
 
     if (!match_found)
     {

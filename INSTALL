@@ -16,6 +16,9 @@ The default behaviour of the configuration script is as follows:
 - Use GNU SASL if it is available.
   If it is not available, disable GNU SASL support, and use the built-in
   authentication code instead.
+- Use GNU Libidn if it is available.
+  If it is not available, then disable support for Internationalized Domain
+  Names (IDN).
 - Enable native language support (NLS) if GNU gettext is available.
 
 You can change these defaults with the following options:
@@ -24,6 +27,7 @@ You can change these defaults with the following options:
   --with-ssl=openssl
 - Disable TLS/SSL support with --disable-ssl
 - Disable GNU SASL support with --disable-gsasl
+- Disable IDN support with --without-libidn
 - Disable native language support with --disable-nls
 
 For special notes on Windows and DOS, read README.win32 and 

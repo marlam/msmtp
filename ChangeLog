@@ -1,5 +1,7 @@
 Version 1.4.6 (not yet released):
 - Sync from mpop:
+  - Add (optional) support for Internationalized Domain Names (IDN) via
+    GNU Libidn.
   - Initialize TLS only if pop3_connect() succeeded.
   - Move SSL_LIBS and GSASL_LIBS into LIBS; do not put them in Makefile.am.
   - Fix memory leak in GNU SASL variant of pop3_auth().

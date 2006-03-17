@@ -1,5 +1,6 @@
 Version 1.4.6 (not yet released):
 - Sync from mpop:
+  - Move SSL_LIBS and GSASL_LIBS into LIBS; do not put them in Makefile.am.
   - Fix memory leak in GNU SASL variant of pop3_auth().
     (This change applies to smtp_auth(), GNU SASL variant.)
   - Fix memory leak in GnuTLS variant of tls_cert_info_get().

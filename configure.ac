@@ -135,6 +135,7 @@ if test "$want_openssl" = "yes" -a "$have_tls" = "no"; then
 fi
 if test "$have_tls" = "yes"; then
     CFLAGS="$CFLAGS $SSL_CFLAGS"
+    LIBS="$LIBS $SSL_LIBS"
     AC_DEFINE(HAVE_SSL,, Build with TLS/SSL support)
     tls_obj="tls.o"
 elif test "$want_tls" = "yes"; then
@@ -154,14 +155,13 @@ if test "$want_gsasl" != "no" ; then
 fi
 if test "$have_gsasl" = "yes"; then
     CFLAGS="$CFLAGS $GSASL_CFLAGS"
+    LIBS="$LIBS $GSASL_LIBS"
     AC_DEFINE(USE_GSASL,, Build with GNU SASL support)
 else
     if test "$want_gsasl" = "yes"; then
         AC_MSG_WARN([Cannot find GNU SASL, disabling])
     fi
-    crypto_obj="crypto.o"
 fi
-AC_SUBST(crypto_obj)
 
 
 dnl Global #defines for all source files

@@ -10,7 +10,7 @@ msmtp_SOURCES = \
 	smtp.c smtp.h \
 	stream.c stream.h
 
-msmtp_LDADD = @LIBINTL@ @tls_obj@ $(SSL_LIBS) $(GSASL_LIBS) ../gnulib/libgnu.a
+msmtp_LDADD = @tls_obj@ ../gnulib/libgnu.a @LIBINTL@
 
 msmtp_DEPENDENCIES = @tls_obj@
 

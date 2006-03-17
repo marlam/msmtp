@@ -1,5 +1,6 @@
 Version 1.4.6 (not yet released):
 - Sync from mpop:
+  - Fix memory leak in GnuTLS variant of tls_cert_info_get().
   - pop3_auth(), GNU SASL variant: 
     - Check if authentication data is complete before trying to start
       authentication.

@@ -382,6 +382,7 @@ int tls_cert_info_get(tls_t *tls, tls_cert_info_t *tci, char **errstr)
     if (gnutls_x509_crt_import(cert, &cert_list[0], GNUTLS_X509_FMT_DER) != 0)
     {
 	*errstr = xasprintf(_("%s: error parsing certificate"), errmsg);
+	gnutls_x509_crt_deinit(cert);
 	return TLS_ECERT;
     }
 
@@ -391,6 +392,7 @@ int tls_cert_info_get(tls_t *tls, tls_cert_info_t *tci, char **errstr)
 		tci->sha1_fingerprint, &size) != 0)
     {
 	*errstr = xasprintf(_("%s: error getting SHA1 fingerprint"), errmsg);
+	gnutls_x509_crt_deinit(cert);
 	return TLS_ECERT;
     }
     size = 16;
@@ -398,16 +400,19 @@ int tls_cert_info_get(tls_t *tls, tls_cert_info_t *tci, char **errstr)
 		tci->md5_fingerprint, &size) != 0)
     {
 	*errstr = xasprintf(_("%s: error getting MD5 fingerprint"), errmsg);
+	gnutls_x509_crt_deinit(cert);
 	return TLS_ECERT;
     }
     if ((tci->activation_time = gnutls_x509_crt_get_activation_time(cert)) < 0)
     {
 	*errstr = xasprintf(_("%s: cannot get activation time"), errmsg);
+	gnutls_x509_crt_deinit(cert);
 	return TLS_ECERT;
     }
     if ((tci->expiration_time = gnutls_x509_crt_get_expiration_time(cert)) < 0)
     {
 	*errstr = xasprintf(_("%s: cannot get expiration time"), errmsg);
+	gnutls_x509_crt_deinit(cert);
 	return TLS_ECERT;
     }
 
@@ -453,6 +458,7 @@ int tls_cert_info_get(tls_t *tls, tls_cert_info_t *tci, char **errstr)
 	}
     }
     
+    gnutls_x509_crt_deinit(cert);
     return TLS_EOK;
 #endif /* HAVE_GNUTLS */
     

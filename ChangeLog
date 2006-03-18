@@ -1,5 +1,6 @@
 Version 1.4.6 (not yet released):
 - Sync from mpop:
+  - Improve --version output.
   - Add (optional) support for Internationalized Domain Names (IDN) via
     GNU Libidn.
   - Initialize TLS only if pop3_connect() succeeded.

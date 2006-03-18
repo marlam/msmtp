@@ -1964,29 +1964,26 @@ void msmtp_print_version(void)
     char *homedir;
     char *userconffile;
     
-    printf(_("%s version %s\nNLS: "), PACKAGE_NAME, VERSION);
-#ifdef ENABLE_NLS
-    printf(_("enabled, LOCALEDIR is %s\n"), LOCALEDIR);
-#else
-    printf("disabled\n");
-#endif
-    printf(_("TLS/SSL library: %s\n"
-		"Authentication library: %s\n"
-		"Supported authentication methods:\n"),
+    printf(_("%s version %s\n"), PACKAGE_NAME, VERSION);
+    /* TLS/SSL support */
+    printf(_("TLS/SSL library: %s\n"),
 #ifdef HAVE_GNUTLS
 	    "GnuTLS"
 #elif defined (HAVE_OPENSSL)
-	    "OpenSSL"
+    	    "OpenSSL"
 #else
 	    _("none")
 #endif
-	    ,
+	  );
+    /* Authentication support */
+    printf(_("Authentication library: %s\n"
+		"Supported authentication methods:\n"),
 #ifdef USE_GSASL
-	    _("GNU SASL")
+	    "GNU SASL"
 #else
 	    _("built-in")
 #endif /* USE_GSASL */
-	      );
+	  );
     if (smtp_client_supports_authmech("PLAIN"))
     {
 	printf("plain ");
@@ -2016,6 +2013,23 @@ void msmtp_print_version(void)
 	printf("ntlm ");
     }
     printf("\n");
+    /* Internationalized Domain Names support */
+    printf(_("IDN support: "));
+#ifdef USE_LIBIDN
+    printf(_("enabled"));
+#else
+    printf(_("disabled"));
+#endif
+    printf("\n");
+    /* Native language support */
+    printf(_("NLS: "));
+#ifdef ENABLE_NLS
+    printf(_("enabled"));
+    printf(_(", LOCALEDIR is %s"), LOCALEDIR);
+#else
+    printf(_("disabled"));
+#endif
+    printf("\n");
     sysconfdir = get_sysconfdir();
     sysconffile = get_filename(sysconfdir, SYSCONFFILE);
     printf(_("System configuration file name: %s\n"), sysconffile);
@@ -2026,7 +2040,8 @@ void msmtp_print_version(void)
     printf(_("User configuration file name: %s\n"), userconffile);
     free(userconffile);
     free(homedir);
-    printf(_("\nCopyright (C) 2004, 2005, 2006  Martin Lambers and others.\n"
+    printf("\n");
+    printf(_("Copyright (C) 2006  Martin Lambers and others.\n"
     		"This is free software; see the source for copying "
 		"conditions.  There is NO\n"
 		"warranty; not even for MERCHANTABILITY or FITNESS FOR A "

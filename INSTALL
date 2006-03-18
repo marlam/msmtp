@@ -25,8 +25,8 @@ You can change these defaults with the following options:
 - Choose the TLS/SSL library with one of:
   --with-ssl=gnutls
   --with-ssl=openssl
-- Disable TLS/SSL support with --disable-ssl
-- Disable GNU SASL support with --disable-gsasl
+- Disable TLS/SSL support with --without-ssl
+- Disable GNU SASL support with --without-libgsasl
 - Disable IDN support with --without-libidn
 - Disable native language support with --disable-nls
 

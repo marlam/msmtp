@@ -1,5 +1,7 @@
 Version 1.4.6 (not yet released):
 - Sync from mpop:
+  - Improve checks for libraries in configure.ac. The ./configure options have
+    changed! See INSTALL for more info.
   - Improve --version output.
   - Add (optional) support for Internationalized Domain Names (IDN) via
     GNU Libidn.

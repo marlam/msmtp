@@ -3,7 +3,7 @@ dnl Process this file with autoconf to produce a configure script.
 #
 # This file is part of msmtp, an SMTP client.
 #
-# Copyright (C) 2003, 2004, 2005
+# Copyright (C) 2003, 2004, 2005, 2006
 # Christophe Nowicki
 # Martin Lambers <marlam@marlam.de>
 #
@@ -78,34 +78,29 @@ else
 fi
 
 
-dnl pkg-config
-PKG_PROG_PKG_CONFIG
-
-
 dnl TLS/SSL
-want_tls=yes
 have_tls=no
+tls_lib=none
+want_tls=yes
 want_gnutls=yes
 want_openssl=yes
-tls_lib=none
-AC_ARG_ENABLE(ssl, AC_HELP_STRING([--disable-ssl], 
-    [disable TLS/SSL support]), want_tls=$enableval)
-if test "$want_tls" = "yes"; then
-    AC_ARG_WITH(ssl, [--with-ssl=[gnutls|openssl] 
-        TLS/SSL support via GnuTLS (default) or OpenSSL],
+AC_ARG_WITH(ssl, AC_HELP_STRING([--with-ssl=[gnutls|openssl|no]],
+        [TLS/SSL support: GnuTLS (default), OpenSSL, or none.]),
         if test "$withval" = "gnutls"; then
+            want_tls=yes
 	    want_gnutls=yes
             want_openssl=no
 	elif test "$withval" = "openssl"; then
+            want_tls=yes
             want_gnutls=no
             want_openssl=yes
+	elif test "$withval" = "no"; then
+            want_tls=no
+            want_gnutls=no
+            want_openssl=no
 	else
-	    AC_MSG_ERROR(Use --with-ssl=gnutls or --with-ssl=openssl)
+	    AC_MSG_ERROR(Use --with-ssl=gnutls or --with-ssl=openssl or --with-ssl=no)
 	fi)
-else
-    want_gnutls=no
-    want_openssl=no
-fi
 if test "$want_gnutls" = "yes"; then
     AM_PATH_LIBGNUTLS(1.2.0, [have_gnutls=yes],)
     if test "$have_gnutls" = "yes"; then
@@ -117,15 +112,13 @@ if test "$want_gnutls" = "yes"; then
     fi
 fi
 if test "$want_openssl" = "yes" -a "$have_tls" = "no"; then
-    PKG_CHECK_MODULES(SSL, openssl, [have_openssl=yes], [have_openssl=no])
-    if test "$have_openssl" != "yes"; then
-        if test "$windows" = "yes"; then
-            AC_CHECK_HEADER(openssl/ssl.h, AC_CHECK_LIB(ssl32, SSL_read,
-                [have_openssl=yes SSL_LIBS="-leay32 -lssl32" ],, -leay32))
-        else
-            AC_CHECK_HEADER(openssl/ssl.h, AC_CHECK_LIB(ssl, SSL_read, 
-                [have_openssl=yes SSL_LIBS="-lssl -lcrypto" ],, -lcrypto))
-        fi
+    have_openssl=no
+    if test "$windows" = "yes"; then
+        AC_CHECK_HEADER(openssl/ssl.h, AC_CHECK_LIB(ssl32, SSL_read,
+            [have_openssl=yes SSL_LIBS="-leay32 -lssl32" ],, -leay32))
+    else
+        AC_CHECK_HEADER(openssl/ssl.h, AC_CHECK_LIB(ssl, SSL_read, 
+            [have_openssl=yes SSL_LIBS="-lssl -lcrypto" ],, -lcrypto))
     fi
     if test "$have_openssl" = "yes"; then
         AC_DEFINE(HAVE_OPENSSL,, Build with OpenSSL support)
@@ -145,40 +138,38 @@ AC_SUBST(tls_obj)
 
 
 dnl GNU SASL
-want_gsasl=yes
-have_gsasl=no
-AC_ARG_ENABLE(gsasl, AC_HELP_STRING([--disable-gsasl], [disable GNU SASL]), 
-    want_gsasl=$enableval)
-if test "$want_gsasl" != "no" ; then
-    PKG_CHECK_MODULES(GSASL, libgsasl >= 0.2.4, 
-        [have_gsasl=yes], [have_gsasl=no])
-fi
-if test "$have_gsasl" = "yes"; then
-    CFLAGS="$CFLAGS $GSASL_CFLAGS"
-    LIBS="$LIBS $GSASL_LIBS"
-    AC_DEFINE(USE_GSASL,, Build with GNU SASL support)
-elif test "$want_gsasl" = "yes"; then
-    AC_MSG_WARN([Cannot find GNU SASL, disabling])
+AC_ARG_WITH(libgsasl, AC_HELP_STRING([--with-libgsasl],
+	[Use GNU SASL authentication library.]),
+    libgsasl=$withval, libgsasl=yes)
+if test "$libgsasl" != "no"; then
+    AC_LIB_HAVE_LINKFLAGS(gsasl,, [#include <gsasl.h>],
+        [gsasl_check_version (0);])
+    if test "$ac_cv_libgsasl" != yes; then
+        libgsasl=no
+        AC_MSG_WARN([Cannot find GNU SASL, disabling])
+    else
+        libgsasl=yes
+	LIBS="$LIBS $LIBGSASL"
+        AC_DEFINE(USE_GSASL,, Build with GNU SASL support)
+    fi
 fi
 
 
 dnl GNU Libidn
-AC_ARG_WITH(libidn, AC_HELP_STRING([--with-libidn=[DIR]],
+AC_ARG_WITH(libidn, AC_HELP_STRING([--with-libidn],
 	[Support IDN (needs GNU Libidn)]),
     libidn=$withval, libidn=yes)
 if test "$libidn" != "no"; then
-    if test "$libidn" != "yes"; then
-        LDFLAGS="${LDFLAGS} -L$libidn/lib"
-        CPPFLAGS="${CPPFLAGS} -I$libidn/include"
+    AC_LIB_HAVE_LINKFLAGS(idn,, [#include <stringprep.h>],
+        [stringprep_check_version (0);])
+    if test "$ac_cv_libidn" != yes; then
+        libidn=no
+        AC_MSG_WARN([Cannot find GNU Libidn, disabling])
+    else
+        libidn=yes
+	LIBS="$LIBS $LIBIDN"
+        AC_DEFINE(USE_LIBIDN, 1, [Build with IDN support.])
     fi
-    AC_CHECK_HEADER(idna.h,
-        AC_CHECK_LIB(idn, stringprep_check_version,
-            [libidn=yes LIBS="${LIBS} -lidn"], libidn=no), libidn=no)
-fi
-if test "$libidn" != "no" ; then
-    AC_DEFINE(USE_LIBIDN, 1, [Build with IDN support.])
-else
-    AC_MSG_WARN([Cannot find GNU Libidn, disabling])
 fi
 
 
@@ -207,6 +198,6 @@ AC_OUTPUT
 echo
 echo "Install prefix ....... : $prefix"
 echo "TLS/SSL support ...... : $have_tls (Library: $tls_lib)"
-echo "GNU SASL support ..... : $have_gsasl"
+echo "GNU SASL support ..... : $libgsasl"
 echo "GNU Libidn support ... : $libidn"
 echo "NLS support .......... : $USE_NLS"

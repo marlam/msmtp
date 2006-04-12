@@ -124,9 +124,10 @@ FILE *tempfile(const char *base);
  * lock_file()
  *
  * Locks a file for reading (if lock_type is OSENV_LOCK_READ) or writing (if 
- * lock_type is OSENV_LOCK_WRITE). Returns 0 in case of success and 1 if the 
- * file could not be locked before the given timeout (in seconds). In this 
- * case, errno will be set.
+ * lock_type is OSENV_LOCK_WRITE). Returns 0 in case of success, 1 if the file
+ * could not be locked before the given timeout (in seconds) because some other
+ * process holds a lock on the file, and 2 if the file could not be locked due
+ * to some other error. If 1 or 2 is returned, errno will be set.
  */
 #define OSENV_LOCK_READ 0
 #define OSENV_LOCK_WRITE 1

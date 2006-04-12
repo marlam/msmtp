@@ -33,17 +33,16 @@ extern int errno;
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <time.h>
 
 #ifdef _WIN32
 #include <windows.h>
 #include <io.h>
-#include <time.h>
 #include <lmcons.h>
 #include <sys/locking.h>
 #include <limits.h>
 #elif defined DJGPP
 #include <unistd.h>
-#include <time.h>
 #else /* UNIX */
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -52,6 +51,7 @@ extern int errno;
 #endif /* UNIX */
 
 #include "xalloc.h"
+#include "timespec.h"
 
 #include "os_env.h"
 
@@ -574,8 +574,9 @@ error_exit:
 int lock_file(FILE *f, int lock_type, int timeout)
 {
     int fd;
-    int seconds;
     int lock_success;
+    struct timespec hundredth_second = { 0, 10000000 };
+    int hundredth_seconds;
 #ifndef _WIN32
     struct flock lock;
 #endif /* not _WIN32 */
@@ -587,27 +588,25 @@ int lock_file(FILE *f, int lock_type, int timeout)
     lock.l_start = 0;
     lock.l_len = 0;
 #endif /* not _WIN32 */
-    seconds = 0;
+    hundredth_seconds = 0;
     for (;;)
     {
+	errno = 0;
 #ifdef _WIN32
 	lock_success = (_locking(fd, _LK_NBLCK, LONG_MAX) != -1);
 #else /* UNIX, DJGPP */
 	lock_success = (fcntl(fd, F_SETLK, &lock) != -1);
 #endif
-	if (lock_success || seconds >= timeout)
+	if (lock_success || (errno != EACCES && errno != EAGAIN) 
+	    || hundredth_seconds / 100 >= timeout)
 	{
 	    break;
 	}
 	else
 	{
-#ifdef _WIN32
-	    Sleep(1000);
-#else /* UNIX, DJGPP */
-	    sleep(1);
-#endif
-	    seconds++;
+ 	    nanosleep(&hundredth_second, NULL);
+	    hundredth_seconds++;
 	}
     }
-    return lock_success ? 0 : 1;
+    return (lock_success ? 0 : (hundredth_seconds / 100 >= timeout ? 1 : 2));
 }

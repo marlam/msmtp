@@ -1,6 +1,10 @@
 Version 1.4.6 (not yet released):
 - Sync from mpop:
+  - lock_file(): If another process holds a lock on the file, then wait 1/100 
+    second instead of 1 second before the next try.
   - Gnulib update. Added nanosleep module.
+  - Improve error handling for file locking: differentiate between timeouts and
+    other errors.
   - Improve checks for libraries in configure.ac. The ./configure options have
     changed! See INSTALL for more info.
   - Improve --version output.

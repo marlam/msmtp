@@ -1807,19 +1807,19 @@ void msmtp_log_to_file(const char *logfile, const char *loginfo)
     FILE *f;
     time_t t;
     struct tm *tm;
-    const char *failure_reason;
+    char *failure_reason;
     char time_str[64];
-    
+    int e;
     
     /* get time */
     if ((t = time(NULL)) < 0)
     {
-	failure_reason = strerror(errno);
+	failure_reason = xasprintf(_("cannot get time: %s"), strerror(errno));
 	goto log_failure;
     }
     if (!(tm = localtime(&t)))
     {
-	failure_reason = _("cannot convert UTC time to local time");
+	failure_reason = xstrdup(_("cannot convert UTC time to local time"));
 	goto log_failure;
     }
     (void)strftime(time_str, sizeof(time_str), "%b %d %H:%M:%S", tm);
@@ -1831,22 +1831,36 @@ void msmtp_log_to_file(const char *logfile, const char *loginfo)
     }
     else
     {
-	if (!(f = fopen(logfile, "a")) 
-		|| lock_file(f, OSENV_LOCK_WRITE, 10) != 0)
+	if (!(f = fopen(logfile, "a")))
 	{
-	    failure_reason = strerror(errno);
+	    failure_reason = xasprintf(_("cannot open: %s"), strerror(errno));
+	    goto log_failure;
+	}
+	if ((e = lock_file(f, OSENV_LOCK_WRITE, 10)) != 0)
+	{
+	    if (e == 1)
+	    {
+		failure_reason = xasprintf(
+			_("cannot lock (tried for %d seconds): %s"), 
+			10, strerror(errno));
+	    }
+	    else
+	    {
+		failure_reason = xasprintf(_("cannot lock: %s"), 
+			strerror(errno));
+	    }
 	    goto log_failure;
 	}
     }
     if ((fputs(time_str, f) == EOF) || (fputc(' ', f) == EOF)
 	|| (fputs(loginfo, f) == EOF) || (fputc('\n', f) == EOF))
     {
-	failure_reason = _("output error");
+	failure_reason = xstrdup(_("output error"));
 	goto log_failure;
     }
     if (f != stdout && fclose(f) != 0)
     {
-	failure_reason = strerror(errno);
+	failure_reason = xstrdup(strerror(errno));
 	goto log_failure;
     }
 
@@ -1855,6 +1869,7 @@ void msmtp_log_to_file(const char *logfile, const char *loginfo)
     /* error exit target */
 log_failure:
     print_error(_("cannot log to %s: %s"), logfile, failure_reason);
+    free(failure_reason);
     if (loginfo)
     {
 	print_error(_("log info was: %s"), loginfo);

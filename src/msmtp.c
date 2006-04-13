@@ -1814,7 +1814,7 @@ void msmtp_log_to_file(const char *logfile, const char *loginfo)
     /* get time */
     if ((t = time(NULL)) < 0)
     {
-	failure_reason = xasprintf(_("cannot get time: %s"), strerror(errno));
+	failure_reason = xasprintf(_("cannot get system time: %s"), strerror(errno));
 	goto log_failure;
     }
     if (!(tm = localtime(&t)))

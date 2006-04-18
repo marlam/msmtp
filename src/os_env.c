@@ -408,7 +408,8 @@ int mkstemp_unlink(char *template)
     int i;
     int try;
     int ret;
-    const char alnum[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"; 
+    const char alnum[] 
+	= "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"; 
 
     templatelen = strlen(template);
     if (templatelen < 6)
@@ -434,10 +435,12 @@ int mkstemp_unlink(char *template)
 	    X[i] = alnum[rand() % 36];
 	}
 #ifdef _WIN32
-	ret = _open(template, _O_CREAT | _O_EXCL | _O_RDWR | _O_TEMPORARY | _O_BINARY, 
+	ret = _open(template, _O_CREAT | _O_EXCL | _O_RDWR 
+		| _O_TEMPORARY | _O_BINARY, 
 		_S_IREAD | _S_IWRITE);
 #else /* DJGPP */
-	ret = open(template, O_CREAT | O_EXCL | O_RDWR | O_TEMPORARY | _O_BINARY, 
+	ret = open(template, O_CREAT | O_EXCL | O_RDWR 
+		| O_TEMPORARY | _O_BINARY, 
 		S_IRUSR | S_IWUSR);
 #endif /* DJGPP */
     }
@@ -575,8 +578,8 @@ int lock_file(FILE *f, int lock_type, int timeout)
 {
     int fd;
     int lock_success;
-    struct timespec hundredth_second = { 0, 10000000 };
-    int hundredth_seconds;
+    struct timespec tenth_second = { 0, 100000000 };
+    int tenth_seconds;
 #ifndef _WIN32
     struct flock lock;
 #endif /* not _WIN32 */
@@ -588,7 +591,7 @@ int lock_file(FILE *f, int lock_type, int timeout)
     lock.l_start = 0;
     lock.l_len = 0;
 #endif /* not _WIN32 */
-    hundredth_seconds = 0;
+    tenth_seconds = 0;
     for (;;)
     {
 	errno = 0;
@@ -598,15 +601,15 @@ int lock_file(FILE *f, int lock_type, int timeout)
 	lock_success = (fcntl(fd, F_SETLK, &lock) != -1);
 #endif
 	if (lock_success || (errno != EACCES && errno != EAGAIN) 
-	    || hundredth_seconds / 100 >= timeout)
+	    || tenth_seconds / 10 >= timeout)
 	{
 	    break;
 	}
 	else
 	{
- 	    nanosleep(&hundredth_second, NULL);
-	    hundredth_seconds++;
+ 	    nanosleep(&tenth_second, NULL);
+	    tenth_seconds++;
 	}
     }
-    return (lock_success ? 0 : (hundredth_seconds / 100 >= timeout ? 1 : 2));
+    return (lock_success ? 0 : (tenth_seconds / 10 >= timeout ? 1 : 2));
 }

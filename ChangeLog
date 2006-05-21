@@ -1,4 +1,5 @@
 Version 1.4.6 (not yet released):
+- Improved --help text output.
 - Improved error messages when logging to a logfile fails.
 - Sync from mpop:
   - lock_file(): If another process holds a lock on the file, then wait 1/10 

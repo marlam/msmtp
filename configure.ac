@@ -24,6 +24,7 @@ dnl Process this file with autoconf to produce a configure script.
 
 AC_INIT(msmtp, 1.4.6, marlam@marlam.de)
 AC_CONFIG_SRCDIR(src/msmtp.c)
+AC_CANONICAL_SYSTEM
 
 AM_INIT_AUTOMAKE
 AM_CONFIG_HEADER(config.h)
@@ -32,7 +33,6 @@ AC_PROG_CC
 gl_EARLY
 AC_PROG_RANLIB
 AC_PROG_INSTALL
-AC_CANONICAL_SYSTEM
 
 AC_C_CONST
 

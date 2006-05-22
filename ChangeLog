@@ -2,6 +2,7 @@ Version 1.4.6 (not yet released):
 - Improved --help text output.
 - Improved error messages when logging to a logfile fails.
 - Sync from mpop:
+  - Fix warnings emitted for configure.ac by autoreconf.
   - lock_file(): If another process holds a lock on the file, then wait 1/10 
     second instead of 1 second before the next try.
   - Gnulib update. Added nanosleep module.

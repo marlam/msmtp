@@ -189,6 +189,11 @@ AH_VERBATIM([gettext],
 [/* Common gettext #defines */
 #define _(String) gettext (String)
 #define N_(String) gettext_noop (String)])
+AH_VERBATIM([W32_NATIVE],
+[/* Define to 1 if the native W32 API should be used. */
+#if (defined _WIN32 || defined __WIN32__) && !defined __CYGWIN__
+#define W32_NATIVE 1
+#endif])
 
 
 dnl End.

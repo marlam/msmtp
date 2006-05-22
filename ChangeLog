@@ -2,6 +2,11 @@ ersion 1.4.6 (not yet released):
 - Improved --help text output.
 - Improved error messages when logging to a logfile fails.
 - Sync from mpop:
+  - Replace '#ifdef _WIN32' with '#ifdef W32_NATIVE', where W32_NATIVE is 
+    defined in config.h if the following is true:
+    '#if (defined _WIN32 || defined __WIN32__) && !defined __CYGWIN__'.
+    The reason is that Cygwin defines _WIN32 nowadays, but we want the UNIX API
+    on that platform.
   - Include config.h in list.c.
   - Fix warnings emitted for configure.ac by autoreconf.
   - lock_file(): If another process holds a lock on the file, then wait 1/10 

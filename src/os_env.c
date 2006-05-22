@@ -35,7 +35,7 @@ extern int errno;
 #include <sys/stat.h>
 #include <time.h>
 
-#ifdef _WIN32
+#ifdef W32_NATIVE
 #include <windows.h>
 #include <io.h>
 #include <lmcons.h>
@@ -95,7 +95,7 @@ const char *get_prgname(const char *argv0)
 
 char *get_sysconfdir(void)
 {
-#ifdef _WIN32
+#ifdef W32_NATIVE
 
     BYTE sysconfdir[MAX_PATH + 1];
     HKEY hkey;
@@ -143,7 +143,7 @@ char *get_sysconfdir(void)
 char *get_username(void)
 {
     char *username;
-#ifdef _WIN32
+#ifdef W32_NATIVE
     DWORD size = UNLEN + 1;
     TCHAR buf[UNLEN + 1];
 #elif defined DJGPP
@@ -165,7 +165,7 @@ char *get_username(void)
 	}
 	else
 	{
-#ifdef _WIN32
+#ifdef W32_NATIVE
 	    if (GetUserName(buf, &size))
 	    {
 		username = xstrdup((char *)buf);
@@ -216,7 +216,7 @@ char *get_username(void)
 
 char *get_homedir(void)
 {
-#ifdef _WIN32
+#ifdef W32_NATIVE
 
     char *home;
     BYTE homebuf[MAX_PATH + 1];
@@ -355,7 +355,7 @@ char *expand_tilde(const char *filename)
 
 int check_secure(const char *pathname)
 {
-#if defined(_WIN32) || defined(DJGPP)
+#if defined(W32_NATIVE) || defined(DJGPP)
     
     return 0;
 
@@ -400,7 +400,7 @@ int check_secure(const char *pathname)
  * Return value: file descriptor, or -1 on error (errno will be set).
  */
 
-#if defined(_WIN32) || defined(DJGPP)
+#if defined(W32_NATIVE) || defined(DJGPP)
 int mkstemp_unlink(char *template)
 {
     size_t templatelen;
@@ -434,7 +434,7 @@ int mkstemp_unlink(char *template)
 	{
 	    X[i] = alnum[rand() % 36];
 	}
-#ifdef _WIN32
+#ifdef W32_NATIVE
 	ret = _open(template, _O_CREAT | _O_EXCL | _O_RDWR 
 		| _O_TEMPORARY | _O_BINARY, 
 		_S_IREAD | _S_IWRITE);
@@ -447,7 +447,7 @@ int mkstemp_unlink(char *template)
 
     return ret;
 }
-#endif /* _WIN32 or DJGPP */
+#endif /* W32_NATIVE or DJGPP */
 
 
 /*
@@ -475,7 +475,7 @@ FILE *tempfile(const char *base)
     if (!(dir = getenv("TMPDIR")))
     {
 	/* system dependent default location */
-#ifdef _WIN32
+#ifdef W32_NATIVE
 	/* there is no registry key for this (?) */
 	if (!(dir = getenv("TEMP")))
 	{
@@ -519,7 +519,7 @@ FILE *tempfile(const char *base)
     strcpy(template + dirlen + baselen, "XXXXXX");
 
     /* create the file */
-#if defined(_WIN32) || defined(DJGPP)
+#if defined(W32_NATIVE) || defined(DJGPP)
     if ((fd = mkstemp_unlink(template)) == -1)
 #else /* UNIX */
     if ((fd = mkstemp(template)) == -1)
@@ -531,7 +531,7 @@ FILE *tempfile(const char *base)
     /* UNIX only: set the permissions (not every mkstemp() sets them to 0600)
      * and unlink the file so that it gets deleted when the caller closes it */
 #ifndef DJGPP
-#ifndef _WIN32
+#ifndef W32_NATIVE
     if (fchmod(fd, S_IRUSR | S_IWUSR) == -1)
     {
 	goto error_exit;
@@ -540,7 +540,7 @@ FILE *tempfile(const char *base)
     {
 	goto error_exit;
     }
-#endif /* not _WIN32 */
+#endif /* not W32_NATIVE */
 #endif /* not DJGPP */
 
     /* get the stream from the filedescriptor */
@@ -580,22 +580,22 @@ int lock_file(FILE *f, int lock_type, int timeout)
     int lock_success;
     struct timespec tenth_second = { 0, 100000000 };
     int tenth_seconds;
-#ifndef _WIN32
+#ifndef W32_NATIVE
     struct flock lock;
-#endif /* not _WIN32 */
+#endif /* not W32_NATIVE */
 
     fd = fileno(f);
-#ifndef _WIN32   
+#ifndef W32_NATIVE   
     lock.l_type = (lock_type == OSENV_LOCK_WRITE) ? F_WRLCK : F_RDLCK;
     lock.l_whence = SEEK_SET;
     lock.l_start = 0;
     lock.l_len = 0;
-#endif /* not _WIN32 */
+#endif /* not W32_NATIVE */
     tenth_seconds = 0;
     for (;;)
     {
 	errno = 0;
-#ifdef _WIN32
+#ifdef W32_NATIVE
 	lock_success = (_locking(fd, _LK_NBLCK, LONG_MAX) != -1);
 #else /* UNIX, DJGPP */
 	lock_success = (fcntl(fd, F_SETLK, &lock) != -1);

@@ -34,13 +34,10 @@ http://www.rahul.net/dkaufman/index.html . It may even be necessary.
 Compiling the source
 ====================
 
-To compile msmtp yourself, you need:
+To compile msmtp, you need:
 - A DOS with LFN (long file name) support.
 - DJGPP with bash, fileutils, shellutils, sed, grep, and gawk.
   The utilities are needed to run the configure script.
-  You need DJGPP 2.04 (which still is in the 'beta' subdirectory on DJGPP
-  ftp sites as of 2004-09-02). Version 2.03 (which is in 'current') won't work 
-  because it lacks snprintf().
 - The Watt32 networking library for DOS from http://www.bgnett.no/~giva/
   The library should be available as libsocket.a in the DJGPP lib
   directory (as is suggested in the Watt32 docs).

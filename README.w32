@@ -1,4 +1,4 @@
-Since version 0.7.2, msmtp can be compiled to a native Win32 application
+Since version 0.7.2, msmtp can be compiled to a native Windows application
 using MinGW (http://www.mingw.org/).
 
 
@@ -23,14 +23,14 @@ Differences between the UNIX and Windows versions
   "AppData"
 
 - User configuration file security checks are not done, because I do not know
-  how to do this on Win32. Patches are welcome.
+  how to do this on W32. Patches are welcome.
 
 - The name of the .netrc file is "netrc.txt". It is expected to be in the same 
   directory as the user configuration file.
 
 - The timeout setting has no effect for connection attempts. This is because I
-  do not know how to do this on Win32. See src/net.c, function net_connect() for
-  __MINGW32__. Patches are welcome.
+  do not know how to do this on W32. See src/net.c, function net_connect() for
+  W32_NATIVE. Patches are welcome.
   Additionaly, the timeout setting only works for input/output when the IPv6 
   enabled binary is used. This is because older Windows systems have a broken 
   timeout implementation. 

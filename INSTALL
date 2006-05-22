@@ -30,7 +30,7 @@ You can change these defaults with the following options:
 - Disable IDN support with --without-libidn
 - Disable native language support with --disable-nls
 
-For special notes on Windows and DOS, read README.win32 and 
+For special notes on Windows and DOS, read README.w32 and 
 README.dos.
 
 

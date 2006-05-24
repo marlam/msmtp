@@ -2057,7 +2057,7 @@ void msmtp_print_version(void)
     free(userconffile);
     free(homedir);
     printf("\n");
-    printf(_("Copyright (C) 2006  Martin Lambers and others.\n"
+    printf(_("Copyright (C) 2006 Martin Lambers and others.\n"
     		"This is free software; see the source for copying "
 		"conditions.  There is NO\n"
 		"warranty; not even for MERCHANTABILITY or FITNESS FOR A "

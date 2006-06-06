@@ -2,6 +2,7 @@ Version 1.4.6 (not yet released):
 - Improved --help text output.
 - Improved error messages when logging to a logfile fails.
 - Sync from mpop:
+  - Don't check configuration file permissions on Cygwin.
   - Renamed README.win32 to README.w32. Updated README.w32 and README.dos.
   - Replace '#ifdef _WIN32' with '#ifdef W32_NATIVE', where W32_NATIVE is 
     defined in config.h if the following is true:

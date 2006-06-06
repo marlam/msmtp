@@ -52,6 +52,7 @@ extern int errno;
 
 #include "xalloc.h"
 #include "timespec.h"
+#include "nanosleep.h"
 
 #include "os_env.h"
 
@@ -355,7 +356,7 @@ char *expand_tilde(const char *filename)
 
 int check_secure(const char *pathname)
 {
-#if defined(W32_NATIVE) || defined(DJGPP)
+#if defined W32_NATIVE || defined DJGPP || defined __CYGWIN__
     
     return 0;
 

@@ -21,7 +21,7 @@
 
 /*
  * ISO C 99 <stdint.h> for platforms that lack it.
- * <http://www.opengroup.org/onlinepubs/007904975/basedefs/stdint.h.html>
+ * <http://www.opengroup.org/susv3xbd/stdint.h.html>
  */
 
 /* Get wchar_t, WCHAR_MIN, WCHAR_MAX.  */
@@ -64,7 +64,7 @@
      UINTPTR_MAX, PTRDIFF_MIN, PTRDIFF_MAX.  */
 # define _STDINT_H_HAVE_SYSTEM_INTTYPES
 #endif
-#if !((defined(UNIX_CYGWIN32) || defined(__linux__)) && defined(__BIT_TYPES_DEFINED__))
+#if !((defined(__CYGWIN__) || defined(__linux__)) && defined(__BIT_TYPES_DEFINED__))
 # define _STDINT_H_NEED_SIGNED_INT_TYPES
 #endif
 

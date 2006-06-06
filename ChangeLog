@@ -1,4 +1,5 @@
 Version 1.4.6 (not yet released):
+- Gnulib update.
 - Improved --help text output.
 - Improved error messages when logging to a logfile fails.
 - Sync from mpop:

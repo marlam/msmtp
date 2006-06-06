@@ -52,7 +52,8 @@ extern int errno;
 
 #include "xalloc.h"
 #include "timespec.h"
-#include "nanosleep.h"
+/* FIXME: wait for gnulib update of nanosleep module.
+ * #include "nanosleep.h" */
 
 #include "os_env.h"
 

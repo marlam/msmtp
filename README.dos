@@ -1,4 +1,4 @@
-mpop can be compiled to a DOS executable using DJGPP 
+msmtp can be compiled to a DOS executable using DJGPP 
 (http://www.delorie.com/djgpp/)
 
 To run the DOS executable, you need a DPMI server and an installed Watt32 
@@ -8,11 +8,9 @@ library from http://www.bgnett.no/~giva/ .
 Differences between the UNIX and DOS versions
 =============================================
 
-- The default user configuration file is "$HOME/_mpoprc".
-- The default uidls file is "$HOME/_uidls".
-- The .netrc file is "$HOME/_netrc"  
-- The maildir delivery method will only work on systems with long filename 
-  support.
+- The default system configuration file is "/env/DJDIR/etc/msmtprc".
+- The default user configuration file is "$HOME/_msmtprc".
+- The .netrc file is "$HOME/_netrc".
 
 
 Notes on TLS/SSL with OpenSSL on DOS
@@ -32,7 +30,7 @@ http://www.rahul.net/dkaufman/index.html . It may even be necessary.
 Compiling the source
 ====================
 
-To compile mpop, you need:
+To compile msmtp, you need:
 - A DOS with LFN (long file name) support.
 - DJGPP with bash, fileutils, shellutils, sed, grep, and gawk. 
   The utilities are needed to run the configure script.

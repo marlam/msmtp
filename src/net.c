@@ -36,6 +36,7 @@
 #elif defined (DJGPP)
 #include <unistd.h>
 #include <tcp.h>
+#include <fcntl.h>
 #include <netdb.h>
 #ifndef NI_MAXHOST
 #define NI_MAXHOST 1025
@@ -57,6 +58,7 @@ extern int h_errno;
 #include <errno.h>
 extern int errno;
 #endif /* UNIX */
+
 #ifdef USE_LIBIDN
 #include <idna.h>
 #endif
@@ -240,10 +242,7 @@ int net_connect(int fd, const struct sockaddr *serv_addr, socklen_t addrlen,
 #ifdef W32_NATIVE
     /* TODO: I don't know how to do this on Win32. Please send a patch. */
     return connect(fd, serv_addr, addrlen);
-#elif defined DJGPP
-    /* TODO: I don't know how to do this with Watt32. Please send a patch. */
-    return connect(fd, serv_addr, addrlen);
-#else /* UNIX */
+#else /* UNIX or DJGPP */
     
     int flags;
     struct timeval tv;

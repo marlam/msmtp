@@ -3162,10 +3162,13 @@ int main(int argc, char *argv[])
 		account->port = se ? ntohs(se->s_port) : 25;
 	    }
 	}
-	else /* LMTP */
+	else /* LMTP. Has no default port as of 2006-06-17. */
 	{
 	    se = getservbyname("lmtp", NULL);
-	    account->port = se ? ntohs(se->s_port) : 2003;
+	    if (se)
+	    {
+		account->port = ntohs(se->s_port);
+	    }
 	}
     }
     if (conf.sendmail && account->auto_from)

@@ -529,6 +529,11 @@ int check_account(account_t *acc, int sendmail_mode, char **errstr)
 	*errstr = xasprintf(_("host not set"));
 	return CONF_ESYNTAX;
     }
+    if (acc->port == 0)
+    {
+	*errstr = xasprintf(_("port not set"));
+	return CONF_ESYNTAX;
+    }
     if (sendmail_mode && !acc->from)
     {
 	*errstr = xasprintf(_("envelope-from address is missing"));

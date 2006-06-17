@@ -1,4 +1,5 @@
 Version 1.4.6:
+- Minor documentation improvements.
 - Do not set a default port for LMTP, because none is officially defined.
 - Update gettext files to gettext-0.14.5.
 - Another gnulib update, with the additional sys_select module and a patch to

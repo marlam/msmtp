@@ -63,7 +63,7 @@ queue to the SMTP server and exit.
 .IP "\fBConfiguration options\fP"
 .RS
 .IP "-C, --file=\fIfilename\fP"
-Use the given file instead of $HOME/.msmtprc as the user configuration file.
+Use the given file instead of ~/.msmtprc as the user configuration file.
 .IP "-a, --account=\fIaccount_name\fP"
 Use the given account instead of the account named "default". The settings of
 this account may be changed with command line options. This option cannot be
@@ -137,11 +137,8 @@ Set or unset the log file. See the \fBlogfile\fP command below.
 .IP "--syslog[=(\fIon\fP|\fIoff\fP|\fIfacility\fP)]"
 Enable or disable syslog logging. See the \fBsyslog\fP command below.
 .IP "-t, --read-recipients"
-Read recipient addresses from the To:, Cc:, and Bcc: headers of the mail in
+Read recipient addresses from the To, Cc, and Bcc headers of the mail in
 addition to the recipients given on the command line.
-.br
-This requires a temporary file to buffer the mail headers; see ENVIRONMENT / 
-FILES below.
 .IP "--"
 This marks the end of options. All following arguments will be treated as
 recipient addresses, even if they start with a '-'.
@@ -194,7 +191,7 @@ SYSCONFDIR/msmtprc will be loaded, where SYSCONFDIR depends on your platform.
 Use \fB--version\fP to find out which directory is used.
 .br
 If it exists and is readable, a user configuration file will be loaded
-($HOME/.msmtprc by default). Accounts defined in the user configuration file 
+(~/.msmtprc by default). Accounts defined in the user configuration file 
 override accounts from the system configuration file.
 The user configuration file must have no more permissions than user read/write.
 Configuration data from either file can be changed by command line options.
@@ -211,7 +208,7 @@ last character is a blank.
 If the first character of a filename is the tilde (~), this tilde will be
 replaced by $HOME.
 If a command accepts the argument \fIon\fP, it also accepts an empty argument
-and treats that the same as \fIon\fP.
+and treats that as if it was \fIon\fP.
 .br
 Commands form groups. Each group begins with the \fBaccount\fP command and 
 defines the settings for one SMTP server.
@@ -238,9 +235,9 @@ The port that the SMTP server listens on.
 The default port will be acquired from your operating system's service database:
 for SMTP, the service is "smtp" (default port 25), unless TLS 
 without STARTTLS is used, in which case it is "ssmtp" (465). For LMTP, it is 
-"lmtp" (2003).
+"lmtp".
 .IP "timeout (\fIoff\fP|\fIseconds\fP)"
-Set or unset a network timeout, in seconds. The argument off means that no
+Set or unset a network timeout, in seconds. The argument \fIoff\fP means that no
 timeout will be set, which means that the operating system default will be used.
 .br
 For compatibility with older versions, \fBconnect_timeout\fP is accepted as an
@@ -515,9 +512,9 @@ Define a default account, and put the following in your ~/.mailrc:
 System configuration file. Use
 .B --version
 to find out what SYSCONFDIR is on your platform.
-.IP "$HOME/.msmtprc"
+.IP "~/.msmtprc"
 User configuration file.
-.IP $HOME/.netrc
+.IP "~/.netrc"
 The .netrc file contains login information. If a password is not found in the
 configuration file, msmtp will search it in .netrc before prompting the user for
 it. The syntax of .netrc is described in 
@@ -534,7 +531,7 @@ default directory is used.
 A temporary file is only created when the
 .BR -t/--read-recipients
 option is used. The file is then used to buffer the headers of the mail (but not
-the body, so the file won't get too large).
+the body, so the file won't get very large).
 .SH AUTHORS
 msmtp was written by Martin Lambers <marlam@marlam.de>.
 .br

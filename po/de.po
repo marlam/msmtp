@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: msmtp 1.4.6\n"
 "Report-Msgid-Bugs-To: marlam@marlam.de\n"
-"POT-Creation-Date: 2006-06-17 20:27+0200\n"
+"POT-Creation-Date: 2006-06-17 22:59+0200\n"
 "PO-Revision-Date: 2005-06-20 22:15+0200\n"
 "Last-Translator: Martin Lambers <marlam@marlam.de>\n"
 "Language-Team: German\n"
@@ -75,82 +75,86 @@ msgstr "%s: Option `-W %s' akzeptiert kein Argument\n"
 
 #: src/conf.c:529
 msgid "host not set"
-msgstr "host nicht angegeben"
+msgstr "Host nicht angegeben"
 
 #: src/conf.c:534
+msgid "port not set"
+msgstr "Port nicht angegeben"
+
+#: src/conf.c:539
 msgid "envelope-from address is missing"
 msgstr "Umschlagabsenderadresse fehlt"
 
-#: src/conf.c:539
+#: src/conf.c:544
 msgid "tls_key_file requires tls_cert_file"
 msgstr "tls_key_file benötigt tls_cert_file"
 
-#: src/conf.c:544
+#: src/conf.c:549
 msgid "tls_cert_file requires tls_key_file"
 msgstr "tls_cert_file benötigt tls_key_file"
 
-#: src/conf.c:550
+#: src/conf.c:555
 msgid "cannot use tls_trust_file with tls_cert_check turned off"
 msgstr "um tls_trust_file zu nutzen muss tls_cert_check aktiviert sein"
 
-#: src/conf.c:655 src/stream.c:63
+#: src/conf.c:660 src/stream.c:63
 msgid "input error"
 msgstr "Lesefehler"
 
-#: src/conf.c:677
+#: src/conf.c:682
 #, c-format
 msgid "line longer than %d characters"
 msgstr "Zeile länger als %d Zeichen"
 
-#: src/conf.c:728 src/conf.c:850
+#: src/conf.c:733 src/conf.c:855
 #, c-format
 msgid "line %d: missing account name"
 msgstr "Zeile %d: Accountname fehlt"
 
-#: src/conf.c:733
+#: src/conf.c:738
 #, c-format
 msgid "line %d: account %s not (yet) defined"
 msgstr "Zeile %d: Account %s ist (noch) nicht definiert"
 
-#: src/conf.c:822 src/conf.c:1302 src/conf.c:1319
+#: src/conf.c:827 src/conf.c:1307 src/conf.c:1324
 #, c-format
 msgid "line %d: command %s does not take an argument"
 msgstr "Zeile %d: Kommando %s akzeptiert kein Argument"
 
-#: src/conf.c:857
+#: src/conf.c:862
 #, c-format
 msgid "line %d: an account name must not contain colons or commas"
 msgstr ""
 "Zeile %d: Ein Accountname darf keine Doppelpunkte oder Kommata enthalten"
 
-#: src/conf.c:866
+#: src/conf.c:871
 #, c-format
 msgid "line %d: account %s was already defined in this file"
 msgstr "Zeile %d: Account %s wurde in dieser Datei bereits definiert"
 
-#: src/conf.c:890 src/conf.c:909 src/conf.c:936 src/conf.c:965 src/conf.c:1177
-#: src/conf.c:1212
+#: src/conf.c:895 src/conf.c:914 src/conf.c:941 src/conf.c:970 src/conf.c:1182
+#: src/conf.c:1217
 #, c-format
 msgid "line %d: command %s needs an argument"
 msgstr "Zeile %d: Kommando %s benötigt ein Argument"
 
-#: src/conf.c:920 src/conf.c:952 src/conf.c:983 src/conf.c:1010
-#: src/conf.c:1048 src/conf.c:1086 src/conf.c:1145 src/conf.c:1165
-#: src/conf.c:1199 src/conf.c:1230 src/conf.c:1251 src/conf.c:1287
+#: src/conf.c:925 src/conf.c:957 src/conf.c:988 src/conf.c:1015
+#: src/conf.c:1053 src/conf.c:1091 src/conf.c:1150 src/conf.c:1170
+#: src/conf.c:1204 src/conf.c:1235 src/conf.c:1256 src/conf.c:1292
 #, c-format
 msgid "line %d: invalid argument %s for command %s"
 msgstr "Zeile %d: Ungültiges Argument %s für Kommando %s"
 
-#: src/conf.c:1331
+#: src/conf.c:1336
 #, c-format
 msgid "line %d: unknown command %s"
 msgstr "Zeile %d: Unbekanntes Kommando %s"
 
-#: src/conf.c:1374
+#: src/conf.c:1379
 msgid "must be owned by you"
 msgstr "muss Dir gehören"
 
-#: src/conf.c:1379
+#: src/conf.c:1384
 msgid "must have no more than user read/write permissions"
 msgstr "darf nicht mehr Rechte als Lese-/Schreibrecht für den Benutzer haben"
 
@@ -702,64 +706,64 @@ msgstr "Account %s nicht in %s gefunden"
 msgid "account %s not found: no configuration file available"
 msgstr "Account %s nicht gefunden: Keine Konfigurationsdatei verfügbar"
 
-#: src/msmtp.c:3180
+#: src/msmtp.c:3183
 #, c-format
 msgid "account %s from %s: %s"
 msgstr "Account %s aus %s: %s"
 
-#: src/msmtp.c:3208
+#: src/msmtp.c:3211
 msgid "this platform does not support syslog logging"
 msgstr "diese Plattform unterstützt Syslog nicht"
 
-#: src/msmtp.c:3217
+#: src/msmtp.c:3220
 #, c-format
 msgid "support for authentication method %s is not compiled in"
 msgstr ""
 "Unterstützung für Authentifizierungsmethode %s ist nicht einkompiliert worden"
 
-#: src/msmtp.c:3225
+#: src/msmtp.c:3228
 #, c-format
 msgid "cannot initialize networking: %s"
 msgstr "kann Netzwerkprogrammbibliothek nicht initialisieren: %s"
 
-#: src/msmtp.c:3236
+#: src/msmtp.c:3239
 #, c-format
 msgid "cannot initialize TLS library: %s"
 msgstr "kann TLS Programmbibliothek nicht initialisieren: %s"
 
-#: src/msmtp.c:3243
+#: src/msmtp.c:3246
 msgid "support for TLS is not compiled in"
 msgstr "Unterstützung für TLS ist nicht einkompiliert worden"
 
-#: src/msmtp.c:3274
+#: src/msmtp.c:3277
 #, c-format
 msgid "LMTP server message: %s"
 msgstr "Nachricht des LMTP Servers: %s"
 
-#: src/msmtp.c:3285
+#: src/msmtp.c:3288
 #, c-format
 msgid "could not send mail to all recipients (account %s from %s)"
 msgstr "konnte Mail nicht an alle Empfänger schicken (Account %s aus %s)"
 
-#: src/msmtp.c:3291
+#: src/msmtp.c:3294
 msgid "could not send mail to all recipients"
 msgstr "konnte Mail nicht an alle Empfänger schicken"
 
-#: src/msmtp.c:3306 src/msmtp.c:3361 src/msmtp.c:3382
+#: src/msmtp.c:3309 src/msmtp.c:3364 src/msmtp.c:3385
 #, c-format
 msgid "server message: %s"
 msgstr "Nachricht des Servers: %s"
 
-#: src/msmtp.c:3312
+#: src/msmtp.c:3315
 #, c-format
 msgid "could not send mail (account %s from %s)"
 msgstr "konnte Mail nicht verschicken (Account %s aus %s)"
 
-#: src/msmtp.c:3317
+#: src/msmtp.c:3320
 msgid "could not send mail"
 msgstr "konnte Mail nicht verschicken"
 
-#: src/msmtp.c:3327
+#: src/msmtp.c:3330
 msgid "delivery to one or more recipients failed"
 msgstr "Zustellung an einen oder mehrere Empfänger fehlgeschlagen"
 

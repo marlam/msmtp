@@ -11,6 +11,7 @@ Features include:
 - Many authentication methods
 - TLS encrypted connections (including server certificate verification and the
   possibility to send a client certificate)
+- Support for Internationalized Domain Names (IDN)
 - DSN (Delivery Status Notification) support
 - RMQS (Remote Message Queue Starting) support (ETRN keyword)
 - PIPELINING support for increased transmission speed

@@ -1,3 +1,9 @@
+Version 1.4.6:
+- The options to the configure script have changed! See the first few
+  paragraphs of INSTALL for details.
+- Optional support for Internationalized Domain Names (IDN) was added. 
+  GNU Libidn is required for this.
+
 Version 1.4.5:
 - Only minor tweaks.
 

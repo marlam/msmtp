@@ -14,7 +14,7 @@ dnl
 
 AC_DEFUN([gl_FUNC_NANOSLEEP],
 [
- AC_LIBSOURCES([nanosleep.c])
+ AC_LIBSOURCES([nanosleep.c, nanosleep.h])
 
  dnl Persuade glibc and Solaris <time.h> to declare nanosleep.
  AC_REQUIRE([gl_USE_SYSTEM_EXTENSIONS])

@@ -29,9 +29,7 @@
 
 #include <stdbool.h>
 #include <stdio.h>
-#if HAVE_SYS_SELECT_H
-# include <sys/select.h>
-#endif
+#include <sys/select.h>
 #include <sys/types.h>
 #include <signal.h>
 

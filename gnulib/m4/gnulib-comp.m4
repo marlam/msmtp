@@ -48,6 +48,7 @@ AC_DEFUN([gl_INIT],
   gl_STDARG_H
   AM_STDBOOL_H
   gl_STDINT_H
+  gl_HEADER_SYS_SELECT
   gl_HEADER_SYS_SOCKET
   gl_SYSEXITS
   gl_TIMESPEC
@@ -86,10 +87,12 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/memxor.c
   lib/memxor.h
   lib/nanosleep.c
+  lib/nanosleep.h
   lib/printf-args.c
   lib/printf-args.h
   lib/printf-parse.c
   lib/printf-parse.h
+  lib/select_.h
   lib/size_max.h
   lib/socket_.h
   lib/stdbool_.h
@@ -111,6 +114,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/codeset.m4
   m4/eoverflow.m4
   m4/extensions.m4
+  m4/full-header-path.m4
   m4/getdelim.m4
   m4/getline.m4
   m4/getopt.m4
@@ -149,6 +153,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/stdbool.m4
   m4/stdint.m4
   m4/stdint_h.m4
+  m4/sys_select_h.m4
   m4/sys_socket_h.m4
   m4/sysexits.m4
   m4/timespec.m4

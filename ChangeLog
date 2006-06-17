@@ -1,4 +1,7 @@
 Version 1.4.6 (not yet released):
+- Another gnulib update, with the additional sys_select module and a patch to
+  the nanosleep module. See the mailing list gnulib-bugs for these patches
+  that are not (yet?) part of the official gnulib.
 - Gnulib update.
 - Improved --help text output.
 - Improved error messages when logging to a logfile fails.

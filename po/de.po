@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: msmtp 1.4.6\n"
 "Report-Msgid-Bugs-To: marlam@marlam.de\n"
-"POT-Creation-Date: 2006-05-24 21:59+0200\n"
+"POT-Creation-Date: 2006-06-17 20:27+0200\n"
 "PO-Revision-Date: 2005-06-20 22:15+0200\n"
 "Last-Translator: Martin Lambers <marlam@marlam.de>\n"
 "Language-Team: German\n"
@@ -763,155 +763,155 @@ msgstr "konnte Mail nicht verschicken"
 msgid "delivery to one or more recipients failed"
 msgstr "Zustellung an einen oder mehrere Empfänger fehlgeschlagen"
 
-#: src/net.c:87
+#: src/net.c:89
 msgid "not enough memory"
 msgstr "nicht genug Speicher"
 
-#: src/net.c:90 src/net.c:400 src/net.c:485 src/net.c:578 src/net.c:686
-#: src/net.c:806 src/tls.c:1144 src/tls.c:1203 src/tls.c:1266 src/tls.c:1305
+#: src/net.c:92 src/net.c:399 src/net.c:484 src/net.c:577 src/net.c:685
+#: src/net.c:805 src/tls.c:1144 src/tls.c:1203 src/tls.c:1266 src/tls.c:1305
 #: src/tls.c:1386 src/tls.c:1432
 msgid "operation aborted"
 msgstr "Operation abgebrochen"
 
-#: src/net.c:93
+#: src/net.c:95
 msgid "invalid argument"
 msgstr "ungültiges Argument"
 
-#: src/net.c:96
+#: src/net.c:98
 msgid "class type not found"
 msgstr "Klassentyp nicht gefunden"
 
-#: src/net.c:99
+#: src/net.c:101
 msgid "the network subsystem has failed"
 msgstr "Das Netzwerksystem versagte"
 
-#: src/net.c:102
+#: src/net.c:104
 msgid "host not found (authoritative)"
 msgstr "Host nicht gefunden (endgültig)"
 
-#: src/net.c:105
+#: src/net.c:107
 msgid "host not found (nonauthoritative) or server failure"
 msgstr "Host nicht gefunden (nicht endgültig) oder Serverfehlfunktion"
 
-#: src/net.c:108
+#: src/net.c:110
 msgid "nonrecoverable error"
 msgstr "Nichtbehebbarer Fehler"
 
-#: src/net.c:111
+#: src/net.c:113
 msgid "valid name, but no data record of requested type"
 msgstr "gültiger Name, aber keine Daten des angeforderten Typs gefunden"
 
-#: src/net.c:114
+#: src/net.c:116
 msgid "address family not supported"
 msgstr "Adressfamilie nicht unterstützt"
 
-#: src/net.c:117
+#: src/net.c:119
 msgid "no socket descriptors available"
 msgstr "keine Socketdeskriptoren verfügbar"
 
-#: src/net.c:120
+#: src/net.c:122
 msgid "no buffer space available"
 msgstr "kein Pufferplatz verfügbar"
 
-#: src/net.c:123
+#: src/net.c:125
 msgid "protocol not supported"
 msgstr "Protokoll nicht unterstützt"
 
-#: src/net.c:126
+#: src/net.c:128
 msgid "wrong protocol type for this socket"
 msgstr "falsches Protokoll für diesen Socket"
 
-#: src/net.c:129
+#: src/net.c:131
 msgid "socket type is not supported in this address family"
 msgstr "Sockettyp ist in dieser Adressfamilie nicht unterstützt"
 
-#: src/net.c:132
+#: src/net.c:134
 msgid "remote address is not valid"
 msgstr "Partneradresse ist ungültig"
 
-#: src/net.c:135
+#: src/net.c:137
 msgid "connection refused"
 msgstr "Verbindung abgelehnt"
 
-#: src/net.c:138
+#: src/net.c:140
 msgid "network unreachable"
 msgstr "Netzwerk nicht erreichbar"
 
-#: src/net.c:141
+#: src/net.c:143
 msgid "timeout"
 msgstr "Timeout"
 
-#: src/net.c:144
+#: src/net.c:146
 msgid "socket not connected"
 msgstr "Socket nicht verbunden"
 
-#: src/net.c:147
+#: src/net.c:149
 msgid "the socket was shut down"
 msgstr "der Socket wurde beendet"
 
-#: src/net.c:150
+#: src/net.c:152
 msgid "host unreachable"
 msgstr "Host nicht erreichbar"
 
-#: src/net.c:153
+#: src/net.c:155
 msgid "connection reset by peer"
 msgstr "Verbidung vom Partner zurückgesetzt"
 
-#: src/net.c:156
+#: src/net.c:158
 msgid "the underlying network subsystem is not ready"
 msgstr "das Netzwerksubsystem ist nicht bereit"
 
-#: src/net.c:159
+#: src/net.c:161
 msgid "the requested version is not available"
 msgstr "angeforderte Version ist nicht verfügbar"
 
-#: src/net.c:162
+#: src/net.c:164
 msgid "a blocking operation is in progress"
 msgstr "eine blockende Operation läuft"
 
-#: src/net.c:165
+#: src/net.c:167
 msgid "limit on the number of tasks has been reached"
 msgstr "Grenze der Anzahl der Abläufe wurde erreicht"
 
-#: src/net.c:168
+#: src/net.c:170
 msgid "invalid request"
 msgstr "ungültige Anfrage"
 
-#: src/net.c:171 src/tls.c:1095 src/tls.c:1119 src/tls.c:1409
+#: src/net.c:173 src/tls.c:1095 src/tls.c:1119 src/tls.c:1409
 msgid "unknown error"
 msgstr "unbekannter Fehler"
 
-#: src/net.c:395 src/net.c:404 src/net.c:543
+#: src/net.c:394 src/net.c:403 src/net.c:542
 #, c-format
 msgid "cannot locate host %s: %s"
 msgstr "kann Host %s nicht finden: %s"
 
-#: src/net.c:468 src/net.c:555
+#: src/net.c:467 src/net.c:554
 #, c-format
 msgid "cannot create socket: %s"
 msgstr "kann Socket nicht erstellen: %s"
 
-#: src/net.c:480 src/net.c:489 src/net.c:573 src/net.c:582
+#: src/net.c:479 src/net.c:488 src/net.c:572 src/net.c:581
 #, c-format
 msgid "cannot connect to %s, port %d: %s"
 msgstr "kann keine Verbindung zu %s, Port %d herstellen: %s"
 
-#: src/net.c:657 src/net.c:662 src/net.c:690 src/net.c:695
+#: src/net.c:656 src/net.c:661 src/net.c:689 src/net.c:694
 #, c-format
 msgid "network read error: %s"
 msgstr "Netzwerk Lesefehler: %s"
 
-#: src/net.c:658 src/net.c:691 src/net.c:775 src/net.c:811 src/tls.c:1114
+#: src/net.c:657 src/net.c:690 src/net.c:774 src/net.c:810 src/tls.c:1114
 #: src/tls.c:1151 src/tls.c:1273 src/tls.c:1393
 msgid "the operation timed out"
 msgstr "die Wartezeit ist abgelaufen"
 
-#: src/net.c:774 src/net.c:779 src/net.c:810 src/net.c:815
+#: src/net.c:773 src/net.c:778 src/net.c:809 src/net.c:814
 #, c-format
 msgid "network write error: %s"
 msgstr "Netzwerk Ausgabefehler: %s"
 
-#: src/net.c:790 src/net.c:826
+#: src/net.c:789 src/net.c:825
 msgid "network write error"
 msgstr "Netzwerk Ausgabefehler"
 

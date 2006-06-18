@@ -423,6 +423,7 @@ Print information about the SMTP server and exit. This includes information
 about supported features (mail size limit, authentication, TLS, DSN, @dots{})
 and about the TLS certificate (if TLS is active).
 @xref{Server information mode}.
+@anchor{--rmqs}
 @itemx --rmqs=(@var{host}|@var{@@domain}|@var{#queue})
 @opindex --rmqs
 Send a Remote Message Queue Starting request for the given host, domain, or

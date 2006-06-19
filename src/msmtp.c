@@ -52,6 +52,7 @@ extern int optind;
 #include <winsock2.h>
 #elif defined DJGPP
 #include <io.h>
+#include <fcntl.h>
 #include <netdb.h>
 #include <arpa/inet.h>
 #else /* UNIX */

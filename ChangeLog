@@ -1,4 +1,5 @@
 Version 1.4.7 (not yet released):
+- Fix error message typo in check_account().
 - DJGPP port: include missing header <fcntl.h> in msmtp.c
 
 Version 1.4.6:

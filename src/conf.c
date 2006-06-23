@@ -552,7 +552,7 @@ int check_account(account_t *acc, int sendmail_mode, char **errstr)
     if (acc->tls_nocertcheck && acc->tls_trust_file)
     {
 	*errstr = xasprintf(
-		_("cannot use tls_trust_file with tls_cert_check turned off"));
+		_("cannot use tls_trust_file with tls_certcheck turned off"));
 	return CONF_ESYNTAX;
     }
 

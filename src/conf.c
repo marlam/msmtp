@@ -22,7 +22,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+# include "config.h"
 #endif
 
 #include <stdlib.h>
@@ -37,9 +37,9 @@ extern int errno;
 #include "xalloc.h"
 #include "xvasprintf.h"
 
-#include "os_env.h"
-#include "smtp.h"
 #include "list.h"
+#include "smtp.h"
+#include "tools.h"
 #include "conf.h"
 
 /* buffer size for configuration file lines */

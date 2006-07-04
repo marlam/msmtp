@@ -6,9 +6,9 @@ msmtp_SOURCES = \
 	msmtp.c \
 	net.c net.h \
 	netrc.c netrc.h \
-	os_env.c os_env.h \
 	smtp.c smtp.h \
-	stream.c stream.h
+	stream.c stream.h \
+	tools.c tools.h
 
 msmtp_LDADD = @tls_obj@ $(top_builddir)/gnulib/libgnu.a @LIBINTL@
 

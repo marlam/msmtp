@@ -22,7 +22,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+# include "config.h"
 #endif
 
 #include <stdio.h>
@@ -36,10 +36,10 @@
 extern int errno;
 
 #ifdef USE_GSASL
-#include <gsasl.h>
+# include <gsasl.h>
 #else
-#include "base64.h"
-#include "hmac.h"
+# include "base64.h"
+# include "hmac.h"
 #endif
 
 #include "gettext.h"
@@ -48,11 +48,11 @@ extern int errno;
 
 #include "list.h"
 #include "net.h"
+#include "smtp.h"
+#include "stream.h"
 #ifdef HAVE_SSL
 #include "tls.h"
 #endif /* HAVE_SSL */
-#include "stream.h"
-#include "smtp.h"
 
 
 /* This defines the maximum number of lines in a multiline server reply.

@@ -22,7 +22,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+# include "config.h"
 #endif
 
 #include <stdio.h>
@@ -36,14 +36,13 @@ extern int errno;
 #include <getopt.h>
 extern char *optarg;
 extern int optind;
+#include <unistd.h>
+#include <sysexits.h>
 #ifdef ENABLE_NLS
-#include <locale.h>
+# include <locale.h>
 #endif
 #ifdef HAVE_SYSLOG
-#include <syslog.h>
-#endif
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
+# include <syslog.h>
 #endif
 #ifdef W32_NATIVE
 #include <io.h>
@@ -59,21 +58,20 @@ extern int optind;
 #include <netdb.h>
 #include <arpa/inet.h>
 #endif
-#include <sysexits.h>
 
 #include "getpass.h"
 #include "gettext.h"
 #include "xalloc.h"
 #include "xvasprintf.h"
 
-#include "list.h"
-#include "os_env.h"
 #include "conf.h"
+#include "list.h"
 #include "net.h"
 #include "netrc.h"
 #include "smtp.h"
+#include "tools.h"
 #ifdef HAVE_SSL
-#include "tls.h"
+# include "tls.h"
 #endif /* HAVE_SSL */
 
 /* Default file names. */
@@ -1838,7 +1836,7 @@ void msmtp_log_to_file(const char *logfile, const char *loginfo)
 	    failure_reason = xasprintf(_("cannot open: %s"), strerror(errno));
 	    goto log_failure;
 	}
-	if ((e = lock_file(f, OSENV_LOCK_WRITE, 10)) != 0)
+	if ((e = lock_file(f, TOOLS_LOCK_WRITE, 10)) != 0)
 	{
 	    if (e == 1)
 	    {

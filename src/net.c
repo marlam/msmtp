@@ -23,49 +23,42 @@
 
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+# include "config.h"
 #endif
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#ifdef W32_NATIVE
-#define WINVER 0x0501
-#include <winsock2.h>
-#include <ws2tcpip.h>
-#elif defined (DJGPP)
 #include <unistd.h>
-#include <tcp.h>
 #include <fcntl.h>
-#include <netdb.h>
-#ifndef NI_MAXHOST
-#define NI_MAXHOST 1025
-#endif
 #include <errno.h>
 extern int errno;
-#else /* UNIX */
-#include <unistd.h>
-#include <fcntl.h>
-#ifndef HAVE_GETADDRINFO
-#include <netinet/in.h>
-extern int h_errno;
-#endif
 #include <sys/time.h>
 #include <sys/types.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <errno.h>
-extern int errno;
-#endif /* UNIX */
+#ifdef W32_NATIVE
+# define WINVER 0x0501
+# include <winsock2.h>
+# include <ws2tcpip.h>
+#else
+# ifndef HAVE_GETADDRINFO
+#  include <netinet/in.h>
+   extern int h_errno;
+# endif
+# include <sys/socket.h>
+# include <arpa/inet.h>
+# include <netdb.h>
+# ifndef NI_MAXHOST
+#  define NI_MAXHOST 1025
+# endif
+#endif
 
 #ifdef USE_LIBIDN
-#include <idna.h>
+# include <idna.h>
 #endif
 
 #include "gettext.h"
-#include "xvasprintf.h"
 #include "xalloc.h"
+#include "xvasprintf.h"
 
 #include "net.h"
 

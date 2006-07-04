@@ -1,9 +1,9 @@
 /*
- * os_env.h
+ * tools.h
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2004, 2005
+ * Copyright (C) 2004, 2005, 2006
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -21,15 +21,15 @@
  *   Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef OSENV_H
-#define OSENV_H
+#ifndef TOOLS_H
+#define TOOLS_H
 
 
 /* The path separator character */
-#ifdef __MINGW32__
-#define PATH_SEP '\\'
-#else /* UNIX or DJGPP */
-#define PATH_SEP '/'
+#ifdef W32_NATIVE
+# define PATH_SEP '\\'
+#else
+# define PATH_SEP '/'
 #endif
 
 
@@ -123,14 +123,23 @@ FILE *tempfile(const char *base);
 /*
  * lock_file()
  *
- * Locks a file for reading (if lock_type is OSENV_LOCK_READ) or writing (if 
- * lock_type is OSENV_LOCK_WRITE). Returns 0 in case of success, 1 if the file
+ * Locks a file for reading (if lock_type is TOOLS_LOCK_READ) or writing (if 
+ * lock_type is TOOLS_LOCK_WRITE). Returns 0 in case of success, 1 if the file
  * could not be locked before the given timeout (in seconds) because some other
  * process holds a lock on the file, and 2 if the file could not be locked due
  * to some other error. If 1 or 2 is returned, errno will be set.
  */
-#define OSENV_LOCK_READ 0
-#define OSENV_LOCK_WRITE 1
+#define TOOLS_LOCK_READ 0
+#define TOOLS_LOCK_WRITE 1
 int lock_file(FILE *f, int lock_type, int timeout);
+
+/*
+ * string_replace()
+ *
+ * Replace all occurences of 's' in the string 'str' with 'r'.
+ * The string 'str' must be an allocated string. A pointer to the expanded
+ * string is returned.
+ */
+char *string_replace(char *str, const char *s, const char *r);
 
 #endif

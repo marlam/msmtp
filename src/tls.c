@@ -22,7 +22,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+# include "config.h"
 #endif
 
 #include <stdio.h>
@@ -36,20 +36,20 @@
 extern int errno;
 
 #ifdef HAVE_GNUTLS
-#include <gnutls/gnutls.h>
-#include <gnutls/x509.h>
+# include <gnutls/gnutls.h>
+# include <gnutls/x509.h>
 #endif /* HAVE_GNUTLS */
 #ifdef HAVE_OPENSSL
-#include <openssl/ssl.h>
-#include <openssl/x509.h>
-#include <openssl/x509v3.h>
-#include <openssl/err.h>
-#include <openssl/rand.h>
-#include <openssl/evp.h>
+# include <openssl/ssl.h>
+# include <openssl/x509.h>
+# include <openssl/x509v3.h>
+# include <openssl/err.h>
+# include <openssl/rand.h>
+# include <openssl/evp.h>
 #endif /* HAVE_OPENSSL */
 
 #ifdef USE_LIBIDN
-#include <idna.h>
+# include <idna.h>
 #endif
 
 #include "gettext.h"

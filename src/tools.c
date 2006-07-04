@@ -1,5 +1,5 @@
 /*
- * os_env.c
+ * tools.c
  *
  * This file is part of msmtp, an SMTP client.
  *
@@ -22,7 +22,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+# include "config.h"
 #endif
 
 #include <stdio.h>
@@ -34,33 +34,28 @@ extern int errno;
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <time.h>
-
+#include <unistd.h>
 #ifdef W32_NATIVE
-#include <windows.h>
-#include <io.h>
-#include <lmcons.h>
-#include <sys/locking.h>
-#include <limits.h>
-#elif defined DJGPP
-#include <unistd.h>
-#else /* UNIX */
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
+# include <windows.h>
+# include <io.h>
+# include <lmcons.h>
+# include <sys/locking.h>
+# include <limits.h>
+#else
+# include <pwd.h>
 #endif
-#include <pwd.h>
-#endif /* UNIX */
 
-#include "xalloc.h"
-#include "timespec.h"
+#include "gettext.h"
 #include "nanosleep.h"
+#include "xalloc.h"
 
-#include "os_env.h"
+#include "tools.h"
 
 
 /*
  * get_prgname()
  *
- * see os_env.h
+ * see tools.h
  */
 
 const char *get_prgname(const char *argv0)
@@ -91,7 +86,7 @@ const char *get_prgname(const char *argv0)
 /*
  * get_sysconfdir()
  *
- * see os_env.h
+ * see tools.h
  */
 
 char *get_sysconfdir(void)
@@ -138,7 +133,7 @@ char *get_sysconfdir(void)
 /*
  * get_username()
  *
- * see os_env.h
+ * see tools.h
  */
 
 char *get_username(void)
@@ -212,7 +207,7 @@ char *get_username(void)
 /*
  * get_homedir()
  *
- * see os_env.h
+ * see tools.h
  */
 
 char *get_homedir(void)
@@ -300,7 +295,7 @@ char *get_homedir(void)
 /*
  * get_filename()
  *
- * see os_env.h
+ * see tools.h
  */
 
 char *get_filename(const char *directory, const char *name)
@@ -324,7 +319,7 @@ char *get_filename(const char *directory, const char *name)
 /*
  * expand_tilde()
  *
- * see os_env.h
+ * see tools.h
  */
 
 char *expand_tilde(const char *filename)
@@ -351,7 +346,7 @@ char *expand_tilde(const char *filename)
 /*
  * check_secure()
  *
- * see os_env.h
+ * see tools.h
  */
 
 int check_secure(const char *pathname)
@@ -454,7 +449,7 @@ int mkstemp_unlink(char *template)
 /*
  * tempfile()
  *
- * see os_env.h
+ * see tools.h
  */
 
 FILE *tempfile(const char *base)
@@ -572,7 +567,7 @@ error_exit:
 /*
  * lock_file()
  *
- * see os_env.h
+ * see tools.h
  */
 
 int lock_file(FILE *f, int lock_type, int timeout)
@@ -587,7 +582,7 @@ int lock_file(FILE *f, int lock_type, int timeout)
 
     fd = fileno(f);
 #ifndef W32_NATIVE   
-    lock.l_type = (lock_type == OSENV_LOCK_WRITE) ? F_WRLCK : F_RDLCK;
+    lock.l_type = (lock_type == TOOLS_LOCK_WRITE) ? F_WRLCK : F_RDLCK;
     lock.l_whence = SEEK_SET;
     lock.l_start = 0;
     lock.l_len = 0;
@@ -613,4 +608,31 @@ int lock_file(FILE *f, int lock_type, int timeout)
 	}
     }
     return (lock_success ? 0 : (tenth_seconds / 10 >= timeout ? 1 : 2));
+}
+
+
+/*
+ * string_replace()
+ *
+ * see tools.h
+ */
+
+char *string_replace(char *str, const char *s, const char *r)
+{
+    char *p, *new_str;
+    size_t next_pos = 0;
+    size_t rlen = strlen(r);
+
+    while ((p = strstr(str + next_pos, s)))
+    {
+	new_str = xmalloc((strlen(str) + rlen - 1) * sizeof(char));
+	strncpy(new_str, str, (size_t)(p - str));
+	strcpy(new_str + (size_t)(p - str), r);
+	strcpy(new_str + (size_t)(p - str) + rlen, 
+		str + (size_t)(p - str) + 2);
+	next_pos = (size_t)(p - str) + rlen;
+	free(str);
+	str = new_str;
+    }
+    return str;
 }

@@ -25,10 +25,10 @@
 #define TLS_H
 
 #ifdef HAVE_GNUTLS
-#include <gnutls/gnutls.h>
+# include <gnutls/gnutls.h>
 #endif /* HAVE_GNUTLS */
 #ifdef HAVE_OPENSSL
-#include <openssl/ssl.h>
+# include <openssl/ssl.h>
 #endif /* HAVE_OPENSSL */
 
 

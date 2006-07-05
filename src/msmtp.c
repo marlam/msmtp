@@ -2057,10 +2057,11 @@ void msmtp_print_version(void)
     free(homedir);
     printf("\n");
     printf(_("Copyright (C) 2006 Martin Lambers and others.\n"
-    		"This is free software; see the source for copying "
-		"conditions.  There is NO\n"
-		"warranty; not even for MERCHANTABILITY or FITNESS FOR A "
-		"PARTICULAR PURPOSE.\n"));
+		"This is free software.  You may redistribute copies of "
+		    "it under the terms of\n"
+		"the GNU General Public License "
+		    "<http://www.gnu.org/licenses/gpl.html>.\n"
+		"There is NO WARRANTY, to the extent permitted by law.\n"));
 }
 
 

@@ -3032,8 +3032,10 @@ int main(int argc, char *argv[])
     /* Avoid the side effects of text mode interpretations on DOS systems. */
 #ifdef W32_NATIVE
     _setmode(_fileno(stdin), _O_BINARY);
+    _fmode = _O_BINARY;
 #elif defined DJGPP
     setmode(fileno(stdin), O_BINARY);
+    _fmode = O_BINARY;
 #endif
 
     errstr = NULL;

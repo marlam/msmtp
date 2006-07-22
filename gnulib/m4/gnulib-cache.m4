@@ -15,13 +15,15 @@
 
 
 # Specification in the form of a command-line invocation:
-#   gnulib-tool --import --dir=. --lib=libgnu --source-base=gnulib --m4-base=gnulib/m4 --aux-dir=. --avoid=xalloc-die --macro-prefix=gl base64 getopt getpass gettext hmac-md5 md5 nanosleep socklen sysexits xalloc xvasprintf
+#   gnulib-tool --import --dir=. --lib=libgnu --source-base=gnulib --m4-base=gnulib/m4 --doc-base=doc --aux-dir=. --avoid=xalloc-die --macro-prefix=gl --assume-autoconf=2.59 base64 getopt getpass gettext hmac-md5 md5 nanosleep socklen sysexits xalloc xvasprintf
 
 # Specification in the form of a few gnulib-tool.m4 macro invocations:
 gl_MODULES([base64 getopt getpass gettext hmac-md5 md5 nanosleep socklen sysexits xalloc xvasprintf])
 gl_AVOID([xalloc-die])
 gl_SOURCE_BASE([gnulib])
 gl_M4_BASE([gnulib/m4])
+gl_DOC_BASE([doc])
 gl_TESTS_BASE([tests])
 gl_LIB([libgnu])
 gl_MACRO_PREFIX([gl])
+gl_AUTOCONF_MINVERSION([2.59])

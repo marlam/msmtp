@@ -22,6 +22,7 @@ AC_DEFUN([gl_EARLY],
   AC_REQUIRE([AC_PROG_RANLIB])
   AC_REQUIRE([AC_GNU_SOURCE])
   AC_REQUIRE([gl_USE_SYSTEM_EXTENSIONS])
+  AC_REQUIRE([gl_LOCK])
 ])
 
 # This macro should be invoked from ./configure.ac, in the section
@@ -37,7 +38,7 @@ AC_DEFUN([gl_INIT],
   gl_GETOPT
   gl_FUNC_GETPASS
   dnl you must add AM_GNU_GETTEXT([external]) or similar to configure.ac.
-  AM_GNU_GETTEXT_VERSION([0.14.5])
+  AM_GNU_GETTEXT_VERSION([0.15])
   gl_HMAC_MD5
   gl_MD5
   gl_MEMXOR
@@ -92,7 +93,6 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/printf-args.h
   lib/printf-parse.c
   lib/printf-parse.h
-  lib/select_.h
   lib/size_max.h
   lib/socket_.h
   lib/stdbool_.h
@@ -109,12 +109,12 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/xsize.h
   lib/xvasprintf.c
   lib/xvasprintf.h
+  m4/absolute-header.m4
   m4/alloca.m4
   m4/base64.m4
   m4/codeset.m4
   m4/eoverflow.m4
   m4/extensions.m4
-  m4/full-header-path.m4
   m4/getdelim.m4
   m4/getline.m4
   m4/getopt.m4
@@ -127,14 +127,14 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/intdiv0.m4
   m4/intmax.m4
   m4/intmax_t.m4
+  m4/inttypes-h.m4
   m4/inttypes-pri.m4
-  m4/inttypes.m4
   m4/inttypes_h.m4
-  m4/isc-posix.m4
   m4/lcmessage.m4
   m4/lib-ld.m4
   m4/lib-link.m4
   m4/lib-prefix.m4
+  m4/lock.m4
   m4/longdouble.m4
   m4/longlong.m4
   m4/md5.m4
@@ -149,6 +149,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/signed.m4
   m4/size_max.m4
   m4/socklen.m4
+  m4/sockpfaf.m4
   m4/stdarg.m4
   m4/stdbool.m4
   m4/stdint.m4
@@ -162,6 +163,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/unistd_h.m4
   m4/vasnprintf.m4
   m4/vasprintf.m4
+  m4/visibility.m4
   m4/wchar_t.m4
   m4/wint_t.m4
   m4/xalloc.m4

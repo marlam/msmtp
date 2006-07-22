@@ -1,4 +1,5 @@
 Version 1.4.7 (not yet released):
+- Update to gettext-0.15.
 - W32/DJGPP: Assure that all files are opened in binary mode. This seems to
   also apply to socket connections, therefore it is necessary.
 - Fix error message typo in check_account().

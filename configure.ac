@@ -49,6 +49,7 @@ AC_CHECK_FUNCS(syslog,,)
 
 dnl gnulib 
 gl_INIT
+LIBS="$LIBS $LIB_NANOSLEEP"
 
 
 dnl Gettext

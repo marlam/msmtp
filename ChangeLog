@@ -1,4 +1,6 @@
 Version 1.4.7 (not yet released):
+- Link with LIB_NANOSLEEP as determined by the gnulib nanosleep module. This
+  fixes build problems on Solaris. Reported by Daniel Rechsteiner. Thanks!
 - Gnulib update. The nanosleep module still differs from the official gnulib
   source.
 - Update to gettext-0.15.

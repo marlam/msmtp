@@ -52,7 +52,7 @@ extern int errno;
 # endif
 #endif
 
-#ifdef USE_LIBIDN
+#ifdef HAVE_LIBIDN
 # include <idna.h>
 #endif
 
@@ -357,7 +357,7 @@ int net_open_socket(const char *hostname, int port, int timeout, int *ret_fd,
     int saved_errno;
     int cause;
     char nameinfo_buffer[NI_MAXHOST];
-#ifdef USE_LIBIDN
+#ifdef HAVE_LIBIDN
     char *hostname_ascii;
 #endif
     
@@ -370,7 +370,7 @@ int net_open_socket(const char *hostname, int port, int timeout, int *ret_fd,
     hints.ai_addr = NULL;
     hints.ai_next = NULL;
     port_string = xasprintf("%d", port);
-#ifdef USE_LIBIDN
+#ifdef HAVE_LIBIDN
     if (idna_to_ascii_lz(hostname, &hostname_ascii, 0) != IDNA_SUCCESS)
     {
 	hostname_ascii = xstrdup(hostname);
@@ -500,7 +500,7 @@ int net_open_socket(const char *hostname, int port, int timeout, int *ret_fd,
 #endif /* W32_NATIVE */
     struct in_addr addr;
     char *p;
-#ifdef USE_LIBIDN
+#ifdef HAVE_LIBIDN
     char *hostname_ascii;
 #endif
     
@@ -517,7 +517,7 @@ int net_open_socket(const char *hostname, int port, int timeout, int *ret_fd,
     else
     {
 #endif /* W32_NATIVE */
-#ifdef USE_LIBIDN
+#ifdef HAVE_LIBIDN
 	if (idna_to_ascii_lz(hostname, &hostname_ascii, 0) != IDNA_SUCCESS)
 	{
 	    hostname_ascii = xstrdup(hostname);

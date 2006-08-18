@@ -22,12 +22,12 @@ dnl Process this file with autoconf to produce a configure script.
 #   Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 
-AC_INIT(msmtp, 1.4.7, marlam@marlam.de)
-AC_CONFIG_SRCDIR(src/msmtp.c)
+AC_INIT([msmtp], [1.4.7], [marlam@marlam.de])
+AC_CONFIG_SRCDIR([src/msmtp.c])
 AC_CANONICAL_SYSTEM
 
 AM_INIT_AUTOMAKE
-AM_CONFIG_HEADER(config.h)
+AM_CONFIG_HEADER([config.h])
 
 AC_PROG_CC
 gl_EARLY
@@ -44,7 +44,7 @@ case "${target}" in *-*-mingw32*) windows=yes ;; *) windows=no ;; esac
 
 
 dnl Functions
-AC_CHECK_FUNCS(syslog,,)
+AC_CHECK_FUNCS([syslog], [], [])
 
 
 dnl gnulib 
@@ -59,23 +59,23 @@ AM_GNU_GETTEXT([external])
 dnl Networking libraries, getaddrinfo()
 if test "$windows" = "yes"; then
     LIBS="$LIBS -lws2_32"
-    AC_ARG_ENABLE(win2000-and-older, 
+    AC_ARG_ENABLE([win2000-and-older], 
         AC_HELP_STRING([--enable-win2000-and-older], 
             [build a binary that works on Windows 2000 and older systems]),
-        win2000_and_older=$enableval)
+        [win2000_and_older=$enableval])
     if test "$win2000_and_older" != "yes"; then
-        AC_DEFINE(HAVE_GETADDRINFO, [], [Have getaddrinfo() function])
+        AC_DEFINE([HAVE_GETADDRINFO], [], [Have getaddrinfo() function])
     fi
 else
-    AC_CHECK_FUNC(socket, [], 
-        [AC_CHECK_LIB(socket, socket, [LIBS="$LIBS -lsocket"])])
-    AC_CHECK_FUNC(getaddrinfo, 
+    AC_CHECK_FUNC([socket], [], 
+        [AC_CHECK_LIB([socket], [socket], [LIBS="$LIBS -lsocket"])])
+    AC_CHECK_FUNC([getaddrinfo], 
         [AC_DEFINE(HAVE_GETADDRINFO, [], [Have getaddrinfo() function])
-            have_getaddrinfo=yes],
-        [AC_CHECK_FUNC(gethostbyname, [], 
-            [AC_CHECK_LIB(nsl, gethostbyname, [LIBS="$LIBS -lnsl"])])
-         AC_CHECK_FUNC(hstrerror, [], 
-            [AC_CHECK_LIB(resolv, hstrerror, [LIBS="$LIBS -lresolv"])])])
+            [have_getaddrinfo=yes]],
+        [AC_CHECK_FUNC([gethostbyname], [], 
+            [AC_CHECK_LIB([nsl], [gethostbyname], [LIBS="$LIBS -lnsl"])])
+         AC_CHECK_FUNC([hstrerror], [], 
+            [AC_CHECK_LIB([resolv], [hstrerror], [LIBS="$LIBS -lresolv"])])])
 fi
 
 
@@ -85,8 +85,8 @@ tls_lib=none
 want_tls=yes
 want_gnutls=yes
 want_openssl=yes
-AC_ARG_WITH(ssl, AC_HELP_STRING([--with-ssl=[gnutls|openssl|no]],
-        [TLS/SSL support: GnuTLS (default), OpenSSL, or none.]),
+AC_ARG_WITH([ssl], [AC_HELP_STRING([--with-ssl=[gnutls|openssl|no]],
+        [TLS/SSL support: GnuTLS (default), OpenSSL, or none.])],
         if test "$withval" = "gnutls"; then
             want_tls=yes
 	    want_gnutls=yes
@@ -100,76 +100,87 @@ AC_ARG_WITH(ssl, AC_HELP_STRING([--with-ssl=[gnutls|openssl|no]],
             want_gnutls=no
             want_openssl=no
 	else
-	    AC_MSG_ERROR(Use --with-ssl=gnutls or --with-ssl=openssl or --with-ssl=no)
+	    AC_MSG_ERROR([Use --with-ssl=gnutls or --with-ssl=openssl or --with-ssl=no])
 	fi)
 if test "$want_gnutls" = "yes"; then
-    AM_PATH_LIBGNUTLS(1.2.0, [have_gnutls=yes],)
-    if test "$have_gnutls" = "yes"; then
-        AC_DEFINE(HAVE_GNUTLS,, Build with GnuTLS support)
-        have_tls=yes 
-        tls_lib="GnuTLS"
-        SSL_CFLAGS="$LIBGNUTLS_CFLAGS"
-        SSL_LIBS="$LIBGNUTLS_LIBS"
+    AC_LIB_HAVE_LINKFLAGS([gnutls], [], 
+        [#include <gnutls/gnutls.h>
+	 #if LIBGNUTLS_VERSION_NUMBER < 0x010200
+	 GNU TLS version too old
+	 #endif],
+        [gnutls_check_version(0);])
+    if test "$HAVE_LIBGNUTLS" != yes; then
+        AC_MSG_WARN([Cannot find GNU TLS, disabling])
+    else
+	have_tls=yes
+        tls_lib="GNU TLS"
+	LIBS="$LIBS $LIBGNUTLS"
     fi
 fi
 if test "$want_openssl" = "yes" -a "$have_tls" = "no"; then
     have_openssl=no
     if test "$windows" = "yes"; then
-        AC_CHECK_HEADER(openssl/ssl.h, AC_CHECK_LIB(ssl32, SSL_read,
-            [have_openssl=yes SSL_LIBS="-leay32 -lssl32" ],, -leay32))
+        AC_LIB_HAVE_LINKFLAGS([ssl32], [], [#include <openssl/ssl.h>],
+            [SSL_library_init();])
+        if test "$HAVE_LIBSSL32" = yes; then
+	    have_openssl=yes
+            LIBS="$LIBS $LIBSSL32"
+        fi
     else
-        AC_CHECK_HEADER(openssl/ssl.h, AC_CHECK_LIB(ssl, SSL_read, 
-            [have_openssl=yes SSL_LIBS="-lssl -lcrypto" ],, -lcrypto))
+        AC_LIB_HAVE_LINKFLAGS([ssl], [], [#include <openssl/ssl.h>],
+            [SSL_library_init();])
+        if test "$HAVE_LIBSSL" = yes; then
+	    have_openssl=yes
+            LIBS="$LIBS $LIBSSL"
+        fi
     fi
-    if test "$have_openssl" = "yes"; then
-        AC_DEFINE(HAVE_OPENSSL,, Build with OpenSSL support)
+    if test "$have_openssl" != "yes"; then
+        AC_MSG_WARN([Cannot find OpenSSL, disabling])
+    else
+        AC_DEFINE([HAVE_OPENSSL], [], [Build with OpenSSL support])
         have_tls=yes
         tls_lib="OpenSSL"
     fi
 fi
 if test "$have_tls" = "yes"; then
-    CFLAGS="$CFLAGS $SSL_CFLAGS"
-    LIBS="$LIBS $SSL_LIBS"
-    AC_DEFINE(HAVE_SSL,, Build with TLS/SSL support)
+    AC_DEFINE([HAVE_TLS], [], [Build with TLS/SSL support])
     tls_obj="tls.o"
 elif test "$want_tls" = "yes"; then
-    AC_MSG_WARN([Neither GnuTLS nor OpenSSL found, disabling TLS/SSL support])
+    AC_MSG_WARN([Neither GNU TLS nor OpenSSL found, disabling TLS/SSL support])
 fi
-AC_SUBST(tls_obj)
+AC_SUBST([tls_obj])
 
 
 dnl GNU SASL
-AC_ARG_WITH(libgsasl, AC_HELP_STRING([--with-libgsasl],
-	[Use GNU SASL authentication library.]),
-    libgsasl=$withval, libgsasl=yes)
+AC_ARG_WITH([libgsasl], [AC_HELP_STRING([--with-libgsasl],
+	[Use GNU SASL authentication library.])],
+    [libgsasl=$withval], [libgsasl=yes])
 if test "$libgsasl" != "no"; then
-    AC_LIB_HAVE_LINKFLAGS(gsasl,, [#include <gsasl.h>],
-        [gsasl_check_version (0);])
-    if test "$ac_cv_libgsasl" != yes; then
+    AC_LIB_HAVE_LINKFLAGS([gsasl], [], [#include <gsasl.h>],
+        [gsasl_check_version(0);])
+    if test "$HAVE_LIBGSASL" != yes; then
         libgsasl=no
         AC_MSG_WARN([Cannot find GNU SASL, disabling])
     else
         libgsasl=yes
 	LIBS="$LIBS $LIBGSASL"
-        AC_DEFINE(USE_GSASL,, Build with GNU SASL support)
     fi
 fi
 
 
 dnl GNU Libidn
-AC_ARG_WITH(libidn, AC_HELP_STRING([--with-libidn],
-	[Support IDN (needs GNU Libidn)]),
-    libidn=$withval, libidn=yes)
+AC_ARG_WITH([libidn], [AC_HELP_STRING([--with-libidn],
+	[Support IDN (needs GNU Libidn)])],
+    [libidn=$withval], [libidn=yes])
 if test "$libidn" != "no"; then
-    AC_LIB_HAVE_LINKFLAGS(idn,, [#include <stringprep.h>],
-        [stringprep_check_version (0);])
-    if test "$ac_cv_libidn" != yes; then
+    AC_LIB_HAVE_LINKFLAGS([idn], [], [#include <stringprep.h>],
+        [stringprep_check_version(0);])
+    if test "$HAVE_LIBIDN" != yes; then
         libidn=no
         AC_MSG_WARN([Cannot find GNU Libidn, disabling])
     else
         libidn=yes
 	LIBS="$LIBS $LIBIDN"
-        AC_DEFINE(USE_LIBIDN, 1, [Build with IDN support.])
     fi
 fi
 
@@ -187,7 +198,7 @@ AH_VERBATIM([UNUSED],
 # define UNUSED __attribute__ ((__unused__))
 #endif])
 AH_VERBATIM([gettext],
-[/* Common gettext #defines */
+[/* Common gettext #defines. */
 #define _(String) gettext (String)
 #define N_(String) gettext_noop (String)])
 AH_VERBATIM([W32_NATIVE],
@@ -198,7 +209,7 @@ AH_VERBATIM([W32_NATIVE],
 
 
 dnl End.
-AC_CONFIG_FILES(Makefile doc/Makefile gnulib/Makefile po/Makefile.in src/Makefile)
+AC_CONFIG_FILES([Makefile doc/Makefile gnulib/Makefile po/Makefile.in src/Makefile])
 AC_OUTPUT
 
 echo

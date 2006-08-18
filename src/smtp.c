@@ -35,7 +35,7 @@
 #include <errno.h>
 extern int errno;
 
-#ifdef USE_GSASL
+#ifdef HAVE_LIBGSASL
 # include <gsasl.h>
 #else
 # include "base64.h"
@@ -596,7 +596,7 @@ int smtp_tls(smtp_server_t *srv, const char *hostname, int tls_nocertcheck,
  * Used error codes: SMTP_EIO, SMTP_EPROTO, SMTP_EAUTHFAIL, SMTP_EINVAL
  */
 
-#ifndef USE_GSASL
+#ifndef HAVE_LIBGSASL
 int smtp_auth_plain(smtp_server_t *srv, const char *user, const char *password,
 	list_t **error_msg, char **errstr)
 {
@@ -650,7 +650,7 @@ int smtp_auth_plain(smtp_server_t *srv, const char *user, const char *password,
 
     return SMTP_EOK;
 }
-#endif /* !USE_GSASL */
+#endif /* !HAVE_LIBGSASL */
 
 
 /*
@@ -661,7 +661,7 @@ int smtp_auth_plain(smtp_server_t *srv, const char *user, const char *password,
  * Used error codes: SMTP_EIO, SMTP_EPROTO, SMTP_EAUTHFAIL, SMTP_EINVAL
  */
 
-#ifndef USE_GSASL
+#ifndef HAVE_LIBGSASL
 int smtp_auth_login(smtp_server_t *srv, const char *user, const char *password,
 	list_t **error_msg, char **errstr)
 {
@@ -733,7 +733,7 @@ int smtp_auth_login(smtp_server_t *srv, const char *user, const char *password,
 
     return SMTP_EOK;
 }
-#endif /* !USE_GSASL */
+#endif /* !HAVE_LIBGSASL */
 
 
 /*
@@ -744,7 +744,7 @@ int smtp_auth_login(smtp_server_t *srv, const char *user, const char *password,
  * Used error codes: SMTP_EIO, SMTP_EPROTO, SMTP_EAUTHFAIL, SMTP_EINVAL
  */
 
-#ifndef USE_GSASL
+#ifndef HAVE_LIBGSASL
 int smtp_auth_cram_md5(smtp_server_t *srv, const char *user, 
 	const char *password,
 	list_t **error_msg, char **errstr)
@@ -830,7 +830,7 @@ int smtp_auth_cram_md5(smtp_server_t *srv, const char *user,
 
     return SMTP_EOK;
 }
-#endif /* !USE_GSASL */
+#endif /* !HAVE_LIBGSASL */
 
 
 /*
@@ -843,7 +843,7 @@ int smtp_auth_cram_md5(smtp_server_t *srv, const char *user,
  * Used error codes: SMTP_EIO, SMTP_EPROTO, SMTP_EAUTHFAIL, SMTP_EINVAL
  */
 
-#ifndef USE_GSASL
+#ifndef HAVE_LIBGSASL
 int smtp_auth_external(smtp_server_t *srv, const char *user,
 	list_t **error_msg, char **errstr)
 {
@@ -893,7 +893,7 @@ int smtp_auth_external(smtp_server_t *srv, const char *user,
 
     return SMTP_EOK;
 }
-#endif /* !USE_GSASL */
+#endif /* !HAVE_LIBGSASL */
 
 
 /*
@@ -929,7 +929,7 @@ int smtp_server_supports_authmech(smtp_server_t *srv, const char *mech)
 
 int smtp_client_supports_authmech(const char *mech)
 {
-#ifdef USE_GSASL
+#ifdef HAVE_LIBGSASL
 
     int supported = 0;
     Gsasl *ctx;
@@ -942,14 +942,14 @@ int smtp_client_supports_authmech(const char *mech)
     gsasl_done(ctx);
     return supported;
     
-#else /* not USE_GSASL */
+#else /* not HAVE_LIBGSASL */
     
     return (strcmp(mech, "CRAM-MD5") == 0
 	    || strcmp(mech, "PLAIN") == 0
 	    || strcmp(mech, "EXTERNAL") == 0
 	    || strcmp(mech, "LOGIN") == 0);
     
-#endif /* not USE_GSASL */
+#endif /* not HAVE_LIBGSASL */
 }
 
 
@@ -963,7 +963,7 @@ int smtp_auth(smtp_server_t *srv,
 	const char *hostname,
 	const char *user, 
 	const char *password,
-#ifdef USE_GSASL
+#ifdef HAVE_LIBGSASL
 	const char *ntlmdomain,
 #else
 	const char *ntlmdomain UNUSED,
@@ -973,7 +973,7 @@ int smtp_auth(smtp_server_t *srv,
 	list_t **error_msg,
 	char **errstr)
 {
-#ifdef USE_GSASL
+#ifdef HAVE_LIBGSASL
     int e;
     list_t *msg;
     Gsasl *ctx;
@@ -1271,7 +1271,7 @@ int smtp_auth(smtp_server_t *srv,
     }
     return SMTP_EOK;
 
-#else /* not USE_GSASL */
+#else /* not HAVE_LIBGSASL */
 
     char *callback_password = NULL;
     int e;
@@ -1373,7 +1373,7 @@ int smtp_auth(smtp_server_t *srv,
     free(callback_password);
     return e;
 
-#endif /* not USE_GSASL */
+#endif /* not HAVE_LIBGSASL */
 }
 
 

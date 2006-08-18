@@ -24,9 +24,9 @@
 #ifndef TLS_H
 #define TLS_H
 
-#ifdef HAVE_GNUTLS
+#ifdef HAVE_LIBGNUTLS
 # include <gnutls/gnutls.h>
-#endif /* HAVE_GNUTLS */
+#endif /* HAVE_LIBGNUTLS */
 #ifdef HAVE_OPENSSL
 # include <openssl/ssl.h>
 #endif /* HAVE_OPENSSL */
@@ -56,10 +56,10 @@ typedef struct
 {
     int have_trust_file;
     int is_active;
-#ifdef HAVE_GNUTLS
+#ifdef HAVE_LIBGNUTLS
     gnutls_session_t session;
     gnutls_certificate_credentials_t cred;
-#endif /* HAVE_GNUTLS */
+#endif /* HAVE_LIBGNUTLS */
 #ifdef HAVE_OPENSSL
     SSL_CTX *ssl_ctx;
     SSL *ssl;

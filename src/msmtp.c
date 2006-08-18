@@ -1982,7 +1982,7 @@ void msmtp_print_version(void)
     printf(_("%s version %s\n"), PACKAGE_NAME, VERSION);
     /* TLS/SSL support */
     printf(_("TLS/SSL library: %s\n"),
-#ifdef HAVE_GNUTLS
+#ifdef HAVE_LIBGNUTLS
 	    "GnuTLS"
 #elif defined (HAVE_OPENSSL)
     	    "OpenSSL"
@@ -1993,11 +1993,11 @@ void msmtp_print_version(void)
     /* Authentication support */
     printf(_("Authentication library: %s\n"
 		"Supported authentication methods:\n"),
-#ifdef USE_GSASL
+#ifdef HAVE_LIBGSASL
 	    "GNU SASL"
 #else
 	    _("built-in")
-#endif /* USE_GSASL */
+#endif /* HAVE_LIBGSASL */
 	  );
     if (smtp_client_supports_authmech("PLAIN"))
     {
@@ -2030,7 +2030,7 @@ void msmtp_print_version(void)
     printf("\n");
     /* Internationalized Domain Names support */
     printf(_("IDN support: "));
-#ifdef USE_LIBIDN
+#ifdef HAVE_LIBIDN
     printf(_("enabled"));
 #else
     printf(_("disabled"));

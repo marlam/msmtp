@@ -35,10 +35,10 @@
 #include <errno.h>
 extern int errno;
 
-#ifdef HAVE_GNUTLS
+#ifdef HAVE_LIBGNUTLS
 # include <gnutls/gnutls.h>
 # include <gnutls/x509.h>
-#endif /* HAVE_GNUTLS */
+#endif /* HAVE_LIBGNUTLS */
 #ifdef HAVE_OPENSSL
 # include <openssl/ssl.h>
 # include <openssl/x509.h>
@@ -48,7 +48,7 @@ extern int errno;
 # include <openssl/evp.h>
 #endif /* HAVE_OPENSSL */
 
-#ifdef USE_LIBIDN
+#ifdef HAVE_LIBIDN
 # include <idna.h>
 #endif
 
@@ -149,7 +149,7 @@ int seed_prng(char **errstr)
 
 int tls_lib_init(char **errstr)
 {
-#ifdef HAVE_GNUTLS
+#ifdef HAVE_LIBGNUTLS
     int error_code;
     
     if ((error_code = gnutls_global_init()) != 0)
@@ -159,7 +159,7 @@ int tls_lib_init(char **errstr)
     }
 
     return TLS_EOK;
-#endif /* HAVE_GNUTLS */
+#endif /* HAVE_LIBGNUTLS */
 
 #ifdef HAVE_OPENSSL
     int e;
@@ -353,7 +353,7 @@ error_exit:
 
 int tls_cert_info_get(tls_t *tls, tls_cert_info_t *tci, char **errstr)
 {
-#ifdef HAVE_GNUTLS
+#ifdef HAVE_LIBGNUTLS
     const gnutls_datum_t *cert_list;
     unsigned int cert_list_size;
     gnutls_x509_crt_t cert;
@@ -464,7 +464,7 @@ int tls_cert_info_get(tls_t *tls, tls_cert_info_t *tci, char **errstr)
     
     gnutls_x509_crt_deinit(cert);
     return TLS_EOK;
-#endif /* HAVE_GNUTLS */
+#endif /* HAVE_LIBGNUTLS */
     
 #ifdef HAVE_OPENSSL
     X509 *x509cert;
@@ -646,7 +646,7 @@ int hostname_match(const char *hostname, const char *certname)
 
 int tls_check_cert(tls_t *tls, const char *hostname, int verify, char **errstr)
 {
-#ifdef HAVE_GNUTLS
+#ifdef HAVE_LIBGNUTLS
     int error_code;
     const char *error_msg;
     unsigned int status;
@@ -655,7 +655,7 @@ int tls_check_cert(tls_t *tls, const char *hostname, int verify, char **errstr)
     unsigned int i;
     gnutls_x509_crt_t cert;
     time_t t1, t2;
-#ifdef USE_LIBIDN
+#ifdef HAVE_LIBIDN
     char *hostname_ascii;
 #endif
     
@@ -742,7 +742,7 @@ int tls_check_cert(tls_t *tls, const char *hostname, int verify, char **errstr)
 	/* Check hostname */
 	if (i == 0)
 	{
-#ifdef USE_LIBIDN
+#ifdef HAVE_LIBIDN
 	    if (idna_to_ascii_lz(hostname, &hostname_ascii, 0) == IDNA_SUCCESS)
 	    {
     		if (!gnutls_x509_crt_check_hostname(cert, hostname_ascii)) 
@@ -795,7 +795,7 @@ int tls_check_cert(tls_t *tls, const char *hostname, int verify, char **errstr)
     }
 
     return TLS_EOK;
-#endif /* HAVE_GNUTLS */
+#endif /* HAVE_LIBGNUTLS */
 
 #ifdef HAVE_OPENSSL
     X509 *x509cert;
@@ -849,7 +849,7 @@ int tls_check_cert(tls_t *tls, const char *hostname, int verify, char **errstr)
     /* Check if 'hostname' matches the one of the subjectAltName extensions of
      * type DNS or the Common Name (CN). */
     
-#ifdef USE_LIBIDN
+#ifdef HAVE_LIBIDN
     if (idna_to_ascii_lz(hostname, &hostname_ascii, 0) != IDNA_SUCCESS)
     {
 	hostname_ascii = xstrdup(hostname);
@@ -928,7 +928,7 @@ int tls_check_cert(tls_t *tls, const char *hostname, int verify, char **errstr)
 int tls_init(tls_t *tls, const char *key_file, const char *cert_file, 
 	const char *trust_file, char **errstr)
 {
-#ifdef HAVE_GNUTLS
+#ifdef HAVE_LIBGNUTLS
     int error_code;
     
     if ((error_code = gnutls_init(&tls->session, GNUTLS_CLIENT)) != 0)
@@ -990,7 +990,7 @@ int tls_init(tls_t *tls, const char *key_file, const char *cert_file,
     }
     return TLS_EOK;
     
-#endif /* HAVE_GNUTLS */
+#endif /* HAVE_LIBGNUTLS */
 
 #ifdef HAVE_OPENSSL
     
@@ -1133,7 +1133,7 @@ char *openssl_io_error(int error_code, int error_code2,
 int tls_start(tls_t *tls, int fd, const char *hostname, int no_certcheck, 
 	tls_cert_info_t *tci, char **errstr)
 {
-#ifdef HAVE_GNUTLS
+#ifdef HAVE_LIBGNUTLS
     int error_code;
     
     gnutls_transport_set_ptr(tls->session, (gnutls_transport_ptr_t)fd);
@@ -1180,7 +1180,7 @@ int tls_start(tls_t *tls, int fd, const char *hostname, int no_certcheck,
     }    
     tls->is_active = 1;
     return TLS_EOK;
-#endif /* HAVE_GNUTLS */
+#endif /* HAVE_LIBGNUTLS */
 
 #ifdef HAVE_OPENSSL
     int error_code;
@@ -1245,7 +1245,7 @@ int tls_start(tls_t *tls, int fd, const char *hostname, int no_certcheck,
 
 int tls_getchar(tls_t *tls, char *c, int *eof, char **errstr)
 {
-#ifdef HAVE_GNUTLS
+#ifdef HAVE_LIBGNUTLS
     ssize_t ret;
     
     ret = gnutls_record_recv(tls->session, c, 1);
@@ -1280,7 +1280,7 @@ int tls_getchar(tls_t *tls, char *c, int *eof, char **errstr)
 	return TLS_EIO;
     }
     
-#endif /* HAVE_GNUTLS */
+#endif /* HAVE_LIBGNUTLS */
 
 #ifdef HAVE_OPENSSL
     
@@ -1369,7 +1369,7 @@ int tls_gets(tls_t *tls, char *str, size_t size, size_t *len, char **errstr)
 
 int tls_puts(tls_t *tls, const char *s, size_t len, char **errstr)
 {
-#ifdef HAVE_GNUTLS
+#ifdef HAVE_LIBGNUTLS
     
     ssize_t ret;
 
@@ -1410,7 +1410,7 @@ int tls_puts(tls_t *tls, const char *s, size_t len, char **errstr)
 	return TLS_EIO;
     }    
 
-#endif /* HAVE_GNUTLS */
+#endif /* HAVE_LIBGNUTLS */
 
 #ifdef HAVE_OPENSSL
     
@@ -1456,11 +1456,11 @@ void tls_close(tls_t *tls)
 {
     if (tls->is_active)
     {
-#ifdef HAVE_GNUTLS
+#ifdef HAVE_LIBGNUTLS
 	gnutls_bye(tls->session, GNUTLS_SHUT_WR);
 	gnutls_deinit(tls->session);
 	gnutls_certificate_free_credentials(tls->cred);
-#endif /* HAVE_GNUTLS */
+#endif /* HAVE_LIBGNUTLS */
 #ifdef HAVE_OPENSSL
  	SSL_shutdown(tls->ssl);
 	SSL_free(tls->ssl);
@@ -1479,7 +1479,7 @@ void tls_close(tls_t *tls)
 
 void tls_lib_deinit(void)
 {
-#ifdef HAVE_GNUTLS
+#ifdef HAVE_LIBGNUTLS
     gnutls_global_deinit();
-#endif /* HAVE_GNUTLS */
+#endif /* HAVE_LIBGNUTLS */
 }

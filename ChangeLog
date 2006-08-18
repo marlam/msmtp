@@ -1,4 +1,11 @@
 Version 1.4.7 (not yet released):
+- Improvements for the build system:
+  - Quote arguments of M4 macros.
+  - Use AC_LIB_HAVE_LINKFLAGS to detect libraries. Do not use *-config scripts
+    or pkg-config. This avoids problems that are reported in this thread:
+    http://thread.gmane.org/gmane.comp.encryption.gpg.gnutls.devel/
+    1610/focus=1610 .
+  - Use HAVE_LIB* macros instead of USE_* or others, for consistency.
 - Link with LIB_NANOSLEEP as determined by the gnulib nanosleep module. This
   fixes build problems on Solaris. Reported by Daniel Rechsteiner. Thanks!
 - Gnulib update. The nanosleep module still differs from the official gnulib

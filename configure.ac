@@ -105,7 +105,7 @@ AC_ARG_WITH([ssl], [AC_HELP_STRING([--with-ssl=[gnutls|openssl|no]],
 if test "$want_gnutls" = "yes"; then
     AC_LIB_HAVE_LINKFLAGS([gnutls], [], 
         [#include <gnutls/gnutls.h>
-	 #if LIBGNUTLS_VERSION_NUMBER < 0x010200
+	 #if !defined LIBGNUTLS_VERSION_NUMBER || LIBGNUTLS_VERSION_NUMBER < 0x010200
 	 GNU TLS version too old
 	 #endif],
         [gnutls_check_version(0);])

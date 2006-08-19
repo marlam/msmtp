@@ -70,9 +70,9 @@ extern int optind;
 #include "netrc.h"
 #include "smtp.h"
 #include "tools.h"
-#ifdef HAVE_SSL
+#ifdef HAVE_TLS
 # include "tls.h"
-#endif /* HAVE_SSL */
+#endif /* HAVE_TLS */
 
 /* Default file names. */
 #ifdef W32_NATIVE
@@ -131,7 +131,7 @@ int exitcode_net(int net_error_code)
     }
 }
 
-#ifdef HAVE_SSL
+#ifdef HAVE_TLS
 int exitcode_tls(int tls_error_code)
 {
     switch (tls_error_code)
@@ -155,7 +155,7 @@ int exitcode_tls(int tls_error_code)
 	    return EX_SOFTWARE;
     }
 }
-#endif /* HAVE_SSL */
+#endif /* HAVE_TLS */
 
 int exitcode_smtp(int smtp_error_code)
 {
@@ -321,7 +321,7 @@ char *msmtp_password_callback(const char *hostname, const char *user)
  * Prints information about a TLS certificate.
  */
 
-#ifdef HAVE_SSL
+#ifdef HAVE_TLS
 /* Convert the given time into a string. */
 void msmtp_time_to_string(time_t *t, char *buf, size_t bufsize)
 {
@@ -439,9 +439,9 @@ int msmtp_rmqs(account_t *acc, int debug, const char *rmqs_argument,
 {
     smtp_server_t srv;
     int e;
-#ifdef HAVE_SSL
+#ifdef HAVE_TLS
     tls_cert_info_t *tci = NULL;
-#endif /* HAVE_SSL */
+#endif /* HAVE_TLS */
     
     *errstr = NULL;
     *msg = NULL;
@@ -457,7 +457,7 @@ int msmtp_rmqs(account_t *acc, int debug, const char *rmqs_argument,
     }
 
     /* prepare tls */
-#ifdef HAVE_SSL
+#ifdef HAVE_TLS
     if (acc->tls)
     {
 	if ((e = smtp_tls_init(&srv, acc->tls_key_file, acc->tls_cert_file, 
@@ -466,10 +466,10 @@ int msmtp_rmqs(account_t *acc, int debug, const char *rmqs_argument,
 	    return exitcode_tls(e);
 	}
     }
-#endif /* HAVE_SSL */
+#endif /* HAVE_TLS */
 
     /* start tls for ssmtp servers */
-#ifdef HAVE_SSL
+#ifdef HAVE_TLS
     if (acc->tls && acc->tls_nostarttls)
     {
 	if (debug)
@@ -492,7 +492,7 @@ int msmtp_rmqs(account_t *acc, int debug, const char *rmqs_argument,
 	    tls_cert_info_free(tci);
 	}
     }
-#endif /* HAVE_SSL */
+#endif /* HAVE_TLS */
 
     /* get greeting */
     if ((e = smtp_get_greeting(&srv, msg, NULL, errstr)) != SMTP_EOK)
@@ -509,7 +509,7 @@ int msmtp_rmqs(account_t *acc, int debug, const char *rmqs_argument,
     }
     
     /* start tls for starttls servers */
-#ifdef HAVE_SSL
+#ifdef HAVE_TLS
     if (acc->tls && !acc->tls_nostarttls)
     {
 	if (!(srv.cap.flags & SMTP_CAP_STARTTLS))
@@ -550,7 +550,7 @@ int msmtp_rmqs(account_t *acc, int debug, const char *rmqs_argument,
 	    return exitcode_smtp(e);
 	}
     }
-#endif /* HAVE_SSL */
+#endif /* HAVE_TLS */
 
     if (!(srv.cap.flags & SMTP_CAP_ETRN))
     {
@@ -609,9 +609,9 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
     char *server_address = NULL;
     char *server_greeting = NULL;
     int e;
-#ifdef HAVE_SSL
+#ifdef HAVE_TLS
     tls_cert_info_t *tci = NULL;
-#endif /* HAVE_SSL */
+#endif /* HAVE_TLS */
     
     *errstr = NULL;
     *msg = NULL;
@@ -629,7 +629,7 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
     }
 
     /* prepare tls */
-#ifdef HAVE_SSL
+#ifdef HAVE_TLS
     if (acc->tls)
     {
 	tci = tls_cert_info_new();
@@ -640,10 +640,10 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
 	    goto error_exit;
 	}
     }
-#endif /* HAVE_SSL */
+#endif /* HAVE_TLS */
 
     /* start tls for ssmtp servers */
-#ifdef HAVE_SSL
+#ifdef HAVE_TLS
     if (acc->tls && acc->tls_nostarttls)
     {
 	if ((e = smtp_tls(&srv, acc->host, acc->tls_nocertcheck, tci, errstr))
@@ -654,7 +654,7 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
 	    goto error_exit;
 	}
     }
-#endif /* HAVE_SSL */
+#endif /* HAVE_TLS */
 
     /* get greeting */
     if ((e = smtp_get_greeting(&srv, msg, &server_greeting, 
@@ -674,7 +674,7 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
     }
     
     /* start tls for starttls servers */
-#ifdef HAVE_SSL
+#ifdef HAVE_TLS
     if (acc->tls && !acc->tls_nostarttls)
     {
 	if (!(srv.cap.flags & SMTP_CAP_STARTTLS))
@@ -706,7 +706,7 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
 	    goto error_exit;
 	}
     }
-#endif /* HAVE_SSL */
+#endif /* HAVE_TLS */
 
     /* end session */
     msmtp_endsession(&srv, 1);
@@ -740,17 +740,17 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
     {
 	printf("    %s\n", msmtp_sanitize_string(server_greeting));
     }
-#ifdef HAVE_SSL
+#ifdef HAVE_TLS
     if (acc->tls)
     {
 	msmtp_print_tls_cert_info(tci);
     }
-#endif /* HAVE_SSL */
-#ifdef HAVE_SSL
+#endif /* HAVE_TLS */
+#ifdef HAVE_TLS
     if (srv.cap.flags == 0 && !(acc->tls && !acc->tls_nostarttls))
-#else /* not HAVE_SSL */
+#else /* not HAVE_TLS */
     if (srv.cap.flags == 0)
-#endif /* not HAVE_SSL */
+#endif /* not HAVE_TLS */
     {
 	printf(_("No special capabilities.\n"));
     }
@@ -795,12 +795,12 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
     	    printf("    DSN:\n        %s\n", _("Support for "
 			"Delivery Status Notifications"));
        	}
-#ifdef HAVE_SSL
+#ifdef HAVE_TLS
 	if ((acc->tls && !acc->tls_nostarttls) 
 		|| (srv.cap.flags & SMTP_CAP_STARTTLS))
-#else /* not HAVE_SSL */
+#else /* not HAVE_TLS */
         if (srv.cap.flags & SMTP_CAP_STARTTLS)
-#endif /* not HAVE_SSL */
+#endif /* not HAVE_TLS */
 	{
     	    printf("    STARTTLS:\n        %s\n", _("Support for "
 			"TLS encryption via the STARTTLS command"));
@@ -839,11 +839,11 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
     	    }
 	    printf("\n");
        	}
-#ifdef HAVE_SSL
+#ifdef HAVE_TLS
 	if ((srv.cap.flags & SMTP_CAP_STARTTLS) && !acc->tls)
-#else /* not HAVE_SSL */
+#else /* not HAVE_TLS */
 	if (srv.cap.flags & SMTP_CAP_STARTTLS)
-#endif /* not HAVE_SSL */
+#endif /* not HAVE_TLS */
 	{
     	    printf(_("This server might advertise more or other "
 		    "capabilities when TLS is active.\n"));
@@ -855,12 +855,12 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
 error_exit:
     free(server_canonical_name);
     free(server_address);
-#ifdef HAVE_SSL
+#ifdef HAVE_TLS
     if (tci)
     {
 	tls_cert_info_free(tci);
     }
-#endif /* HAVE_SSL */
+#endif /* HAVE_TLS */
     free(server_greeting);
     return e;
 }
@@ -1337,9 +1337,9 @@ int msmtp_sendmail(account_t *acc, list_t *recipients, int read_recipients,
     smtp_server_t srv;
     FILE *tmpfile = NULL;
     int e;
-#ifdef HAVE_SSL
+#ifdef HAVE_TLS
     tls_cert_info_t *tci = NULL;
-#endif /* HAVE_SSL */
+#endif /* HAVE_TLS */
     
     *errstr = NULL;
     *msg = NULL;
@@ -1366,7 +1366,7 @@ int msmtp_sendmail(account_t *acc, list_t *recipients, int read_recipients,
     srv = smtp_new(debug ? stdout : NULL, acc->protocol);
 
     /* prepare tls */
-#ifdef HAVE_SSL
+#ifdef HAVE_TLS
     if (acc->tls)
     {
 	if ((e = smtp_tls_init(&srv, acc->tls_key_file, acc->tls_cert_file, 
@@ -1376,7 +1376,7 @@ int msmtp_sendmail(account_t *acc, list_t *recipients, int read_recipients,
 	    goto error_exit;
 	}
     }
-#endif /* HAVE_SSL */
+#endif /* HAVE_TLS */
 
     /* connect */
     if ((e = smtp_connect(&srv, acc->host, acc->port, acc->timeout,
@@ -1387,7 +1387,7 @@ int msmtp_sendmail(account_t *acc, list_t *recipients, int read_recipients,
     }
 
     /* start tls for ssmtp servers */
-#ifdef HAVE_SSL
+#ifdef HAVE_TLS
     if (acc->tls && acc->tls_nostarttls)
     {
 	if (debug)
@@ -1411,7 +1411,7 @@ int msmtp_sendmail(account_t *acc, list_t *recipients, int read_recipients,
 	    tls_cert_info_free(tci);
 	}
     }
-#endif /* HAVE_SSL */
+#endif /* HAVE_TLS */
 
     /* get greeting */
     if ((e = smtp_get_greeting(&srv, msg, NULL, errstr)) != SMTP_EOK)
@@ -1430,7 +1430,7 @@ int msmtp_sendmail(account_t *acc, list_t *recipients, int read_recipients,
     }
 
     /* start tls for starttls servers */
-#ifdef HAVE_SSL
+#ifdef HAVE_TLS
     if (acc->tls && !acc->tls_nostarttls)
     {
 	if (!(srv.cap.flags & SMTP_CAP_STARTTLS))
@@ -1475,7 +1475,7 @@ int msmtp_sendmail(account_t *acc, list_t *recipients, int read_recipients,
 	    goto error_exit;
 	}
     }
-#endif /* HAVE_SSL */
+#endif /* HAVE_TLS */
 
     /* test for needed features */
     if ((acc->dsn_return || acc->dsn_notify) && !(srv.cap.flags & SMTP_CAP_DSN))
@@ -3012,7 +3012,7 @@ int main(int argc, char *argv[])
     int e;
     list_t *lp;
     /* misc */
-#ifdef HAVE_SSL
+#ifdef HAVE_TLS
     int tls_lib_initialized = 0;
 #endif
     int net_lib_initialized = 0;
@@ -3235,7 +3235,7 @@ int main(int argc, char *argv[])
     net_lib_initialized = 1;
     if (account->tls)
     {
-#ifdef HAVE_SSL
+#ifdef HAVE_TLS
 	if ((e = tls_lib_init(&errstr)) != TLS_EOK)
 	{
 	    print_error(_("cannot initialize TLS library: %s"), 
@@ -3244,11 +3244,11 @@ int main(int argc, char *argv[])
 	    goto exit;
 	}
 	tls_lib_initialized = 1;
-#else /* not HAVE_SSL */
+#else /* not HAVE_TLS */
 	print_error(_("support for TLS is not compiled in"));
 	error_code = EX_UNAVAILABLE;
 	goto exit;
-#endif /* not HAVE_SSL */
+#endif /* not HAVE_TLS */
     }
 
     /* do the work */
@@ -3397,12 +3397,12 @@ exit:
     /* clean up */
     free(loaded_system_conffile);
     free(loaded_user_conffile);
-#ifdef HAVE_SSL
+#ifdef HAVE_TLS
     if (tls_lib_initialized) 
     {
 	tls_lib_deinit();
     }
-#endif /* HAVE_SSL */
+#endif /* HAVE_TLS */
     if (net_lib_initialized)
     {
 	net_lib_deinit();

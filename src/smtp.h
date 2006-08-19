@@ -28,9 +28,9 @@
 
 #include "list.h"
 #include "net.h"
-#ifdef HAVE_SSL
+#ifdef HAVE_TLS
 # include "tls.h"
-#endif /* HAVE_SSL */
+#endif /* HAVE_TLS */
 
 
 /* SMTP errors */
@@ -92,9 +92,9 @@ typedef struct
 {
     int fd;
     net_readbuf_t readbuf;
-#ifdef HAVE_SSL
+#ifdef HAVE_TLS
     tls_t tls;
-#endif /* HAVE_SSL */
+#endif /* HAVE_TLS */
     int protocol;
     smtp_cap_t cap;
     FILE *debug;
@@ -171,10 +171,10 @@ int smtp_init(smtp_server_t *srv, const char *ehlo_domain, list_t **msg,
  * Used error codes: TLS_ELIBFAILED, TLS_EFILE
  * Success: TLS_EOK
  */
-#ifdef HAVE_SSL
+#ifdef HAVE_TLS
 int smtp_tls_init(smtp_server_t *srv, const char *tls_key_file, 
 	const char *tls_ca_file, const char *tls_trust_file, char **errstr);
-#endif /* HAVE_SSL */
+#endif /* HAVE_TLS */
 
 /*
  * smtp_tls_starttls()
@@ -189,9 +189,9 @@ int smtp_tls_init(smtp_server_t *srv, const char *tls_key_file,
  * 'error_msg' contains the error message from the SMTP server or NULL.
  * Used error codes: SMTP_EIO, SMTP_EPROTO, SMTP_EINVAL
  */
-#ifdef HAVE_SSL
+#ifdef HAVE_TLS
 int smtp_tls_starttls(smtp_server_t *srv, list_t **error_msg, char **errstr);
-#endif /* HAVE_SSL */
+#endif /* HAVE_TLS */
 
 /*
  * smtp_tls()
@@ -205,10 +205,10 @@ int smtp_tls_starttls(smtp_server_t *srv, list_t **error_msg, char **errstr);
  * Used error codes: TLS_ELIBFAILED, TLS_ECERT, TLS_EHANDSHAKE
  * Success: TLS_EOK
  */
-#ifdef HAVE_SSL
+#ifdef HAVE_TLS
 int smtp_tls(smtp_server_t *srv, const char *hostname, int tls_nocertcheck, 
 	tls_cert_info_t *tci, char **errstr);
-#endif /* HAVE_SSL */
+#endif /* HAVE_TLS */
 
 /*
  * smtp_client_supports_authmech()

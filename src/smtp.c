@@ -50,9 +50,9 @@ extern int errno;
 #include "net.h"
 #include "smtp.h"
 #include "stream.h"
-#ifdef HAVE_SSL
+#ifdef HAVE_TLS
 #include "tls.h"
-#endif /* HAVE_SSL */
+#endif /* HAVE_TLS */
 
 
 /* This defines the maximum number of lines in a multiline server reply.
@@ -109,9 +109,9 @@ smtp_server_t smtp_new(FILE *debug, int protocol)
 
     srv.fd = -1;
     net_readbuf_init(&(srv.readbuf));
-#ifdef HAVE_SSL
+#ifdef HAVE_TLS
     tls_clear(&srv.tls);
-#endif /* HAVE_SSL */
+#endif /* HAVE_TLS */
     srv.protocol = protocol;
     srv.cap.flags = 0;
     srv.cap.size = 0;
@@ -164,7 +164,7 @@ int smtp_get_msg(smtp_server_t *srv, list_t **msg, char **errstr)
     counter = 0;
     do
     {
-#ifdef HAVE_SSL
+#ifdef HAVE_TLS
 	if (tls_is_active(&srv->tls))
 	{
 	    if (tls_gets(&srv->tls, line, SMTP_BUFSIZE, &len, errstr) 
@@ -176,16 +176,16 @@ int smtp_get_msg(smtp_server_t *srv, list_t **msg, char **errstr)
 	}
 	else
 	{
-#endif /* HAVE_SSL */
+#endif /* HAVE_TLS */
 	    if (net_gets(srv->fd, &(srv->readbuf), line, SMTP_BUFSIZE, &len, 
 			errstr) != NET_EOK)
 	    {
 		list_xfree(l, free);
 		return SMTP_EIO;
 	    }
-#ifdef HAVE_SSL
+#ifdef HAVE_TLS
 	}
-#endif /* HAVE_SSL */
+#endif /* HAVE_TLS */
 	if (len < 4 
 		|| !(isdigit((unsigned char)line[0]) 
 		    && isdigit((unsigned char)line[1]) 
@@ -262,18 +262,18 @@ int smtp_put(smtp_server_t *srv, const char *s, size_t len, char **errstr)
 {
     int e = 0;
 
-#ifdef HAVE_SSL
+#ifdef HAVE_TLS
     if (tls_is_active(&srv->tls))
     {
 	e = (tls_puts(&srv->tls, s, len, errstr) != TLS_EOK);
     }
     else
     {
-#endif /* HAVE_SSL */
+#endif /* HAVE_TLS */
 	e = (net_puts(srv->fd, s, len, errstr) != NET_EOK);
-#ifdef HAVE_SSL
+#ifdef HAVE_TLS
     }
-#endif /* HAVE_SSL */
+#endif /* HAVE_TLS */
     if (e)
     {
 	return SMTP_EIO;
@@ -529,14 +529,14 @@ int smtp_init(smtp_server_t *srv, const char *ehlo_domain, list_t **errmsg,
  * see smtp.h
  */
 
-#ifdef HAVE_SSL
+#ifdef HAVE_TLS
 int smtp_tls_init(smtp_server_t *srv, const char *tls_key_file, 
 	const char *tls_ca_file, const char *tls_trust_file, char **errstr)
 {
     return tls_init(&srv->tls, tls_key_file, tls_ca_file, tls_trust_file, 
 	    errstr);
 }
-#endif /* HAVE_SSL */
+#endif /* HAVE_TLS */
 
 
 /*
@@ -545,7 +545,7 @@ int smtp_tls_init(smtp_server_t *srv, const char *tls_key_file,
  * see smtp.h
  */
 
-#ifdef HAVE_SSL
+#ifdef HAVE_TLS
 int smtp_tls_starttls(smtp_server_t *srv, list_t **error_msg, char **errstr)
 {
     int e;
@@ -569,7 +569,7 @@ int smtp_tls_starttls(smtp_server_t *srv, list_t **error_msg, char **errstr)
     list_xfree(msg, free);
     return SMTP_EOK;
 }
-#endif /* HAVE_SSL */
+#endif /* HAVE_TLS */
 
 
 /*
@@ -578,14 +578,14 @@ int smtp_tls_starttls(smtp_server_t *srv, list_t **error_msg, char **errstr)
  * see smtp.h
  */
 
-#ifdef HAVE_SSL
+#ifdef HAVE_TLS
 int smtp_tls(smtp_server_t *srv, const char *hostname, int tls_nocertcheck,
 	tls_cert_info_t *tci, char **errstr)
 {
     return tls_start(&srv->tls, srv->fd, hostname, tls_nocertcheck, tci, 
 	    errstr);
 }
-#endif /* HAVE_SSL */
+#endif /* HAVE_TLS */
 
 
 /*
@@ -1032,7 +1032,7 @@ int smtp_auth(smtp_server_t *srv,
 	{
 	    auth_mech = "NTLM";
 	}
-#ifdef HAVE_SSL
+#ifdef HAVE_TLS
 	else if (tls_is_active(&srv->tls))
 	{
 	    if (gsasl_client_support_p(ctx, "PLAIN") 
@@ -1046,24 +1046,24 @@ int smtp_auth(smtp_server_t *srv,
 		auth_mech = "LOGIN";
 	    }
 	}
-#endif /* HAVE_SSL */
+#endif /* HAVE_TLS */
     }
     if (strcmp(auth_mech, "") == 0)
     {
 	gsasl_done(ctx);
-#ifdef HAVE_SSL
+#ifdef HAVE_TLS
 	if (!tls_is_active(&srv->tls))
 	{
-#endif /* HAVE_SSL */
+#endif /* HAVE_TLS */
 	    *errstr = xasprintf(_("cannot use a secure authentication method"));
-#ifdef HAVE_SSL
+#ifdef HAVE_TLS
 	}
 	else
 	{
 	    *errstr = xasprintf(
 		    _("cannot find a usable authentication method"));
      	}
-#endif /* not HAVE_SSL */
+#endif /* not HAVE_TLS */
 	return SMTP_EUNAVAIL;
     }
     
@@ -1293,7 +1293,7 @@ int smtp_auth(smtp_server_t *srv,
 	{
 	    auth_mech = "CRAM-MD5";
 	}
-#ifdef HAVE_SSL
+#ifdef HAVE_TLS
 	else if (tls_is_active(&srv->tls))
 	{
 	    if (srv->cap.flags & SMTP_CAP_AUTH_PLAIN)
@@ -1305,23 +1305,23 @@ int smtp_auth(smtp_server_t *srv,
 		auth_mech = "LOGIN";
 	    }
 	}
-#endif /* HAVE_SSL */
+#endif /* HAVE_TLS */
     }
     if (strcmp(auth_mech, "") == 0)
     {
-#ifdef HAVE_SSL
+#ifdef HAVE_TLS
        	if (!tls_is_active(&srv->tls))
  	{
-#endif /* HAVE_SSL */
+#endif /* HAVE_TLS */
 	    *errstr = xasprintf(_("cannot use a secure authentication method"));
-#ifdef HAVE_SSL
+#ifdef HAVE_TLS
     	}
     	else
  	{
 	    *errstr = xasprintf(
 		    _("cannot find a usable authentication method"));
 	}
-#endif /* not HAVE_SSL */
+#endif /* not HAVE_TLS */
 	return SMTP_EUNAVAIL;
     }
 
@@ -1869,11 +1869,11 @@ int smtp_quit(smtp_server_t *srv, char **errstr)
 
 void smtp_close(smtp_server_t *srv)
 {
-#ifdef HAVE_SSL
+#ifdef HAVE_TLS
     if (tls_is_active(&srv->tls))
     {
 	tls_close(&srv->tls);
     }
-#endif /* HAVE_SSL */
+#endif /* HAVE_TLS */
     net_close_socket(srv->fd);
 }

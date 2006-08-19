@@ -106,7 +106,9 @@ if test "$want_gnutls" = "yes"; then
     # Test for GNU TLS >= 1.2.0. Since LIBGNUTLS_VERSION_NUMBER was not added
     # before 1.2.9, we test for gnutls_x509_crt_sign2(), which was added in 
     # 1.2.0.
-    AC_LIB_HAVE_LINKFLAGS([gnutls], [], [#include <gnutls/gnutls.h>],
+    AC_LIB_HAVE_LINKFLAGS([gnutls], [], 
+        [#include <gnutls/gnutls.h>
+	 #include <gnutls/x509.h>],
         [gnutls_x509_crt_sign2(0, 0, 0, 0, 0)])
     if test "$HAVE_LIBGNUTLS" != yes; then
         AC_MSG_WARN([Cannot find GNU TLS, disabling])

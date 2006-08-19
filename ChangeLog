@@ -1,4 +1,5 @@
 Version 1.4.7 (not yet released):
+- Changed detection of libgnutls so that it works with version >= 1.2.0 again.
 - Improvements for the build system:
   - Quote arguments of M4 macros.
   - Use AC_LIB_HAVE_LINKFLAGS to detect libraries. Do not use *-config scripts

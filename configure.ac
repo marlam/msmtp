@@ -103,12 +103,11 @@ AC_ARG_WITH([ssl], [AC_HELP_STRING([--with-ssl=[gnutls|openssl|no]],
 	    AC_MSG_ERROR([Use --with-ssl=gnutls or --with-ssl=openssl or --with-ssl=no])
 	fi)
 if test "$want_gnutls" = "yes"; then
-    AC_LIB_HAVE_LINKFLAGS([gnutls], [], 
-        [#include <gnutls/gnutls.h>
-	 #if !defined LIBGNUTLS_VERSION_NUMBER || LIBGNUTLS_VERSION_NUMBER < 0x010200
-	 GNU TLS version too old
-	 #endif],
-        [gnutls_check_version(0);])
+    # Test for GNU TLS >= 1.2.0. Since LIBGNUTLS_VERSION_NUMBER was not added
+    # before 1.2.9, we test for gnutls_x509_crt_sign2(), which was added in 
+    # 1.2.0.
+    AC_LIB_HAVE_LINKFLAGS([gnutls], [], [#include <gnutls/gnutls.h>],
+        [gnutls_x509_crt_sign2(0, 0, 0, 0, 0)])
     if test "$HAVE_LIBGNUTLS" != yes; then
         AC_MSG_WARN([Cannot find GNU TLS, disabling])
     else

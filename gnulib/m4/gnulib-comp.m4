@@ -19,6 +19,8 @@
 # any checks for libraries, header files, types and library functions.
 AC_DEFUN([gl_EARLY],
 [
+  m4_pattern_forbid([^gl_[A-Z]])dnl the gnulib macro namespace
+  m4_pattern_allow([^gl_ES$])dnl a valid locale name
   AC_REQUIRE([AC_PROG_RANLIB])
   AC_REQUIRE([AC_GNU_SOURCE])
   AC_REQUIRE([gl_USE_SYSTEM_EXTENSIONS])
@@ -43,7 +45,6 @@ AC_DEFUN([gl_INIT],
   gl_MD5
   gl_MEMXOR
   gl_FUNC_NANOSLEEP
-  gl_C_RESTRICT
   gl_SIZE_MAX
   gl_TYPE_SOCKLEN_T
   gl_STDARG_H
@@ -145,7 +146,6 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/po.m4
   m4/printf-posix.m4
   m4/progtest.m4
-  m4/restrict.m4
   m4/signed.m4
   m4/size_max.m4
   m4/socklen.m4

@@ -1,4 +1,6 @@
 Version 1.4.7 (not yet released):
+- Gnulib update. The nanosleep module still differs from the official gnulib
+  source.
 - Disable SSLv2 because it has known flaws. This only affects the OpenSSL
   version because GNU TLS does not implement SSLv2.
 - Add new command tls_force_sslv3 and option --tls-force-sslv3 to force
@@ -15,8 +17,6 @@ Version 1.4.7 (not yet released):
   - Use HAVE_LIB* macros instead of USE_* or others, for consistency.
 - Link with LIB_NANOSLEEP as determined by the gnulib nanosleep module. This
   fixes build problems on Solaris. Reported by Daniel Rechsteiner. Thanks!
-- Gnulib update. The nanosleep module still differs from the official gnulib
-  source.
 - Update to gettext-0.15.
 - W32/DJGPP: Assure that all files are opened in binary mode. This seems to
   also apply to socket connections, therefore it is necessary.

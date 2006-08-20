@@ -87,6 +87,9 @@ Set or unset the user name for authentication. See the \fBuser\fP command
 below.
 .IP "--tls[=(\fIon\fP|\fIoff\fP)]"
 Enable or disable TLS encryption. See the \fBtls\fP command below.
+.IP "--tls-starttls[=(\fIon\fP|\fIoff\fP)]"
+Enable or disable STARTTLS for TLS encryption. See the \fBtls_starttls\fP
+command below.
 .IP "--tls-trust-file=[\fIfile\fP]"
 Set or unset a trust file for TLS encryption. See the \fBtls_trust_file\fP
 command below.
@@ -99,9 +102,6 @@ command below.
 .IP "--tls-certcheck[=(\fIon\fP|\fIoff\fP)]"
 Enable or disable server certificate checks for TLS encryption. See the
 \fBtls_certcheck\fP command below.
-.IP "--tls-starttls[=(\fIon\fP|\fIoff\fP)]"
-Enable or disable STARTTLS for TLS encryption. See the \fBtls_starttls\fP
-command below.
 .IP "--tls-force-sslv3[=(\fIon\fP|\fIoff\fP)]"
 Force TLS/SSL version SSLv3. See the \fBtls_force_sslv3\fP command below.
 .IP "--domain=[\fIstring\fP]"
@@ -314,6 +314,14 @@ eavesdroppers. A sanity check will be performed on the server certificate
 (unless the \fBtls_certcheck\fP command is used to turn this off, see below).
 To make full use of the TLS/SSL capabilities, it is recommended to use the
 \fBtls_trust_file\fP command (see below).
+.IP "tls_starttls [(\fIon\fP|\fIoff\fP)]"
+By default, TLS encryption is activated using the STARTTLS SMTP command.  By
+disabling this, TLS encryption is immediately started instead (this is known as
+SMTP tunneled through TLS/SSL). The default port is set to 465 for this mode of
+operation.
+.br
+For compatibility with older versions, \fBtls_nostarttls\fP is accepted as an
+alias for \fBtls_starttls off\fP.
 .IP "tls_trust_file [\fIfile\fP]"
 This command activates strict server certificate verification.
 The file must contain one or more certificates of trusted Certification
@@ -337,14 +345,6 @@ aborted.  This command can turn the checks off.
 .br
 For compatibility with older versions, \fBtls_nocertcheck\fP is accepted as an
 alias for \fBtls_certcheck off\fP.
-.IP "tls_starttls [(\fIon\fP|\fIoff\fP)]"
-By default, TLS encryption is activated using the STARTTLS SMTP command.  By
-disabling this, TLS encryption is immediately started instead (this is known as
-SMTP tunneled through TLS/SSL). The default port is set to 465 for this mode of
-operation.
-.br
-For compatibility with older versions, \fBtls_nostarttls\fP is accepted as an
-alias for \fBtls_starttls off\fP.
 .IP "tls_force_sslv3 [(\fIon\fP|\fIoff\fP)]"
 Force TLS/SSL version SSLv3. This might be needed to use SSL with some old and 
 broken servers. Do not use this unless you have to.

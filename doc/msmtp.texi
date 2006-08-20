@@ -484,6 +484,10 @@ Set or unset the user name for authentication. @xref{user}.
 @itemx --tls[=(on|off)]
 @opindex --tls
 Enable or disable TLS. @xref{tls}.
+@anchor{--tls-starttls}
+@itemx --tls-starttls[=(on|off)]
+@opindex --tls-starttls
+Enable or disable STARTTLS for TLS encryption. @xref{tls_starttls}.
 @anchor{--tls-trust-file}
 @itemx --tls-trust-file=[@var{file}]
 @opindex --tls-trust-file
@@ -501,10 +505,6 @@ Set or unset a cert file for TLS encryption. @xref{tls_cert_file}.
 @opindex --tls-certcheck
 Enable or disable server certificate checks for TLS encryption.  
 @xref{tls_certcheck}.
-@anchor{--tls-starttls}
-@itemx --tls-starttls[=(on|off)]
-@opindex --tls-starttls
-Enable or disable STARTTLS for TLS encryption. @xref{tls_starttls}.
 @anchor{--tls-force-sslv3}
 @itemx --tls-force-sslv3[=(on|off)]
 @opindex --tls-force-sslv3

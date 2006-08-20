@@ -1,4 +1,4 @@
-Version 1.4.7 (not yet released):
+Version 1.4.7:
 - Gnulib update. The nanosleep module still differs from the official gnulib
   source.
 - Disable SSLv2 because it has known flaws. This only affects the OpenSSL

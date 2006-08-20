@@ -1,9 +1,9 @@
 \input texinfo   @c -*-texinfo-*-
 @setfilename msmtp.info
-@set UPDATED June 17, 2006
-@set UPDATED-MONTH June 2006
-@set EDITION 1.4.6
-@set VERSION 1.4.6
+@set UPDATED August 18, 2006
+@set UPDATED-MONTH August 2006
+@set EDITION 1.4.7
+@set VERSION 1.4.7
 @settitle msmtp @value{VERSION}
 
 @c Define new indices: for options (op) and commands (cm)

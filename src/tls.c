@@ -1020,6 +1020,8 @@ int tls_init(tls_t *tls, const char *key_file, const char *cert_file,
 		ERR_error_string(ERR_get_error(), NULL));
 	return TLS_ELIBFAILED;
     }
+    /* SSLv2 has known flaws. Disable it. */
+    (void)SSL_CTX_set_options(tls->ssl_ctx, SSL_OP_NO_SSLv2);
     if (key_file && cert_file)
     {
 	if (SSL_CTX_use_PrivateKey_file(

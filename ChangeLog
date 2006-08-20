@@ -1,4 +1,6 @@
 Version 1.4.7 (not yet released):
+- Disable SSLv2 because it has known flaws. This only affects the OpenSSL
+  version because GNU TLS does not implement SSLv2.
 - Add new command tls_force_sslv3 and option --tls-force-sslv3 to force
   TLS/SSL version SSLv3. This is needed to use SSL with some old and broken 
   servers. Closes Debian bug #374610, reported by Marko Mäkelä. Thanks to 

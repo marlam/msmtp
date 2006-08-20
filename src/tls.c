@@ -926,7 +926,7 @@ int tls_check_cert(tls_t *tls, const char *hostname, int verify, char **errstr)
  */
 
 int tls_init(tls_t *tls, const char *key_file, const char *cert_file, 
-	const char *trust_file, char **errstr)
+	const char *trust_file, int force_sslv3, char **errstr)
 {
 #ifdef HAVE_LIBGNUTLS
     int error_code;
@@ -943,6 +943,18 @@ int tls_init(tls_t *tls, const char *key_file, const char *cert_file,
 		gnutls_strerror(error_code));
 	gnutls_deinit(tls->session);
 	return TLS_ELIBFAILED;
+    }
+    if (force_sslv3)
+    {
+	const int force_sslv3_proto_prio[2] = { GNUTLS_SSL3, 0 };
+	if ((error_code = gnutls_protocol_set_priority(tls->session, 
+			force_sslv3_proto_prio)) != 0)
+	{
+	    *errstr = xasprintf(_("cannot force SSLv3: %s"),
+	    	    gnutls_strerror(error_code));
+	    gnutls_deinit(tls->session);
+	    return TLS_ELIBFAILED;
+	}
     }
     if ((error_code = gnutls_certificate_allocate_credentials(&tls->cred)) < 0)
     {
@@ -996,13 +1008,13 @@ int tls_init(tls_t *tls, const char *key_file, const char *cert_file,
     
     SSL_METHOD *ssl_method = NULL;
     
-    if (!(ssl_method = SSLv23_client_method()))
+    ssl_method = force_sslv3 ? SSLv3_client_method() : SSLv23_client_method();
+    if (!ssl_method)
     {
 	*errstr = xasprintf(_("cannot set TLS method"));
 	return TLS_ELIBFAILED;
     }
-    tls->ssl_ctx = SSL_CTX_new(ssl_method);
-    if (!tls->ssl_ctx)
+    if (!(tls->ssl_ctx = SSL_CTX_new(ssl_method)))
     {
 	*errstr = xasprintf(_("cannot create TLS context: %s"),
 		ERR_error_string(ERR_get_error(), NULL));

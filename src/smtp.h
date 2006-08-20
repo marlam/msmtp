@@ -3,7 +3,7 @@
  * 
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2000, 2003, 2004, 2005
+ * Copyright (C) 2000, 2003, 2004, 2005, 2006
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -173,7 +173,8 @@ int smtp_init(smtp_server_t *srv, const char *ehlo_domain, list_t **msg,
  */
 #ifdef HAVE_TLS
 int smtp_tls_init(smtp_server_t *srv, const char *tls_key_file, 
-	const char *tls_ca_file, const char *tls_trust_file, char **errstr);
+ 	const char *tls_ca_file, const char *tls_trust_file, 
+ 	int sslv3only, char **errstr);
 #endif /* HAVE_TLS */
 
 /*

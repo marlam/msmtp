@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2000, 2003, 2004, 2005
+ * Copyright (C) 2000, 2003, 2004, 2005, 2006
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -59,13 +59,14 @@
 #define ACC_PASSWORD		(1 << 13)
 #define ACC_NTLMDOMAIN		(1 << 14)
 #define ACC_TLS			(1 << 15)
-#define ACC_TLS_KEY_FILE	(1 << 16)
-#define ACC_TLS_CERT_FILE	(1 << 17)
-#define ACC_TLS_TRUST_FILE	(1 << 18)
-#define ACC_TLS_NOCERTCHECK	(1 << 19)
-#define ACC_TLS_NOSTARTTLS	(1 << 20)
-#define ACC_LOGFILE		(1 << 21)
-#define ACC_SYSLOG		(1 << 22)
+#define ACC_TLS_NOSTARTTLS	(1 << 16)
+#define ACC_TLS_KEY_FILE	(1 << 17)
+#define ACC_TLS_CERT_FILE	(1 << 18)
+#define ACC_TLS_TRUST_FILE	(1 << 19)
+#define ACC_TLS_NOCERTCHECK	(1 << 20)
+#define ACC_TLS_FORCE_SSLV3	(1 << 21)
+#define ACC_LOGFILE		(1 << 22)
+#define ACC_SYSLOG		(1 << 23)
 
 typedef struct
 {
@@ -99,9 +100,10 @@ typedef struct
     char *tls_key_file;		/* file in PEM format */
     char *tls_cert_file;	/* file in PEM format */
     char *tls_trust_file;	/* file in PEM format */
-    int tls_nocertcheck;	/* flag: do not check certificate? */
     int tls_nostarttls;		/* flag: start TLS immediatly 
 				   (without STARTTLS command)? */
+    int tls_nocertcheck;	/* flag: do not check certificate? */
+    int tls_force_sslv3;	/* flag: force SSLv3? */
     /* logging */
     char *logfile;		/* NULL or logfile */
     char *syslog;		/* NULL or syslog facility */

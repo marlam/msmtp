@@ -285,6 +285,12 @@ TLS encryption. It is enabled by default.
 @xref{Transport Layer Security}.
 For compatibility with older versions, @samp{tls_nostarttls} is accepted as an
 alias for @samp{tls_starttls off}.
+@anchor{tls_force_sslv3}
+@item tls_force_sslv3 [(on|off)]
+@cmindex tls_force_sslv3
+Force TLS/SSL version SSLv3. This might be needed to use SSL with some old and 
+broken servers. Do not use this unless you have to.
+@xref{Transport Layer Security}.
 @end table
 
 @section Commands specific to sendmail mode
@@ -499,6 +505,10 @@ Enable or disable server certificate checks for TLS encryption.
 @itemx --tls-starttls[=(on|off)]
 @opindex --tls-starttls
 Enable or disable STARTTLS for TLS encryption. @xref{tls_starttls}.
+@anchor{--tls-force-sslv3}
+@itemx --tls-force-sslv3[=(on|off)]
+@opindex --tls-force-sslv3
+Force TLS/SSL version SSLv3. @xref{tls_force_sslv3}.
 @end table
 
 @subsection Options specific to sendmail mode

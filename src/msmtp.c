@@ -461,7 +461,8 @@ int msmtp_rmqs(account_t *acc, int debug, const char *rmqs_argument,
     if (acc->tls)
     {
 	if ((e = smtp_tls_init(&srv, acc->tls_key_file, acc->tls_cert_file, 
-			acc->tls_trust_file, errstr)) != TLS_EOK)
+			acc->tls_trust_file, acc->tls_force_sslv3, errstr)) 
+		!= TLS_EOK)
 	{
 	    return exitcode_tls(e);
 	}
@@ -634,7 +635,8 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
     {
 	tci = tls_cert_info_new();
 	if ((e = smtp_tls_init(&srv, acc->tls_key_file, acc->tls_cert_file, 
-			acc->tls_trust_file, errstr)) != TLS_EOK)
+			acc->tls_trust_file, acc->tls_force_sslv3, errstr)) 
+		!= TLS_EOK)
 	{
 	    e = exitcode_tls(e);
 	    goto error_exit;
@@ -1370,7 +1372,8 @@ int msmtp_sendmail(account_t *acc, list_t *recipients, int read_recipients,
     if (acc->tls)
     {
 	if ((e = smtp_tls_init(&srv, acc->tls_key_file, acc->tls_cert_file, 
-			acc->tls_trust_file, errstr)) != TLS_EOK)
+			acc->tls_trust_file, acc->tls_force_sslv3, errstr)) 
+		!= TLS_EOK)
 	{
 	    e = exitcode_tls(e);
 	    goto error_exit;
@@ -2120,6 +2123,7 @@ void msmtp_print_help(void)
 	    "  --user=[username]            Set/unset user name for "
 	    	"authentication.\n"
 	    "  --tls[=(on|off)]             Enable/disable TLS encryption.\n"
+	    "  --tls-starttls[=(on|off)]    Enable/disable STARTTLS for TLS.\n"
 	    "  --tls-trust-file=[file]      Set/unset trust file for TLS.\n"
             "  --tls-key-file=[file]        Set/unset private key file for "
 	    	"TLS.\n"
@@ -2127,7 +2131,8 @@ void msmtp_print_help(void)
 	    	"TLS.\n"
 	    "  --tls-certcheck[=(on|off)]   Enable/disable server certificate "
 	    	"checks for TLS.\n"
-	    "  --tls-starttls[=(on|off)]    Enable/disable STARTTLS for TLS.\n"
+	    "  --tls-force-sslv3[=(on|off)] Enable/disable restriction to "
+	        "SSLv3.\n"
             "Options specific to sendmail mode:\n"
 	    "  --auto-from[=(on|off)]       Enable/disable automatic "
 	        "envelope-from addresses.\n"
@@ -2189,18 +2194,19 @@ typedef struct
 #define LONGONLYOPT_AUTH		5
 #define LONGONLYOPT_USER		6
 #define LONGONLYOPT_TLS			7
-#define LONGONLYOPT_TLS_TRUST_FILE	8
-#define LONGONLYOPT_TLS_KEY_FILE	9
-#define LONGONLYOPT_TLS_CERT_FILE	10
-#define LONGONLYOPT_TLS_CERTCHECK	11
-#define LONGONLYOPT_TLS_STARTTLS	12
-#define LONGONLYOPT_PROTOCOL		13
-#define LONGONLYOPT_DOMAIN		14
-#define LONGONLYOPT_KEEPBCC		15
-#define LONGONLYOPT_RMQS		16
-#define LONGONLYOPT_SYSLOG		17
-#define LONGONLYOPT_MAILDOMAIN		18
-#define LONGONLYOPT_AUTO_FROM		19
+#define LONGONLYOPT_TLS_STARTTLS	8
+#define LONGONLYOPT_TLS_TRUST_FILE	9
+#define LONGONLYOPT_TLS_KEY_FILE	10
+#define LONGONLYOPT_TLS_CERT_FILE	11
+#define LONGONLYOPT_TLS_CERTCHECK	12
+#define LONGONLYOPT_TLS_FORCE_SSLV3	13
+#define LONGONLYOPT_PROTOCOL		14
+#define LONGONLYOPT_DOMAIN		15
+#define LONGONLYOPT_KEEPBCC		16
+#define LONGONLYOPT_RMQS		17
+#define LONGONLYOPT_SYSLOG		18
+#define LONGONLYOPT_MAILDOMAIN		19
+#define LONGONLYOPT_AUTO_FROM		20
 
 int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
 {
@@ -2226,11 +2232,12 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
 	{ "auth",            optional_argument, 0, LONGONLYOPT_AUTH },
 	{ "user",            required_argument, 0, LONGONLYOPT_USER },
 	{ "tls",             optional_argument, 0, LONGONLYOPT_TLS },
+	{ "tls-starttls",    optional_argument, 0, LONGONLYOPT_TLS_STARTTLS },
 	{ "tls-trust-file",  required_argument, 0, LONGONLYOPT_TLS_TRUST_FILE },
 	{ "tls-key-file",    required_argument, 0, LONGONLYOPT_TLS_KEY_FILE },
 	{ "tls-cert-file",   required_argument, 0, LONGONLYOPT_TLS_CERT_FILE },
 	{ "tls-certcheck",   optional_argument, 0, LONGONLYOPT_TLS_CERTCHECK },
-	{ "tls-starttls",    optional_argument, 0, LONGONLYOPT_TLS_STARTTLS },
+	{ "tls-force-sslv3", optional_argument, 0, LONGONLYOPT_TLS_FORCE_SSLV3 },
 	{ "dsn-notify",      required_argument, 0, 'N' },
 	{ "dsn-return",      required_argument, 0, 'R' },
 	{ "protocol",        required_argument, 0, LONGONLYOPT_PROTOCOL },
@@ -2480,6 +2487,24 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
 		}
 		conf->cmdline_account->mask |= ACC_TLS;
 		break;
+		
+	    case LONGONLYOPT_TLS_STARTTLS:
+	    	if (!optarg || is_on(optarg))
+    		{
+		    conf->cmdline_account->tls_nostarttls = 0;
+		}
+		else if (is_off(optarg))
+		{
+		    conf->cmdline_account->tls_nostarttls = 1;
+		}
+		else
+		{
+		    print_error(_("invalid argument %s for %s"), 
+			    optarg, "--tls-starttls");
+		    error_code = 1;
+		}
+		conf->cmdline_account->mask |= ACC_TLS_NOSTARTTLS;
+		break;
 
 	    case LONGONLYOPT_TLS_TRUST_FILE:
 		free(conf->cmdline_account->tls_trust_file);
@@ -2539,22 +2564,22 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
 		conf->cmdline_account->mask |= ACC_TLS_NOCERTCHECK;
 		break;
 
-	    case LONGONLYOPT_TLS_STARTTLS:
-	    	if (!optarg || is_on(optarg))
+	    case LONGONLYOPT_TLS_FORCE_SSLV3:
+	   	if (!optarg || is_on(optarg))
     		{
-		    conf->cmdline_account->tls_nostarttls = 0;
+		    conf->cmdline_account->tls_force_sslv3 = 1;
 		}
 		else if (is_off(optarg))
 		{
-		    conf->cmdline_account->tls_nostarttls = 1;
+		    conf->cmdline_account->tls_force_sslv3 = 0;
 		}
 		else
 		{
 		    print_error(_("invalid argument %s for %s"), 
-			    optarg, "--tls-starttls");
+			    optarg, "--tls-force-sslv3");
 		    error_code = 1;
 		}
-		conf->cmdline_account->mask |= ACC_TLS_NOSTARTTLS;
+		conf->cmdline_account->mask |= ACC_TLS_FORCE_SSLV3;
 		break;
 
 	    case 'N':
@@ -2942,20 +2967,22 @@ void msmtp_print_conf(msmtp_cmdline_conf_t conf, account_t *account)
 	    "password        = %s\n"
 	    "ntlmdomain      = %s\n"
 	    "tls             = %s\n"
+	    "tls_starttls    = %s\n"
 	    "tls_trust_file  = %s\n"
 	    "tls_key_file    = %s\n"
 	    "tls_cert_file   = %s\n"
-	    "tls_starttls    = %s\n"
-	    "tls_certcheck   = %s\n",
+	    "tls_certcheck   = %s\n"
+	    "tls_force_sslv3 = %s\n",
 	    account->username ? account->username : _("(not set)"),
 	    account->password ? "*" : _("(not set)"),
 	    account->ntlmdomain ? account->ntlmdomain : _("(not set)"),
 	    account->tls ? _("on") : _("off"), 
+	    account->tls_nostarttls ? _("off") : _("on"),
 	    account->tls_trust_file ? account->tls_trust_file : _("(not set)"),
 	    account->tls_key_file ? account->tls_key_file : _("(not set)"),
 	    account->tls_cert_file ? account->tls_cert_file : _("(not set)"),
-	    account->tls_nostarttls ? _("off") : _("on"),
-	    account->tls_nocertcheck ? _("off") : _("on"));
+	    account->tls_nocertcheck ? _("off") : _("on"),
+	    account->tls_force_sslv3 ? _("on") : _("off"));
     if (conf.sendmail)
     {
 	printf("auto_from       = %s\n"

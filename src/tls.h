@@ -3,7 +3,7 @@
  * 
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2000, 2003, 2004, 2005
+ * Copyright (C) 2000, 2003, 2004, 2005, 2006
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -110,11 +110,14 @@ void tls_clear(tls_t *tls);
  * set to be used when the peer request a certificate. If 'trust_file' is not
  * NULL, it will be used to verify the peer certificate.
  * All files must be in PEM format.
+ * If 'force_sslv3' is set, then only the SSLv3 protocol will be accepted. This
+ * option might be needed to talk to some obsolete broken servers. Only use this
+ * if you have to.
  * Used error codes: TLS_ELIBFAILED, TLS_EFILE
  */
 int tls_init(tls_t *tls, 
 	const char *key_file, const char *ca_file, const char *trust_file, 
-	char **errstr);
+	int force_sslv3, char **errstr);
 
 /*
  * tls_start()

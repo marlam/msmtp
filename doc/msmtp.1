@@ -102,6 +102,8 @@ Enable or disable server certificate checks for TLS encryption. See the
 .IP "--tls-starttls[=(\fIon\fP|\fIoff\fP)]"
 Enable or disable STARTTLS for TLS encryption. See the \fBtls_starttls\fP
 command below.
+.IP "--tls-force-sslv3[=(\fIon\fP|\fIoff\fP)]"
+Force TLS/SSL version SSLv3. See the \fBtls_force_sslv3\fP command below.
 .IP "--domain=[\fIstring\fP]"
 Set the argument of the SMTP EHLO (or LMTP LHLO) command. See the \fBdomain\fP
 command below.
@@ -343,6 +345,9 @@ operation.
 .br
 For compatibility with older versions, \fBtls_nostarttls\fP is accepted as an
 alias for \fBtls_starttls off\fP.
+.IP "tls_force_sslv3 [(\fIon\fP|\fIoff\fP)]"
+Force TLS/SSL version SSLv3. This might be needed to use SSL with some old and 
+broken servers. Do not use this unless you have to.
 .IP "dsn_notify (\fIoff\fP|\fIcondition\fP)"
 This command sets the condition(s) under which the mail system should send DSN
 (Delivery Status Notification) messages. The argument \fIoff\fP disables

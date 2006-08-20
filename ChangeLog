@@ -1,4 +1,8 @@
 Version 1.4.7 (not yet released):
+- Add new command tls_force_sslv3 and option --tls-force-sslv3 to force
+  TLS/SSL version SSLv3. This is needed to use SSL with some old and broken 
+  servers. Closes Debian bug #374610, reported by Marko Mäkelä. Thanks to 
+  Julien Louis for tracking this problem down and testing the patch.
 - Changed detection of libgnutls so that it works with version >= 1.2.0 again.
 - Improvements for the build system:
   - Quote arguments of M4 macros.

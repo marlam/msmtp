@@ -17,7 +17,6 @@ noinst_LIBRARIES = libgnu.a
 libgnu_a_SOURCES =
 libgnu_a_LIBADD = @LIBOBJS@
 noinst_HEADERS =
-pkgdata_DATA =
 EXTRA_DIST =
 BUILT_SOURCES =
 SUFFIXES =

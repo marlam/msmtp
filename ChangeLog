@@ -1,3 +1,9 @@
+Version 1.4.8 (not yet released):
+- Gnulib update. Removes the initialization of pkgdata_DATA from
+  gnulib/Makefile.am, thanks to a fix by Bruno Haible. 'make install' will no
+  longer create an empty directory $(pkgdatadir) anymore (the default for
+  $(pkgdatadir) is /usr/local/share/msmtp). Reported by Roman Bogorodskiy.
+
 Version 1.4.7:
 - Gnulib update. The nanosleep module still differs from the official gnulib
   source.

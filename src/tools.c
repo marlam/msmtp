@@ -621,6 +621,7 @@ char *string_replace(char *str, const char *s, const char *r)
 {
     char *p, *new_str;
     size_t next_pos = 0;
+    size_t slen = strlen(s);
     size_t rlen = strlen(r);
 
     while ((p = strstr(str + next_pos, s)))
@@ -629,7 +630,7 @@ char *string_replace(char *str, const char *s, const char *r)
 	strncpy(new_str, str, (size_t)(p - str));
 	strcpy(new_str + (size_t)(p - str), r);
 	strcpy(new_str + (size_t)(p - str) + rlen, 
-		str + (size_t)(p - str) + 2);
+		str + (size_t)(p - str) + slen);
 	next_pos = (size_t)(p - str) + rlen;
 	free(str);
 	str = new_str;

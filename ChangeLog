@@ -1,4 +1,5 @@
 Version 1.4.8 (not yet released):
+- Fix a bug in string_replace(). This bug did not affect msmtp.
 - Gnulib update. Removes the initialization of pkgdata_DATA from
   gnulib/Makefile.am, thanks to a fix by Bruno Haible. 'make install' will no
   longer create an empty directory $(pkgdatadir) anymore (the default for

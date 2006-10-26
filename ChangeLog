@@ -1,4 +1,7 @@
 Version 1.4.8 (not yet released):
+- Improved the configure check for the OpenSSL libraries. This fixes a build
+  failure on Mac OS X. Reported by Michael Williams, who also tested the fix.
+  Thanks!
 - Fix a bug in string_replace(). This bug did not affect msmtp.
 - Gnulib update. Removes the initialization of pkgdata_DATA from
   gnulib/Makefile.am, thanks to a fix by Bruno Haible. 'make install' will no

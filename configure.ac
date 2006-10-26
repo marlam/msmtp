@@ -121,15 +121,19 @@ fi
 if test "$want_openssl" = "yes" -a "$have_tls" = "no"; then
     have_openssl=no
     if test "$windows" = "yes"; then
-        AC_LIB_HAVE_LINKFLAGS([ssl32], [], [#include <openssl/ssl.h>],
-            [SSL_library_init();])
+        AC_LIB_HAVE_LINKFLAGS([ssl32], [eay32], 
+	    [#include <openssl/ssl.h>
+	     #include <openssl/err.h>],
+            [SSL_library_init(); ERR_get_error(); ])
         if test "$HAVE_LIBSSL32" = yes; then
 	    have_openssl=yes
             LIBS="$LIBS $LIBSSL32"
         fi
     else
-        AC_LIB_HAVE_LINKFLAGS([ssl], [], [#include <openssl/ssl.h>],
-            [SSL_library_init();])
+        AC_LIB_HAVE_LINKFLAGS([ssl], [crypto], 
+	    [#include <openssl/ssl.h>
+	     #include <openssl/err.h>],
+            [SSL_library_init(); ERR_get_error(); ])
         if test "$HAVE_LIBSSL" = yes; then
 	    have_openssl=yes
             LIBS="$LIBS $LIBSSL"

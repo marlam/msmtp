@@ -46,7 +46,6 @@ extern int errno;
 #endif
 
 #include "gettext.h"
-#include "nanosleep.h"
 #include "xalloc.h"
 
 #include "tools.h"
@@ -570,11 +569,23 @@ error_exit:
  * see tools.h
  */
 
+/* Helper function that sleeps for the tenth of a second */
+static void sleep_tenth_second(void)
+{
+#ifdef W32_NATIVE
+    Sleep(100);
+#elif defined DJGPP
+    usleep(100000);
+#else /* POSIX */
+    struct timespec tenth_second = { 0, 100000000 };
+    nanosleep(&tenth_second, NULL);
+#endif
+}
+
 int lock_file(FILE *f, int lock_type, int timeout)
 {
     int fd;
     int lock_success;
-    struct timespec tenth_second = { 0, 100000000 };
     int tenth_seconds;
 #ifndef W32_NATIVE
     struct flock lock;
@@ -603,7 +614,7 @@ int lock_file(FILE *f, int lock_type, int timeout)
 	}
 	else
 	{
- 	    nanosleep(&tenth_second, NULL);
+	    sleep_tenth_second();
 	    tenth_seconds++;
 	}
     }

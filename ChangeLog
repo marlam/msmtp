@@ -1,4 +1,5 @@
 Version 1.4.8 (not yet released):
+- Update gettext files to gettext-0.16.
 - Improved the configure check for the OpenSSL libraries. This fixes a build
   failure on Mac OS X. Reported by Michael Williams, who also tested the fix.
   Thanks!

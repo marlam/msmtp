@@ -1,4 +1,4 @@
-Version 1.4.8 (not yet released):
+Version 1.4.8:
 - Gnulib update. There are no local changes anymore.
 - Do not use nanosleep() on W32 anymore. Use Sleep() instead.
   Do not use nanosleep() on DJGPP anymore. Use usleep() instead.

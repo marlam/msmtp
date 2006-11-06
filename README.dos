@@ -37,8 +37,3 @@ To compile msmtp, you need:
 - The Watt32 networking library for DOS from http://www.bgnett.no/~giva/
   The library should be available as libsocket.a in the DJGPP lib
   directory (as is suggested in the Watt32 docs).
-Delete the line 51 (#include "timespec.h") from gnulib/nanosleep.c.
-(This is necessary because the Watt32 library defines struct timespec in a
-non-standard header. DJGPP itself does not define struct timespec, therefore
-the gnulib timespec.h header must define it. The nanosleep.c module includes
-both header files, resulting in a conflict of the two definitions.)

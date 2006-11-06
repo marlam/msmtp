@@ -43,17 +43,17 @@ dnl System
 case "${target}" in *-*-mingw32*) windows=yes ;; *) windows=no ;; esac
 
 
-dnl Functions
-AC_CHECK_FUNCS([syslog], [], [])
-
-
 dnl gnulib 
 gl_INIT
-LIBS="$LIBS $LIB_NANOSLEEP"
 
 
 dnl Gettext
 AM_GNU_GETTEXT([external])
+
+
+dnl Functions
+AC_CHECK_FUNCS([syslog], [], [])
+AC_SEARCH_LIBS([nanosleep], [rt posix4])
 
 
 dnl Networking libraries, getaddrinfo()

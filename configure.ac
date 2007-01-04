@@ -3,7 +3,7 @@ dnl Process this file with autoconf to produce a configure script.
 #
 # This file is part of msmtp, an SMTP client.
 #
-# Copyright (C) 2003, 2004, 2005, 2006
+# Copyright (C) 2003, 2004, 2005, 2006, 2007
 # Christophe Nowicki
 # Martin Lambers <marlam@marlam.de>
 #
@@ -22,7 +22,7 @@ dnl Process this file with autoconf to produce a configure script.
 #   Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 
-AC_INIT([msmtp], [1.4.9], [marlam@marlam.de])
+AC_INIT([msmtp], [1.4.10], [marlam@marlam.de])
 AC_CONFIG_SRCDIR([src/msmtp.c])
 AC_CANONICAL_SYSTEM
 
@@ -33,28 +33,20 @@ AC_PROG_CC
 gl_EARLY
 AC_PROG_RANLIB
 AC_PROG_INSTALL
-
-AC_C_CONST
-
-AC_HEADER_STDC
-
+AC_SYS_LARGEFILE
 
 dnl System
 case "${target}" in *-*-mingw32*) windows=yes ;; *) windows=no ;; esac
 
-
 dnl gnulib 
 gl_INIT
-
 
 dnl Gettext
 AM_GNU_GETTEXT([external])
 
-
 dnl Functions
 AC_CHECK_FUNCS([syslog], [], [])
 AC_SEARCH_LIBS([nanosleep], [rt posix4])
-
 
 dnl Networking libraries, getaddrinfo()
 if test "$windows" = "yes"; then
@@ -77,7 +69,6 @@ else
          AC_CHECK_FUNC([hstrerror], [], 
             [AC_CHECK_LIB([resolv], [hstrerror], [LIBS="$LIBS -lresolv"])])])
 fi
-
 
 dnl TLS/SSL
 have_tls=no
@@ -155,7 +146,6 @@ elif test "$want_tls" = "yes"; then
 fi
 AC_SUBST([tls_obj])
 
-
 dnl GNU SASL
 AC_ARG_WITH([libgsasl], [AC_HELP_STRING([--with-libgsasl],
 	[Use GNU SASL authentication library.])],
@@ -172,7 +162,6 @@ if test "$libgsasl" != "no"; then
     fi
 fi
 
-
 dnl GNU Libidn
 AC_ARG_WITH([libidn], [AC_HELP_STRING([--with-libidn],
 	[Support IDN (needs GNU Libidn)])],
@@ -188,7 +177,6 @@ if test "$libidn" != "no"; then
 	LIBS="$LIBS $LIBIDN"
     fi
 fi
-
 
 dnl Global #defines for all source files
 AH_VERBATIM([UNUSED],
@@ -211,7 +199,6 @@ AH_VERBATIM([W32_NATIVE],
 #if (defined _WIN32 || defined __WIN32__) && !defined __CYGWIN__
 #define W32_NATIVE 1
 #endif])
-
 
 dnl End.
 AC_CONFIG_FILES([Makefile doc/Makefile gnulib/Makefile po/Makefile.in src/Makefile])

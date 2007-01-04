@@ -1,3 +1,7 @@
+Version 1.4.10 (not yet released):
+- Added AC_SYS_LARGEFILE to configure.ac, for large file support. Removed the
+  unnecessary AC_C_CONST and AC_HEADER_STDC.
+
 Version 1.4.9:
 - Remove gnulib module nanosleep. This fixes more build problems.
 

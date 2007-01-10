@@ -31,7 +31,6 @@
 #include <string.h>
 #include <ctype.h>
 #include <errno.h>
-extern int errno;
 
 #include "gettext.h"
 #include "xalloc.h"

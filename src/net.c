@@ -32,7 +32,6 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
-extern int errno;
 #include <sys/time.h>
 #include <sys/types.h>
 #ifdef W32_NATIVE

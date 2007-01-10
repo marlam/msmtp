@@ -33,7 +33,6 @@
 #include <limits.h>
 #include <time.h>
 #include <errno.h>
-extern int errno;
 
 #ifdef HAVE_LIBGNUTLS
 # include <gnutls/gnutls.h>

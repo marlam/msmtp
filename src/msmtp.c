@@ -31,7 +31,6 @@
 #include <string.h>
 #include <ctype.h>
 #include <errno.h>
-extern int errno;
 #include <time.h>
 #include <getopt.h>
 extern char *optarg;

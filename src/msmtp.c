@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2000, 2003, 2004, 2005, 2006
+ * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -2058,7 +2058,7 @@ void msmtp_print_version(void)
     free(userconffile);
     free(homedir);
     printf("\n");
-    printf(_("Copyright (C) 2006 Martin Lambers and others.\n"
+    printf(_("Copyright (C) 2007 Martin Lambers and others.\n"
 		"This is free software.  You may redistribute copies of "
 		    "it under the terms of\n"
 		"the GNU General Public License "

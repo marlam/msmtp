@@ -64,17 +64,22 @@
    On pre-ANSI systems without 'const', the config.h file is supposed to
    contain "#define const".  */
 # define gettext(Msgid) ((const char *) (Msgid))
-# define dgettext(Domainname, Msgid) ((const char *) (Msgid))
-# define dcgettext(Domainname, Msgid, Category) ((const char *) (Msgid))
+# define dgettext(Domainname, Msgid) ((void) (Domainname), gettext (Msgid))
+# define dcgettext(Domainname, Msgid, Category) \
+    ((void) (Category), dgettext (Domainname, Msgid))
 # define ngettext(Msgid1, Msgid2, N) \
-    ((N) == 1 ? (const char *) (Msgid1) : (const char *) (Msgid2))
+    ((N) == 1 \
+     ? ((void) (Msgid2), (const char *) (Msgid1)) \
+     : ((void) (Msgid1), (const char *) (Msgid2)))
 # define dngettext(Domainname, Msgid1, Msgid2, N) \
-    ((N) == 1 ? (const char *) (Msgid1) : (const char *) (Msgid2))
+    ((void) (Domainname), ngettext (Msgid1, Msgid2, N))
 # define dcngettext(Domainname, Msgid1, Msgid2, N, Category) \
-    ((N) == 1 ? (const char *) (Msgid1) : (const char *) (Msgid2))
+    ((void) (Category), dngettext(Domainname, Msgid1, Msgid2, N))
 # define textdomain(Domainname) ((const char *) (Domainname))
-# define bindtextdomain(Domainname, Dirname) ((const char *) (Dirname))
-# define bind_textdomain_codeset(Domainname, Codeset) ((const char *) (Codeset))
+# define bindtextdomain(Domainname, Dirname) \
+    ((void) (Domainname), (const char *) (Dirname))
+# define bind_textdomain_codeset(Domainname, Codeset) \
+    ((void) (Domainname), (const char *) (Codeset))
 
 #endif
 
@@ -164,7 +169,8 @@ npgettext_aux (const char *domain,
 #include <string.h>
 
 #define _LIBGETTEXT_HAVE_VARIABLE_SIZE_ARRAYS \
-  (__GNUC__ >= 3 || __GNUG__ >= 2 /* || __STDC_VERSION__ >= 199901L */ )
+  (((__GNUC__ >= 3 || __GNUG__ >= 2) && !__STRICT_ANSI__) \
+   /* || __STDC_VERSION__ >= 199901L */ )
 
 #if !_LIBGETTEXT_HAVE_VARIABLE_SIZE_ARRAYS
 #include <stdlib.h>

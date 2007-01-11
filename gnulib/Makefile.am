@@ -1,6 +1,6 @@
 ## DO NOT EDIT! GENERATED AUTOMATICALLY!
 ## Process this file with automake to produce Makefile.in.
-# Copyright (C) 2004-2006 Free Software Foundation, Inc.
+# Copyright (C) 2004-2007 Free Software Foundation, Inc.
 #
 # This file is free software, distributed under the terms of the GNU
 # General Public License.  As a special exception to the GNU General
@@ -13,12 +13,9 @@
 
 AUTOMAKE_OPTIONS = 1.5 gnits
 
-noinst_LIBRARIES = libgnu.a
-
-libgnu_a_SOURCES =
-libgnu_a_LIBADD = $(gl_LIBOBJS)
-libgnu_a_DEPENDENCIES = $(gl_LIBOBJS)
 noinst_HEADERS =
+noinst_LIBRARIES =
+noinst_LTLIBRARIES =
 EXTRA_DIST =
 BUILT_SOURCES =
 SUFFIXES =
@@ -29,6 +26,13 @@ DISTCLEANFILES =
 MAINTAINERCLEANFILES =
 
 AM_CPPFLAGS =
+
+noinst_LIBRARIES += libgnu.a
+
+libgnu_a_SOURCES =
+libgnu_a_LIBADD = $(gl_LIBOBJS)
+libgnu_a_DEPENDENCIES = $(gl_LIBOBJS)
+EXTRA_libgnu_a_SOURCES =
 
 ## begin gnulib module alloca-opt
 
@@ -58,12 +62,16 @@ libgnu_a_SOURCES += base64.h base64.c
 
 EXTRA_DIST += getdelim.c getdelim.h
 
+EXTRA_libgnu_a_SOURCES += getdelim.c
+
 ## end   gnulib module getdelim
 
 ## begin gnulib module getline
 
 
 EXTRA_DIST += getline.c getline.h
+
+EXTRA_libgnu_a_SOURCES += getline.c
 
 ## end   gnulib module getline
 
@@ -82,12 +90,16 @@ MOSTLYCLEANFILES += getopt.h getopt.h-t
 
 EXTRA_DIST += getopt.c getopt1.c getopt_.h getopt_int.h
 
+EXTRA_libgnu_a_SOURCES += getopt.c getopt1.c
+
 ## end   gnulib module getopt
 
 ## begin gnulib module getpass
 
 
 EXTRA_DIST += getpass.c getpass.h
+
+EXTRA_libgnu_a_SOURCES += getpass.c
 
 ## end   gnulib module getpass
 
@@ -116,6 +128,8 @@ libgnu_a_SOURCES += gettext.h
 
 EXTRA_DIST += hmac-md5.c hmac.h
 
+EXTRA_libgnu_a_SOURCES += hmac-md5.c
+
 ## end   gnulib module hmac-md5
 
 ## begin gnulib module md5
@@ -123,12 +137,16 @@ EXTRA_DIST += hmac-md5.c hmac.h
 
 EXTRA_DIST += md5.c md5.h
 
+EXTRA_libgnu_a_SOURCES += md5.c
+
 ## end   gnulib module md5
 
 ## begin gnulib module memxor
 
 
 EXTRA_DIST += memxor.c memxor.h
+
+EXTRA_libgnu_a_SOURCES += memxor.c
 
 ## end   gnulib module memxor
 
@@ -251,6 +269,8 @@ MOSTLYCLEANFILES += unistd.h
 
 EXTRA_DIST += asnprintf.c printf-args.c printf-args.h printf-parse.c printf-parse.h vasnprintf.c vasnprintf.h
 
+EXTRA_libgnu_a_SOURCES += asnprintf.c printf-args.c printf-parse.c vasnprintf.c
+
 ## end   gnulib module vasnprintf
 
 ## begin gnulib module vasprintf
@@ -258,12 +278,16 @@ EXTRA_DIST += asnprintf.c printf-args.c printf-args.h printf-parse.c printf-pars
 
 EXTRA_DIST += asprintf.c vasprintf.c vasprintf.h
 
+EXTRA_libgnu_a_SOURCES += asprintf.c vasprintf.c
+
 ## end   gnulib module vasprintf
 
 ## begin gnulib module xalloc
 
 
 EXTRA_DIST += xalloc.h xmalloc.c
+
+EXTRA_libgnu_a_SOURCES += xmalloc.c
 
 ## end   gnulib module xalloc
 

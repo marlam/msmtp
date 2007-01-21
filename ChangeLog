@@ -1,4 +1,4 @@
-Version 1.4.10 (not yet released):
+Version 1.4.10:
 - Updated copyright info to 2007.
 - Gnulib update to 2007-01-10.
 - From mpop: Switch to autoconf-2.61 and automake-1.10, to avoid problems with

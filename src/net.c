@@ -39,13 +39,13 @@
 # include <winsock2.h>
 # include <ws2tcpip.h>
 #else
+# include <sys/socket.h>
+# include <arpa/inet.h>
+# include <netdb.h>
 # ifndef HAVE_GETADDRINFO
 #  include <netinet/in.h>
    extern int h_errno;
 # endif
-# include <sys/socket.h>
-# include <arpa/inet.h>
-# include <netdb.h>
 # ifndef NI_MAXHOST
 #  define NI_MAXHOST 1025
 # endif
@@ -60,6 +60,42 @@
 #include "xvasprintf.h"
 
 #include "net.h"
+
+
+/*
+ * hstrerror()
+ *
+ * This function is only used on systems that 
+ * 1. lack getaddrinfo(), so that gethostbyname() must be used instead, and
+ * 2. do not provide hstrerror() themselves.
+ * The messages are identical to the ones in wsa_strerror() 
+ * below so that no additional strings have to be translated. 
+ */
+
+#ifndef HAVE_GETADDRINFO
+#ifndef HAVE_HSTRERROR
+const char *hstrerror(int e)
+{
+    switch (e)
+    {
+	case HOST_NOT_FOUND:
+    	    return _("host not found (authoritative)");
+
+	case TRY_AGAIN:
+    	    return _("host not found (nonauthoritative) or server failure");
+
+	case NO_RECOVERY:
+    	    return _("nonrecoverable error");
+	
+	case NO_DATA:
+    	    return _("valid name, but no data record of requested type");
+	
+	default:        /* should never happen */
+    	    return _("unknown error");
+    }
+}
+#endif
+#endif
 
 
 /*

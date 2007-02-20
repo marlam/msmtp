@@ -1,3 +1,8 @@
+Version 1.4.11 (not yet released):
+- Provide a hstrerror() function for systems that lack getaddrinfo(), so that
+  gethostbyname() must be used instead, and do not provide hstrerror()
+  themselves. Needed for Solaris 2.6. Reported and tested by Chris Green.
+
 Version 1.4.10:
 - Updated copyright info to 2007.
 - Gnulib update to 2007-01-10.

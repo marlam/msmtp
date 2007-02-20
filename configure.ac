@@ -22,7 +22,7 @@ dnl Process this file with autoconf to produce a configure script.
 #   Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 
-AC_INIT([msmtp], [1.4.10], [marlam@marlam.de])
+AC_INIT([msmtp], [1.4.11], [marlam@marlam.de])
 AC_CONFIG_SRCDIR([src/msmtp.c])
 AC_CANONICAL_SYSTEM
 

@@ -288,7 +288,7 @@ If you don't choose the method yourself, msmtp chooses the best secure method
 that the SMTP server supports. Secure means that your authentication data will
 not be sent in cleartext over the net. For TLS encrypted connections, every
 authentication method is secure in this sense. If TLS is not active, only
-gssapi, digest-md5, cram-md5 and ntlm are secure in this sense.
+gssapi, digest-md5, and cram-md5 are secure in this sense.
 .br
 The \fIexternal\fP is special: the actual authentication happens outside of the
 SMTP protocol, typically by sending a TLS client certificate (see the

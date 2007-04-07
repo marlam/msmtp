@@ -708,6 +708,9 @@ them.  Some methods send authentication data in plain text (or nearly plain
 text) to the server. These methods should only be used when TLS is active to
 prevent others from stealing the password. @xref{Transport Layer Security}.
 
+By default, msmtp chooses a method automatically, and it will never choose one 
+that puts the authentication data at risk. See below for details.
+
 msmtp supports the following authentication methods:
 @itemize
 @item @samp{PLAIN}@*
@@ -745,7 +748,8 @@ which can be easily decoded to plain text.
 @item @samp{NTLM}@*
 This is an obscure non-standard authentication method. It needs a user name and
 a password and in some cases a special domain parameter (see @ref{ntlmdomain}). 
-The authentication data is not send in plain text.
+The authentication data is not send in plain text, but since NTLM is not an open
+standard, it should be considered broken and insecure.
 @end itemize
 
 It depends on the underlying authentication library and its version whether a
@@ -761,13 +765,14 @@ The authentication method can be chosen with the @samp{auth} command or
 @samp{--auth} option, but it is usually sufficient to just use the @samp{on} 
 argument to let msmtp choose the method itself. See @ref{auth}, @ref{--auth}.
 
-If msmtp chooses the method itself, it will not choose a method that sends 
-plain text authentication data when TLS is not active. This means that only
-CRAM-MD5, DIGEST-MD5, GSSAPI, and NTLM are available when TLS is inactive.
-PLAIN and LOGIN are only available when TLS is active.
-If you really want to send clear text authentication data, you have to force
-msmtp to do that by setting the authentication method to PLAIN or LOGIN when
-TLS is off.
+If msmtp chooses the method itself, it will never choose an insecure method.
+If TLS is active, all methods are considered secure in this context, because the
+connection to the server is protected by TLS. If TLS is not active, only the
+CRAM-MD5, DIGEST-MD5, and GSSAPI methods are considered secure in this context,
+because all the others methods put the authentication data at risk.
+
+If you really want to risk your authentication data, you have to force msmtp to
+do that by manually setting the authentication method while TLS is off.
 
 @node Delivery Status Notifications
 @section Delivery Status Notifications

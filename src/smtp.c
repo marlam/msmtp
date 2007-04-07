@@ -1027,11 +1027,6 @@ int smtp_auth(smtp_server_t *srv,
 	{
 	    auth_mech = "CRAM-MD5";
 	}
-	else if (gsasl_client_support_p(ctx, "NTLM") 
-		&& (srv->cap.flags & SMTP_CAP_AUTH_NTLM))
-	{
-	    auth_mech = "NTLM";
-	}
 #ifdef HAVE_TLS
 	else if (tls_is_active(&srv->tls))
 	{
@@ -1044,6 +1039,11 @@ int smtp_auth(smtp_server_t *srv,
 		    && (srv->cap.flags & SMTP_CAP_AUTH_LOGIN))
 	    {
 		auth_mech = "LOGIN";
+	    }
+	    else if (gsasl_client_support_p(ctx, "NTLM") 
+	    	    && (srv->cap.flags & SMTP_CAP_AUTH_NTLM))
+	    {
+		auth_mech = "NTLM";
 	    }
 	}
 #endif /* HAVE_TLS */

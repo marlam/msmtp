@@ -1,4 +1,6 @@
 Version 1.4.11 (not yet released):
+- Do not use NTLM authentication automatically anymore unless TLS is active.
+  NTLM is not an open standard and must therefore be considered broken.
 - Gnulib update 2007-04-07.
 - Move build-aux files to separate directory build-aux.
 - Provide a hstrerror() function for systems that lack getaddrinfo(), so that

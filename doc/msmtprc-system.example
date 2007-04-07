@@ -14,7 +14,7 @@ host mailhub.oursite.example
 
 # Use TLS.
 #tls on
-#tls_trust_file /etc/ssl/certs/ca.pem
+#tls_trust_file /etc/ssl/certs/ca-certificates.crt
 
 # Syslog logging with facility LOG_MAIL instead of the default LOG_USER.
 syslog LOG_MAIL

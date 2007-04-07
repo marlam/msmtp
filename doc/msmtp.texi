@@ -1,7 +1,7 @@
 \input texinfo   @c -*-texinfo-*-
 @setfilename msmtp.info
-@set UPDATED February 21, 2007
-@set UPDATED-MONTH February 2007
+@set UPDATED April 7, 2007
+@set UPDATED-MONTH April 2007
 @set EDITION 1.4.11
 @set VERSION 1.4.11
 @settitle msmtp @value{VERSION}
@@ -243,16 +243,20 @@ one, even if it is an arbitrary string.
 @item tls [(on|off)]
 @cmindex tls
 This command enables or disables TLS/SSL encrypted connections to the SMTP
-server. Not every server supports TLS, and a few that do require the
-@samp{tls_starttls off} command. It is recommended to also use the
-@samp{tls_trust_file} command. @xref{Transport Layer Security}.
+server. Not every server supports TLS, and a few that support it require the
+@samp{tls_starttls off} command.@*
+To use TLS/SSL, it is required to either use the @samp{tls_trust_file} command
+(highly recommended) or to disable @samp{tls_certcheck}. 
+@xref{Transport Layer Security}.
 @anchor{tls_trust_file}
 @item tls_trust_file [@var{file}]
 @cmindex tls_trust_file
 This command activates strict server certificate verification.
-The given file must contain one or more certificates of trusted Certification
-Authorities (CAs) in PEM format. An empty argument disables this feature.
-@xref{Transport Layer Security}.
+The given file must contain one or more certificates of trusted Certification 
+Authorities (CAs) in PEM format.@*
+On Debian based systems, you can install the @samp{ca-certificates} package and
+use the file @file{/etc/ssl/certs/ca-certificates.crt}.@*
+An empty argument disables this feature.
 @anchor{tls_key_file}
 @item tls_key_file [@var{file}]
 @cmindex tls_key_file
@@ -272,9 +276,9 @@ An empty argument disables this feature.
 @anchor{tls_certcheck}
 @item tls_certcheck [(on|off)]
 @cmindex tls_certcheck
-This command enables or disables sanity checks for the server certificate.
-These checks are enabled by default, but can cause difficulties in rare cases.
-@xref{Transport Layer Security}.
+This command enables or disables checks for the server certificate.@*
+WARNING: When the checks are disabled, TLS/SSL sessions will be vulnerable to
+man-in-the-middle attacks! @xref{Transport Layer Security}.@*
 For compatibility with older versions, @samp{tls_nocertcheck} is accepted as an
 alias for @samp{tls_certcheck off}.
 @anchor{tls_starttls}
@@ -664,27 +668,13 @@ issuer, and the activation and expiration times of the certificate.  This
 information can be displayed in server information mode. 
 @xref{Server information mode}.
 
-Some sanity checks are done with the server certificate. These include: 
-@itemize 
-@item Does the certificate belong to the host name of the SMTP server?
-@item Is the certificate activated?
-@item Is the certificate still valid, or has it expired?
-@end itemize
-Sometimes one of these checks fail. msmtp will abort the connection in this 
-case. If the user still wants to use this SMTP server with TLS, the sanity 
-checks can be switched off with @samp{tls_certcheck} or @samp{--tls-certcheck}
-(see @ref{tls_certcheck}, @ref{--tls-certcheck}).
-
-Note that the SMTP server cannot be fully trusted just because the certificate
-passes the sanity checks. To verify that the user can trust the SMTP server,
-it is necessary to use a (list of) certificates of Certification Authorities
-(CAs) that are trusted. If msmtp can verify that the server certificate was
-issued by one of these CAs, then the SMTP server is trusted.
-A file containing CA certificates can be set with @samp{tls_trust_file} or 
-@samp{--tls-trust-file} (see @ref{tls_trust_file}, @ref{--tls-trust-file}).
-Using this verification mode is highly recommended. On systems compatible to 
-Debian GNU/Linux, the file @file{/etc/ssl/certs/ca-certificates.crt} from the 
-@samp{ca-certificates} package can be used.
+To use TLS, it is required to either enable full server certificate verification
+using the @samp{tls_trust_file} command or @samp{--tls-trust-file} option, or to
+disable all certificate checks using @samp{tls_certcheck off} or 
+@samp{--tls-certcheck=off}. WARNING: When certificate checks are disabled, 
+TLS/SSL sessions are vulnerable to man-in-the-middle attacks!
+See @ref{tls_trust_file}, @ref{--tls-trust-file}, @ref{tls_certcheck}, 
+@ref{--tls-certcheck}.
 
 If the server requests it, the client can send a certificate, too. This allows
 the server to verify the identity of the client. See the EXTERNAL mechanism in
@@ -980,7 +970,7 @@ host mailhub.oursite.example
 
 # Use TLS.
 #tls on
-#tls_trust_file /etc/ssl/certs/ca.pem
+#tls_trust_file /etc/ssl/certs/ca-certificates.crt
 
 # Syslog logging with facility LOG_MAIL instead of the default LOG_USER.
 syslog LOG_MAIL

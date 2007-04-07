@@ -4,7 +4,7 @@
 .\"
 .\" Copyright (C) 2005, 2006, 2007  Martin Lambers
 .\"
-.TH MSMTP 1 2007-01
+.TH MSMTP 1 2007-04
 .SH NAME
 msmtp \- An SMTP client 
 .SH SYNOPSIS
@@ -281,8 +281,8 @@ underlying authentication library. Use the \fB--version\fP option to find out
 which methods are supported.
 .br
 The \fIplain\fP and \fIlogin\fP methods send your authentication data in
-cleartext over the net and should therefore only be used together with the
-\fBtls\fP command.
+cleartext over the net, and the \fIntlm\fP method may be vulnerable to attacks.
+These methods should therefore only be used together with the \fBtls\fP command.
 .br
 If you don't choose the method yourself, msmtp chooses the best secure method
 that the SMTP server supports. Secure means that your authentication data will
@@ -311,11 +311,11 @@ even if it is an arbitrary string.
 .IP "tls [(\fIon\fP|\fIoff\fP)]"
 This command enables or disables TLS/SSL encrypted connections to the SMTP
 server. Not every server supports TLS.
+.br
 With TLS, the connection with the SMTP server will be protected against
-eavesdroppers. A sanity check will be performed on the server certificate
-(unless the \fBtls_certcheck\fP command is used to turn this off, see below).
-To make full use of the TLS/SSL capabilities, it is recommended to use the
-\fBtls_trust_file\fP command (see below).
+eavesdroppers and man-in-the-middle attacks. To use TLS/SSL, it is required to 
+either use the \fBtls_trust_file\fP command (highly recommended) or to disable 
+\fBtls_certcheck\fP.
 .IP "tls_starttls [(\fIon\fP|\fIoff\fP)]"
 By default, TLS encryption is activated using the STARTTLS SMTP command.  By
 disabling this, TLS encryption is immediately started instead (this is known as
@@ -326,10 +326,12 @@ For compatibility with older versions, \fBtls_nostarttls\fP is accepted as an
 alias for \fBtls_starttls off\fP.
 .IP "tls_trust_file [\fIfile\fP]"
 This command activates strict server certificate verification.
-The file must contain one or more certificates of trusted Certification
-Authorities (CAs) in PEM format. An empty argument disables this feature.
-With a trust file, msmtp can verify the authenticity of the server it connects
-to.
+.br
+The filename must be the absolute path name of a file in PEM format containing
+one or more certificates of trusted Certification Authorities (CAs).
+.br
+On Debian based systems, you can install the \fBca-certificates\fP package and
+use the file \fB/etc/ssl/certs/ca-certificates.crt\fP.
 .IP "tls_key_file [\fIfile\fP]"
 This command (together with the \fBtls_cert_file\fP command) enables msmtp to
 send a client certificate to the SMTP server if requested.
@@ -341,9 +343,10 @@ send a client certificate to the SMTP server if requested.
 The file must contain a certificate in PEM format.
 An empty argument disables this feature.
 .IP "tls_certcheck [(\fIon\fP|\fIoff\fP)]"
-By default, sanity checks are performed on server certificate(s) when TLS is
-used.  If the certificate(s) don't pass the checks, the TLS connection is
-aborted.  This command can turn the checks off. 
+This command enables or disables checks for the server certificate.
+.br
+\fBWARNING\fP: When the checks are disabled, TLS/SSL sessions will be vulnerable
+to man-in-the-middle attacks!
 .br
 For compatibility with older versions, \fBtls_nocertcheck\fP is accepted as an
 alias for \fBtls_certcheck off\fP.

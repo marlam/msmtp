@@ -1,4 +1,6 @@
 Version 1.4.11 (not yet released):
+- Require either tls_trust_file or tls_certcheck=off for TLS sessions, so that
+  msmtp is not silently vulnerable to man-in-the-middle attacks.
 - Do not use NTLM authentication automatically anymore unless TLS is active.
   NTLM is not an open standard and must therefore be considered broken.
 - Gnulib update 2007-04-07.

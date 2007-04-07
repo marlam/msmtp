@@ -1,4 +1,4 @@
-/* Copyright (C) 2001, 2002, 2003, 2006 Free Software Foundation, Inc.
+/* Copyright (C) 2001, 2002, 2003, 2006, 2007 Free Software Foundation, Inc.
    Written by Bruno Haible <haible@clisp.cons.org>, 2001.
 
    This program is free software; you can redistribute it and/or modify
@@ -15,8 +15,8 @@
    along with this program; if not, write to the Free Software Foundation,
    Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
 
-#ifndef _STDBOOL_H
-#define _STDBOOL_H
+#ifndef _GL_STDBOOL_H
+#define _GL_STDBOOL_H
 
 /* ISO C 99 <stdbool.h> for platforms that lack it.  */
 
@@ -40,6 +40,9 @@
        - <stdbool.h> must be #included before the '_Bool' type can be used.
 
        - You cannot assume that _Bool is a typedef; it might be a macro.
+
+       - Bit-fields of type 'bool' are not supported.  Portable code
+         should use 'unsigned int foo : 1;' rather than 'bool foo : 1;'.
 
        - In C99, casts and automatic conversions to '_Bool' or 'bool' are
          performed in such a way that every nonzero value gets converted
@@ -112,4 +115,4 @@ typedef enum { _Bool_must_promote_to_int = -1, false = 0, true = 1 } _Bool;
 #define true 1
 #define __bool_true_false_are_defined 1
 
-#endif /* _STDBOOL_H */
+#endif /* _GL_STDBOOL_H */

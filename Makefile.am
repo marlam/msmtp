@@ -1,3 +1,3 @@
-SUBDIRS = doc gnulib po src
-EXTRA_DIST = config.rpath mkinstalldirs README.w32 README.dos
-ACLOCAL_AMFLAGS = -I gnulib/m4
+SUBDIRS = build-aux gnulib src po doc
+EXTRA_DIST = README.w32 README.dos
+ACLOCAL_AMFLAGS = -I build-aux -I gnulib/m4

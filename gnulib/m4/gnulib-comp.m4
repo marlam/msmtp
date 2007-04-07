@@ -26,8 +26,11 @@ AC_DEFUN([gl_EARLY],
   m4_pattern_allow([^gl_LTLIBOBJS$])dnl a variable
   AC_REQUIRE([AC_PROG_RANLIB])
   AC_REQUIRE([AC_GNU_SOURCE])
-  AC_REQUIRE([gl_USE_SYSTEM_EXTENSIONS])
-  AC_REQUIRE([gl_LOCK_EARLY])
+  dnl Some compilers (e.g., AIX 5.3 cc) need to be in c99 mode
+  dnl for the builtin va_copy to work.  With Autoconf 2.60 or later,
+  dnl AC_PROG_CC_STDC arranges for this.  With older Autoconf AC_PROG_CC_STDC
+  dnl shouldn't hurt, though installers are on their own to set c99 mode.
+  AC_REQUIRE([AC_PROG_CC_STDC])
 ])
 
 # This macro should be invoked from ./configure.ac, in the section
@@ -44,26 +47,32 @@ AC_DEFUN([gl_INIT],
   gl_source_base='gnulib'
   gl_FUNC_ALLOCA
   gl_FUNC_BASE64
+  gl_HMAC_MD5
+  gl_MD5
   gl_FUNC_GETDELIM
   gl_FUNC_GETLINE
   gl_GETOPT
   gl_FUNC_GETPASS
   dnl you must add AM_GNU_GETTEXT([external]) or similar to configure.ac.
-  AM_GNU_GETTEXT_VERSION([0.15])
-  gl_HMAC_MD5
+  AM_GNU_GETTEXT_VERSION([0.16.1])
+  AC_SUBST([LIBINTL])
+  AC_SUBST([LTLIBINTL])
   gl_INLINE
-  gl_MD5
   gl_MEMXOR
   gl_SIZE_MAX
   gl_TYPE_SOCKLEN_T
   gl_STDARG_H
   AM_STDBOOL_H
   gl_STDINT_H
+  gl_STDIO_H
   gl_HEADER_SYS_SOCKET
+  AC_PROG_MKDIR_P
   gl_SYSEXITS
-  gl_HEADER_UNISTD
+  gl_UNISTD_H
   gl_FUNC_VASNPRINTF
   gl_FUNC_VASPRINTF
+  gl_STDIO_MODULE_INDICATOR([vasprintf])
+  gl_WCHAR_H
   gl_XALLOC
   gl_XSIZE
   gl_XVASPRINTF
@@ -109,6 +118,7 @@ AC_DEFUN([gl_LIBSOURCES],
 # gnulib-tool and may be removed by future gnulib-tool invocations.
 AC_DEFUN([gl_FILE_LIST], [
   build-aux/config.rpath
+  build-aux/link-warning.h
   lib/alloca_.h
   lib/asnprintf.c
   lib/asprintf.c
@@ -139,11 +149,13 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/socket_.h
   lib/stdbool_.h
   lib/stdint_.h
+  lib/stdio_.h
   lib/sysexit_.h
+  lib/unistd_.h
   lib/vasnprintf.c
   lib/vasnprintf.h
   lib/vasprintf.c
-  lib/vasprintf.h
+  lib/wchar_.h
   lib/xalloc.h
   lib/xasprintf.c
   lib/xmalloc.c
@@ -178,7 +190,6 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/lib-link.m4
   m4/lib-prefix.m4
   m4/lock.m4
-  m4/longdouble.m4
   m4/longlong.m4
   m4/md5.m4
   m4/memxor.m4
@@ -194,6 +205,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/stdbool.m4
   m4/stdint.m4
   m4/stdint_h.m4
+  m4/stdio_h.m4
   m4/sys_socket_h.m4
   m4/sysexits.m4
   m4/uintmax_t.m4
@@ -202,6 +214,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/vasnprintf.m4
   m4/vasprintf.m4
   m4/visibility.m4
+  m4/wchar.m4
   m4/wchar_t.m4
   m4/wint_t.m4
   m4/xalloc.m4

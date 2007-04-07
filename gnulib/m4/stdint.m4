@@ -1,5 +1,5 @@
-# stdint.m4 serial 21
-dnl Copyright (C) 2001-2002, 2004-2006 Free Software Foundation, Inc.
+# stdint.m4 serial 23
+dnl Copyright (C) 2001-2002, 2004-2007 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -26,15 +26,6 @@ AC_DEFUN([gl_STDINT_H],
     HAVE_UNSIGNED_LONG_LONG_INT=0
   fi
   AC_SUBST([HAVE_UNSIGNED_LONG_LONG_INT])
-
-  dnl Check for <wchar.h>.
-  AC_CHECK_HEADERS_ONCE([wchar.h])
-  if test $ac_cv_header_wchar_h = yes; then
-    HAVE_WCHAR_H=1
-  else
-    HAVE_WCHAR_H=0
-  fi
-  AC_SUBST([HAVE_WCHAR_H])
 
   dnl Check for <inttypes.h>.
   dnl AC_INCLUDES_DEFAULT defines $ac_cv_header_inttypes_h.
@@ -75,7 +66,7 @@ AC_DEFUN([gl_STDINT_H],
       [gl_cv_header_working_stdint_h],
       [gl_cv_header_working_stdint_h=no
        AC_COMPILE_IFELSE([
-	 AC_LANG_PROGRAM([[
+         AC_LANG_PROGRAM([[
 #include <stddef.h>
 #define __STDC_LIMIT_MACROS 1 /* to make it work also in C++ mode */
 #define __STDC_CONSTANT_MACROS 1 /* to make it work also in C++ mode */
@@ -152,17 +143,17 @@ uintptr_t h = UINTPTR_MAX;
 intmax_t i = INTMAX_MAX;
 uintmax_t j = UINTMAX_MAX;
 struct s {
-  int check_PTRDIFF: PTRDIFF_MIN < 0 && 0 < PTRDIFF_MAX ? 1 : -1;
-  int check_SIG_ATOMIC: SIG_ATOMIC_MIN <= 0 && 0 < SIG_ATOMIC_MAX ? 1 : -1;
-  int check_SIZE: 0 < SIZE_MAX ? 1 : -1;
-  int check_WCHAR: WCHAR_MIN <= 0 && 0 < WCHAR_MAX ? 1 : -1;
-  int check_WINT: WINT_MIN <= 0 && 0 < WINT_MAX ? 1 : -1;
+  int check_PTRDIFF: PTRDIFF_MIN < (ptrdiff_t) 0 && (ptrdiff_t) 0 < PTRDIFF_MAX ? 1 : -1;
+  int check_SIG_ATOMIC: SIG_ATOMIC_MIN <= (sig_atomic_t) 0 && (sig_atomic_t) 0 < SIG_ATOMIC_MAX ? 1 : -1;
+  int check_SIZE: (size_t) 0 < SIZE_MAX ? 1 : -1;
+  int check_WCHAR: WCHAR_MIN <= (wchar_t) 0 && (wchar_t) 0 < WCHAR_MAX ? 1 : -1;
+  int check_WINT: WINT_MIN <= (wint_t) 0 && (wint_t) 0 < WINT_MAX ? 1 : -1;
 
   /* Detect bugs in glibc 2.4 and Solaris 10 stdint.h, among others.  */
   int check_UINT8_C:
-	(-1 < UINT8_C (0)) == (-1 < (uint_least8_t) 0) ? 1 : -1;
+        (-1 < UINT8_C (0)) == (-1 < (uint_least8_t) 0) ? 1 : -1;
   int check_UINT16_C:
-	(-1 < UINT16_C (0)) == (-1 < (uint_least16_t) 0) ? 1 : -1;
+        (-1 < UINT16_C (0)) == (-1 < (uint_least16_t) 0) ? 1 : -1;
 
   /* Detect bugs in OpenBSD 3.9 stdint.h.  */
 #ifdef UINT8_MAX
@@ -189,7 +180,7 @@ struct s {
   int check_uintmax: (uintmax_t) -1 == UINTMAX_MAX ? 1 : -1;
   int check_size: (size_t) -1 == SIZE_MAX ? 1 : -1;
 };
-	 ]])],
+         ]])],
          [gl_cv_header_working_stdint_h=yes])])
   fi
   if test "$gl_cv_header_working_stdint_h" = yes; then
@@ -231,7 +222,7 @@ AC_DEFUN([gl_STDINT_BITSIZEOF],
   for gltype in $1 ; do
     AC_CACHE_CHECK([for bit size of $gltype], [gl_cv_bitsizeof_${gltype}],
       [AC_COMPUTE_INT([result], [sizeof ($gltype) * CHAR_BIT],
-	 [$2
+         [$2
 #include <limits.h>], [result=unknown])
        eval gl_cv_bitsizeof_${gltype}=\$result
       ])
@@ -299,35 +290,35 @@ AC_DEFUN([gl_INTEGER_TYPE_SUFFIX],
   AC_FOREACH([gltype], [$1],
     [AH_TEMPLATE(translit(gltype,[abcdefghijklmnopqrstuvwxyz ],[ABCDEFGHIJKLMNOPQRSTUVWXYZ_])[_SUFFIX],
        [Define to l, ll, u, ul, ull, etc., as suitable for
-	constants of type ']gltype['.])])
+        constants of type ']gltype['.])])
   for gltype in $1 ; do
     AC_CACHE_CHECK([for $gltype integer literal suffix],
       [gl_cv_type_${gltype}_suffix],
       [eval gl_cv_type_${gltype}_suffix=no
        eval result=\$gl_cv_type_${gltype}_signed
        if test "$result" = yes; then
-	 glsufu=
+         glsufu=
        else
-	 glsufu=u
+         glsufu=u
        fi
        for glsuf in "$glsufu" ${glsufu}l ${glsufu}ll ${glsufu}i64; do
-	 case $glsuf in
-	   '')  gltype1='int';;
-	   l)	gltype1='long int';;
-	   ll)	gltype1='long long int';;
-	   i64)	gltype1='__int64';;
-	   u)	gltype1='unsigned int';;
-	   ul)	gltype1='unsigned long int';;
-	   ull)	gltype1='unsigned long long int';;
-	   ui64)gltype1='unsigned __int64';;
-	 esac
-	 AC_COMPILE_IFELSE(
-	   [AC_LANG_PROGRAM([$2
-	      extern $gltype foo;
-	      extern $gltype1 foo;])],
-	   [eval gl_cv_type_${gltype}_suffix=\$glsuf])
-	 eval result=\$gl_cv_type_${gltype}_suffix
-	 test "$result" != no && break
+         case $glsuf in
+           '')  gltype1='int';;
+           l)	gltype1='long int';;
+           ll)	gltype1='long long int';;
+           i64)	gltype1='__int64';;
+           u)	gltype1='unsigned int';;
+           ul)	gltype1='unsigned long int';;
+           ull)	gltype1='unsigned long long int';;
+           ui64)gltype1='unsigned __int64';;
+         esac
+         AC_COMPILE_IFELSE(
+           [AC_LANG_PROGRAM([$2
+              extern $gltype foo;
+              extern $gltype1 foo;])],
+           [eval gl_cv_type_${gltype}_suffix=\$glsuf])
+         eval result=\$gl_cv_type_${gltype}_suffix
+         test "$result" != no && break
        done])
     GLTYPE=`echo $gltype | tr 'abcdefghijklmnopqrstuvwxyz ' 'ABCDEFGHIJKLMNOPQRSTUVWXYZ_'`
     eval result=\$gl_cv_type_${gltype}_suffix
@@ -342,15 +333,13 @@ AC_DEFUN([gl_INTEGER_TYPE_SUFFIX],
 dnl gl_STDINT_INCLUDES
 AC_DEFUN([gl_STDINT_INCLUDES],
 [[
+  /* BSD/OS 4.0.1 has a bug: <stddef.h>, <stdio.h> and <time.h> must be
+     included before <wchar.h>.  */
   #include <stddef.h>
   #include <signal.h>
-  #if HAVE_WCHAR_H
-    /* BSD/OS 4.1 has a bug: <stdio.h> and <time.h> must be included before
-       <wchar.h>.  */
-  # include <stdio.h>
-  # include <time.h>
-  # include <wchar.h>
-  #endif
+  #include <stdio.h>
+  #include <time.h>
+  #include <wchar.h>
 ]])
 
 dnl gl_STDINT_TYPE_PROPERTIES
@@ -373,3 +362,8 @@ dnl Remove this when we can assume autoconf >= 2.61.
 m4_ifdef([AC_COMPUTE_INT], [], [
   AC_DEFUN([AC_COMPUTE_INT], [_AC_COMPUTE_INT([$2],[$1],[$3],[$4])])
 ])
+
+# Hey Emacs!
+# Local Variables:
+# indent-tabs-mode: nil
+# End:

@@ -24,6 +24,8 @@ dnl Process this file with autoconf to produce a configure script.
 
 AC_INIT([msmtp], [1.4.11], [marlam@marlam.de])
 AC_CONFIG_SRCDIR([src/msmtp.c])
+AC_CONFIG_AUX_DIR([build-aux])
+AC_CONFIG_MACRO_DIR([build-aux])
 AC_CANONICAL_SYSTEM
 
 AM_INIT_AUTOMAKE
@@ -201,7 +203,8 @@ AH_VERBATIM([W32_NATIVE],
 #endif])
 
 dnl End.
-AC_CONFIG_FILES([Makefile doc/Makefile gnulib/Makefile po/Makefile.in src/Makefile])
+AC_CONFIG_FILES([Makefile build-aux/Makefile gnulib/Makefile \
+	src/Makefile po/Makefile doc/Makefile])
 AC_OUTPUT
 
 echo

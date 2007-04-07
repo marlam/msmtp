@@ -1,5 +1,5 @@
 /* vsprintf with automatic memory allocation.
-   Copyright (C) 1999, 2002-2006 Free Software Foundation, Inc.
+   Copyright (C) 1999, 2002-2007 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -34,12 +34,16 @@
 # include "vasnprintf.h"
 #endif
 
+#include <locale.h>	/* localeconv() */
 #include <stdio.h>	/* snprintf(), sprintf() */
 #include <stdlib.h>	/* abort(), malloc(), realloc(), free() */
 #include <string.h>	/* memcpy(), strlen() */
 #include <errno.h>	/* errno */
 #include <limits.h>	/* CHAR_BIT */
 #include <float.h>	/* DBL_MAX_EXP, LDBL_MAX_EXP */
+#if HAVE_NL_LANGINFO
+# include <langinfo.h>
+#endif
 #if WIDE_CHAR_VERSION
 # include "wprintf-parse.h"
 #else
@@ -49,8 +53,22 @@
 /* Checked size_t computations.  */
 #include "xsize.h"
 
-#ifdef HAVE_WCHAR_T
-# ifdef HAVE_WCSLEN
+#if NEED_PRINTF_DIRECTIVE_A && !defined IN_LIBINTL
+# include <math.h>
+# include "isnan.h"
+# include "printf-frexp.h"
+# include "isnanl-nolibm.h"
+# include "printf-frexpl.h"
+# include "fpucw.h"
+#endif
+
+/* Some systems, like OSF/1 4.0 and Woe32, don't have EOVERFLOW.  */
+#ifndef EOVERFLOW
+# define EOVERFLOW E2BIG
+#endif
+
+#if HAVE_WCHAR_T
+# if HAVE_WCSLEN
 #  define local_wcslen wcslen
 # else
    /* Solaris 2.5.1 has wcslen() in a separate library libw.so. To avoid
@@ -100,6 +118,37 @@ local_wcslen (const wchar_t *s)
 # else
    /* Unix.  */
 #  define SNPRINTF snprintf
+   /* Here we need to call the native snprintf, not rpl_snprintf.  */
+#  undef snprintf
+# endif
+#endif
+/* Here we need to call the native sprintf, not rpl_sprintf.  */
+#undef sprintf
+
+#if NEED_PRINTF_DIRECTIVE_A && !defined IN_LIBINTL
+/* Determine the decimal-point character according to the current locale.  */
+# ifndef decimal_point_char_defined
+#  define decimal_point_char_defined 1
+static char
+decimal_point_char ()
+{
+  const char *point;
+  /* Determine it in a multithread-safe way.  We know nl_langinfo is
+     multithread-safe on glibc systems, but is not required to be multithread-
+     safe by POSIX.  sprintf(), however, is multithread-safe.  localeconv()
+     is rarely multithread-safe.  */
+#  if HAVE_NL_LANGINFO && __GLIBC__
+  point = nl_langinfo (RADIXCHAR);
+#  elif 1
+  char pointbuf[5];
+  sprintf (pointbuf, "%#.0f", 1.0);
+  point = &pointbuf[1];
+#  else
+  point = localeconv () -> decimal_point;
+#  endif
+  /* The decimal point is always a single byte: either '.' or ','.  */
+  return (point[0] != '\0' ? point[0] : '.');
+}
 # endif
 #endif
 
@@ -248,7 +297,7 @@ VASNPRINTF (CHAR_T *resultbuf, size_t *lengthp, const CHAR_T *format, va_list ar
 		  case TYPE_COUNT_LONGINT_POINTER:
 		    *a.arg[dp->arg_index].a.a_count_longint_pointer = length;
 		    break;
-#ifdef HAVE_LONG_LONG_INT
+#if HAVE_LONG_LONG_INT
 		  case TYPE_COUNT_LONGLONGINT_POINTER:
 		    *a.arg[dp->arg_index].a.a_count_longlongint_pointer = length;
 		    break;
@@ -257,6 +306,453 @@ VASNPRINTF (CHAR_T *resultbuf, size_t *lengthp, const CHAR_T *format, va_list ar
 		    abort ();
 		  }
 	      }
+#if NEED_PRINTF_DIRECTIVE_A && !defined IN_LIBINTL
+	    else if (dp->conversion == 'a' || dp->conversion == 'A')
+	      {
+		arg_type type = a.arg[dp->arg_index].type;
+		int flags = dp->flags;
+		int has_width;
+		size_t width;
+		int has_precision;
+		size_t precision;
+		size_t tmp_length;
+		CHAR_T tmpbuf[700];
+		CHAR_T *tmp;
+		CHAR_T *pad_ptr;
+		CHAR_T *p;
+
+		has_width = 0;
+		width = 0;
+		if (dp->width_start != dp->width_end)
+		  {
+		    if (dp->width_arg_index != ARG_NONE)
+		      {
+			int arg;
+
+			if (!(a.arg[dp->width_arg_index].type == TYPE_INT))
+			  abort ();
+			arg = a.arg[dp->width_arg_index].a.a_int;
+			if (arg < 0)
+			  {
+			    /* "A negative field width is taken as a '-' flag
+			        followed by a positive field width."  */
+			    flags |= FLAG_LEFT;
+			    width = (unsigned int) (-arg);
+			  }
+			else
+			  width = arg;
+		      }
+		    else
+		      {
+			const CHAR_T *digitp = dp->width_start;
+
+			do
+			  width = xsum (xtimes (width, 10), *digitp++ - '0');
+			while (digitp != dp->width_end);
+		      }
+		    has_width = 1;
+		  }
+
+		has_precision = 0;
+		precision = 0;
+		if (dp->precision_start != dp->precision_end)
+		  {
+		    if (dp->precision_arg_index != ARG_NONE)
+		      {
+			int arg;
+
+			if (!(a.arg[dp->precision_arg_index].type == TYPE_INT))
+			  abort ();
+			arg = a.arg[dp->precision_arg_index].a.a_int;
+			/* "A negative precision is taken as if the precision
+			    were omitted."  */
+			if (arg >= 0)
+			  {
+			    precision = arg;
+			    has_precision = 1;
+			  }
+		      }
+		    else
+		      {
+			const CHAR_T *digitp = dp->precision_start + 1;
+
+			precision = 0;
+			while (digitp != dp->precision_end)
+			  precision = xsum (xtimes (precision, 10), *digitp++ - '0');
+			has_precision = 1;
+		      }
+		  }
+
+		/* Allocate a temporary buffer of sufficient size.  */
+		if (type == TYPE_LONGDOUBLE)
+		  tmp_length =
+		    (unsigned int) ((LDBL_DIG + 1)
+				    * 0.831 /* decimal -> hexadecimal */
+				   )
+		    + 1; /* turn floor into ceil */
+		else
+		  tmp_length =
+		    (unsigned int) ((DBL_DIG + 1)
+				    * 0.831 /* decimal -> hexadecimal */
+				   )
+		    + 1; /* turn floor into ceil */
+		if (tmp_length < precision)
+		  tmp_length = precision;
+		/* Account for sign, decimal point etc. */
+		tmp_length = xsum (tmp_length, 12);
+
+		if (tmp_length < width)
+		  tmp_length = width;
+
+		tmp_length = xsum (tmp_length, 1); /* account for trailing NUL */
+
+		if (tmp_length <= sizeof (tmpbuf) / sizeof (CHAR_T))
+		  tmp = tmpbuf;
+		else
+		  {
+		    size_t tmp_memsize = xtimes (tmp_length, sizeof (CHAR_T));
+
+		    if (size_overflow_p (tmp_memsize))
+		      /* Overflow, would lead to out of memory.  */
+		      goto out_of_memory;
+		    tmp = (CHAR_T *) malloc (tmp_memsize);
+		    if (tmp == NULL)
+		      /* Out of memory.  */
+		      goto out_of_memory;
+		  }
+
+		pad_ptr = NULL;
+		p = tmp;
+		if (type == TYPE_LONGDOUBLE)
+		  {
+		    long double arg = a.arg[dp->arg_index].a.a_longdouble;
+
+		    if (isnanl (arg))
+		      {
+			if (dp->conversion == 'A')
+			  {
+			    *p++ = 'N'; *p++ = 'A'; *p++ = 'N';
+			  }
+			else
+			  {
+			    *p++ = 'n'; *p++ = 'a'; *p++ = 'n';
+			  }
+		      }
+		    else
+		      {
+			int sign = 0;
+			DECL_LONG_DOUBLE_ROUNDING
+
+			BEGIN_LONG_DOUBLE_ROUNDING ();
+
+			if (signbit (arg)) /* arg < 0.0L or negative zero */
+			  {
+			    sign = -1;
+			    arg = -arg;
+			  }
+
+			if (sign < 0)
+			  *p++ = '-';
+			else if (flags & FLAG_SHOWSIGN)
+			  *p++ = '+';
+			else if (flags & FLAG_SPACE)
+			  *p++ = ' ';
+
+			if (arg > 0.0L && arg + arg == arg)
+			  {
+			    if (dp->conversion == 'A')
+			      {
+				*p++ = 'I'; *p++ = 'N'; *p++ = 'F';
+			      }
+			    else
+			      {
+				*p++ = 'i'; *p++ = 'n'; *p++ = 'f';
+			      }
+			  }
+			else
+			  {
+			    int exponent;
+			    long double mantissa;
+
+			    if (arg > 0.0L)
+			      mantissa = printf_frexpl (arg, &exponent);
+			    else
+			      {
+				exponent = 0;
+				mantissa = 0.0L;
+			      }
+
+			    if (has_precision
+				&& precision < (unsigned int) ((LDBL_DIG + 1) * 0.831) + 1)
+			      {
+				/* Round the mantissa.  */
+				long double tail = mantissa;
+				size_t q;
+
+				for (q = precision; ; q--)
+				  {
+				    int digit = (int) tail;
+				    tail -= digit;
+				    if (q == 0)
+				      {
+					if (digit & 1 ? tail >= 0.5L : tail > 0.5L)
+					  tail = 1 - tail;
+					else
+					  tail = - tail;
+					break;
+				      }
+				    tail *= 16.0L;
+				  }
+				if (tail != 0.0L)
+				  for (q = precision; q > 0; q--)
+				    tail *= 0.0625L;
+				mantissa += tail;
+			      }
+
+			    *p++ = '0';
+			    *p++ = dp->conversion - 'A' + 'X';
+			    pad_ptr = p;
+			    {
+			      int digit;
+
+			      digit = (int) mantissa;
+			      mantissa -= digit;
+			      *p++ = '0' + digit;
+			      if ((flags & FLAG_ALT)
+				  || mantissa > 0.0L || precision > 0)
+				{
+				  *p++ = decimal_point_char ();
+				  /* This loop terminates because we assume
+				     that FLT_RADIX is a power of 2.  */
+				  while (mantissa > 0.0L)
+				    {
+				      mantissa *= 16.0L;
+				      digit = (int) mantissa;
+				      mantissa -= digit;
+				      *p++ = digit
+					     + (digit < 10
+						? '0'
+						: dp->conversion - 10);
+				      if (precision > 0)
+					precision--;
+				    }
+				  while (precision > 0)
+				    {
+				      *p++ = '0';
+				      precision--;
+				    }
+				}
+			      }
+			      *p++ = dp->conversion - 'A' + 'P';
+# if WIDE_CHAR_VERSION
+			      {
+				static const wchar_t decimal_format[] =
+				  { '%', '+', 'd', '\0' };
+				SNPRINTF (p, 6 + 1, decimal_format, exponent);
+			      }
+# else
+			      sprintf (p, "%+d", exponent);
+# endif
+			      while (*p != '\0')
+				p++;
+			  }
+
+			END_LONG_DOUBLE_ROUNDING ();
+		      }
+		  }
+		else
+		  {
+		    double arg = a.arg[dp->arg_index].a.a_double;
+
+		    if (isnan (arg))
+		      {
+			if (dp->conversion == 'A')
+			  {
+			    *p++ = 'N'; *p++ = 'A'; *p++ = 'N';
+			  }
+			else
+			  {
+			    *p++ = 'n'; *p++ = 'a'; *p++ = 'n';
+			  }
+		      }
+		    else
+		      {
+			int sign = 0;
+
+			if (signbit (arg)) /* arg < 0.0 or negative zero */
+			  {
+			    sign = -1;
+			    arg = -arg;
+			  }
+
+			if (sign < 0)
+			  *p++ = '-';
+			else if (flags & FLAG_SHOWSIGN)
+			  *p++ = '+';
+			else if (flags & FLAG_SPACE)
+			  *p++ = ' ';
+
+			if (arg > 0.0 && arg + arg == arg)
+			  {
+			    if (dp->conversion == 'A')
+			      {
+				*p++ = 'I'; *p++ = 'N'; *p++ = 'F';
+			      }
+			    else
+			      {
+				*p++ = 'i'; *p++ = 'n'; *p++ = 'f';
+			      }
+			  }
+			else
+			  {
+			    int exponent;
+			    double mantissa;
+
+			    if (arg > 0.0)
+			      mantissa = printf_frexp (arg, &exponent);
+			    else
+			      {
+				exponent = 0;
+				mantissa = 0.0;
+			      }
+
+			    if (has_precision
+				&& precision < (unsigned int) ((DBL_DIG + 1) * 0.831) + 1)
+			      {
+				/* Round the mantissa.  */
+				double tail = mantissa;
+				size_t q;
+
+				for (q = precision; ; q--)
+				  {
+				    int digit = (int) tail;
+				    tail -= digit;
+				    if (q == 0)
+				      {
+					if (digit & 1 ? tail >= 0.5 : tail > 0.5)
+					  tail = 1 - tail;
+					else
+					  tail = - tail;
+					break;
+				      }
+				    tail *= 16.0;
+				  }
+				if (tail != 0.0)
+				  for (q = precision; q > 0; q--)
+				    tail *= 0.0625;
+				mantissa += tail;
+			      }
+
+			    *p++ = '0';
+			    *p++ = dp->conversion - 'A' + 'X';
+			    pad_ptr = p;
+			    {
+			      int digit;
+
+			      digit = (int) mantissa;
+			      mantissa -= digit;
+			      *p++ = '0' + digit;
+			      if ((flags & FLAG_ALT)
+				  || mantissa > 0.0 || precision > 0)
+				{
+				  *p++ = decimal_point_char ();
+				  /* This loop terminates because we assume
+				     that FLT_RADIX is a power of 2.  */
+				  while (mantissa > 0.0)
+				    {
+				      mantissa *= 16.0;
+				      digit = (int) mantissa;
+				      mantissa -= digit;
+				      *p++ = digit
+					     + (digit < 10
+						? '0'
+						: dp->conversion - 10);
+				      if (precision > 0)
+					precision--;
+				    }
+				  while (precision > 0)
+				    {
+				      *p++ = '0';
+				      precision--;
+				    }
+				}
+			      }
+			      *p++ = dp->conversion - 'A' + 'P';
+# if WIDE_CHAR_VERSION
+			      {
+				static const wchar_t decimal_format[] =
+				  { '%', '+', 'd', '\0' };
+				SNPRINTF (p, 6 + 1, decimal_format, exponent);
+			      }
+# else
+			      sprintf (p, "%+d", exponent);
+# endif
+			      while (*p != '\0')
+				p++;
+			  }
+		      }
+		  }
+		/* The generated string now extends from tmp to p, with the
+		   zero padding insertion point being at pad_ptr.  */
+		if (has_width && p - tmp < width)
+		  {
+		    size_t pad = width - (p - tmp);
+		    CHAR_T *end = p + pad;
+
+		    if (flags & FLAG_LEFT)
+		      {
+			/* Pad with spaces on the right.  */
+			for (; pad > 0; pad--)
+			  *p++ = ' ';
+		      }
+		    else if ((flags & FLAG_ZERO) && pad_ptr != NULL)
+		      {
+			/* Pad with zeroes.  */
+			CHAR_T *q = end;
+
+			while (p > pad_ptr)
+			  *--q = *--p;
+			for (; pad > 0; pad--)
+			  *p++ = '0';
+		      }
+		    else
+		      {
+			/* Pad with spaces on the left.  */
+			CHAR_T *q = end;
+
+			while (p > tmp)
+			  *--q = *--p;
+			for (; pad > 0; pad--)
+			  *p++ = ' ';
+		      }
+
+		    p = end;
+		  }
+
+		{
+		  size_t count = p - tmp;
+
+		  if (count >= tmp_length)
+		    /* tmp_length was incorrectly calculated - fix the
+		       code above!  */
+		    abort ();
+
+		  /* Make room for the result.  */
+		  if (count >= allocated - length)
+		    {
+		      size_t n = xsum (length, count);
+
+		      ENSURE_ALLOCATION (n);
+		    }
+
+		  /* Append the result.  */
+		  memcpy (result + length, tmp, count * sizeof (CHAR_T));
+		  if (tmp != tmpbuf)
+		    free (tmp);
+		  length += count;
+		}
+	      }
+#endif
 	    else
 	      {
 		arg_type type = a.arg[dp->arg_index].type;
@@ -322,7 +818,7 @@ VASNPRINTF (CHAR_T *resultbuf, size_t *lengthp, const CHAR_T *format, va_list ar
 		    {
 
 		    case 'd': case 'i': case 'u':
-# ifdef HAVE_LONG_LONG_INT
+# if HAVE_LONG_LONG_INT
 		      if (type == TYPE_LONGLONGINT || type == TYPE_ULONGLONGINT)
 			tmp_length =
 			  (unsigned int) (sizeof (unsigned long long) * CHAR_BIT
@@ -352,7 +848,7 @@ VASNPRINTF (CHAR_T *resultbuf, size_t *lengthp, const CHAR_T *format, va_list ar
 		      break;
 
 		    case 'o':
-# ifdef HAVE_LONG_LONG_INT
+# if HAVE_LONG_LONG_INT
 		      if (type == TYPE_LONGLONGINT || type == TYPE_ULONGLONGINT)
 			tmp_length =
 			  (unsigned int) (sizeof (unsigned long long) * CHAR_BIT
@@ -380,7 +876,7 @@ VASNPRINTF (CHAR_T *resultbuf, size_t *lengthp, const CHAR_T *format, va_list ar
 		      break;
 
 		    case 'x': case 'X':
-# ifdef HAVE_LONG_LONG_INT
+# if HAVE_LONG_LONG_INT
 		      if (type == TYPE_LONGLONGINT || type == TYPE_ULONGLONGINT)
 			tmp_length =
 			  (unsigned int) (sizeof (unsigned long long) * CHAR_BIT
@@ -408,7 +904,6 @@ VASNPRINTF (CHAR_T *resultbuf, size_t *lengthp, const CHAR_T *format, va_list ar
 		      break;
 
 		    case 'f': case 'F':
-# ifdef HAVE_LONG_DOUBLE
 		      if (type == TYPE_LONGDOUBLE)
 			tmp_length =
 			  (unsigned int) (LDBL_MAX_EXP
@@ -418,7 +913,6 @@ VASNPRINTF (CHAR_T *resultbuf, size_t *lengthp, const CHAR_T *format, va_list ar
 			  + 1 /* turn floor into ceil */
 			  + 10; /* sign, decimal point etc. */
 		      else
-# endif
 			tmp_length =
 			  (unsigned int) (DBL_MAX_EXP
 					  * 0.30103 /* binary -> decimal */
@@ -430,14 +924,32 @@ VASNPRINTF (CHAR_T *resultbuf, size_t *lengthp, const CHAR_T *format, va_list ar
 		      break;
 
 		    case 'e': case 'E': case 'g': case 'G':
-		    case 'a': case 'A':
 		      tmp_length =
 			12; /* sign, decimal point, exponent etc. */
 		      tmp_length = xsum (tmp_length, precision);
 		      break;
 
+		    case 'a': case 'A':
+		      if (type == TYPE_LONGDOUBLE)
+			tmp_length =
+			  (unsigned int) (LDBL_DIG
+					  * 0.831 /* decimal -> hexadecimal */
+					 )
+			  + 1; /* turn floor into ceil */
+		      else
+			tmp_length =
+			  (unsigned int) (DBL_DIG
+					  * 0.831 /* decimal -> hexadecimal */
+					 )
+			  + 1; /* turn floor into ceil */
+		      if (tmp_length < precision)
+			tmp_length = precision;
+		      /* Account for sign, decimal point etc. */
+		      tmp_length = xsum (tmp_length, 12);
+		      break;
+
 		    case 'c':
-# if defined HAVE_WINT_T && !WIDE_CHAR_VERSION
+# if HAVE_WINT_T && !WIDE_CHAR_VERSION
 		      if (type == TYPE_WIDE_CHAR)
 			tmp_length = MB_CUR_MAX;
 		      else
@@ -446,7 +958,7 @@ VASNPRINTF (CHAR_T *resultbuf, size_t *lengthp, const CHAR_T *format, va_list ar
 		      break;
 
 		    case 's':
-# ifdef HAVE_WCHAR_T
+# if HAVE_WCHAR_T
 		      if (type == TYPE_WIDE_STRING)
 			{
 			  tmp_length =
@@ -527,7 +1039,7 @@ VASNPRINTF (CHAR_T *resultbuf, size_t *lengthp, const CHAR_T *format, va_list ar
 
 		switch (type)
 		  {
-#ifdef HAVE_LONG_LONG_INT
+#if HAVE_LONG_LONG_INT
 		  case TYPE_LONGLONGINT:
 		  case TYPE_ULONGLONGINT:
 		    *p++ = 'l';
@@ -535,19 +1047,17 @@ VASNPRINTF (CHAR_T *resultbuf, size_t *lengthp, const CHAR_T *format, va_list ar
 #endif
 		  case TYPE_LONGINT:
 		  case TYPE_ULONGINT:
-#ifdef HAVE_WINT_T
+#if HAVE_WINT_T
 		  case TYPE_WIDE_CHAR:
 #endif
-#ifdef HAVE_WCHAR_T
+#if HAVE_WCHAR_T
 		  case TYPE_WIDE_STRING:
 #endif
 		    *p++ = 'l';
 		    break;
-#ifdef HAVE_LONG_DOUBLE
 		  case TYPE_LONGDOUBLE:
 		    *p++ = 'L';
 		    break;
-#endif
 		  default:
 		    break;
 		  }
@@ -593,6 +1103,9 @@ VASNPRINTF (CHAR_T *resultbuf, size_t *lengthp, const CHAR_T *format, va_list ar
 		    retcount = 0;
 
 #if USE_SNPRINTF
+		    /* SNPRINTF can fail if maxlen > INT_MAX.  */
+		    if (maxlen > INT_MAX)
+		      goto overflow;
 # define SNPRINTF_BUF(arg) \
 		    switch (prefix_count)				    \
 		      {							    \
@@ -681,7 +1194,7 @@ VASNPRINTF (CHAR_T *resultbuf, size_t *lengthp, const CHAR_T *format, va_list ar
 			  SNPRINTF_BUF (arg);
 			}
 			break;
-#ifdef HAVE_LONG_LONG_INT
+#if HAVE_LONG_LONG_INT
 		      case TYPE_LONGLONGINT:
 			{
 			  long long int arg = a.arg[dp->arg_index].a.a_longlongint;
@@ -701,21 +1214,19 @@ VASNPRINTF (CHAR_T *resultbuf, size_t *lengthp, const CHAR_T *format, va_list ar
 			  SNPRINTF_BUF (arg);
 			}
 			break;
-#ifdef HAVE_LONG_DOUBLE
 		      case TYPE_LONGDOUBLE:
 			{
 			  long double arg = a.arg[dp->arg_index].a.a_longdouble;
 			  SNPRINTF_BUF (arg);
 			}
 			break;
-#endif
 		      case TYPE_CHAR:
 			{
 			  int arg = a.arg[dp->arg_index].a.a_char;
 			  SNPRINTF_BUF (arg);
 			}
 			break;
-#ifdef HAVE_WINT_T
+#if HAVE_WINT_T
 		      case TYPE_WIDE_CHAR:
 			{
 			  wint_t arg = a.arg[dp->arg_index].a.a_wide_char;
@@ -729,7 +1240,7 @@ VASNPRINTF (CHAR_T *resultbuf, size_t *lengthp, const CHAR_T *format, va_list ar
 			  SNPRINTF_BUF (arg);
 			}
 			break;
-#ifdef HAVE_WCHAR_T
+#if HAVE_WCHAR_T
 		      case TYPE_WIDE_STRING:
 			{
 			  const wchar_t *arg = a.arg[dp->arg_index].a.a_wide_string;
@@ -867,6 +1378,15 @@ VASNPRINTF (CHAR_T *resultbuf, size_t *lengthp, const CHAR_T *format, va_list ar
        that's only because snprintf() returns an 'int'.  This function does
        not have this limitation.  */
     return result;
+
+  overflow:
+    if (!(result == resultbuf || result == NULL))
+      free (result);
+    if (buf_malloced != NULL)
+      free (buf_malloced);
+    CLEANUP ();
+    errno = EOVERFLOW;
+    return NULL;
 
   out_of_memory:
     if (!(result == resultbuf || result == NULL))

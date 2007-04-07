@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: msmtp 1.4.10\n"
 "Report-Msgid-Bugs-To: marlam@marlam.de\n"
-"POT-Creation-Date: 2007-01-11 11:13+0100\n"
+"POT-Creation-Date: 2007-02-21 00:36+0100\n"
 "PO-Revision-Date: 2005-06-20 22:15+0200\n"
 "Last-Translator: Martin Lambers <marlam@marlam.de>\n"
 "Language-Team: German\n"
@@ -774,155 +774,155 @@ msgstr "konnte Mail nicht verschicken"
 msgid "delivery to one or more recipients failed"
 msgstr "Zustellung an einen oder mehrere Empfänger fehlgeschlagen"
 
-#: src/net.c:81
+#: src/net.c:82 src/net.c:132
+msgid "host not found (authoritative)"
+msgstr "Host nicht gefunden (endgültig)"
+
+#: src/net.c:85 src/net.c:135
+msgid "host not found (nonauthoritative) or server failure"
+msgstr "Host nicht gefunden (nicht endgültig) oder Serverfehlfunktion"
+
+#: src/net.c:88 src/net.c:138
+msgid "nonrecoverable error"
+msgstr "Nichtbehebbarer Fehler"
+
+#: src/net.c:91 src/net.c:141
+msgid "valid name, but no data record of requested type"
+msgstr "gültiger Name, aber keine Daten des angeforderten Typs gefunden"
+
+#: src/net.c:94 src/net.c:201 src/tls.c:1108 src/tls.c:1132 src/tls.c:1422
+msgid "unknown error"
+msgstr "unbekannter Fehler"
+
+#: src/net.c:117
 msgid "not enough memory"
 msgstr "nicht genug Speicher"
 
-#: src/net.c:84 src/net.c:391 src/net.c:476 src/net.c:569 src/net.c:677
-#: src/net.c:797 src/tls.c:1157 src/tls.c:1216 src/tls.c:1279 src/tls.c:1318
+#: src/net.c:120 src/net.c:427 src/net.c:512 src/net.c:605 src/net.c:713
+#: src/net.c:833 src/tls.c:1157 src/tls.c:1216 src/tls.c:1279 src/tls.c:1318
 #: src/tls.c:1399 src/tls.c:1445
 msgid "operation aborted"
 msgstr "Operation abgebrochen"
 
-#: src/net.c:87
+#: src/net.c:123
 msgid "invalid argument"
 msgstr "ungültiges Argument"
 
-#: src/net.c:90
+#: src/net.c:126
 msgid "class type not found"
 msgstr "Klassentyp nicht gefunden"
 
-#: src/net.c:93
+#: src/net.c:129
 msgid "the network subsystem has failed"
 msgstr "Das Netzwerksystem versagte"
 
-#: src/net.c:96
-msgid "host not found (authoritative)"
-msgstr "Host nicht gefunden (endgültig)"
-
-#: src/net.c:99
-msgid "host not found (nonauthoritative) or server failure"
-msgstr "Host nicht gefunden (nicht endgültig) oder Serverfehlfunktion"
-
-#: src/net.c:102
-msgid "nonrecoverable error"
-msgstr "Nichtbehebbarer Fehler"
-
-#: src/net.c:105
-msgid "valid name, but no data record of requested type"
-msgstr "gültiger Name, aber keine Daten des angeforderten Typs gefunden"
-
-#: src/net.c:108
+#: src/net.c:144
 msgid "address family not supported"
 msgstr "Adressfamilie nicht unterstützt"
 
-#: src/net.c:111
+#: src/net.c:147
 msgid "no socket descriptors available"
 msgstr "keine Socketdeskriptoren verfügbar"
 
-#: src/net.c:114
+#: src/net.c:150
 msgid "no buffer space available"
 msgstr "kein Pufferplatz verfügbar"
 
-#: src/net.c:117
+#: src/net.c:153
 msgid "protocol not supported"
 msgstr "Protokoll nicht unterstützt"
 
-#: src/net.c:120
+#: src/net.c:156
 msgid "wrong protocol type for this socket"
 msgstr "falsches Protokoll für diesen Socket"
 
-#: src/net.c:123
+#: src/net.c:159
 msgid "socket type is not supported in this address family"
 msgstr "Sockettyp ist in dieser Adressfamilie nicht unterstützt"
 
-#: src/net.c:126
+#: src/net.c:162
 msgid "remote address is not valid"
 msgstr "Partneradresse ist ungültig"
 
-#: src/net.c:129
+#: src/net.c:165
 msgid "connection refused"
 msgstr "Verbindung abgelehnt"
 
-#: src/net.c:132
+#: src/net.c:168
 msgid "network unreachable"
 msgstr "Netzwerk nicht erreichbar"
 
-#: src/net.c:135
+#: src/net.c:171
 msgid "timeout"
 msgstr "Timeout"
 
-#: src/net.c:138
+#: src/net.c:174
 msgid "socket not connected"
 msgstr "Socket nicht verbunden"
 
-#: src/net.c:141
+#: src/net.c:177
 msgid "the socket was shut down"
 msgstr "der Socket wurde beendet"
 
-#: src/net.c:144
+#: src/net.c:180
 msgid "host unreachable"
 msgstr "Host nicht erreichbar"
 
-#: src/net.c:147
+#: src/net.c:183
 msgid "connection reset by peer"
 msgstr "Verbidung vom Partner zurückgesetzt"
 
-#: src/net.c:150
+#: src/net.c:186
 msgid "the underlying network subsystem is not ready"
 msgstr "das Netzwerksubsystem ist nicht bereit"
 
-#: src/net.c:153
+#: src/net.c:189
 msgid "the requested version is not available"
 msgstr "angeforderte Version ist nicht verfügbar"
 
-#: src/net.c:156
+#: src/net.c:192
 msgid "a blocking operation is in progress"
 msgstr "eine blockende Operation läuft"
 
-#: src/net.c:159
+#: src/net.c:195
 msgid "limit on the number of tasks has been reached"
 msgstr "Grenze der Anzahl der Abläufe wurde erreicht"
 
-#: src/net.c:162
+#: src/net.c:198
 msgid "invalid request"
 msgstr "ungültige Anfrage"
 
-#: src/net.c:165 src/tls.c:1108 src/tls.c:1132 src/tls.c:1422
-msgid "unknown error"
-msgstr "unbekannter Fehler"
-
-#: src/net.c:386 src/net.c:395 src/net.c:534
+#: src/net.c:422 src/net.c:431 src/net.c:570
 #, c-format
 msgid "cannot locate host %s: %s"
 msgstr "kann Host %s nicht finden: %s"
 
-#: src/net.c:459 src/net.c:546
+#: src/net.c:495 src/net.c:582
 #, c-format
 msgid "cannot create socket: %s"
 msgstr "kann Socket nicht erstellen: %s"
 
-#: src/net.c:471 src/net.c:480 src/net.c:564 src/net.c:573
+#: src/net.c:507 src/net.c:516 src/net.c:600 src/net.c:609
 #, c-format
 msgid "cannot connect to %s, port %d: %s"
 msgstr "kann keine Verbindung zu %s, Port %d herstellen: %s"
 
-#: src/net.c:648 src/net.c:653 src/net.c:681 src/net.c:686
+#: src/net.c:684 src/net.c:689 src/net.c:717 src/net.c:722
 #, c-format
 msgid "network read error: %s"
 msgstr "Netzwerk Lesefehler: %s"
 
-#: src/net.c:649 src/net.c:682 src/net.c:766 src/net.c:802 src/tls.c:1127
+#: src/net.c:685 src/net.c:718 src/net.c:802 src/net.c:838 src/tls.c:1127
 #: src/tls.c:1164 src/tls.c:1286 src/tls.c:1406
 msgid "the operation timed out"
 msgstr "die Wartezeit ist abgelaufen"
 
-#: src/net.c:765 src/net.c:770 src/net.c:801 src/net.c:806
+#: src/net.c:801 src/net.c:806 src/net.c:837 src/net.c:842
 #, c-format
 msgid "network write error: %s"
 msgstr "Netzwerk Ausgabefehler: %s"
 
-#: src/net.c:781 src/net.c:817
+#: src/net.c:817 src/net.c:853
 msgid "network write error"
 msgstr "Netzwerk Ausgabefehler"
 

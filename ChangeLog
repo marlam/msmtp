@@ -1,4 +1,6 @@
 Version 1.4.11 (not yet released):
+- Gnulib update 2007-04-07.
+- Move build-aux files to separate directory build-aux.
 - Provide a hstrerror() function for systems that lack getaddrinfo(), so that
   gethostbyname() must be used instead, and do not provide hstrerror()
   themselves. Needed for Solaris 2.6. Reported and tested by Chris Green.

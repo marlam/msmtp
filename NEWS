@@ -1,8 +1,9 @@
-Version 1.4.11: Security fixes.
-- TLS requires tls_trust_file or a disabled tls_certcheck now, so that it is 
-  not silently vulnerable to man-in-the-middle attacks.
-- NTLM authentication is considered insecure because it is undocumented. It is
-  therefore not used automatically without TLS anymore.
+Version 1.4.11: 
+- Security improvements:
+  - TLS requires tls_trust_file or a disabled tls_certcheck now, so that it is 
+    not silently vulnerable to man-in-the-middle attacks.
+  - NTLM authentication is considered insecure because it is undocumented. It is
+    therefore not used automatically without TLS anymore.
 
 Version 1.4.10:
 - No significant changes.

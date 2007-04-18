@@ -410,6 +410,7 @@ delivery succeeded), SMTP status code and SMTP error message (only in case of
 failure and only if available), error message (only in case of failure and only
 if available), exit code (from sysexits.h; EX_OK indicates success).
 .SH EXAMPLES
+.br
 .B Configuration file
 .PP
 # Set default values for all following accounts.
@@ -470,6 +471,32 @@ account default : provider
 .br
 
 .PP
+.B Manually finding the right CA certificate for \fBtls_trust_file\fP
+.PP
+The following example works as of 2007-04-18.
+.br
+For the Gmail SMTP server, you first issue the following command:
+.br
+.B msmtp --serverinfo --host=smtp.gmail.com --tls=on --port=587
+.B   --tls-certcheck=off
+.br
+The option \fI--port=587\fP is specific to Gmail and should not be used with
+other servers. The option \fI--tls-certcheck=off\fP allows msmtp to accept any
+certificate, so that it can print some information about it.
+.br
+According to the output of this command, the common name of the server
+certificate issuer is "Thawte Premium Server CA". This means that you have to
+trust the Thawte CA to use full TLS security. You can download the Thawte CA 
+certificate bundle from http://thawte.com/roots. You get a ZIP file with
+different certificates. The one you need for the \fBtls_trust_file\fP command is
+\fIThawte Server Roots/ThawtePremiumServerCA_b64.txt\fP.
+.br
+The following command should now succeed:
+.br
+.B msmtp --serverinfo --host=smtp.gmail.com --tls=on --port=587 
+.B   --tls-trust-file="Thawte Server Roots/ThawtePremiumServerCA_b64.txt"
+
+.PP
 .B Using msmtp with Mutt
 .PP
 Create a configuration file for msmtp and add the following lines to your 
@@ -511,6 +538,7 @@ the following Mutt configuration lines:
 .B macro generic\ "<esc>2"\ ":set from=you@your-employer.example"
 .br
 .B macro generic\ "<esc>3"\ ":set from=you@some-other-provider.example"
+
 .PP
 .B Using msmtp with mail
 .PP

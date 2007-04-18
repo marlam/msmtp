@@ -1,3 +1,7 @@
+Version 1.4.12 (not yet released):
+- Add documentation on how to find the right CA certificate for
+  tls_trust_file. Thanks to Bryan Kam for suggestions.
+
 Version 1.4.11:
 - Require either tls_trust_file or tls_certcheck=off for TLS sessions, so that
   msmtp is not silently vulnerable to man-in-the-middle attacks.

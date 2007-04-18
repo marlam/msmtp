@@ -676,6 +676,36 @@ TLS/SSL sessions are vulnerable to man-in-the-middle attacks!
 See @ref{tls_trust_file}, @ref{--tls-trust-file}, @ref{tls_certcheck}, 
 @ref{--tls-certcheck}.
 
+If your system has a file that collects all system-wide trusted CA
+certificates, it is easiest to just use this in the @samp{defaults} section of
+your configuration file. On Debian-based systems, for example, the adequate
+command would be @samp{tls_trust_file /etc/ssl/certs/ca-certificates.crt}.
+
+But you can also find out manually which CA certificate you need to
+trust. The following example works as of 2007-04-18.
+
+For the Gmail SMTP server, you first issue the following command:
+@example
+$ msmtp --serverinfo --host=smtp.gmail.com --tls=on --port=587 \
+  --tls-certcheck=off
+@end example
+The option @samp{--port=587} is specific to Gmail and should not be used with
+other servers. The option @samp{--tls-certcheck=off} allows msmtp to accept any
+certificate, so that it can print some information about it.
+
+According to the output of this command, the common name of the server
+certificate issuer is "Thawte Premium Server CA". This means that you have to
+trust the Thawte CA to use full TLS security. You can download the Thawte CA 
+certificate bundle from @url{http://thawte.com/roots}. You get a ZIP file with
+different certificates. The one you need for the @samp{tls_trust_file} command is
+@file{Thawte Server Roots/ThawtePremiumServerCA_b64.txt}.
+
+The following command should now succeed:
+@example
+$ msmtp --serverinfo --host=smtp.gmail.com --tls=on --port=587 \
+  --tls-trust-file="Thawte Server Roots/ThawtePremiumServerCA_b64.txt"
+@end example
+
 If the server requests it, the client can send a certificate, too. This allows
 the server to verify the identity of the client. See the EXTERNAL mechanism in
 @ref{Authentication}. The @samp{tls_key_file}/@samp{tls_cert_file} commands or

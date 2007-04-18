@@ -88,7 +88,7 @@ the \fBauth\fP command below.
 Set or unset the user name for authentication. See the \fBuser\fP command
 below.
 .IP "--tls[=(\fIon\fP|\fIoff\fP)]"
-Enable or disable TLS encryption. See the \fBtls\fP command below.
+Enable or disable TLS/SSL encryption. See the \fBtls\fP command below.
 .IP "--tls-starttls[=(\fIon\fP|\fIoff\fP)]"
 Enable or disable STARTTLS for TLS encryption. See the \fBtls_starttls\fP
 command below.
@@ -309,10 +309,10 @@ Set a domain for the \fIntlm\fP authentication method. The default is to use no
 domain (equivalent to an empty argument), but some servers seem to require one,
 even if it is an arbitrary string.
 .IP "tls [(\fIon\fP|\fIoff\fP)]"
-This command enables or disables TLS/SSL encrypted connections to the SMTP
-server. Not every server supports TLS.
+This command enables or disables TLS (also known as SSL) encrypted connections 
+to the SMTP server. Not every server supports TLS.
 .br
-With TLS, the connection with the SMTP server will be protected against
+With TLS/SSL, the connection with the SMTP server will be protected against
 eavesdroppers and man-in-the-middle attacks. To use TLS/SSL, it is required to 
 either use the \fBtls_trust_file\fP command (highly recommended) or to disable 
 \fBtls_certcheck\fP.

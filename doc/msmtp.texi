@@ -487,7 +487,7 @@ Enable or disable authentication and optionally choose the method. @xref{auth}.
 Set or unset the user name for authentication. @xref{user}.
 @itemx --tls[=(on|off)]
 @opindex --tls
-Enable or disable TLS. @xref{tls}.
+Enable or disable TLS/SSL. @xref{tls}.
 @anchor{--tls-starttls}
 @itemx --tls-starttls[=(on|off)]
 @opindex --tls-starttls
@@ -644,6 +644,10 @@ not the body, so the file won't get very large).
 
 @node Transport Layer Security
 @section Transport Layer Security
+
+Transport Layer Security (TLS) is a new name for Secure Socket Layer (SSL).
+The TLS 1.0 protocol is an updated version of the SSL 3.0 protocol. TLS and
+SSL mean the same thing.
 
 Quoting from RFC2246, the TLS 1.0 protocol specification:@*
 "The TLS protocol provides communications privacy over the Internet.

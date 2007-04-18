@@ -1,4 +1,6 @@
 Version 1.4.12 (not yet released):
+- Improve the documentation for TLS vs. SSL. Thanks to Carlos Martín Nieto for
+  suggestions.
 - Add documentation on how to find the right CA certificate for
   tls_trust_file. Thanks to Bryan Kam for suggestions.
 

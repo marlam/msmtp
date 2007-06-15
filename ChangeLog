@@ -1,4 +1,7 @@
-Version 1.4.12 (not yet released):
+Version 1.4.12:
+- Handle the special envelope from address MAILER-DAEMON correctly: send 
+  "MAIL FROM:<>" instead of "MAIL FROM:<MAILER-DAEMON>". Reported by 
+  André Egerer.
 - Improve the documentation for TLS vs. SSL. Thanks to Carlos Martín Nieto for
   suggestions.
 - Add documentation on how to find the right CA certificate for

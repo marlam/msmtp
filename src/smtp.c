@@ -1423,12 +1423,14 @@ int smtp_send_envelope(smtp_server_t *srv,
 		if (dsn_return)
 		{
 		    e = smtp_send_cmd(srv, errstr, "MAIL FROM:<%s> RET=%s", 
-			    envelope_from, dsn_return);
+			    strcasecmp(envelope_from, "MAILER-DAEMON") == 0 
+			    ? "" : envelope_from, dsn_return);
 		}
 		else
 		{
 		    e = smtp_send_cmd(srv, errstr, "MAIL FROM:<%s>", 
-			    envelope_from);
+			    strcasecmp(envelope_from, "MAILER-DAEMON") == 0 
+			    ? "" : envelope_from);
 		}
 		if (e != SMTP_EOK)
 		{

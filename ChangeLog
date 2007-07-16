@@ -1,3 +1,6 @@
+Version 1.4.13:
+- Gnulib update to 2007-07-15.
+
 Version 1.4.12:
 - Handle the special envelope from address MAILER-DAEMON correctly: send 
   "MAIL FROM:<>" instead of "MAIL FROM:<MAILER-DAEMON>". Reported by 

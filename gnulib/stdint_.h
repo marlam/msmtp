@@ -16,13 +16,12 @@
    along with this program; if not, write to the Free Software Foundation,
    Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
 
-#ifndef _GL_STDINT_H
-#define _GL_STDINT_H
-
 /*
  * ISO C 99 <stdint.h> for platforms that lack it.
  * <http://www.opengroup.org/susv3xbd/stdint.h.html>
  */
+
+#ifndef _GL_STDINT_H
 
 /* Get those types that are already defined in other system include
    files, so that we can "#define int8_t signed char" below without
@@ -42,16 +41,20 @@
   /* Other systems may have an incomplete or buggy <stdint.h>.
      Include it before <inttypes.h>, since any "#include <stdint.h>"
      in <inttypes.h> would reinclude us, skipping our contents because
-     _GL_STDINT_H is defined.  */
-# include @ABSOLUTE_STDINT_H@
+     _GL_STDINT_H is defined.
+     The include_next requires a split double-inclusion guard.  */
+# @INCLUDE_NEXT@ @NEXT_STDINT_H@
 #endif
+
+#if ! defined _GL_STDINT_H && ! defined _GL_JUST_INCLUDE_SYSTEM_STDINT_H
+#define _GL_STDINT_H
 
 /* <sys/types.h> defines some of the stdint.h types as well, on glibc,
    IRIX 6.5, and OpenBSD 3.8 (via <machine/types.h>).
    AIX 5.2 <sys/types.h> isn't needed and causes troubles.
    MacOS X 10.4.6 <sys/types.h> includes <stdint.h> (which is us), but
    relies on the system <stdint.h> definitions, so include
-   <sys/types.h> after @ABSOLUTE_STDINT_H@.  */
+   <sys/types.h> after @NEXT_STDINT_H@.  */
 #if @HAVE_SYS_TYPES_H@ && ! defined _AIX
 # include <sys/types.h>
 #endif
@@ -63,9 +66,9 @@
   /* In OpenBSD 3.8, <inttypes.h> includes <machine/types.h>, which defines
      int{8,16,32,64}_t, uint{8,16,32,64}_t and __BIT_TYPES_DEFINED__.
      <inttypes.h> also defines intptr_t and uintptr_t.  */
-# define _GL_JUST_INCLUDE_ABSOLUTE_INTTYPES_H
+# define _GL_JUST_INCLUDE_SYSTEM_INTTYPES_H
 # include <inttypes.h>
-# undef _GL_JUST_INCLUDE_ABSOLUTE_INTTYPES_H
+# undef _GL_JUST_INCLUDE_SYSTEM_INTTYPES_H
 #elif @HAVE_SYS_INTTYPES_H@
   /* Solaris 7 <sys/inttypes.h> has the types except the *_fast*_t types, and
      the macros except for *_FAST*_*, INTPTR_MIN, PTRDIFF_MIN, PTRDIFF_MAX.  */
@@ -502,3 +505,4 @@
 #endif /* !defined __cplusplus || defined __STDC_CONSTANT_MACROS */
 
 #endif /* _GL_STDINT_H */
+#endif /* !defined _GL_STDINT_H && !defined _GL_JUST_INCLUDE_SYSTEM_STDINT_H */

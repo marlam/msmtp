@@ -19,24 +19,26 @@
 #if defined __need_FILE || defined __need___FILE
 /* Special invocation convention inside glibc header files.  */
 
-#include @ABSOLUTE_STDIO_H@
+#@INCLUDE_NEXT@ @NEXT_STDIO_H@
 
 #else
 /* Normal invocation convention.  */
 
-#ifdef __DECC
-# include_next <stdio.h>
-#endif
+#ifndef _GL_STDIO_H
+
+/* The include_next requires a split double-inclusion guard.  */
+#@INCLUDE_NEXT@ @NEXT_STDIO_H@
 
 #ifndef _GL_STDIO_H
 #define _GL_STDIO_H
 
-#ifndef __DECC
-# include @ABSOLUTE_STDIO_H@
-#endif
-
 #include <stdarg.h>
 #include <stddef.h>
+
+#if (@GNULIB_FSEEKO@ && @REPLACE_FSEEKO@) || (@GNULIB_FTELLO@ && @REPLACE_FTELLO@)
+/* Get off_t.  */
+# include <sys/types.h>
+#endif
 
 #ifndef __attribute__
 /* This feature is available in gcc versions 2.5 and later.  */
@@ -207,9 +209,104 @@ extern int vsprintf (char *str, const char *format, va_list args)
 # endif
 #endif
 
+#if @GNULIB_FSEEKO@
+# if @REPLACE_FSEEKO@
+/* Provide fseek, fseeko functions that are aware of a preceding
+   fflush(), and which detect pipes.  */
+#  define fseeko rpl_fseeko
+extern int fseeko (FILE *fp, off_t offset, int whence);
+#  define fseek(fp, offset, whence) fseeko (fp, (off_t)(offset), whence)
+# endif
+#elif defined GNULIB_POSIXCHECK
+# undef fseeko
+# define fseeko(f,o,w) \
+   (GL_LINK_WARNING ("fseeko is unportable - " \
+                     "use gnulib module fseeko for portability"), \
+    fseeko (f, o, w))
+#endif
+
+#if @GNULIB_FSEEK@ && @REPLACE_FSEEK@
+extern int rpl_fseek (FILE *fp, long offset, int whence);
+# undef fseek
+# if defined GNULIB_POSIXCHECK
+#  define fseek(f,o,w) \
+     (GL_LINK_WARNING ("fseek cannot handle files larger than 4 GB " \
+                       "on 32-bit platforms - " \
+                       "use fseeko function for handling of large files"), \
+      rpl_fseek (f, o, w))
+# else
+#  define fseek rpl_fseek
+# endif
+#elif defined GNULIB_POSIXCHECK
+# ifndef fseek
+#  define fseek(f,o,w) \
+     (GL_LINK_WARNING ("fseek cannot handle files larger than 4 GB " \
+                       "on 32-bit platforms - " \
+                       "use fseeko function for handling of large files"), \
+      fseek (f, o, w))
+# endif
+#endif
+
+#if @GNULIB_FTELLO@
+# if @REPLACE_FTELLO@
+#  define ftello rpl_ftello
+extern off_t ftello (FILE *fp);
+#  define ftell(fp) ftello (fp)
+# endif
+#elif defined GNULIB_POSIXCHECK
+# undef ftello
+# define ftello(f) \
+   (GL_LINK_WARNING ("ftello is unportable - " \
+                     "use gnulib module ftello for portability"), \
+    ftello (f))
+#endif
+
+#if @GNULIB_FTELL@ && @REPLACE_FTELL@
+extern long rpl_ftell (FILE *fp);
+# undef ftell
+# if GNULIB_POSIXCHECK
+#  define ftell(f) \
+     (GL_LINK_WARNING ("ftell cannot handle files larger than 4 GB " \
+                       "on 32-bit platforms - " \
+                       "use ftello function for handling of large files"), \
+      rpl_ftell (f))
+# else
+#  define ftell rpl_ftell
+# endif
+#elif defined GNULIB_POSIXCHECK
+# ifndef ftell
+#  define ftell(f) \
+     (GL_LINK_WARNING ("ftell cannot handle files larger than 4 GB " \
+                       "on 32-bit platforms - " \
+                       "use ftello function for handling of large files"), \
+      ftell (f))
+# endif
+#endif
+
+#if @GNULIB_FFLUSH@
+# if @REPLACE_FFLUSH@
+#  define fflush rpl_fflush
+  /* Flush all pending data on STREAM according to POSIX rules.  Both
+     output and seekable input streams are supported.
+     Note! LOSS OF DATA can occur if fflush is applied on an input stream
+     that is _not_seekable_ or on an update stream that is _not_seekable_
+     and in which the most recent operation was input.  Seekability can
+     be tested with lseek(fileno(fp),0,SEEK_CUR).  */
+  extern int fflush (FILE *gl_stream);
+# endif
+#elif defined GNULIB_POSIXCHECK
+# undef fflush
+# define fflush(f) \
+   (GL_LINK_WARNING ("fflush is not always POSIX compliant - " \
+                     "use gnulib module fflush for portable " \
+                     "POSIX compliance"), \
+    fflush (f))
+#endif
+
 #ifdef __cplusplus
 }
 #endif
 
+#endif /* _GL_STDIO_H */
 #endif /* _GL_STDIO_H */
 #endif

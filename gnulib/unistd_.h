@@ -16,12 +16,22 @@
    Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
 
 #ifndef _GL_UNISTD_H
-#define _GL_UNISTD_H
 
+/* The include_next requires a split double-inclusion guard.  */
 #if @HAVE_UNISTD_H@
-# include @ABSOLUTE_UNISTD_H@
+# @INCLUDE_NEXT@ @NEXT_UNISTD_H@
 #endif
 
+#ifndef _GL_UNISTD_H
+#define _GL_UNISTD_H
+
+/* mingw doesn't define the SEEK_* macros in <unistd.h>.  */
+#if !(defined SEEK_CUR && defined SEEK_END && defined SEEK_SET)
+# include <stdio.h>
+#endif
+
+/* mingw fails to declare _exit in <unistd.h>.  */
+#include <stdlib.h>
 
 /* The definition of GL_LINK_WARNING is copied here.  */
 
@@ -35,13 +45,18 @@ extern "C" {
 
 #if @GNULIB_CHOWN@
 # if @REPLACE_CHOWN@
+#  ifndef REPLACE_CHOWN
+#   define REPLACE_CHOWN 1
+#  endif
+#  if REPLACE_CHOWN
 /* Change the owner of FILE to UID (if UID is not -1) and the group of FILE
-   to GID (if GID is not -1).
+   to GID (if GID is not -1).  Follow symbolic links.
    Return 0 if successful, otherwise -1 and errno set.
    See the POSIX:2001 specification
    <http://www.opengroup.org/susv3xsh/chown.html>.  */
-#  define chown rpl_chown
+#   define chown rpl_chown
 extern int chown (const char *file, uid_t uid, gid_t gid);
+#  endif
 # endif
 #elif defined GNULIB_POSIXCHECK
 # undef chown
@@ -165,6 +180,43 @@ extern int getlogin_r (char *name, size_t size);
 #endif
 
 
+#if @GNULIB_LCHOWN@
+# if @REPLACE_LCHOWN@
+/* Change the owner of FILE to UID (if UID is not -1) and the group of FILE
+   to GID (if GID is not -1).  Do not follow symbolic links.
+   Return 0 if successful, otherwise -1 and errno set.
+   See the POSIX:2001 specification
+   <http://www.opengroup.org/susv3xsh/lchown.html>.  */
+#  define lchown rpl_lchown
+extern int lchown (char const *file, uid_t owner, gid_t group);
+# endif
+#elif defined GNULIB_POSIXCHECK
+# undef lchown
+# define lchown(f,u,g) \
+    (GL_LINK_WARNING ("lchown is unportable to pre-POSIX.1-2001 " \
+                      "systems - use gnulib module lchown for portability"), \
+     lchown (f, u, g))
+#endif
+
+
+#if @GNULIB_LSEEK@
+# if @REPLACE_LSEEK@
+/* Set the offset of FD relative to SEEK_SET, SEEK_CUR, or SEEK_END.
+   Return the new offset if successful, otherwise -1 and errno set.
+   See the POSIX:2001 specification
+   <http://www.opengroup.org/susv3xsh/lseek.html>.  */
+#  define lseek rpl_lseek
+   extern off_t lseek (int fd, off_t offset, int whence);
+# endif
+#elif defined GNULIB_POSIXCHECK
+# undef lseek
+# define lseek(f,o,w) \
+    (GL_LINK_WARNING ("lseek does not fail with ESPIPE on pipes on some " \
+                      "systems - use gnulib module lseek for portability"), \
+     lseek (f, o, w))
+#endif
+
+
 #if @GNULIB_READLINK@
 /* Read the contents of the symbolic link FILE and place the first BUFSIZE
    bytes of it into BUF.  Return the number of bytes placed into BUF if
@@ -184,9 +236,27 @@ extern int readlink (const char *file, char *buf, size_t bufsize);
 #endif
 
 
+#if @GNULIB_SLEEP@
+/* Pause the execution of the current thread for N seconds.
+   Returns the number of seconds left to sleep.
+   See the POSIX:2001 specification
+   <http://www.opengroup.org/susv3xsh/sleep.html>.  */
+# if !@HAVE_SLEEP@
+extern unsigned int sleep (unsigned int n);
+# endif
+#elif defined GNULIB_POSIXCHECK
+# undef sleep
+# define sleep(n) \
+    (GL_LINK_WARNING ("sleep is unportable - " \
+                      "use gnulib module sleep for portability"), \
+     sleep (n))
+#endif
+
+
 #ifdef __cplusplus
 }
 #endif
 
 
+#endif /* _GL_UNISTD_H */
 #endif /* _GL_UNISTD_H */

@@ -1,4 +1,6 @@
 Version 1.4.13:
+- Update the license of the source code to GPLv3 or later, and change the
+  license of the documentation to the GFDLv1.2 or later.
 - Gnulib update to 2007-07-15.
 
 Version 1.4.12:

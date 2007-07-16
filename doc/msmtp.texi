@@ -1,9 +1,9 @@
 \input texinfo   @c -*-texinfo-*-
 @setfilename msmtp.info
-@set UPDATED June 16, 2007
-@set UPDATED-MONTH June 2007
-@set EDITION 1.4.12
-@set VERSION 1.4.12
+@set UPDATED July 16, 2007
+@set UPDATED-MONTH July 2007
+@set EDITION 1.4.13
+@set VERSION 1.4.13
 @settitle msmtp @value{VERSION}
 
 @c Define new indices: for options (op) and commands (cm)
@@ -18,21 +18,12 @@ This manual was last updated @value{UPDATED} for version
 Copyright (C) 2005, 2006, 2007 Martin Lambers
 
 @quotation
-This program, including this manual,
-is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-This program, including this manual,
-is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.2 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled ``GNU Free
+Documentation License''.
 @end quotation
 @end copying
 
@@ -69,6 +60,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 * Remote Message Queue Starting mode::	How to send RMQS requests.
 * Examples::				Usage examples.
 * Development::				About the development process.
+* Copying Information::			How you can copy and share mpop.
 @end menu
 
 
@@ -1126,6 +1118,22 @@ Please send any questions, suggestions, and bug reports either to the mailing
 list or to Martin Lambers (@email{marlam@@marlam.de}, OpenPGP key: 
 @url{http://www.marlam.de/key.txt}).
 If you send a bug report, please include the output of @code{msmtp --version}.
+
+
+@node Copying Information
+@appendix Copying Information
+
+@menu
+* GNU Free Documentation License::   License for copying this manual.
+* GNU GPL::                          License for copying the program.
+@end menu
+
+@node GNU Free Documentation License
+@unnumberedsec GNU Free Documentation License
+@include fdl.texi
+@node GNU GPL
+@unnumberedsec GNU GPL
+@include gpl.texi
 
 
 @bye

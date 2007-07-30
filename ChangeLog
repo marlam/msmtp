@@ -1,4 +1,6 @@
 Version 1.4.13:
+- Make the search of an account by the envelope from address case insensitive.
+  Problem reported and fixed by Brandon Philips.
 - Update the license of the source code to GPLv3 or later, and change the
   license of the documentation to the GFDLv1.2 or later.
 - Gnulib update to 2007-07-15.

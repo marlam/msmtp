@@ -28,6 +28,7 @@
 #include <limits.h>
 #include <stdio.h>
 #include <string.h>
+#include <strings.h>
 #include <ctype.h>
 #include <errno.h>
 
@@ -206,7 +207,7 @@ account_t *find_account_by_envelope_from(list_t *acc_list, const char *from)
     {
 	acc_list = acc_list->next;
 	acc_from = ((account_t *)(acc_list->data))->from;
-	if (acc_from && strcmp(from, acc_from) == 0)
+	if (acc_from && strcasecmp(from, acc_from) == 0)
 	{
 	    a = acc_list->data;
 	    break;

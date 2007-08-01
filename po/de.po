@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: msmtp 1.4.11\n"
 "Report-Msgid-Bugs-To: marlam@marlam.de\n"
-"POT-Creation-Date: 2007-07-16 22:45+0200\n"
+"POT-Creation-Date: 2007-08-01 11:02+0200\n"
 "PO-Revision-Date: 2005-06-20 22:15+0200\n"
 "Last-Translator: Martin Lambers <marlam@marlam.de>\n"
 "Language-Team: German\n"
@@ -73,31 +73,31 @@ msgstr "%s: Option `-W %s' ist nicht eindeutig\n"
 msgid "%s: option `-W %s' doesn't allow an argument\n"
 msgstr "%s: Option `-W %s' akzeptiert kein Argument\n"
 
-#: src/conf.c:533
+#: src/conf.c:534
 msgid "host not set"
 msgstr "Host nicht angegeben"
 
-#: src/conf.c:538
+#: src/conf.c:539
 msgid "port not set"
 msgstr "Port nicht angegeben"
 
-#: src/conf.c:543
+#: src/conf.c:544
 msgid "envelope-from address is missing"
 msgstr "Umschlagabsenderadresse fehlt"
 
-#: src/conf.c:548
+#: src/conf.c:549
 msgid "tls_key_file requires tls_cert_file"
 msgstr "tls_key_file benötigt tls_cert_file"
 
-#: src/conf.c:553
+#: src/conf.c:554
 msgid "tls_cert_file requires tls_key_file"
 msgstr "tls_cert_file benötigt tls_key_file"
 
-#: src/conf.c:559
+#: src/conf.c:560
 msgid "cannot use tls_trust_file with tls_certcheck turned off"
 msgstr "um tls_trust_file zu nutzen muss tls_certcheck aktiviert sein"
 
-#: src/conf.c:565
+#: src/conf.c:566
 msgid ""
 "tls requires either tls_trust_file (highly recommended) or a disabled "
 "tls_certcheck"
@@ -105,65 +105,65 @@ msgstr ""
 "tls benötigt entweder tls_trust_file (empfohlen) oder ein abgeschaltetes "
 "tls_certcheck"
 
-#: src/conf.c:671 src/stream.c:62
+#: src/conf.c:672 src/stream.c:62
 msgid "input error"
 msgstr "Lesefehler"
 
-#: src/conf.c:693
+#: src/conf.c:694
 #, c-format
 msgid "line longer than %d characters"
 msgstr "Zeile länger als %d Zeichen"
 
-#: src/conf.c:744 src/conf.c:866
+#: src/conf.c:745 src/conf.c:867
 #, c-format
 msgid "line %d: missing account name"
 msgstr "Zeile %d: Accountname fehlt"
 
-#: src/conf.c:749
+#: src/conf.c:750
 #, c-format
 msgid "line %d: account %s not (yet) defined"
 msgstr "Zeile %d: Account %s ist (noch) nicht definiert"
 
-#: src/conf.c:838 src/conf.c:1338 src/conf.c:1355
+#: src/conf.c:839 src/conf.c:1339 src/conf.c:1356
 #, c-format
 msgid "line %d: command %s does not take an argument"
 msgstr "Zeile %d: Kommando %s akzeptiert kein Argument"
 
-#: src/conf.c:873
+#: src/conf.c:874
 #, c-format
 msgid "line %d: an account name must not contain colons or commas"
 msgstr ""
 "Zeile %d: Ein Accountname darf keine Doppelpunkte oder Kommata enthalten"
 
-#: src/conf.c:882
+#: src/conf.c:883
 #, c-format
 msgid "line %d: account %s was already defined in this file"
 msgstr "Zeile %d: Account %s wurde in dieser Datei bereits definiert"
 
-#: src/conf.c:906 src/conf.c:925 src/conf.c:952 src/conf.c:981 src/conf.c:1213
-#: src/conf.c:1248
+#: src/conf.c:907 src/conf.c:926 src/conf.c:953 src/conf.c:982 src/conf.c:1214
+#: src/conf.c:1249
 #, c-format
 msgid "line %d: command %s needs an argument"
 msgstr "Zeile %d: Kommando %s benötigt ein Argument"
 
-#: src/conf.c:936 src/conf.c:968 src/conf.c:999 src/conf.c:1026
-#: src/conf.c:1064 src/conf.c:1102 src/conf.c:1122 src/conf.c:1181
-#: src/conf.c:1201 src/conf.c:1235 src/conf.c:1266 src/conf.c:1287
-#: src/conf.c:1323
+#: src/conf.c:937 src/conf.c:969 src/conf.c:1000 src/conf.c:1027
+#: src/conf.c:1065 src/conf.c:1103 src/conf.c:1123 src/conf.c:1182
+#: src/conf.c:1202 src/conf.c:1236 src/conf.c:1267 src/conf.c:1288
+#: src/conf.c:1324
 #, c-format
 msgid "line %d: invalid argument %s for command %s"
 msgstr "Zeile %d: Ungültiges Argument %s für Kommando %s"
 
-#: src/conf.c:1367
+#: src/conf.c:1368
 #, c-format
 msgid "line %d: unknown command %s"
 msgstr "Zeile %d: Unbekanntes Kommando %s"
 
-#: src/conf.c:1410
+#: src/conf.c:1411
 msgid "must be owned by you"
 msgstr "muss Dir gehören"
 
-#: src/conf.c:1415
+#: src/conf.c:1416
 msgid "must have no more than user read/write permissions"
 msgstr "darf nicht mehr Rechte als Lese-/Schreibrecht für den Benutzer haben"
 

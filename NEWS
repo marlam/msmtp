@@ -1,4 +1,5 @@
 Version 1.4.13: 
+- Useful scripts are now distributed in the scripts subdirectory.
 - The license was updated to GPLv3 or later (source code) and GFDLv1.2 or later
   (documentation).
 

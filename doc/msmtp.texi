@@ -1,7 +1,7 @@
 \input texinfo   @c -*-texinfo-*-
 @setfilename msmtp.info
-@set UPDATED July 16, 2007
-@set UPDATED-MONTH July 2007
+@set UPDATED August 1, 2007
+@set UPDATED-MONTH August 2007
 @set EDITION 1.4.13
 @set VERSION 1.4.13
 @settitle msmtp @value{VERSION}

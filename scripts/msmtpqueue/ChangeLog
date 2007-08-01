@@ -1,0 +1,11 @@
+Version 0.5:
+- Added the msmtp-listqueue.sh script, contributed by Andreas Kneib.
+
+Version 0.4:
+- Frank Thieme sent the following improvements:
+  - msmtp-runqueue.sh now uses a lock file to prevent two instances of the
+    script from running simultaneously.
+  - msmtp-enqueue.sh now checks if you're online, and calls msmtp-runqueue.sh
+    immediately if this is the case.
+    This functionality is commented out; you have to adapt the online check to
+    your system before activating it.

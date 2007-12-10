@@ -350,14 +350,23 @@ int net_connect(int fd, const struct sockaddr *serv_addr, socklen_t addrlen,
 
 void net_set_io_timeout(int socket, int seconds)
 {
+#ifdef W32_NATIVE
     /* On old Windows systems (older than Windows 2000), these timeouts are 
      * broken, see http://msdn.microsoft.com/library/default.asp?url=/library/
      * en-us/winsock/winsock/setsockopt_2.asp
      * We activate these timeouts only for Windows systems that also have
      * getaddrinfo(), which means XP or newer, to work around this problem. */
-#if defined W32_NATIVE && !defined HAVE_GETADDRINFO
-    /* do nothing */
-#else
+# ifdef HAVE_GETADDRINFO
+    DWORD milliseconds;
+
+    if (seconds > 0)
+    {
+	milliseconds = seconds * 1000;
+	(void)setsockopt(socket, SOL_SOCKET, SO_RCVTIMEO, &milliseconds, sizeof(int));
+	(void)setsockopt(socket, SOL_SOCKET, SO_SNDTIMEO, &milliseconds, sizeof(int));
+    }
+# endif
+#else /* UNIX or DJGPP */
     struct timeval tv;
     
     if (seconds > 0)

@@ -1,3 +1,6 @@
+2008-01-25:
+- Pass options from msmtp-runqueue.sh to msmtp. Patch by Thomas Weber. Thanks!
+
 Version 0.5:
 - Added the msmtp-listqueue.sh script, contributed by Andreas Kneib.
 

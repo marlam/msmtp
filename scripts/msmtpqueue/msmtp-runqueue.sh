@@ -4,6 +4,8 @@ QUEUEDIR="$HOME/.msmtpqueue"
 LOCKFILE="$QUEUEDIR/.lock"
 MAXWAIT=120
 
+OPTIONS=$@
+
 # wait for a lock that another instance has set
 SECONDS=0
 while [ -e "$LOCKFILE" -a "$SECONDS" -lt "$MAXWAIT" ]; do
@@ -39,7 +41,7 @@ for MAILFILE in *.mail; do
 		echo "FAILURE"
 		continue
 	fi
-	msmtp `cat "$MSMTPFILE"` < "$MAILFILE"
+	msmtp $OPTIONS `cat "$MSMTPFILE"` < "$MAILFILE"
 	if [ $? -eq 0 ]; then
 		rm "$MAILFILE" "$MSMTPFILE"
 		echo "$MAILFILE sent successfully"

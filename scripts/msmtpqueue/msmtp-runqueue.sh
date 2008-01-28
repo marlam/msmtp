@@ -34,7 +34,7 @@ touch "$LOCKFILE" || exit 1
 
 # process all mails
 for MAILFILE in *.mail; do
-	echo "*** Sending $MAILFILE..."
+	echo "*** Sending $MAILFILE to `sed -e 's/^.*-- \(.*$\)/\1/' $MSMTPFILE` ..."
 	MSMTPFILE="`echo $MAILFILE | sed -e 's/mail/msmtp/'`"
 	if [ ! -f "$MSMTPFILE" ]; then
 		echo "No corresponding file $MSMTPFILE found"

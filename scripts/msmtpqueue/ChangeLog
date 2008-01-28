@@ -1,3 +1,7 @@
+2008-01-27:
+- Print the recipients of a mail in msmtp-runqueue.sh. Patch by Konrad
+  Schrempf. Thanks!
+
 2008-01-25:
 - Pass options from msmtp-runqueue.sh to msmtp. Patch by Thomas Weber. Thanks!
 

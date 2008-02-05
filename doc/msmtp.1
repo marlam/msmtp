@@ -2,7 +2,7 @@
 .\"
 .\" msmtp version 1.4.14
 .\"
-.\" Copyright (C) 2005, 2006, 2007  Martin Lambers
+.\" Copyright (C) 2005, 2006, 2007, 2008  Martin Lambers
 .\"
 .\" Permission is granted to copy, distribute and/or modify this document
 .\" under the terms of the GNU Free Documentation License, Version 1.2 or
@@ -276,7 +276,8 @@ one available for you (see below).
 You probably need to set a username (with \fBuser\fP) and password (with 
 \fBpassword\fP). 
 If no password is set but one is needed during authentication, msmtp will try to
-find it in ~/.netrc, and if that fails, msmtp will prompt you for it.
+find it in ~/.netrc. If that fails, it will try to get it from a system specific
+keychain (if available). If that fails, msmtp will prompt you for it.
 .br
 Available methods are \fIplain\fP, \fIcram-md5\fP, \fIdigest-md5\fP,
 \fIgssapi\fP, \fIexternal\fP, \fIlogin\fP, and \fIntlm\fP.  Note that one or 
@@ -307,7 +308,8 @@ name. Authentication must be activated with the \fBauth\fP command.
 Set your password for SMTP authentication. An empty argument unsets the
 password. Authentication must be activated with the \fBauth\fP command.
 If no password is set but one is needed during authentication, msmtp will try to
-find it in ~/.netrc, and if that fails, msmtp will prompt you for it.
+find it in ~/.netrc. If that fails, it will try to get it from a system specific
+keychain (if available). If that fails, msmtp will prompt you for it.
 .IP "ntlmdomain [\fIdomain\fP]"
 Set a domain for the \fIntlm\fP authentication method. The default is to use no
 domain (equivalent to an empty argument), but some servers seem to require one,

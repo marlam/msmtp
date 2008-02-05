@@ -3,8 +3,9 @@
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007
+ * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008
  * Martin Lambers <marlam@marlam.de>
+ * Jay Soffian <jaysoffian@gmail.com> (Mac OS X keychain support)
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -55,6 +56,9 @@ extern int optind;
 #else /* UNIX */
 #include <netdb.h>
 #include <arpa/inet.h>
+#endif
+#ifdef HAVE_KEYCHAIN
+#include <Security/Security.h>
 #endif
 
 #include "getpass.h"
@@ -270,7 +274,8 @@ char *msmtp_sanitize_string(char *str)
  * msmtp_password_callback()
  *
  * This function will be called by smtp_auth() to get a password if none was
- * given. It tries to read a password from .netrc, and if that fails reads a 
+ * given. It tries to read a password from .netrc. If that fails, it tries to 
+ * get it from the system's keychain (if available). If that fails, it reads a 
  * password with getpass().
  * It must return NULL on failure or a password in an allocated buffer.
  */
@@ -284,6 +289,11 @@ char *msmtp_password_callback(const char *hostname, const char *user)
     char *prompt;
     char *gpw;
     char *password = NULL;
+#ifdef HAVE_KEYCHAIN
+    void *password_data;
+    UInt32 password_length;
+    OSStatus status;
+#endif
 
     homedir = get_homedir();
     netrc_filename = get_filename(homedir, NETRCFILE);
@@ -297,7 +307,27 @@ char *msmtp_password_callback(const char *hostname, const char *user)
 	free_netrc_entry_list(netrc_hostlist);
     }
     free(netrc_filename);
-    
+
+#ifdef HAVE_KEYCHAIN
+    if (SecKeychainFindInternetPassword(
+		NULL,
+		strlen(hostname), hostname,
+		0, NULL,
+		strlen(user), user,
+		0, (char *)NULL,
+		0,
+		kSecProtocolTypeSMTP,
+		kSecAuthenticationTypeDefault,
+		&password_length, &password_data,
+		NULL) == noErr)
+    {
+	password = xmalloc((password_length + 1) * sizeof(char));
+	strncpy(password, password_data, (size_t)password_length);
+	password[password_length] = '\0';
+	SecKeychainItemFreeContent(NULL, password_data);
+    }
+#endif /* HAVE_KEYCHAIN */
+
     if (!password)
     {
 	prompt = xasprintf(_("password for %s at %s: "), user, hostname);
@@ -2057,7 +2087,7 @@ void msmtp_print_version(void)
     free(userconffile);
     free(homedir);
     printf("\n");
-    printf(_("Copyright (C) 2007 Martin Lambers and others.\n"
+    printf(_("Copyright (C) 2008 Martin Lambers and others.\n"
 		"This is free software.  You may redistribute copies of "
 		    "it under the terms of\n"
 		"the GNU General Public License "

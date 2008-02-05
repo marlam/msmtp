@@ -1,7 +1,7 @@
 \input texinfo   @c -*-texinfo-*-
 @setfilename msmtp.info
-@set UPDATED December 10, 2007
-@set UPDATED-MONTH December 2007
+@set UPDATED February 5, 2008
+@set UPDATED-MONTH February 2008
 @set EDITION 1.4.14
 @set VERSION 1.4.14
 @settitle msmtp @value{VERSION}
@@ -15,7 +15,7 @@
 This manual was last updated @value{UPDATED} for version
 @value{VERSION} of msmtp.
 
-Copyright (C) 2005, 2006, 2007 Martin Lambers
+Copyright (C) 2005, 2006, 2007, 2008 Martin Lambers
 
 @quotation
 Permission is granted to copy, distribute and/or modify this document
@@ -216,7 +216,8 @@ name.  Authentication must be activated with the @samp{auth} command.
 Set your password for SMTP authentication. An empty argument unsets the
 password.  Authentication must be activated with the @samp{auth} command.
 If no password is set but one is needed during authentication, msmtp will try to
-find it in @code{~/.netrc}, and if that fails, will prompt you for it.
+find it in @code{~/.netrc}. If that fails, it will try to get it from a system 
+specific keychain (if available). If that fails, msmtp will prompt you for it.
 @xref{Authentication}.
 @anchor{ntlmdomain}
 @item ntlmdomain [@var{ntlmdomain}]
@@ -775,7 +776,8 @@ which methods are supported by your version of msmtp.
 Authentication data can be set with the @samp{user} and @samp{password} commands
 or with the @samp{--user} option. See @ref{user}, @ref{password}, @ref{--user}.
 If no password is set but one is needed during authentication, msmtp will try to
-find it in @code{~/.netrc}, and if that fails, msmtp will prompt you for it.
+find it in @code{~/.netrc}. If that fails, it will try to get it from a system 
+specific keychain (if available). If that fails, msmtp will prompt you for it.
 
 The authentication method can be chosen with the @samp{auth} command or 
 @samp{--auth} option, but it is usually sufficient to just use the @samp{on} 

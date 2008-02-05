@@ -3,9 +3,10 @@ dnl Process this file with autoconf to produce a configure script.
 #
 # This file is part of msmtp, an SMTP client.
 #
-# Copyright (C) 2003, 2004, 2005, 2006, 2007
+# Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008
 # Christophe Nowicki
 # Martin Lambers <marlam@marlam.de>
+# Jay Soffian <jaysoffian@gmail.com> (Mac OS X keychain support)
 #
 #   This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -177,6 +178,22 @@ if test "$libidn" != "no"; then
         libidn=yes
 	LIBS="$LIBS $LIBIDN"
     fi
+fi
+
+dnl MacOS X Keychain Services (Security Framework)
+AC_CACHE_CHECK([for SecKeychainGetVersion],
+    ac_cv_func_SecKeychainGetVersion,
+    [ac_save_LIBS="$LIBS"
+    LIBS="$LIBS -Wl,-framework -Wl,Security"
+    AC_TRY_LINK([#include <Security/Security.h>],
+        [SecKeychainGetVersion(NULL);],
+        [ac_cv_func_SecKeychainGetVersion=yes],
+        [ac_cv_func_SecKeychainGetVersion=no])
+    LIBS="$ac_save_LIBS"])
+if test $ac_cv_func_SecKeychainGetVersion = yes; then
+    AC_DEFINE([HAVE_KEYCHAIN], 1,
+        [Define to 1 if you have the MacOS X Keychain Services API.])
+    LIBS="$LIBS -Wl,-framework -Wl,Security"
 fi
 
 dnl Global #defines for all source files

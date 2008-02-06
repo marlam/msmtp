@@ -279,6 +279,9 @@ If no password is set but one is needed during authentication, msmtp will try to
 find it in ~/.netrc. If that fails, it will try to get it from a system specific
 keychain (if available). If that fails, msmtp will prompt you for it.
 .br
+Currently the only supported keychain is the Mac OS X keychain. See the EXAMPLES
+section below.
+.br
 Available methods are \fIplain\fP, \fIcram-md5\fP, \fIdigest-md5\fP,
 \fIgssapi\fP, \fIexternal\fP, \fIlogin\fP, and \fIntlm\fP.  Note that one or 
 more of these methods may be unavailable due to lack of support in the
@@ -551,6 +554,26 @@ the following Mutt configuration lines:
 Define a default account, and put the following in your ~/.mailrc:
 .br
 .B set sendmail="/path/to/msmtp"
+
+.PP
+.B Using the Mac OS X Keychain
+.PP
+A Mac OS X user can store a password in a keychain item using the Keychain
+Access GUI application. The \fIaccount name\fP is simply the value of the
+msmtp \fBuser\fP argument. However, the \fIkeychain item name\fP is 
+\fBsmtp://<hostname>\fP where \fB<hostname>\fP matches the msmtp \fBhost\fP
+argument. Using \fBsmtp://\fP is needed so that the item is created of kind
+\fIinternet password\fP.  For example, selecting \fIFile->Get Info\fP on a
+keychain item that corresponds to \fBhost smtp.freemail.example\fP and
+\fBuser joe.smith\fP will show:
+.br
+Name: smtp.freemail.example
+.br
+Kind: Internet password
+.br
+Account: joe.smith
+.br
+Where: smtp://smtp.freemail.example
 .SH FILES / ENVIRONMENT
 .IP "SYSCONFDIR/msmtprc"
 System configuration file. Use

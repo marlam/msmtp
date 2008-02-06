@@ -53,7 +53,9 @@ Documentation License''.
 * Introduction::			Basic concepts.
 * Configuration files::			Configuration file commands.
 * Invocation::				Command line options.
-* SMTP features::			Explanation of various SMTP features.
+* Transport Layer Security::		How to use TLS/SSL.
+* Authentication::			How to use authentication.
+* Delivery Status Notifications::	How to use DSN.
 * Sendmail mode::			How to send mail.
 * Server information mode::		How to obtain information about 
 					an SMTP server.
@@ -626,17 +628,8 @@ not the body, so the file won't get very large).
 @end table
 
 
-@node SMTP features
-@chapter SMTP features
-
-@menu
-* Transport Layer Security::		How to use TLS/SSL
-* Authentication::			How to use authentication
-* Delivery Status Notifications::	How to use DSN
-@end menu
-
 @node Transport Layer Security
-@section Transport Layer Security
+@chapter Transport Layer Security
 
 Transport Layer Security (TLS) is a new name for Secure Socket Layer (SSL).
 The TLS 1.0 protocol is an updated version of the SSL 3.0 protocol. TLS and
@@ -715,7 +708,7 @@ to the server, it probably was not issued by any CA that the server trusts.
 
 
 @node Authentication
-@section Authentication
+@chapter Authentication
 
 Many SMTP servers require a client to authenticate itself before it is allowed
 to send mail. 
@@ -779,6 +772,9 @@ If no password is set but one is needed during authentication, msmtp will try to
 find it in @code{~/.netrc}. If that fails, it will try to get it from a system 
 specific keychain (if available). If that fails, msmtp will prompt you for it.
 
+Currently the only supported keychain is the Mac OS X keychain. 
+@xref{Using the Mac OS X Keychain}.
+
 The authentication method can be chosen with the @samp{auth} command or 
 @samp{--auth} option, but it is usually sufficient to just use the @samp{on} 
 argument to let msmtp choose the method itself. See @ref{auth}, @ref{--auth}.
@@ -792,8 +788,28 @@ because all the others methods put the authentication data at risk.
 If you really want to risk your authentication data, you have to force msmtp to
 do that by manually setting the authentication method while TLS is off.
 
+@section Using the Mac OS X Keychain
+@anchor{Using the Mac OS X Keychain}
+
+A Mac OS X user can store a password in a keychain item using the Keychain
+Access GUI application. The @samp{account name} is simply the value of the
+msmtp @samp{user} argument. However, the @samp{keychain item name} is
+@code{smtp://<hostname>} where @code{<hostname>} matches the msmtp @samp{host}
+argument. Using @code{smtp://} is needed so that the item is created of kind
+@samp{internet password}.  For example, selecting @samp{File->Get Info} on a
+keychain item that corresponds to @samp{host smtp.freemail.example} and
+@samp{user joe.smith} will show:
+
+@example
+   Name: smtp.freemail.example
+   Kind: Internet password
+Account: joe.smith
+  Where: smtp://smtp.freemail.example
+@end example
+
+
 @node Delivery Status Notifications
-@section Delivery Status Notifications
+@chapter Delivery Status Notifications
 
 In situations such as delivery failure or very long delivery delay, the mail 
 system often generates a message for the sender of the mail in question, 

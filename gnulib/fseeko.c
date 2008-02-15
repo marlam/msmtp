@@ -3,7 +3,7 @@
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2, or (at your option)
+   the Free Software Foundation; either version 3, or (at your option)
    any later version.
 
    This program is distributed in the hope that it will be useful,
@@ -71,11 +71,13 @@ rpl_fseeko (FILE *fp, off_t offset, int whence)
 		    : 0)
       && fp_ub._base == NULL)
 #elif defined _IOERR                /* AIX, HP-UX, IRIX, OSF/1, Solaris, mingw */
-# if defined __sun && defined __sparc && defined _LP64 /* Solaris/SPARC 64-bit */
+# if defined __sun && defined _LP64 /* Solaris/{SPARC,AMD64} 64-bit */
 #  define fp_ ((struct { unsigned char *_ptr; \
 			 unsigned char *_base; \
 			 unsigned char *_end; \
 			 long _cnt; \
+			 int _file; \
+			 unsigned int _flag; \
 		       } *) fp)
   if (fp_->_ptr == fp_->_base
       && (fp_->_ptr == NULL || fp_->_cnt == 0))
@@ -88,6 +90,10 @@ rpl_fseeko (FILE *fp, off_t offset, int whence)
        || fp->__bufpos == fp->__bufstart)
       && ((fp->__modeflags & (__FLAG_READONLY | __FLAG_READING)) == 0
 	  || fp->__bufpos == fp->__bufread))
+#elif defined __QNX__               /* QNX */
+  if ((fp->_Mode & _MWRITE ? fp->_Next == fp->_Buf : fp->_Next == fp->_Rend)
+      && fp->_Rback == fp->_Back + sizeof (fp->_Back)
+      && fp->_Rsave == NULL)
 #else
   #error "Please port gnulib fseeko.c to your platform! Look at the code in fpurge.c, then report this to bug-gnulib."
 #endif
@@ -105,6 +111,9 @@ rpl_fseeko (FILE *fp, off_t offset, int whence)
 #if defined __sferror               /* FreeBSD, NetBSD, OpenBSD, MacOS X, Cygwin */
 	  fp->_offset = pos;
 	  fp->_flags |= __SOFF;
+	  fp->_flags &= ~__SEOF;
+#elif defined _IOERR                /* AIX, HP-UX, IRIX, OSF/1, Solaris, mingw */
+          fp->_flag &= ~_IOEOF;
 #endif
 	  return 0;
 	}

@@ -1,13 +1,13 @@
-# getline.m4 serial 15
+# getline.m4 serial 18
 
-dnl Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2005, 2006 Free Software
-dnl Foundation, Inc.
+dnl Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2005, 2006, 2007 Free
+dnl Software Foundation, Inc.
 dnl
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
 
-AC_PREREQ(2.52)
+AC_PREREQ([2.59])
 
 dnl See if there's a working, system-supplied version of the getline function.
 dnl We can't just do AC_REPLACE_FUNCS(getline) because some systems
@@ -15,10 +15,12 @@ dnl have a function by that name in -linet that doesn't have anything
 dnl to do with the function we need.
 AC_DEFUN([gl_FUNC_GETLINE],
 [
-  dnl Persuade glibc <stdio.h> to declare getline().
-  AC_REQUIRE([AC_GNU_SOURCE])
+  AC_REQUIRE([gl_STDIO_H_DEFAULTS])
 
-  AC_CHECK_DECLS([getline])
+  dnl Persuade glibc <stdio.h> to declare getline().
+  AC_REQUIRE([AC_USE_SYSTEM_EXTENSIONS])
+
+  AC_CHECK_DECLS_ONCE([getline])
 
   gl_getline_needs_run_time_check=no
   AC_CHECK_FUNC(getline,
@@ -60,13 +62,13 @@ AC_DEFUN([gl_FUNC_GETLINE],
     )])
   fi
 
+  if test $ac_cv_have_decl_getline = no; then
+    HAVE_DECL_GETLINE=0
+  fi
+
   if test $am_cv_func_working_getline = no; then
-    dnl We must choose a different name for our function, since on ELF systems
-    dnl a broken getline() in libc.so would override our getline() in
-    dnl libgettextlib.so.
-    AC_DEFINE([getline], [gnu_getline],
-      [Define to a replacement function name for getline().])
-    AC_LIBOBJ(getline)
+    REPLACE_GETLINE=1
+    AC_LIBOBJ([getline])
 
     gl_PREREQ_GETLINE
   fi

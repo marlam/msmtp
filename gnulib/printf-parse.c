@@ -1,9 +1,9 @@
 /* Formatted output to strings.
-   Copyright (C) 1999-2000, 2002-2003, 2006-2007 Free Software Foundation, Inc.
+   Copyright (C) 1999-2000, 2002-2003, 2006-2008 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2, or (at your option)
+   the Free Software Foundation; either version 3, or (at your option)
    any later version.
 
    This program is distributed in the hope that it will be useful,
@@ -49,7 +49,7 @@
 #include <stddef.h>
 
 /* Get intmax_t.  */
-#ifdef IN_LIBINTL
+#if defined IN_LIBINTL || defined IN_LIBASPRINTF
 # if HAVE_STDINT_H_WITH_UINTMAX
 #  include <stdint.h>
 # endif
@@ -62,6 +62,9 @@
 
 /* malloc(), realloc(), free().  */
 #include <stdlib.h>
+
+/* errno.  */
+#include <errno.h>
 
 /* Checked size_t computations.  */
 #include "xsize.h"
@@ -89,7 +92,7 @@ PRINTF_PARSE (const CHAR_T *format, DIRECTIVES *d, arguments *a)
   d->dir = (DIRECTIVE *) malloc (d_allocated * sizeof (DIRECTIVE));
   if (d->dir == NULL)
     /* Out of memory.  */
-    return -1;
+    goto out_of_memory_1;
 
   a->count = 0;
   a_allocated = 0;
@@ -109,13 +112,13 @@ PRINTF_PARSE (const CHAR_T *format, DIRECTIVES *d, arguments *a)
 	memory_size = xtimes (a_allocated, sizeof (argument));		\
 	if (size_overflow_p (memory_size))				\
 	  /* Overflow, would lead to out of memory.  */			\
-	  goto error;							\
+	  goto out_of_memory;						\
 	memory = (argument *) (a->arg					\
 			       ? realloc (a->arg, memory_size)		\
 			       : malloc (memory_size));			\
 	if (memory == NULL)						\
 	  /* Out of memory.  */						\
-	  goto error;							\
+	  goto out_of_memory;						\
 	a->arg = memory;						\
       }									\
     while (a->count <= n)						\
@@ -389,6 +392,44 @@ PRINTF_PARSE (const CHAR_T *format, DIRECTIVES *d, arguments *a)
 			}
 		      cp++;
 		    }
+#if defined __APPLE__ && defined __MACH__
+		  /* On MacOS X 10.3, PRIdMAX is defined as "qd".
+		     We cannot change it to "lld" because PRIdMAX must also
+		     be understood by the system's printf routines.  */
+		  else if (*cp == 'q')
+		    {
+		      if (64 / 8 > sizeof (long))
+			{
+			  /* int64_t = long long */
+			  flags += 16;
+			}
+		      else
+			{
+			  /* int64_t = long */
+			  flags += 8;
+			}
+		      cp++;
+		    }
+#endif
+#if (defined _WIN32 || defined __WIN32__) && ! defined __CYGWIN__
+		  /* On native Win32, PRIdMAX is defined as "I64d".
+		     We cannot change it to "lld" because PRIdMAX must also
+		     be understood by the system's printf routines.  */
+		  else if (*cp == 'I' && cp[1] == '6' && cp[2] == '4')
+		    {
+		      if (64 / 8 > sizeof (long))
+			{
+			  /* __int64 = long long */
+			  flags += 16;
+			}
+		      else
+			{
+			  /* __int64 = long */
+			  flags += 8;
+			}
+		      cp += 3;
+		    }
+#endif
 		  else
 		    break;
 		}
@@ -539,11 +580,11 @@ PRINTF_PARSE (const CHAR_T *format, DIRECTIVES *d, arguments *a)
 	      memory_size = xtimes (d_allocated, sizeof (DIRECTIVE));
 	      if (size_overflow_p (memory_size))
 		/* Overflow, would lead to out of memory.  */
-		goto error;
+		goto out_of_memory;
 	      memory = (DIRECTIVE *) realloc (d->dir, memory_size);
 	      if (memory == NULL)
 		/* Out of memory.  */
-		goto error;
+		goto out_of_memory;
 	      d->dir = memory;
 	    }
 	}
@@ -566,6 +607,16 @@ error:
     free (a->arg);
   if (d->dir)
     free (d->dir);
+  errno = EINVAL;
+  return -1;
+
+out_of_memory:
+  if (a->arg)
+    free (a->arg);
+  if (d->dir)
+    free (d->dir);
+out_of_memory_1:
+  errno = ENOMEM;
   return -1;
 }
 

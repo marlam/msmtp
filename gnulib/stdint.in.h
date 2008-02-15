@@ -4,7 +4,7 @@
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2, or (at your option)
+   the Free Software Foundation; either version 3, or (at your option)
    any later version.
 
    This program is distributed in the hope that it will be useful,
@@ -22,6 +22,12 @@
  */
 
 #ifndef _GL_STDINT_H
+
+/* When including a system file that in turn includes <inttypes.h>,
+   use the system <inttypes.h>, not our substitute.  This avoids
+   problems with (for example) VMS, whose <sys/bitypes.h> includes
+   <inttypes.h>.  */
+#define _GL_JUST_INCLUDE_SYSTEM_INTTYPES_H
 
 /* Get those types that are already defined in other system include
    files, so that we can "#define int8_t signed char" below without
@@ -66,9 +72,7 @@
   /* In OpenBSD 3.8, <inttypes.h> includes <machine/types.h>, which defines
      int{8,16,32,64}_t, uint{8,16,32,64}_t and __BIT_TYPES_DEFINED__.
      <inttypes.h> also defines intptr_t and uintptr_t.  */
-# define _GL_JUST_INCLUDE_SYSTEM_INTTYPES_H
 # include <inttypes.h>
-# undef _GL_JUST_INCLUDE_SYSTEM_INTTYPES_H
 #elif @HAVE_SYS_INTTYPES_H@
   /* Solaris 7 <sys/inttypes.h> has the types except the *_fast*_t types, and
      the macros except for *_FAST*_*, INTPTR_MIN, PTRDIFF_MIN, PTRDIFF_MAX.  */
@@ -91,6 +95,8 @@
 
 #endif
 
+#undef _GL_JUST_INCLUDE_SYSTEM_INTTYPES_H
+
 /* Minimum and maximum values for a integer type under the usual assumption.
    Return an unspecified value if BITS == 0, adding a check to pacify
    picky compilers.  */
@@ -101,7 +107,10 @@
 #define _STDINT_MAX(signed, bits, zero) \
   ((signed) \
    ? ~ _STDINT_MIN (signed, bits, zero) \
-   : ((((zero) + 1) << ((bits) ? (bits) - 1 : 0)) - 1) * 2 + 1)
+   : /* The expression for the unsigned case.  The subtraction of (signed) \
+	is a nop in the unsigned case and avoids "signed integer overflow" \
+	warnings in the signed case.  */ \
+     ((((zero) + 1) << ((bits) ? (bits) - 1 - (signed) : 0)) - 1) * 2 + 1)
 
 /* 7.18.1.1. Exact-width integer types */
 
@@ -246,6 +255,11 @@
 #else
 # define uintmax_t unsigned long int
 #endif
+
+/* Verify that intmax_t and uintmax_t have the same size.  Too much code
+   breaks if this is not the case.  If this check fails, the reason is likely
+   to be found in the autoconf macros.  */
+typedef int _verify_intmax_size[2 * (sizeof (intmax_t) == sizeof (uintmax_t)) - 1];
 
 /* 7.18.2. Limits of specified-width integer types */
 

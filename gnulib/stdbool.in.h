@@ -3,7 +3,7 @@
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2, or (at your option)
+   the Free Software Foundation; either version 3, or (at your option)
    any later version.
 
    This program is distributed in the hope that it will be useful,
@@ -97,10 +97,11 @@ typedef bool _Bool;
           "warning: _Bool is a keyword in ISO C99".
         Use of an enum type, with IRIX cc, leads to a stupid
           "warning(1185): enumerated type mixed with another type".
-        The only benefit of the enum type, debuggability, is not important
-        with these compilers.  So use 'signed char' and no typedef.  */
+        Even the existence of an enum type, without a typedef,
+          "Invalid enumerator. (badenum)" with HP-UX cc on Tru64.
+        The only benefit of the enum, debuggability, is not important
+        with these compilers.  So use 'signed char' and no enum.  */
 #  define _Bool signed char
-enum { false = 0, true = 1 };
 # else
    /* With this compiler, trust the _Bool type if the compiler has it.  */
 #  if !@HAVE__BOOL@

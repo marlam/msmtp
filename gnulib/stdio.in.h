@@ -1,10 +1,10 @@
 /* A GNU-like <stdio.h>.
 
-   Copyright (C) 2004, 2007 Free Software Foundation, Inc.
+   Copyright (C) 2004, 2007-2008 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2, or (at your option)
+   the Free Software Foundation; either version 3, or (at your option)
    any later version.
 
    This program is distributed in the hope that it will be useful,
@@ -35,14 +35,17 @@
 #include <stdarg.h>
 #include <stddef.h>
 
-#if (@GNULIB_FSEEKO@ && @REPLACE_FSEEKO@) || (@GNULIB_FTELLO@ && @REPLACE_FTELLO@)
-/* Get off_t.  */
+#if (@GNULIB_FSEEKO@ && @REPLACE_FSEEKO@) \
+  || (@GNULIB_FTELLO@ && @REPLACE_FTELLO@) \
+  || (@GNULIB_GETDELIM@ && !@HAVE_DECL_GETDELIM@) \
+  || (@GNULIB_GETLINE@ && (!@HAVE_DECL_GETLINE@ || @REPLACE_GETLINE@))
+/* Get off_t and ssize_t.  */
 # include <sys/types.h>
 #endif
 
 #ifndef __attribute__
 /* This feature is available in gcc versions 2.5 and later.  */
-# if __GNUC__ < 2 || (__GNUC__ == 2 && __GNUC_MINOR__ < 5) || __STRICT_ANSI__
+# if __GNUC__ < 2 || (__GNUC__ == 2 && __GNUC_MINOR__ < 5)
 #  define __attribute__(Spec) /* empty */
 # endif
 /* The __-protected variants of `format' and `printf' attributes
@@ -209,6 +212,32 @@ extern int vsprintf (char *str, const char *format, va_list args)
 # endif
 #endif
 
+#if @GNULIB_FOPEN@
+# if @REPLACE_FOPEN@
+#  define fopen rpl_fopen
+extern FILE * fopen (const char *filename, const char *mode);
+# endif
+#elif defined GNULIB_POSIXCHECK
+# undef fopen
+# define fopen(f,m) \
+   (GL_LINK_WARNING ("fopen on Win32 platforms is not POSIX compatible - " \
+                     "use gnulib module fopen for portability"), \
+    fopen (f, m))
+#endif
+
+#if @GNULIB_FREOPEN@
+# if @REPLACE_FREOPEN@
+#  define freopen rpl_freopen
+extern FILE * freopen (const char *filename, const char *mode, FILE *stream);
+# endif
+#elif defined GNULIB_POSIXCHECK
+# undef freopen
+# define freopen(f,m,s) \
+   (GL_LINK_WARNING ("freopen on Win32 platforms is not POSIX compatible - " \
+                     "use gnulib module freopen for portability"), \
+    freopen (f, m, s))
+#endif
+
 #if @GNULIB_FSEEKO@
 # if @REPLACE_FSEEKO@
 /* Provide fseek, fseeko functions that are aware of a preceding
@@ -301,6 +330,47 @@ extern long rpl_ftell (FILE *fp);
                      "use gnulib module fflush for portable " \
                      "POSIX compliance"), \
     fflush (f))
+#endif
+
+#if @GNULIB_GETDELIM@
+# if !@HAVE_DECL_GETDELIM@
+/* Read input, up to (and including) the next occurrence of DELIMITER, from
+   STREAM, store it in *LINEPTR (and NUL-terminate it).
+   *LINEPTR is a pointer returned from malloc (or NULL), pointing to *LINESIZE
+   bytes of space.  It is realloc'd as necessary.
+   Return the number of bytes read and stored at *LINEPTR (not including the
+   NUL terminator), or -1 on error or EOF.  */
+extern ssize_t getdelim (char **lineptr, size_t *linesize, int delimiter,
+			 FILE *stream);
+# endif
+#elif defined GNULIB_POSIXCHECK
+# undef getdelim
+# define getdelim(l, s, d, f)					    \
+  (GL_LINK_WARNING ("getdelim is unportable - "			    \
+		    "use gnulib module getdelim for portability"),  \
+   getdelim (l, s, d, f))
+#endif
+
+#if @GNULIB_GETLINE@
+# if @REPLACE_GETLINE@
+#  undef getline
+#  define getline rpl_getline
+# endif
+# if !@HAVE_DECL_GETLINE@ || @REPLACE_GETLINE@
+/* Read a line, up to (and including) the next newline, from STREAM, store it
+   in *LINEPTR (and NUL-terminate it).
+   *LINEPTR is a pointer returned from malloc (or NULL), pointing to *LINESIZE
+   bytes of space.  It is realloc'd as necessary.
+   Return the number of bytes read and stored at *LINEPTR (not including the
+   NUL terminator), or -1 on error or EOF.  */
+extern ssize_t getline (char **lineptr, size_t *linesize, FILE *stream);
+# endif
+#elif defined GNULIB_POSIXCHECK
+# undef getline
+# define getline(l, s, f)						\
+  (GL_LINK_WARNING ("getline is unportable - "				\
+		    "use gnulib module getline for portability"),	\
+   getline (l, s, f))
 #endif
 
 #ifdef __cplusplus

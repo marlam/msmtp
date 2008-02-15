@@ -1,9 +1,9 @@
 /* vsprintf with automatic memory allocation.
-   Copyright (C) 1999, 2002-2007 Free Software Foundation, Inc.
+   Copyright (C) 1999, 2002-2008 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2, or (at your option)
+   the Free Software Foundation; either version 3, or (at your option)
    any later version.
 
    This program is distributed in the hope that it will be useful,
@@ -88,27 +88,30 @@
 /* Checked size_t computations.  */
 #include "xsize.h"
 
-#if NEED_PRINTF_LONG_DOUBLE && !defined IN_LIBINTL
+#if (NEED_PRINTF_DOUBLE || NEED_PRINTF_LONG_DOUBLE) && !defined IN_LIBINTL
 # include <math.h>
 # include "float+.h"
-# include "fpucw.h"
 #endif
 
-#if NEED_PRINTF_INFINITE_DOUBLE && !defined IN_LIBINTL
+#if (NEED_PRINTF_DOUBLE || NEED_PRINTF_INFINITE_DOUBLE) && !defined IN_LIBINTL
 # include <math.h>
-# include "isnan.h"
+# include "isnand.h"
 #endif
 
-#if NEED_PRINTF_INFINITE_LONG_DOUBLE && !defined IN_LIBINTL
+#if (NEED_PRINTF_LONG_DOUBLE || NEED_PRINTF_INFINITE_LONG_DOUBLE) && !defined IN_LIBINTL
 # include <math.h>
 # include "isnanl-nolibm.h"
 # include "fpucw.h"
 #endif
 
-#if NEED_PRINTF_DIRECTIVE_A && !defined IN_LIBINTL
+#if (NEED_PRINTF_DIRECTIVE_A || NEED_PRINTF_DOUBLE) && !defined IN_LIBINTL
 # include <math.h>
-# include "isnan.h"
+# include "isnand.h"
 # include "printf-frexp.h"
+#endif
+
+#if (NEED_PRINTF_DIRECTIVE_A || NEED_PRINTF_LONG_DOUBLE) && !defined IN_LIBINTL
+# include <math.h>
 # include "isnanl-nolibm.h"
 # include "printf-frexpl.h"
 # include "fpucw.h"
@@ -200,7 +203,7 @@ local_wcslen (const wchar_t *s)
 /* Here we need to call the native sprintf, not rpl_sprintf.  */
 #undef sprintf
 
-#if (NEED_PRINTF_DIRECTIVE_A || NEED_PRINTF_LONG_DOUBLE || NEED_PRINTF_INFINITE_DOUBLE) && !defined IN_LIBINTL
+#if (NEED_PRINTF_DIRECTIVE_A || NEED_PRINTF_LONG_DOUBLE || NEED_PRINTF_DOUBLE || NEED_PRINTF_INFINITE_DOUBLE) && !defined IN_LIBINTL
 /* Determine the decimal-point character according to the current locale.  */
 # ifndef decimal_point_char_defined
 #  define decimal_point_char_defined 1
@@ -227,18 +230,18 @@ decimal_point_char ()
 # endif
 #endif
 
-#if NEED_PRINTF_INFINITE_DOUBLE && !defined IN_LIBINTL
+#if NEED_PRINTF_INFINITE_DOUBLE && !NEED_PRINTF_DOUBLE && !defined IN_LIBINTL
 
 /* Equivalent to !isfinite(x) || x == 0, but does not require libm.  */
 static int
 is_infinite_or_zero (double x)
 {
-  return isnan (x) || x + x == x;
+  return isnand (x) || x + x == x;
 }
 
 #endif
 
-#if NEED_PRINTF_INFINITE_LONG_DOUBLE && !defined IN_LIBINTL
+#if NEED_PRINTF_INFINITE_LONG_DOUBLE && !NEED_PRINTF_LONG_DOUBLE && !defined IN_LIBINTL
 
 /* Equivalent to !isfinite(x), but does not require libm.  */
 static int
@@ -249,7 +252,7 @@ is_infinitel (long double x)
 
 #endif
 
-#if NEED_PRINTF_LONG_DOUBLE && !defined IN_LIBINTL
+#if (NEED_PRINTF_LONG_DOUBLE || NEED_PRINTF_DOUBLE) && !defined IN_LIBINTL
 
 /* Converting 'long double' to decimal without rare rounding bugs requires
    real bignums.  We use the naming conventions of GNU gmp, but vastly simpler
@@ -795,6 +798,8 @@ convert_to_decimal (mpn_t a, size_t extra_zeroes)
   return c_ptr;
 }
 
+# if NEED_PRINTF_LONG_DOUBLE
+
 /* Assuming x is finite and >= 0:
    write x as x = 2^e * m, where m is a bignum.
    Return the allocated memory in case of success, NULL in case of memory
@@ -823,8 +828,8 @@ decode_long_double (long double x, int *ep, mpn_t *mp)
      2^31 and 2^32 to 'unsigned int', therefore play safe and cast only
      'long double' values between 0 and 2^16 (to 'unsigned int' or 'int',
      doesn't matter).  */
-# if (LDBL_MANT_BIT % GMP_LIMB_BITS) != 0
-#  if (LDBL_MANT_BIT % GMP_LIMB_BITS) > GMP_LIMB_BITS / 2
+#  if (LDBL_MANT_BIT % GMP_LIMB_BITS) != 0
+#   if (LDBL_MANT_BIT % GMP_LIMB_BITS) > GMP_LIMB_BITS / 2
     {
       mp_limb_t hi, lo;
       y *= (mp_limb_t) 1 << (LDBL_MANT_BIT % (GMP_LIMB_BITS / 2));
@@ -839,7 +844,7 @@ decode_long_double (long double x, int *ep, mpn_t *mp)
 	abort ();
       m.limbs[LDBL_MANT_BIT / GMP_LIMB_BITS] = (hi << (GMP_LIMB_BITS / 2)) | lo;
     }
-#  else
+#   else
     {
       mp_limb_t d;
       y *= (mp_limb_t) 1 << (LDBL_MANT_BIT % GMP_LIMB_BITS);
@@ -849,8 +854,8 @@ decode_long_double (long double x, int *ep, mpn_t *mp)
 	abort ();
       m.limbs[LDBL_MANT_BIT / GMP_LIMB_BITS] = d;
     }
+#   endif
 #  endif
-# endif
   for (i = LDBL_MANT_BIT / GMP_LIMB_BITS; i > 0; )
     {
       mp_limb_t hi, lo;
@@ -866,8 +871,11 @@ decode_long_double (long double x, int *ep, mpn_t *mp)
 	abort ();
       m.limbs[--i] = (hi << (GMP_LIMB_BITS / 2)) | lo;
     }
+#if 0 /* On FreeBSD 6.1/x86, 'long double' numbers sometimes have excess
+         precision.  */
   if (!(y == 0.0L))
     abort ();
+#endif
   /* Normalise.  */
   while (m.nlimbs > 0 && m.limbs[m.nlimbs - 1] == 0)
     m.nlimbs--;
@@ -876,17 +884,101 @@ decode_long_double (long double x, int *ep, mpn_t *mp)
   return m.limbs;
 }
 
-/* Assuming x is finite and >= 0, and n is an integer:
+# endif
+
+# if NEED_PRINTF_DOUBLE
+
+/* Assuming x is finite and >= 0:
+   write x as x = 2^e * m, where m is a bignum.
+   Return the allocated memory in case of success, NULL in case of memory
+   allocation failure.  */
+static void *
+decode_double (double x, int *ep, mpn_t *mp)
+{
+  mpn_t m;
+  int exp;
+  double y;
+  size_t i;
+
+  /* Allocate memory for result.  */
+  m.nlimbs = (DBL_MANT_BIT + GMP_LIMB_BITS - 1) / GMP_LIMB_BITS;
+  m.limbs = (mp_limb_t *) malloc (m.nlimbs * sizeof (mp_limb_t));
+  if (m.limbs == NULL)
+    return NULL;
+  /* Split into exponential part and mantissa.  */
+  y = frexp (x, &exp);
+  if (!(y >= 0.0 && y < 1.0))
+    abort ();
+  /* x = 2^exp * y = 2^(exp - DBL_MANT_BIT) * (y * DBL_MANT_BIT), and the
+     latter is an integer.  */
+  /* Convert the mantissa (y * DBL_MANT_BIT) to a sequence of limbs.
+     I'm not sure whether it's safe to cast a 'double' value between
+     2^31 and 2^32 to 'unsigned int', therefore play safe and cast only
+     'double' values between 0 and 2^16 (to 'unsigned int' or 'int',
+     doesn't matter).  */
+#  if (DBL_MANT_BIT % GMP_LIMB_BITS) != 0
+#   if (DBL_MANT_BIT % GMP_LIMB_BITS) > GMP_LIMB_BITS / 2
+    {
+      mp_limb_t hi, lo;
+      y *= (mp_limb_t) 1 << (DBL_MANT_BIT % (GMP_LIMB_BITS / 2));
+      hi = (int) y;
+      y -= hi;
+      if (!(y >= 0.0 && y < 1.0))
+	abort ();
+      y *= (mp_limb_t) 1 << (GMP_LIMB_BITS / 2);
+      lo = (int) y;
+      y -= lo;
+      if (!(y >= 0.0 && y < 1.0))
+	abort ();
+      m.limbs[DBL_MANT_BIT / GMP_LIMB_BITS] = (hi << (GMP_LIMB_BITS / 2)) | lo;
+    }
+#   else
+    {
+      mp_limb_t d;
+      y *= (mp_limb_t) 1 << (DBL_MANT_BIT % GMP_LIMB_BITS);
+      d = (int) y;
+      y -= d;
+      if (!(y >= 0.0 && y < 1.0))
+	abort ();
+      m.limbs[DBL_MANT_BIT / GMP_LIMB_BITS] = d;
+    }
+#   endif
+#  endif
+  for (i = DBL_MANT_BIT / GMP_LIMB_BITS; i > 0; )
+    {
+      mp_limb_t hi, lo;
+      y *= (mp_limb_t) 1 << (GMP_LIMB_BITS / 2);
+      hi = (int) y;
+      y -= hi;
+      if (!(y >= 0.0 && y < 1.0))
+	abort ();
+      y *= (mp_limb_t) 1 << (GMP_LIMB_BITS / 2);
+      lo = (int) y;
+      y -= lo;
+      if (!(y >= 0.0 && y < 1.0))
+	abort ();
+      m.limbs[--i] = (hi << (GMP_LIMB_BITS / 2)) | lo;
+    }
+  if (!(y == 0.0))
+    abort ();
+  /* Normalise.  */
+  while (m.nlimbs > 0 && m.limbs[m.nlimbs - 1] == 0)
+    m.nlimbs--;
+  *mp = m;
+  *ep = exp - DBL_MANT_BIT;
+  return m.limbs;
+}
+
+# endif
+
+/* Assuming x = 2^e * m is finite and >= 0, and n is an integer:
    Returns the decimal representation of round (x * 10^n).
    Return the allocated memory - containing the decimal digits in low-to-high
    order, terminated with a NUL character - in case of success, NULL in case
    of memory allocation failure.  */
 static char *
-scale10_round_decimal_long_double (long double x, int n)
+scale10_round_decimal_decoded (int e, mpn_t m, void *memory, int n)
 {
-  int e;
-  mpn_t m;
-  void *memory = decode_long_double (x, &e, &m);
   int s;
   size_t extra_zeroes;
   unsigned int abs_n;
@@ -1066,7 +1158,7 @@ scale10_round_decimal_long_double (long double x, int n)
 		size_t count;
 		for (count = m.nlimbs; count > 0; count--)
 		  {
-		    accu += (mp_twolimb_t) *sourceptr++ << s;
+		    accu += (mp_twolimb_t) *sourceptr++ << s_bits;
 		    *destptr++ = (mp_limb_t) accu;
 		    accu = accu >> GMP_LIMB_BITS;
 		  }
@@ -1098,6 +1190,44 @@ scale10_round_decimal_long_double (long double x, int n)
   free (z_memory);
   return digits;
 }
+
+# if NEED_PRINTF_LONG_DOUBLE
+
+/* Assuming x is finite and >= 0, and n is an integer:
+   Returns the decimal representation of round (x * 10^n).
+   Return the allocated memory - containing the decimal digits in low-to-high
+   order, terminated with a NUL character - in case of success, NULL in case
+   of memory allocation failure.  */
+static char *
+scale10_round_decimal_long_double (long double x, int n)
+{
+  int e;
+  mpn_t m;
+  void *memory = decode_long_double (x, &e, &m);
+  return scale10_round_decimal_decoded (e, m, memory, n);
+}
+
+# endif
+
+# if NEED_PRINTF_DOUBLE
+
+/* Assuming x is finite and >= 0, and n is an integer:
+   Returns the decimal representation of round (x * 10^n).
+   Return the allocated memory - containing the decimal digits in low-to-high
+   order, terminated with a NUL character - in case of success, NULL in case
+   of memory allocation failure.  */
+static char *
+scale10_round_decimal_double (double x, int n)
+{
+  int e;
+  mpn_t m;
+  void *memory = decode_double (x, &e, &m);
+  return scale10_round_decimal_decoded (e, m, memory, n);
+}
+
+# endif
+
+# if NEED_PRINTF_LONG_DOUBLE
 
 /* Assuming x is finite and > 0:
    Return an approximation for n with 10^n <= x < 10^(n+1).
@@ -1186,6 +1316,99 @@ floorlog10l (long double x)
   return (int) l + (l < 0 ? -1 : 0);
 }
 
+# endif
+
+# if NEED_PRINTF_DOUBLE
+
+/* Assuming x is finite and > 0:
+   Return an approximation for n with 10^n <= x < 10^(n+1).
+   The approximation is usually the right n, but may be off by 1 sometimes.  */
+static int
+floorlog10 (double x)
+{
+  int exp;
+  double y;
+  double z;
+  double l;
+
+  /* Split into exponential part and mantissa.  */
+  y = frexp (x, &exp);
+  if (!(y >= 0.0 && y < 1.0))
+    abort ();
+  if (y == 0.0)
+    return INT_MIN;
+  if (y < 0.5)
+    {
+      while (y < (1.0 / (1 << (GMP_LIMB_BITS / 2)) / (1 << (GMP_LIMB_BITS / 2))))
+	{
+	  y *= 1.0 * (1 << (GMP_LIMB_BITS / 2)) * (1 << (GMP_LIMB_BITS / 2));
+	  exp -= GMP_LIMB_BITS;
+	}
+      if (y < (1.0 / (1 << 16)))
+	{
+	  y *= 1.0 * (1 << 16);
+	  exp -= 16;
+	}
+      if (y < (1.0 / (1 << 8)))
+	{
+	  y *= 1.0 * (1 << 8);
+	  exp -= 8;
+	}
+      if (y < (1.0 / (1 << 4)))
+	{
+	  y *= 1.0 * (1 << 4);
+	  exp -= 4;
+	}
+      if (y < (1.0 / (1 << 2)))
+	{
+	  y *= 1.0 * (1 << 2);
+	  exp -= 2;
+	}
+      if (y < (1.0 / (1 << 1)))
+	{
+	  y *= 1.0 * (1 << 1);
+	  exp -= 1;
+	}
+    }
+  if (!(y >= 0.5 && y < 1.0))
+    abort ();
+  /* Compute an approximation for l = log2(x) = exp + log2(y).  */
+  l = exp;
+  z = y;
+  if (z < 0.70710678118654752444)
+    {
+      z *= 1.4142135623730950488;
+      l -= 0.5;
+    }
+  if (z < 0.8408964152537145431)
+    {
+      z *= 1.1892071150027210667;
+      l -= 0.25;
+    }
+  if (z < 0.91700404320467123175)
+    {
+      z *= 1.0905077326652576592;
+      l -= 0.125;
+    }
+  if (z < 0.9576032806985736469)
+    {
+      z *= 1.0442737824274138403;
+      l -= 0.0625;
+    }
+  /* Now 0.95 <= z <= 1.01.  */
+  z = 1 - z;
+  /* log(1-z) = - z - z^2/2 - z^3/3 - z^4/4 - ...
+     Four terms are enough to get an approximation with error < 10^-7.  */
+  l -= z * (1.0 + z * (0.5 + z * ((1.0 / 3) + z * 0.25)));
+  /* Finally multiply with log(2)/log(10), yields an approximation for
+     log10(x).  */
+  l *= 0.30102999566398119523;
+  /* Round down to the next integer.  */
+  return (int) l + (l < 0 ? -1 : 0);
+}
+
+# endif
+
 #endif
 
 DCHAR_T *
@@ -1196,10 +1419,8 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
   arguments a;
 
   if (PRINTF_PARSE (format, &d, &a) < 0)
-    {
-      errno = EINVAL;
-      return NULL;
-    }
+    /* errno is already set.  */
+    return NULL;
 
 #define CLEANUP() \
   free (d.dir);								\
@@ -1819,8 +2040,19 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 		  }
 	      }
 #endif
-#if NEED_PRINTF_DIRECTIVE_A && !defined IN_LIBINTL
-	    else if (dp->conversion == 'a' || dp->conversion == 'A')
+#if (NEED_PRINTF_DIRECTIVE_A || NEED_PRINTF_LONG_DOUBLE || NEED_PRINTF_DOUBLE) && !defined IN_LIBINTL
+	    else if ((dp->conversion == 'a' || dp->conversion == 'A')
+# if !(NEED_PRINTF_DIRECTIVE_A || (NEED_PRINTF_LONG_DOUBLE && NEED_PRINTF_DOUBLE))
+		     && (0
+#  if NEED_PRINTF_DOUBLE
+			 || a.arg[dp->arg_index].type == TYPE_DOUBLE
+#  endif
+#  if NEED_PRINTF_LONG_DOUBLE
+			 || a.arg[dp->arg_index].type == TYPE_LONGDOUBLE
+#  endif
+			)
+# endif
+		    )
 	      {
 		arg_type type = a.arg[dp->arg_index].type;
 		int flags = dp->flags;
@@ -1938,6 +2170,7 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 		p = tmp;
 		if (type == TYPE_LONGDOUBLE)
 		  {
+# if NEED_PRINTF_DIRECTIVE_A || NEED_PRINTF_LONG_DOUBLE
 		    long double arg = a.arg[dp->arg_index].a.a_longdouble;
 
 		    if (isnanl (arg))
@@ -2057,7 +2290,7 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 				}
 			      }
 			      *p++ = dp->conversion - 'A' + 'P';
-# if WIDE_CHAR_VERSION
+#  if WIDE_CHAR_VERSION
 			      {
 				static const wchar_t decimal_format[] =
 				  { '%', '+', 'd', '\0' };
@@ -2065,7 +2298,7 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 			      }
 			      while (*p != '\0')
 				p++;
-# else
+#  else
 			      if (sizeof (DCHAR_T) == 1)
 				{
 				  sprintf ((char *) p, "%+d", exponent);
@@ -2080,17 +2313,21 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 				  for (ep = expbuf; (*p = *ep) != '\0'; ep++)
 				    p++;
 				}
-# endif
+#  endif
 			  }
 
 			END_LONG_DOUBLE_ROUNDING ();
 		      }
+# else
+		    abort ();
+# endif
 		  }
 		else
 		  {
+# if NEED_PRINTF_DIRECTIVE_A || NEED_PRINTF_DOUBLE
 		    double arg = a.arg[dp->arg_index].a.a_double;
 
-		    if (isnan (arg))
+		    if (isnand (arg))
 		      {
 			if (dp->conversion == 'A')
 			  {
@@ -2204,7 +2441,7 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 				}
 			      }
 			      *p++ = dp->conversion - 'A' + 'P';
-# if WIDE_CHAR_VERSION
+#  if WIDE_CHAR_VERSION
 			      {
 				static const wchar_t decimal_format[] =
 				  { '%', '+', 'd', '\0' };
@@ -2212,7 +2449,7 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 			      }
 			      while (*p != '\0')
 				p++;
-# else
+#  else
 			      if (sizeof (DCHAR_T) == 1)
 				{
 				  sprintf ((char *) p, "%+d", exponent);
@@ -2227,9 +2464,12 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 				  for (ep = expbuf; (*p = *ep) != '\0'; ep++)
 				    p++;
 				}
-# endif
+#  endif
 			  }
 		      }
+# else
+		    abort ();
+# endif
 		  }
 		/* The generated string now extends from tmp to p, with the
 		   zero padding insertion point being at pad_ptr.  */
@@ -2292,13 +2532,15 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 		}
 	      }
 #endif
-#if (NEED_PRINTF_INFINITE_DOUBLE || NEED_PRINTF_INFINITE_LONG_DOUBLE || NEED_PRINTF_LONG_DOUBLE) && !defined IN_LIBINTL
+#if (NEED_PRINTF_INFINITE_DOUBLE || NEED_PRINTF_DOUBLE || NEED_PRINTF_INFINITE_LONG_DOUBLE || NEED_PRINTF_LONG_DOUBLE) && !defined IN_LIBINTL
 	    else if ((dp->conversion == 'f' || dp->conversion == 'F'
 		      || dp->conversion == 'e' || dp->conversion == 'E'
 		      || dp->conversion == 'g' || dp->conversion == 'G'
 		      || dp->conversion == 'a' || dp->conversion == 'A')
 		     && (0
-# if NEED_PRINTF_INFINITE_DOUBLE
+# if NEED_PRINTF_DOUBLE
+			 || a.arg[dp->arg_index].type == TYPE_DOUBLE
+# elif NEED_PRINTF_INFINITE_DOUBLE
 			 || (a.arg[dp->arg_index].type == TYPE_DOUBLE
 			     /* The systems (mingw) which produce wrong output
 				for Inf, -Inf, and NaN also do so for -0.0.
@@ -2315,7 +2557,7 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 # endif
 			))
 	      {
-# if NEED_PRINTF_INFINITE_DOUBLE && (NEED_PRINTF_LONG_DOUBLE || NEED_PRINTF_INFINITE_LONG_DOUBLE)
+# if (NEED_PRINTF_DOUBLE || NEED_PRINTF_INFINITE_DOUBLE) && (NEED_PRINTF_LONG_DOUBLE || NEED_PRINTF_INFINITE_LONG_DOUBLE)
 		arg_type type = a.arg[dp->arg_index].type;
 # endif
 		int flags = dp->flags;
@@ -2398,17 +2640,21 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 		  precision = 6;
 
 		/* Allocate a temporary buffer of sufficient size.  */
-# if NEED_PRINTF_INFINITE_DOUBLE && NEED_PRINTF_LONG_DOUBLE
+# if NEED_PRINTF_DOUBLE && NEED_PRINTF_LONG_DOUBLE
+		tmp_length = (type == TYPE_LONGDOUBLE ? LDBL_DIG + 1 : DBL_DIG + 1);
+# elif NEED_PRINTF_INFINITE_DOUBLE && NEED_PRINTF_LONG_DOUBLE
 		tmp_length = (type == TYPE_LONGDOUBLE ? LDBL_DIG + 1 : 0);
 # elif NEED_PRINTF_LONG_DOUBLE
 		tmp_length = LDBL_DIG + 1;
+# elif NEED_PRINTF_DOUBLE
+		tmp_length = DBL_DIG + 1;
 # else
 		tmp_length = 0;
 # endif
 		if (tmp_length < precision)
 		  tmp_length = precision;
 # if NEED_PRINTF_LONG_DOUBLE
-#  if NEED_PRINTF_INFINITE_DOUBLE
+#  if NEED_PRINTF_DOUBLE || NEED_PRINTF_INFINITE_DOUBLE
 		if (type == TYPE_LONGDOUBLE)
 #  endif
 		  if (dp->conversion == 'f' || dp->conversion == 'F')
@@ -2418,6 +2664,22 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 			{
 			  /* arg is finite and nonzero.  */
 			  int exponent = floorlog10l (arg < 0 ? -arg : arg);
+			  if (exponent >= 0 && tmp_length < exponent + precision)
+			    tmp_length = exponent + precision;
+			}
+		    }
+# endif
+# if NEED_PRINTF_DOUBLE
+#  if NEED_PRINTF_LONG_DOUBLE || NEED_PRINTF_INFINITE_LONG_DOUBLE
+		if (type == TYPE_DOUBLE)
+#  endif
+		  if (dp->conversion == 'f' || dp->conversion == 'F')
+		    {
+		      double arg = a.arg[dp->arg_index].a.a_double;
+		      if (!(isnand (arg) || arg + arg == arg))
+			{
+			  /* arg is finite and nonzero.  */
+			  int exponent = floorlog10 (arg < 0 ? -arg : arg);
 			  if (exponent >= 0 && tmp_length < exponent + precision)
 			    tmp_length = exponent + precision;
 			}
@@ -2450,7 +2712,7 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 		p = tmp;
 
 # if NEED_PRINTF_LONG_DOUBLE || NEED_PRINTF_INFINITE_LONG_DOUBLE
-#  if NEED_PRINTF_INFINITE_DOUBLE
+#  if NEED_PRINTF_DOUBLE || NEED_PRINTF_INFINITE_DOUBLE
 		if (type == TYPE_LONGDOUBLE)
 #  endif
 		  {
@@ -2810,16 +3072,15 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 			END_LONG_DOUBLE_ROUNDING ();
 		      }
 		  }
-#  if NEED_PRINTF_INFINITE_DOUBLE
+#  if NEED_PRINTF_DOUBLE || NEED_PRINTF_INFINITE_DOUBLE
 		else
 #  endif
 # endif
-# if NEED_PRINTF_INFINITE_DOUBLE
+# if NEED_PRINTF_DOUBLE || NEED_PRINTF_INFINITE_DOUBLE
 		  {
-		    /* Simpler than above: handle only NaN, Infinity, zero.  */
 		    double arg = a.arg[dp->arg_index].a.a_double;
 
-		    if (isnan (arg))
+		    if (isnand (arg))
 		      {
 			if (dp->conversion >= 'A' && dp->conversion <= 'Z')
 			  {
@@ -2834,7 +3095,7 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 		      {
 			int sign = 0;
 
-			if (signbit (arg)) /* arg < 0.0L or negative zero */
+			if (signbit (arg)) /* arg < 0.0 or negative zero */
 			  {
 			    sign = -1;
 			    arg = -arg;
@@ -2860,6 +3121,332 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 			  }
 			else
 			  {
+#  if NEED_PRINTF_DOUBLE
+			    pad_ptr = p;
+
+			    if (dp->conversion == 'f' || dp->conversion == 'F')
+			      {
+				char *digits;
+				size_t ndigits;
+
+				digits =
+				  scale10_round_decimal_double (arg, precision);
+				if (digits == NULL)
+				  goto out_of_memory;
+				ndigits = strlen (digits);
+
+				if (ndigits > precision)
+				  do
+				    {
+				      --ndigits;
+				      *p++ = digits[ndigits];
+				    }
+				  while (ndigits > precision);
+				else
+				  *p++ = '0';
+				/* Here ndigits <= precision.  */
+				if ((flags & FLAG_ALT) || precision > 0)
+				  {
+				    *p++ = decimal_point_char ();
+				    for (; precision > ndigits; precision--)
+				      *p++ = '0';
+				    while (ndigits > 0)
+				      {
+					--ndigits;
+					*p++ = digits[ndigits];
+				      }
+				  }
+
+				free (digits);
+			      }
+			    else if (dp->conversion == 'e' || dp->conversion == 'E')
+			      {
+				int exponent;
+
+				if (arg == 0.0)
+				  {
+				    exponent = 0;
+				    *p++ = '0';
+				    if ((flags & FLAG_ALT) || precision > 0)
+				      {
+					*p++ = decimal_point_char ();
+					for (; precision > 0; precision--)
+					  *p++ = '0';
+				      }
+				  }
+				else
+				  {
+				    /* arg > 0.0.  */
+				    int adjusted;
+				    char *digits;
+				    size_t ndigits;
+
+				    exponent = floorlog10 (arg);
+				    adjusted = 0;
+				    for (;;)
+				      {
+					digits =
+					  scale10_round_decimal_double (arg,
+									(int)precision - exponent);
+					if (digits == NULL)
+					  goto out_of_memory;
+					ndigits = strlen (digits);
+
+					if (ndigits == precision + 1)
+					  break;
+					if (ndigits < precision
+					    || ndigits > precision + 2)
+					  /* The exponent was not guessed
+					     precisely enough.  */
+					  abort ();
+					if (adjusted)
+					  /* None of two values of exponent is
+					     the right one.  Prevent an endless
+					     loop.  */
+					  abort ();
+					free (digits);
+					if (ndigits == precision)
+					  exponent -= 1;
+					else
+					  exponent += 1;
+					adjusted = 1;
+				      }
+
+				    /* Here ndigits = precision+1.  */
+				    *p++ = digits[--ndigits];
+				    if ((flags & FLAG_ALT) || precision > 0)
+				      {
+					*p++ = decimal_point_char ();
+					while (ndigits > 0)
+					  {
+					    --ndigits;
+					    *p++ = digits[ndigits];
+					  }
+				      }
+
+				    free (digits);
+				  }
+
+				*p++ = dp->conversion; /* 'e' or 'E' */
+#   if WIDE_CHAR_VERSION
+				{
+				  static const wchar_t decimal_format[] =
+				    /* Produce the same number of exponent digits
+				       as the native printf implementation.  */
+#    if (defined _WIN32 || defined __WIN32__) && ! defined __CYGWIN__
+				    { '%', '+', '.', '3', 'd', '\0' };
+#    else
+				    { '%', '+', '.', '2', 'd', '\0' };
+#    endif
+				  SNPRINTF (p, 6 + 1, decimal_format, exponent);
+				}
+				while (*p != '\0')
+				  p++;
+#   else
+				{
+				  static const char decimal_format[] =
+				    /* Produce the same number of exponent digits
+				       as the native printf implementation.  */
+#    if (defined _WIN32 || defined __WIN32__) && ! defined __CYGWIN__
+				    "%+.3d";
+#    else
+				    "%+.2d";
+#    endif
+				  if (sizeof (DCHAR_T) == 1)
+				    {
+				      sprintf ((char *) p, decimal_format, exponent);
+				      while (*p != '\0')
+					p++;
+				    }
+				  else
+				    {
+				      char expbuf[6 + 1];
+				      const char *ep;
+				      sprintf (expbuf, decimal_format, exponent);
+				      for (ep = expbuf; (*p = *ep) != '\0'; ep++)
+					p++;
+				    }
+				}
+#   endif
+			      }
+			    else if (dp->conversion == 'g' || dp->conversion == 'G')
+			      {
+				if (precision == 0)
+				  precision = 1;
+				/* precision >= 1.  */
+
+				if (arg == 0.0)
+				  /* The exponent is 0, >= -4, < precision.
+				     Use fixed-point notation.  */
+				  {
+				    size_t ndigits = precision;
+				    /* Number of trailing zeroes that have to be
+				       dropped.  */
+				    size_t nzeroes =
+				      (flags & FLAG_ALT ? 0 : precision - 1);
+
+				    --ndigits;
+				    *p++ = '0';
+				    if ((flags & FLAG_ALT) || ndigits > nzeroes)
+				      {
+					*p++ = decimal_point_char ();
+					while (ndigits > nzeroes)
+					  {
+					    --ndigits;
+					    *p++ = '0';
+					  }
+				      }
+				  }
+				else
+				  {
+				    /* arg > 0.0.  */
+				    int exponent;
+				    int adjusted;
+				    char *digits;
+				    size_t ndigits;
+				    size_t nzeroes;
+
+				    exponent = floorlog10 (arg);
+				    adjusted = 0;
+				    for (;;)
+				      {
+					digits =
+					  scale10_round_decimal_double (arg,
+									(int)(precision - 1) - exponent);
+					if (digits == NULL)
+					  goto out_of_memory;
+					ndigits = strlen (digits);
+
+					if (ndigits == precision)
+					  break;
+					if (ndigits < precision - 1
+					    || ndigits > precision + 1)
+					  /* The exponent was not guessed
+					     precisely enough.  */
+					  abort ();
+					if (adjusted)
+					  /* None of two values of exponent is
+					     the right one.  Prevent an endless
+					     loop.  */
+					  abort ();
+					free (digits);
+					if (ndigits < precision)
+					  exponent -= 1;
+					else
+					  exponent += 1;
+					adjusted = 1;
+				      }
+				    /* Here ndigits = precision.  */
+
+				    /* Determine the number of trailing zeroes
+				       that have to be dropped.  */
+				    nzeroes = 0;
+				    if ((flags & FLAG_ALT) == 0)
+				      while (nzeroes < ndigits
+					     && digits[nzeroes] == '0')
+					nzeroes++;
+
+				    /* The exponent is now determined.  */
+				    if (exponent >= -4
+					&& exponent < (long)precision)
+				      {
+					/* Fixed-point notation:
+					   max(exponent,0)+1 digits, then the
+					   decimal point, then the remaining
+					   digits without trailing zeroes.  */
+					if (exponent >= 0)
+					  {
+					    size_t count = exponent + 1;
+					    /* Note: count <= precision = ndigits.  */
+					    for (; count > 0; count--)
+					      *p++ = digits[--ndigits];
+					    if ((flags & FLAG_ALT) || ndigits > nzeroes)
+					      {
+						*p++ = decimal_point_char ();
+						while (ndigits > nzeroes)
+						  {
+						    --ndigits;
+						    *p++ = digits[ndigits];
+						  }
+					      }
+					  }
+					else
+					  {
+					    size_t count = -exponent - 1;
+					    *p++ = '0';
+					    *p++ = decimal_point_char ();
+					    for (; count > 0; count--)
+					      *p++ = '0';
+					    while (ndigits > nzeroes)
+					      {
+						--ndigits;
+						*p++ = digits[ndigits];
+					      }
+					  }
+				      }
+				    else
+				      {
+					/* Exponential notation.  */
+					*p++ = digits[--ndigits];
+					if ((flags & FLAG_ALT) || ndigits > nzeroes)
+					  {
+					    *p++ = decimal_point_char ();
+					    while (ndigits > nzeroes)
+					      {
+						--ndigits;
+						*p++ = digits[ndigits];
+					      }
+					  }
+					*p++ = dp->conversion - 'G' + 'E'; /* 'e' or 'E' */
+#   if WIDE_CHAR_VERSION
+					{
+					  static const wchar_t decimal_format[] =
+					    /* Produce the same number of exponent digits
+					       as the native printf implementation.  */
+#    if (defined _WIN32 || defined __WIN32__) && ! defined __CYGWIN__
+					    { '%', '+', '.', '3', 'd', '\0' };
+#    else
+					    { '%', '+', '.', '2', 'd', '\0' };
+#    endif
+					  SNPRINTF (p, 6 + 1, decimal_format, exponent);
+					}
+					while (*p != '\0')
+					  p++;
+#   else
+					{
+					  static const char decimal_format[] =
+					    /* Produce the same number of exponent digits
+					       as the native printf implementation.  */
+#    if (defined _WIN32 || defined __WIN32__) && ! defined __CYGWIN__
+					    "%+.3d";
+#    else
+					    "%+.2d";
+#    endif
+					  if (sizeof (DCHAR_T) == 1)
+					    {
+					      sprintf ((char *) p, decimal_format, exponent);
+					      while (*p != '\0')
+						p++;
+					    }
+					  else
+					    {
+					      char expbuf[6 + 1];
+					      const char *ep;
+					      sprintf (expbuf, decimal_format, exponent);
+					      for (ep = expbuf; (*p = *ep) != '\0'; ep++)
+						p++;
+					    }
+					}
+#   endif
+				      }
+
+				    free (digits);
+				  }
+			      }
+			    else
+			      abort ();
+#  else
+			    /* arg is finite.  */
 			    if (!(arg == 0.0))
 			      abort ();
 
@@ -2888,9 +3475,9 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 				*p++ = '+';
 				/* Produce the same number of exponent digits as
 				   the native printf implementation.  */
-#  if (defined _WIN32 || defined __WIN32__) && ! defined __CYGWIN__
+#   if (defined _WIN32 || defined __WIN32__) && ! defined __CYGWIN__
 				*p++ = '0';
-#  endif
+#   endif
 				*p++ = '0';
 				*p++ = '0';
 			      }
@@ -2908,6 +3495,7 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 			      }
 			    else
 			      abort ();
+#  endif
 			  }
 		      }
 		  }
@@ -2978,11 +3566,22 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 	      {
 		arg_type type = a.arg[dp->arg_index].type;
 		int flags = dp->flags;
-#if !USE_SNPRINTF || !DCHAR_IS_TCHAR || ENABLE_UNISTDIO || NEED_PRINTF_FLAG_ZERO
+#if !USE_SNPRINTF || !DCHAR_IS_TCHAR || ENABLE_UNISTDIO || NEED_PRINTF_FLAG_LEFTADJUST || NEED_PRINTF_FLAG_ZERO || NEED_PRINTF_UNBOUNDED_PRECISION
 		int has_width;
 		size_t width;
 #endif
-#if !DCHAR_IS_TCHAR || ENABLE_UNISTDIO || NEED_PRINTF_FLAG_ZERO
+#if !USE_SNPRINTF || NEED_PRINTF_UNBOUNDED_PRECISION
+		int has_precision;
+		size_t precision;
+#endif
+#if NEED_PRINTF_UNBOUNDED_PRECISION
+		int prec_ourselves;
+#else
+#		define prec_ourselves 0
+#endif
+#if NEED_PRINTF_FLAG_LEFTADJUST
+#		define pad_ourselves 1
+#elif !DCHAR_IS_TCHAR || ENABLE_UNISTDIO || NEED_PRINTF_FLAG_ZERO || NEED_PRINTF_UNBOUNDED_PRECISION
 		int pad_ourselves;
 #else
 #		define pad_ourselves 0
@@ -2996,7 +3595,7 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 		TCHAR_T *tmp;
 #endif
 
-#if !USE_SNPRINTF || !DCHAR_IS_TCHAR || ENABLE_UNISTDIO || NEED_PRINTF_FLAG_ZERO
+#if !USE_SNPRINTF || !DCHAR_IS_TCHAR || ENABLE_UNISTDIO || NEED_PRINTF_FLAG_LEFTADJUST || NEED_PRINTF_FLAG_ZERO || NEED_PRINTF_UNBOUNDED_PRECISION
 		has_width = 0;
 		width = 0;
 		if (dp->width_start != dp->width_end)
@@ -3030,34 +3629,42 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 		  }
 #endif
 
+#if !USE_SNPRINTF || NEED_PRINTF_UNBOUNDED_PRECISION
+		has_precision = 0;
+		precision = 6;
+		if (dp->precision_start != dp->precision_end)
+		  {
+		    if (dp->precision_arg_index != ARG_NONE)
+		      {
+			int arg;
+
+			if (!(a.arg[dp->precision_arg_index].type == TYPE_INT))
+			  abort ();
+			arg = a.arg[dp->precision_arg_index].a.a_int;
+			/* "A negative precision is taken as if the precision
+			    were omitted."  */
+			if (arg >= 0)
+			  {
+			    precision = arg;
+			    has_precision = 1;
+			  }
+		      }
+		    else
+		      {
+			const FCHAR_T *digitp = dp->precision_start + 1;
+
+			precision = 0;
+			while (digitp != dp->precision_end)
+			  precision = xsum (xtimes (precision, 10), *digitp++ - '0');
+			has_precision = 1;
+		      }
+		  }
+#endif
+
 #if !USE_SNPRINTF
 		/* Allocate a temporary buffer of sufficient size for calling
 		   sprintf.  */
 		{
-		  size_t precision;
-
-		  precision = 6;
-		  if (dp->precision_start != dp->precision_end)
-		    {
-		      if (dp->precision_arg_index != ARG_NONE)
-			{
-			  int arg;
-
-			  if (!(a.arg[dp->precision_arg_index].type == TYPE_INT))
-			    abort ();
-			  arg = a.arg[dp->precision_arg_index].a.a_int;
-			  precision = (arg < 0 ? 0 : arg);
-			}
-		      else
-			{
-			  const FCHAR_T *digitp = dp->precision_start + 1;
-
-			  precision = 0;
-			  while (digitp != dp->precision_end)
-			    precision = xsum (xtimes (precision, 10), *digitp++ - '0');
-			}
-		    }
-
 		  switch (dp->conversion)
 		    {
 
@@ -3262,8 +3869,23 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 		  }
 #endif
 
+		/* Decide whether to handle the precision ourselves.  */
+#if NEED_PRINTF_UNBOUNDED_PRECISION
+		switch (dp->conversion)
+		  {
+		  case 'd': case 'i': case 'u':
+		  case 'o':
+		  case 'x': case 'X': case 'p':
+		    prec_ourselves = has_precision && (precision > 0);
+		    break;
+		  default:
+		    prec_ourselves = 0;
+		    break;
+		  }
+#endif
+
 		/* Decide whether to perform the padding ourselves.  */
-#if !DCHAR_IS_TCHAR || ENABLE_UNISTDIO || NEED_PRINTF_FLAG_ZERO
+#if !NEED_PRINTF_FLAG_LEFTADJUST && (!DCHAR_IS_TCHAR || ENABLE_UNISTDIO || NEED_PRINTF_FLAG_ZERO || NEED_PRINTF_UNBOUNDED_PRECISION)
 		switch (dp->conversion)
 		  {
 # if !DCHAR_IS_TCHAR || ENABLE_UNISTDIO
@@ -3280,7 +3902,7 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 		    pad_ourselves = 1;
 		    break;
 		  default:
-		    pad_ourselves = 0;
+		    pad_ourselves = prec_ourselves;
 		    break;
 		  }
 #endif
@@ -3328,22 +3950,25 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 			  }
 		      }
 		  }
-		if (dp->precision_start != dp->precision_end)
+		if (!prec_ourselves)
 		  {
-		    size_t n = dp->precision_end - dp->precision_start;
-		    /* The precision specification is known to consist only
-		       of standard ASCII characters.  */
-		    if (sizeof (FCHAR_T) == sizeof (TCHAR_T))
+		    if (dp->precision_start != dp->precision_end)
 		      {
-		        memcpy (fbp, dp->precision_start, n * sizeof (TCHAR_T));
-		        fbp += n;
-		      }
-		    else
-		      {
-			const FCHAR_T *mp = dp->precision_start;
-			do
-			  *fbp++ = (unsigned char) *mp++;
-			while (--n > 0);
+			size_t n = dp->precision_end - dp->precision_start;
+			/* The precision specification is known to consist only
+			   of standard ASCII characters.  */
+			if (sizeof (FCHAR_T) == sizeof (TCHAR_T))
+			  {
+			    memcpy (fbp, dp->precision_start, n * sizeof (TCHAR_T));
+			    fbp += n;
+			  }
+			else
+			  {
+			    const FCHAR_T *mp = dp->precision_start;
+			    do
+			      *fbp++ = (unsigned char) *mp++;
+			    while (--n > 0);
+			  }
 		      }
 		  }
 
@@ -3385,9 +4010,36 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 #endif
 		  *fbp = dp->conversion;
 #if USE_SNPRINTF
+# if !(__GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 3) || ((defined _WIN32 || defined __WIN32__) && ! defined __CYGWIN__))
 		fbp[1] = '%';
 		fbp[2] = 'n';
 		fbp[3] = '\0';
+# else
+		/* On glibc2 systems from glibc >= 2.3 - probably also older
+		   ones - we know that snprintf's returns value conforms to
+		   ISO C 99: the gl_SNPRINTF_DIRECTIVE_N test passes.
+		   Therefore we can avoid using %n in this situation.
+		   On glibc2 systems from 2004-10-18 or newer, the use of %n
+		   in format strings in writable memory may crash the program
+		   (if compiled with _FORTIFY_SOURCE=2), so we should avoid it
+		   in this situation.  */
+		/* On native Win32 systems (such as mingw), we can avoid using
+		   %n because:
+		     - Although the gl_SNPRINTF_TRUNCATION_C99 test fails,
+		       snprintf does not write more than the specified number
+		       of bytes. (snprintf (buf, 3, "%d %d", 4567, 89) writes
+		       '4', '5', '6' into buf, not '4', '5', '\0'.)
+		     - Although the gl_SNPRINTF_RETVAL_C99 test fails, snprintf
+		       allows us to recognize the case of an insufficient
+		       buffer size: it returns -1 in this case.
+		   On native Win32 systems (such as mingw) where the OS is
+		   Windows Vista, the use of %n in format strings by default
+		   crashes the program. See
+		     <http://gcc.gnu.org/ml/gcc/2007-06/msg00122.html> and
+		     <http://msdn2.microsoft.com/en-us/library/ms175782(VS.80).aspx>
+		   So we should avoid %n in this situation.  */
+		fbp[1] = '\0';
+# endif
 #else
 		fbp[1] = '\0';
 #endif
@@ -3414,9 +4066,13 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 		   sizeof (TCHAR_T) divides sizeof (DCHAR_T) and
 		   alignof (TCHAR_T) <= alignof (DCHAR_T).  */
 # define TCHARS_PER_DCHAR (sizeof (DCHAR_T) / sizeof (TCHAR_T))
+		/* Ensure that maxlen below will be >= 2.  Needed on BeOS,
+		   where an snprintf() with maxlen==1 acts like sprintf().  */
+		ENSURE_ALLOCATION (xsum (length,
+					 (2 + TCHARS_PER_DCHAR - 1)
+					 / TCHARS_PER_DCHAR));
 		/* Prepare checking whether snprintf returns the count
 		   via %n.  */
-		ENSURE_ALLOCATION (xsum (length, 1));
 		*(TCHAR_T *) (result + length) = '\0';
 #endif
 
@@ -3430,7 +4086,7 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 		    /* SNPRINTF can fail if its second argument is
 		       > INT_MAX.  */
 		    if (maxlen > INT_MAX / TCHARS_PER_DCHAR)
-		      goto overflow;
+		      maxlen = INT_MAX / TCHARS_PER_DCHAR;
 		    maxlen = maxlen * TCHARS_PER_DCHAR;
 # define SNPRINTF_BUF(arg) \
 		    switch (prefix_count)				    \
@@ -3648,20 +4304,102 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 		      }
 
 #if USE_SNPRINTF
-		    /* Handle overflow of the allocated buffer.  */
-		    if (count >= maxlen)
+		    /* Handle overflow of the allocated buffer.
+		       If such an overflow occurs, a C99 compliant snprintf()
+		       returns a count >= maxlen.  However, a non-compliant
+		       snprintf() function returns only count = maxlen - 1.  To
+		       cover both cases, test whether count >= maxlen - 1.  */
+		    if ((unsigned int) count + 1 >= maxlen)
 		      {
-			/* Need at least count * sizeof (TCHAR_T) bytes.  But
-			   allocate proportionally, to avoid looping eternally
-			   if snprintf() reports a too small count.  */
-			size_t n =
-			  xmax (xsum (length,
-				      (count + TCHARS_PER_DCHAR - 1)
-				      / TCHARS_PER_DCHAR),
-				xtimes (allocated, 2));
+			/* If maxlen already has attained its allowed maximum,
+			   allocating more memory will not increase maxlen.
+			   Instead of looping, bail out.  */
+			if (maxlen == INT_MAX / TCHARS_PER_DCHAR)
+			  goto overflow;
+			else
+			  {
+			    /* Need at least (count + 1) * sizeof (TCHAR_T)
+			       bytes.  (The +1 is for the trailing NUL.)
+			       But ask for (count + 2) * sizeof (TCHAR_T)
+			       bytes, so that in the next round, we likely get
+			         maxlen > (unsigned int) count + 1
+			       and so we don't get here again.
+			       And allocate proportionally, to avoid looping
+			       eternally if snprintf() reports a too small
+			       count.  */
+			    size_t n =
+			      xmax (xsum (length,
+					  ((unsigned int) count + 2
+					   + TCHARS_PER_DCHAR - 1)
+					  / TCHARS_PER_DCHAR),
+				    xtimes (allocated, 2));
 
-			ENSURE_ALLOCATION (n);
-			continue;
+			    ENSURE_ALLOCATION (n);
+			    continue;
+			  }
+		      }
+#endif
+
+#if NEED_PRINTF_UNBOUNDED_PRECISION
+		    if (prec_ourselves)
+		      {
+			/* Handle the precision.  */
+			TCHAR_T *prec_ptr =
+# if USE_SNPRINTF
+			  (TCHAR_T *) (result + length);
+# else
+			  tmp;
+# endif
+			size_t prefix_count;
+			size_t move;
+
+			prefix_count = 0;
+			/* Put the additional zeroes after the sign.  */
+			if (count >= 1
+			    && (*prec_ptr == '-' || *prec_ptr == '+'
+				|| *prec_ptr == ' '))
+			  prefix_count = 1;
+			/* Put the additional zeroes after the 0x prefix if
+			   (flags & FLAG_ALT) || (dp->conversion == 'p').  */
+			else if (count >= 2
+				 && prec_ptr[0] == '0'
+				 && (prec_ptr[1] == 'x' || prec_ptr[1] == 'X'))
+			  prefix_count = 2;
+
+			move = count - prefix_count;
+			if (precision > move)
+			  {
+			    /* Insert zeroes.  */
+			    size_t insert = precision - move;
+			    TCHAR_T *prec_end;
+
+# if USE_SNPRINTF
+			    size_t n =
+			      xsum (length,
+				    (count + insert + TCHARS_PER_DCHAR - 1)
+				    / TCHARS_PER_DCHAR);
+			    length += (count + TCHARS_PER_DCHAR - 1) / TCHARS_PER_DCHAR;
+			    ENSURE_ALLOCATION (n);
+			    length -= (count + TCHARS_PER_DCHAR - 1) / TCHARS_PER_DCHAR;
+			    prec_ptr = (TCHAR_T *) (result + length);
+# endif
+
+			    prec_end = prec_ptr + count;
+			    prec_ptr += prefix_count;
+
+			    while (prec_end > prec_ptr)
+			      {
+				prec_end--;
+				prec_end[insert] = prec_end[0];
+			      }
+
+			    prec_end += insert;
+			    do
+			      *--prec_end = '0';
+			    while (prec_end > prec_ptr);
+
+			    count += insert;
+			  }
 		      }
 #endif
 
@@ -3773,7 +4511,7 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 		    /* Here count <= allocated - length.  */
 
 		    /* Perform padding.  */
-#if !DCHAR_IS_TCHAR || ENABLE_UNISTDIO || NEED_PRINTF_FLAG_ZERO
+#if !DCHAR_IS_TCHAR || ENABLE_UNISTDIO || NEED_PRINTF_FLAG_LEFTADJUST || NEED_PRINTF_FLAG_ZERO || NEED_PRINTF_UNBOUNDED_PRECISION
 		    if (pad_ourselves && has_width)
 		      {
 			size_t w;
@@ -3814,15 +4552,14 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 # endif
 			      DCHAR_T *p = rp + count;
 			      DCHAR_T *end = p + pad;
-# if NEED_PRINTF_FLAG_ZERO
 			      DCHAR_T *pad_ptr;
-#  if !DCHAR_IS_TCHAR
+# if !DCHAR_IS_TCHAR
 			      if (dp->conversion == 'c'
 				  || dp->conversion == 's')
 				/* No zero-padding for string directives.  */
 				pad_ptr = NULL;
 			      else
-#  endif
+# endif
 				{
 				  pad_ptr = (*rp == '-' ? rp + 1 : rp);
 				  /* No zero-padding of "inf" and "nan".  */
@@ -3830,7 +4567,6 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 				      || (*pad_ptr >= 'a' && *pad_ptr <= 'z'))
 				    pad_ptr = NULL;
 				}
-# endif
 			      /* The generated string now extends from rp to p,
 				 with the zero padding insertion point being at
 				 pad_ptr.  */
@@ -3843,7 +4579,6 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 				  for (; pad > 0; pad--)
 				    *p++ = ' ';
 				}
-# if NEED_PRINTF_FLAG_ZERO
 			      else if ((flags & FLAG_ZERO) && pad_ptr != NULL)
 				{
 				  /* Pad with zeroes.  */
@@ -3854,7 +4589,6 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 				  for (; pad > 0; pad--)
 				    *p++ = '0';
 				}
-# endif
 			      else
 				{
 				  /* Pad with spaces on the left.  */
@@ -3933,6 +4667,7 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
        not have this limitation.  */
     return result;
 
+#if USE_SNPRINTF
   overflow:
     if (!(result == resultbuf || result == NULL))
       free (result);
@@ -3941,6 +4676,7 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
     CLEANUP ();
     errno = EOVERFLOW;
     return NULL;
+#endif
 
   out_of_memory:
     if (!(result == resultbuf || result == NULL))
@@ -3957,9 +4693,11 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 #undef TCHARS_PER_DCHAR
 #undef SNPRINTF
 #undef USE_SNPRINTF
+#undef DCHAR_CPY
 #undef PRINTF_PARSE
 #undef DIRECTIVES
 #undef DIRECTIVE
+#undef DCHAR_IS_TCHAR
 #undef TCHAR_T
 #undef DCHAR_T
 #undef FCHAR_T

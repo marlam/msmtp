@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007
+ * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -40,6 +40,7 @@
 # include "hmac.h"
 #endif
 
+#include "c-ctype.h"
 #include "gettext.h"
 #include "xalloc.h"
 #include "xvasprintf.h"
@@ -445,7 +446,7 @@ int smtp_init(smtp_server_t *srv, const char *ehlo_domain, list_t **errmsg,
 	/* make line uppercase */
     	for (i = 4; (size_t)i < len; i++)
 	{
-	    s[i] = toupper((unsigned char)s[i]);
+	    s[i] = c_toupper((unsigned char)s[i]);
 	}
 	/* search capabilities */
 	if (strncmp(s + 4, "STARTTLS", 8) == 0)

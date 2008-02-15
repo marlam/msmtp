@@ -1,4 +1,6 @@
 Version 1.4.14:
+- Use locale-independent c_toupper() instead of toupper() to avoid problems
+  with the tr_TR.UTF-8 locale. Reported by S.Çağlar Onur. Thanks!
 - Updated gnulib to 2008-02-15. Imported c-ctype module.
 - Support for the Max OS X keychain was added by Jay Soffian. Thanks a lot!
 - Fix network input/output timeouts for W32. Bug reported and fixed by

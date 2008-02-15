@@ -3,7 +3,7 @@
  * 
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2000, 2003, 2004, 2005, 2006
+ * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2008
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -313,6 +313,8 @@ int smtp_send_mail(smtp_server_t *srv, FILE *mailf, int keep_bcc,
  * transmission of mail data is complete.
  * This function only works for the SMTP protocol; for LMTP, use 
  * smtp_end_mail_lmtp() instead.
+ * Unlike other functions, this function always returns the SMTP server's
+ * message, unless the return code is SMTP_EIO.
  * Used error codes: SMTP_EIO, SMTP_EUNAVAIL
  */
 int smtp_end_mail(smtp_server_t *srv, list_t **msg, char **errstr);

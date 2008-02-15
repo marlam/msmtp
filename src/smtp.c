@@ -1686,15 +1686,16 @@ int smtp_end_mail(smtp_server_t *srv, list_t **error_msg, char **errstr)
     {
 	return e;
     }
+    *error_msg = msg;
     if (smtp_msg_status(msg) != 250)
     {
-	*error_msg = msg;
 	*errstr = xasprintf(_("the server did not accept the mail"));
 	return SMTP_EUNAVAIL;
     }
-    list_xfree(msg, free);
-    
-    return SMTP_EOK;
+    else
+    {
+	return SMTP_EOK;
+    }
 }
 
 

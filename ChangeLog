@@ -1,4 +1,6 @@
 Version 1.4.14:
+- Always log smtpstatus and smtpmsg, even in case of success. Suggested by
+  Bruno De Fraine.
 - Use locale-independent c_toupper() instead of toupper() to avoid problems
   with the tr_TR.UTF-8 locale. Reported by S.Çağlar Onur. Thanks!
 - Updated gnulib to 2008-02-15. Imported c-ctype module.

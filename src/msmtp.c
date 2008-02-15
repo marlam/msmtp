@@ -1643,8 +1643,8 @@ void print_error(const char *format, ...)
  * - from=%s
  * - recipients=%s,%s,... 
  * - mailsize=%s (only if exitcode == EX_OK)
- * - smtpstatus=%s (only if exitcode != EX_OK and a smtp msg is available)
- * - smtpmsg='%s' (only if exitcode != EX_OK and a smtp msg is available)
+ * - smtpstatus=%s (only if a smtp msg is available)
+ * - smtpmsg='%s' (only if a smtp msg is available)
  * - errormsg='%s' (only if exitcode != EX_OK and an error msg is available)
  * - exitcode=%s 
  * 'exitcode' must be one of the sysexits.h exitcodes.
@@ -1679,7 +1679,7 @@ char *msmtp_get_log_info(account_t *acc, list_t *recipients, long mailsize,
     /* exitcode */
     exitcode_str = exitcode_to_string(exitcode);
     /* smtp status and smtp error message */
-    if (exitcode != EX_OK && errmsg)
+    if (errmsg)
     {
 	smtpstatus_str = xasprintf("%d", smtp_msg_status(errmsg));
 	l = errmsg;
@@ -1743,7 +1743,7 @@ char *msmtp_get_log_info(account_t *acc, list_t *recipients, long mailsize,
 	s += 9 + strlen(mailsize_str) + 1;
     }
     /* "smtpstatus=%s smtpmsg=%s " */
-    if (exitcode != EX_OK && errmsg)
+    if (errmsg)
     {
 	s += 11 + strlen(smtpstatus_str) + 1 + 8 + strlen(smtperrmsg_str) + 1;
     }
@@ -1792,7 +1792,7 @@ char *msmtp_get_log_info(account_t *acc, list_t *recipients, long mailsize,
 	s -= n;
 	p += n;
     }
-    if (exitcode != EX_OK && errmsg)
+    if (errmsg)
     {
 	n = snprintf(p, s, "smtpstatus=%s smtpmsg=%s ", 
 		smtpstatus_str, smtperrmsg_str);

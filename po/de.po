@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: msmtp 1.4.11\n"
 "Report-Msgid-Bugs-To: marlam@marlam.de\n"
-"POT-Creation-Date: 2008-02-15 16:50+0100\n"
+"POT-Creation-Date: 2008-02-18 09:37+0100\n"
 "PO-Revision-Date: 2005-06-20 22:15+0200\n"
 "Last-Translator: Martin Lambers <marlam@marlam.de>\n"
 "Language-Team: German\n"
@@ -968,7 +968,7 @@ msgid "SMTP server does not accept EHLO or HELO commands"
 msgstr "der SMTP Server unterstützt weder EHLO noch HELO"
 
 #: src/smtp.c:434 src/smtp.c:566 src/smtp.c:639 src/smtp.c:687 src/smtp.c:777
-#: src/smtp.c:868 src/smtp.c:1833
+#: src/smtp.c:868 src/smtp.c:1834
 #, c-format
 msgid "command %s failed"
 msgstr "Kommando %s fehlgeschlagen"
@@ -1044,16 +1044,16 @@ msgstr "der Server akzeptiert die Maildaten nicht"
 msgid "the server did not accept the mail"
 msgstr "der Server hat die Mail nicht akzeptiert"
 
-#: src/smtp.c:1755
+#: src/smtp.c:1756
 #, c-format
 msgid "the server refuses to send the mail to %s"
 msgstr "der Server weigert sich, die Mail an %s zu schicken"
 
-#: src/smtp.c:1819
+#: src/smtp.c:1820
 msgid "the server is unable to fulfill the request"
 msgstr "der Server kann die Anforderung nicht erfüllen"
 
-#: src/smtp.c:1827
+#: src/smtp.c:1828
 msgid "invalid argument for Remote Message Queue Starting"
 msgstr "ungültiges Argument für Remote Message Queue Starting"
 

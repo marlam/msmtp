@@ -15,11 +15,11 @@
 
 
 # Specification in the form of a command-line invocation:
-#   gnulib-tool --import --dir=. --lib=libgnu --source-base=gnulib --m4-base=gnulib/m4 --doc-base=doc --aux-dir=build-aux --avoid=xalloc-die --no-libtool --macro-prefix=gl base64 c-ctype crypto/hmac-md5 crypto/md5 getopt getpass gettext socklen sysexits xalloc xvasprintf
+#   gnulib-tool --import --dir=. --lib=libgnu --source-base=gnulib --m4-base=gnulib/m4 --doc-base=doc --aux-dir=build-aux --avoid=xalloc-die --no-libtool --macro-prefix=gl base64 c-ctype crypto/hmac-md5 crypto/md5 getopt getpass gettext havelib socklen sysexits xalloc xvasprintf
 
 # Specification in the form of a few gnulib-tool.m4 macro invocations:
 gl_LOCAL_DIR([])
-gl_MODULES([base64 c-ctype crypto/hmac-md5 crypto/md5 getopt getpass gettext socklen sysexits xalloc xvasprintf])
+gl_MODULES([base64 c-ctype crypto/hmac-md5 crypto/md5 getopt getpass gettext havelib socklen sysexits xalloc xvasprintf])
 gl_AVOID([xalloc-die])
 gl_SOURCE_BASE([gnulib])
 gl_M4_BASE([gnulib/m4])

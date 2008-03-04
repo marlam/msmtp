@@ -16,7 +16,7 @@ msmtp_DEPENDENCIES = @tls_obj@
 
 EXTRA_msmtp_SOURCES = tls.c tls.h
 
-AM_CPPFLAGS = -I$(top_srcdir)/gnulib
+AM_CPPFLAGS = -I$(top_builddir)/gnulib -I$(top_srcdir)/gnulib
 
 DEFS += -DSYSCONFDIR=\"$(sysconfdir)\"
 

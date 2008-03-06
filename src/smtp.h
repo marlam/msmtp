@@ -26,6 +26,7 @@
 #include <stdio.h>
 
 #include "list.h"
+#include "readbuf.h"
 #include "net.h"
 #ifdef HAVE_TLS
 # include "tls.h"
@@ -90,11 +91,10 @@ typedef struct
 typedef struct
 {
     int fd;
-    net_readbuf_t net_readbuf;
 #ifdef HAVE_TLS
     tls_t tls;
-    tls_readbuf_t tls_readbuf;
 #endif /* HAVE_TLS */
+    readbuf_t readbuf;
     int protocol;
     smtp_cap_t cap;
     FILE *debug;

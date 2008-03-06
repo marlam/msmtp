@@ -6,6 +6,7 @@ msmtp_SOURCES = \
 	msmtp.c \
 	net.c net.h \
 	netrc.c netrc.h \
+	readbuf.c readbuf.h \
 	smtp.c smtp.h \
 	stream.c stream.h \
 	tools.c tools.h

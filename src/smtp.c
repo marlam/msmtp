@@ -46,6 +46,7 @@
 #include "xvasprintf.h"
 
 #include "list.h"
+#include "readbuf.h"
 #include "net.h"
 #include "smtp.h"
 #include "stream.h"
@@ -107,11 +108,10 @@ smtp_server_t smtp_new(FILE *debug, int protocol)
     smtp_server_t srv;
 
     srv.fd = -1;
-    net_readbuf_init(&(srv.net_readbuf));
 #ifdef HAVE_TLS
     tls_clear(&srv.tls);
-    tls_readbuf_init(&(srv.tls_readbuf));
 #endif /* HAVE_TLS */
+    readbuf_init(&(srv.readbuf));
     srv.protocol = protocol;
     srv.cap.flags = 0;
     srv.cap.size = 0;
@@ -167,7 +167,7 @@ int smtp_get_msg(smtp_server_t *srv, list_t **msg, char **errstr)
 #ifdef HAVE_TLS
 	if (tls_is_active(&srv->tls))
 	{
-	    if (tls_gets(&srv->tls, &(srv->tls_readbuf), 
+	    if (tls_gets(&srv->tls, &(srv->readbuf), 
 			line, SMTP_BUFSIZE, &len, errstr) != TLS_EOK)
 	    {
 		list_xfree(l, free);
@@ -177,7 +177,7 @@ int smtp_get_msg(smtp_server_t *srv, list_t **msg, char **errstr)
 	else
 	{
 #endif /* HAVE_TLS */
-	    if (net_gets(srv->fd, &(srv->net_readbuf), 
+	    if (net_gets(srv->fd, &(srv->readbuf), 
 			line, SMTP_BUFSIZE, &len, errstr) != NET_EOK)
 	    {
 		list_xfree(l, free);
@@ -564,6 +564,11 @@ int smtp_tls_starttls(smtp_server_t *srv, list_t **error_msg, char **errstr)
     if (smtp_msg_status(msg) != 220)
     {
 	*error_msg = msg;
+	*errstr = xasprintf(_("command %s failed"), "STARTTLS");
+	return SMTP_EPROTO;
+    }
+    if (!readbuf_is_empty(&(srv->readbuf)))
+    {
 	*errstr = xasprintf(_("command %s failed"), "STARTTLS");
 	return SMTP_EPROTO;
     }

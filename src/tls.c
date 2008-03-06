@@ -54,6 +54,7 @@
 #include "xalloc.h"
 #include "xvasprintf.h"
 
+#include "readbuf.h"
 #include "tls.h"
 
 
@@ -1250,24 +1251,12 @@ int tls_start(tls_t *tls, int fd, const char *hostname, int no_certcheck,
 
 
 /*
- * tls_readbuf_init()
- *
- * see net.h
- */
-
-void tls_readbuf_init(tls_readbuf_t *readbuf)
-{
-    readbuf->count = 0;
-}
-
-
-/*
  * tls_readbuf_read()
  *
  * Wraps TLS read function to provide buffering for tls_gets().
  */
 
-int tls_readbuf_read(tls_t *tls, tls_readbuf_t *readbuf, char *ptr, 
+int tls_readbuf_read(tls_t *tls, readbuf_t *readbuf, char *ptr, 
 	char **errstr)
 {
 #ifdef HAVE_LIBGNUTLS
@@ -1359,7 +1348,7 @@ int tls_readbuf_read(tls_t *tls, tls_readbuf_t *readbuf, char *ptr,
  * see tls.h
  */
 
-int tls_gets(tls_t *tls, tls_readbuf_t *readbuf, 
+int tls_gets(tls_t *tls, readbuf_t *readbuf, 
 	char *str, size_t size, size_t *len, char **errstr)
 {
     char c;

@@ -58,6 +58,7 @@
 #include "xalloc.h"
 #include "xvasprintf.h"
 
+#include "readbuf.h"
 #include "net.h"
 
 
@@ -657,24 +658,12 @@ int net_open_socket(const char *hostname, int port, int timeout, int *ret_fd,
 
 
 /*
- * net_readbuf_init()
- *
- * see net.h
- */
-
-void net_readbuf_init(net_readbuf_t *readbuf)
-{
-    readbuf->count = 0;
-}
-
-
-/*
  * net_readbuf_read()
  *
  * Wraps read() to provide buffering for net_gets().
  */
 
-int net_readbuf_read(int fd, net_readbuf_t *readbuf, char *ptr, 
+int net_readbuf_read(int fd, readbuf_t *readbuf, char *ptr, 
 	char **errstr)
 {
 #ifdef W32_NATIVE
@@ -752,7 +741,7 @@ int net_readbuf_read(int fd, net_readbuf_t *readbuf, char *ptr,
  * see net.h
  */
 
-int net_gets(int fd, net_readbuf_t *readbuf, 
+int net_gets(int fd, readbuf_t *readbuf, 
 	char *str, size_t size, size_t *len, char **errstr)
 {
     char c;

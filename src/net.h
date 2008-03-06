@@ -23,6 +23,8 @@
 #ifndef NET_H
 #define NET_H
 
+#include "readbuf.h"
+
 
 /*
  * If a function with an 'errstr' argument returns a value != NET_EOK,
@@ -36,15 +38,6 @@
 #define NET_ESOCKET		3	/* Cannot create socket */
 #define NET_ECONNECT		4	/* Cannot connect */
 #define NET_EIO			5	/* Input/output error */
-
-/* This structure is used as a read buffer for net_gets. Do not access it
- * directly. Use net_readbuf_init() to initialize it. */
-typedef struct
-{
-    int count;
-    char *ptr;
-    char buf[4096];
-} net_readbuf_t;
 
 /*
  * net_lib_init()
@@ -79,13 +72,6 @@ int net_open_socket(const char *hostname, int port, int timeout, int *fd,
 	char **canonical_name, char **address, char **errstr);
 
 /*
- * net_readbuf_init()
- *
- * Initialize a net_readbuf_t for first use.
- */
-void net_readbuf_init(net_readbuf_t *readbuf);
-
-/*
  * net_gets()
  * 
  * Reads in at most one less than 'size' characters from 'fd' and stores them
@@ -97,7 +83,7 @@ void net_readbuf_init(net_readbuf_t *readbuf);
  * all read operations on 'fd'.
  * Used error codes: NET_EIO
  */
-int net_gets(int fd, net_readbuf_t *readbuf,
+int net_gets(int fd, readbuf_t *readbuf,
 	char *str, size_t size, size_t *len, char **errstr);
 
 /*

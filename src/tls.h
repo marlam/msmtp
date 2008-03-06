@@ -30,6 +30,8 @@
 # include <openssl/ssl.h>
 #endif /* HAVE_OPENSSL */
 
+#include "readbuf.h"
+
 
 /*
  * If a function with an 'errstr' argument returns a value != TLS_EOK,
@@ -44,15 +46,6 @@
 #define TLS_EIO		4	/* Input/output error */
 #define TLS_EFILE	5	/* A file does not exist/cannot be read */
 #define TLS_EHANDSHAKE	6	/* TLS handshake failed */
-
-/* This structure is used as a read buffer for tls_gets. Do not access it
- * directly. Use tls_readbuf_init() to initialize it. */
-typedef struct
-{
-    int count;
-    char *ptr;
-    char buf[4096];
-} tls_readbuf_t;
 
 /*
  * Always use tls_clear() before using a tls_t!
@@ -176,13 +169,6 @@ void tls_cert_info_free(tls_cert_info_t *tci);
 int tls_cert_info_get(tls_t *tls, tls_cert_info_t *tci, char **errstr);
 
 /*
- * tls_readbuf_init()
- *
- * Initialize a tls_readbuf_t for first use.
- */
-void tls_readbuf_init(tls_readbuf_t *readbuf);
-
-/*
  * tls_gets()
  *
  * Reads in at most one less than 'size' characters from 'tls' and stores them
@@ -194,7 +180,7 @@ void tls_readbuf_init(tls_readbuf_t *readbuf);
  * all read operations on 'tls'.
  * Used error codes: TLS_EIO
  */
-int tls_gets(tls_t *tls, tls_readbuf_t *readbuf,
+int tls_gets(tls_t *tls, readbuf_t *readbuf,
 	char *str, size_t size, size_t *len, char **errstr);
 
 /*

@@ -3,7 +3,7 @@
  * 
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007
+ * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -45,6 +45,14 @@
 #define TLS_EFILE	5	/* A file does not exist/cannot be read */
 #define TLS_EHANDSHAKE	6	/* TLS handshake failed */
 
+/* This structure is used as a read buffer for tls_gets. Do not access it
+ * directly. Use tls_readbuf_init() to initialize it. */
+typedef struct
+{
+    int count;
+    char *ptr;
+    char buf[4096];
+} tls_readbuf_t;
 
 /*
  * Always use tls_clear() before using a tls_t!
@@ -168,13 +176,11 @@ void tls_cert_info_free(tls_cert_info_t *tci);
 int tls_cert_info_get(tls_t *tls, tls_cert_info_t *tci, char **errstr);
 
 /*
- * tls_getchar()
+ * tls_readbuf_init()
  *
- * Reads a character using TLS and stores it in 'c'.
- * Sets the 'eof' flag to 1 if EOF occurs and to 0 otherwise.
- * Used error codes: TLS_EIO
+ * Initialize a tls_readbuf_t for first use.
  */
-int tls_getchar(tls_t *tls, char *c, int *eof, char **errstr);
+void tls_readbuf_init(tls_readbuf_t *readbuf);
 
 /*
  * tls_gets()
@@ -184,9 +190,12 @@ int tls_getchar(tls_t *tls, char *c, int *eof, char **errstr);
  * If a newline is read, it is stored into the buffer. A '\0' is stored after 
  * the last character in the buffer. The length of the resulting string (the
  * number of characters excluding the terminating '\0') will be stored in 'len'.
+ * 'readbuf' will be used as an input buffer and must of course be the same for
+ * all read operations on 'tls'.
  * Used error codes: TLS_EIO
  */
-int tls_gets(tls_t *tls, char *str, size_t size, size_t *len, char **errstr);
+int tls_gets(tls_t *tls, tls_readbuf_t *readbuf,
+	char *str, size_t size, size_t *len, char **errstr);
 
 /*
  * tls_puts()

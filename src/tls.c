@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007
+ * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -1250,85 +1250,104 @@ int tls_start(tls_t *tls, int fd, const char *hostname, int no_certcheck,
 
 
 /*
- * tls_getchar()
+ * tls_readbuf_init()
  *
- * see tls.h
+ * see net.h
  */
 
-int tls_getchar(tls_t *tls, char *c, int *eof, char **errstr)
+void tls_readbuf_init(tls_readbuf_t *readbuf)
+{
+    readbuf->count = 0;
+}
+
+
+/*
+ * tls_readbuf_read()
+ *
+ * Wraps TLS read function to provide buffering for tls_gets().
+ */
+
+int tls_readbuf_read(tls_t *tls, tls_readbuf_t *readbuf, char *ptr, 
+	char **errstr)
 {
 #ifdef HAVE_LIBGNUTLS
+    
     ssize_t ret;
-    
-    ret = gnutls_record_recv(tls->session, c, 1);
-    if (ret == 1)
+
+    if (readbuf->count <= 0)
     {
-	*eof = 0;
-	return TLS_EOK;
-    }
-    else if (ret == 0)
-    {
-	*eof = 1;
-	return TLS_EOK;
-    }
-    else
-    {
-	if (ret == GNUTLS_E_INTERRUPTED)
+    	ret = (int)gnutls_record_recv(tls->session, 
+		readbuf->buf, sizeof(readbuf->buf));
+	if (ret < 0)
 	{
-	    *errstr = xasprintf(_("operation aborted"));
+	    if (ret == GNUTLS_E_INTERRUPTED)
+	    {
+		*errstr = xasprintf(_("operation aborted"));
+	    }
+	    else if (ret == GNUTLS_E_AGAIN)
+	    {
+		/* This error message makes more sense than what
+		 * gnutls_strerror() would return. */
+		*errstr = xasprintf(_("cannot read from TLS connection: %s"), 
+			_("the operation timed out"));
+	    }
+	    else
+	    {
+		*errstr = xasprintf(_("cannot read from TLS connection: %s"), 
+		    	gnutls_strerror(ret));
+	    }
+	    return TLS_EIO;
 	}
-	else if (ret == GNUTLS_E_AGAIN)
+	else if (ret == 0)
 	{
-	    /* This error message makes more sense than what
-	     * gnutls_strerror() would return. */
-	    *errstr = xasprintf(_("cannot read from TLS connection: %s"), 
-	    	    _("the operation timed out"));
+	    return 0;
 	}
-	else
-	{
-	    *errstr = xasprintf(_("cannot read from TLS connection: %s"), 
-	    	    gnutls_strerror(ret));
-	}
-	return TLS_EIO;
+	readbuf->count = (int)ret;
+	readbuf->ptr = readbuf->buf;
     }
-    
+    readbuf->count--;
+    *ptr = *((readbuf->ptr)++);
+    return 1;
+
 #endif /* HAVE_LIBGNUTLS */
 
 #ifdef HAVE_OPENSSL
     
+    int ret;
     int error_code;
-    int error_code2;
     
-    if ((error_code = SSL_read(tls->ssl, c, 1)) < 1)
+    if (readbuf->count <= 0)
     {
-	if ((error_code2 = SSL_get_error(tls->ssl, error_code)) 
-		== SSL_ERROR_NONE)
+	ret = SSL_read(tls->ssl, readbuf->buf, sizeof(readbuf->buf));
+	if (ret < 1)
 	{
-	    *eof = 1;
-	    return TLS_EOK;
-	}
-	else
-	{
-	    if (errno == EINTR &&
-	    	    (SSL_get_error(tls->ssl, error_code) == SSL_ERROR_WANT_READ
-		     || SSL_get_error(tls->ssl, error_code) 
-		     == SSL_ERROR_WANT_WRITE))
+	    if ((error_code = SSL_get_error(tls->ssl, ret)) == SSL_ERROR_NONE)
 	    {
-		*errstr = xasprintf(_("operation aborted"));
+		return 0;
 	    }
 	    else
-    	    {
-    		*errstr = openssl_io_error(error_code, error_code2, 
-    			_("cannot read from TLS connection"));
-    	    }
-	    return TLS_EIO;
+	    {
+		if (errno == EINTR 
+			&& (SSL_get_error(tls->ssl, ret) == SSL_ERROR_WANT_READ
+			    || SSL_get_error(tls->ssl, ret) 
+			    == SSL_ERROR_WANT_WRITE))
+		{
+		    *errstr = xasprintf(_("operation aborted"));
+		}
+		else
+		{
+		    *errstr = openssl_io_error(ret, error_code, 
+		    	    _("cannot read from TLS connection"));
+		}
+		return TLS_EIO;
+	    }
 	}
+	readbuf->count = ret;
+	readbuf->ptr = readbuf->buf;
     }
-    else
-    {
-	*eof = 0;
-	return TLS_EOK;
-    }
+    readbuf->count--;
+    *ptr = *((readbuf->ptr)++);
+    return 1;
     
 #endif /* HAVE_OPENSSL */
 }
@@ -1340,17 +1359,17 @@ int tls_getchar(tls_t *tls, char *c, int *eof, char **errstr)
  * see tls.h
  */
 
-int tls_gets(tls_t *tls, char *str, size_t size, size_t *len, char **errstr)
+int tls_gets(tls_t *tls, tls_readbuf_t *readbuf, 
+	char *str, size_t size, size_t *len, char **errstr)
 {
     char c;
     size_t i;
-    int eof;
-    int e;
+    int ret;
 
     i = 0;
     while (i + 1 < size)
     {
-	if ((e = tls_getchar(tls, &c, &eof, errstr)) == TLS_EOK && !eof)
+	if ((ret = tls_readbuf_read(tls, readbuf, &c, errstr)) == 1)
 	{
 	    str[i++] = c;
 	    if (c == '\n')
@@ -1358,13 +1377,13 @@ int tls_gets(tls_t *tls, char *str, size_t size, size_t *len, char **errstr)
 		break;
 	    }
 	}
-	else if (e == TLS_EOK && eof)
+	else if (ret == 0)
 	{
 	    break;
 	}
 	else
 	{
-	    return e;
+	    return TLS_EIO;
 	}
     }
     str[i] = '\0';

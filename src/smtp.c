@@ -107,9 +107,10 @@ smtp_server_t smtp_new(FILE *debug, int protocol)
     smtp_server_t srv;
 
     srv.fd = -1;
-    net_readbuf_init(&(srv.readbuf));
+    net_readbuf_init(&(srv.net_readbuf));
 #ifdef HAVE_TLS
     tls_clear(&srv.tls);
+    tls_readbuf_init(&(srv.tls_readbuf));
 #endif /* HAVE_TLS */
     srv.protocol = protocol;
     srv.cap.flags = 0;
@@ -166,8 +167,8 @@ int smtp_get_msg(smtp_server_t *srv, list_t **msg, char **errstr)
 #ifdef HAVE_TLS
 	if (tls_is_active(&srv->tls))
 	{
-	    if (tls_gets(&srv->tls, line, SMTP_BUFSIZE, &len, errstr) 
-		    != TLS_EOK)
+	    if (tls_gets(&srv->tls, &(srv->tls_readbuf), 
+			line, SMTP_BUFSIZE, &len, errstr) != TLS_EOK)
 	    {
 		list_xfree(l, free);
 		return SMTP_EIO;
@@ -176,8 +177,8 @@ int smtp_get_msg(smtp_server_t *srv, list_t **msg, char **errstr)
 	else
 	{
 #endif /* HAVE_TLS */
-	    if (net_gets(srv->fd, &(srv->readbuf), line, SMTP_BUFSIZE, &len, 
-			errstr) != NET_EOK)
+	    if (net_gets(srv->fd, &(srv->net_readbuf), 
+			line, SMTP_BUFSIZE, &len, errstr) != NET_EOK)
 	    {
 		list_xfree(l, free);
 		return SMTP_EIO;

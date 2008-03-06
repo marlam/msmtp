@@ -90,9 +90,10 @@ typedef struct
 typedef struct
 {
     int fd;
-    net_readbuf_t readbuf;
+    net_readbuf_t net_readbuf;
 #ifdef HAVE_TLS
     tls_t tls;
+    tls_readbuf_t tls_readbuf;
 #endif /* HAVE_TLS */
     int protocol;
     smtp_cap_t cap;

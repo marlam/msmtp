@@ -1,4 +1,6 @@
 Version 1.4.14:
+- Buffer read operations also when TLS/SSL is active. Fixes performance problems
+  with GnuTLS, reported by Dimitrios Apostolou for mpop.
 - Fixed a potential problem with VPATH builds.
 - Updated gnulib to 2008-02-26. Imported havelib module.
 - Always log smtpstatus and smtpmsg, even in case of success. Suggested by

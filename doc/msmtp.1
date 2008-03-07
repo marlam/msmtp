@@ -147,6 +147,9 @@ Enable or disable syslog logging. See the \fBsyslog\fP command below.
 .IP "-t, --read-recipients"
 Read recipient addresses from the To, Cc, and Bcc headers of the mail in
 addition to the recipients given on the command line.
+If any Resent- headers are present, then the addresses from any Resent-To,
+Resent-Cc, and Resent-Bcc headers in the first block of Resent- headers are
+used instead.
 .IP "--"
 This marks the end of options. All following arguments will be treated as
 recipient addresses, even if they start with a '-'.

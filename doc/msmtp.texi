@@ -1,7 +1,7 @@
 \input texinfo   @c -*-texinfo-*-
 @setfilename msmtp.info
-@set UPDATED February 5, 2008
-@set UPDATED-MONTH February 2008
+@set UPDATED March 7, 2008
+@set UPDATED-MONTH March 2008
 @set EDITION 1.4.14
 @set VERSION 1.4.14
 @settitle msmtp @value{VERSION}
@@ -567,6 +567,9 @@ Enable or disable syslog logging. @xref{syslog}.
 @opindex --read-recipients
 Send the mail to the recipients given in the To, Cc, and Bcc headers of the
 mail in addition to the recipients given on the command line.@*
+If any Resent- headers are present, then the addresses from any Resent-To,
+Resent-Cc, and Resent-Bcc headers in the first block of Resent- headers are
+used instead.
 @itemx --
 This marks the end of options. All following arguments will be treated as
 recipient addresses, even if they start with a '-'.

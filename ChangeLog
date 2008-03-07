@@ -1,4 +1,6 @@
 Version 1.4.14:
+- Add support for Resent-* headers to the -t/--read-recipients option. Fixes
+  Debian bug #464474, reported by Tim Abbott.
 - Buffer read operations also when TLS/SSL is active. Fixes performance problems
   with GnuTLS, reported by Dimitrios Apostolou for mpop.
 - Fixed a potential problem with VPATH builds.

@@ -924,16 +924,17 @@ error_exit:
 #define STATE_BCC2			6	/* we saw "^Bc" */
 #define STATE_RCPTHDR_ALMOST		7	/* we saw "^To", "^Cc" 
 						   or "^Bcc" */
-#define STATE_RCPTHDR_DEFAULT		8	/* in_rcpt_hdr and in_rcpt 
+#define STATE_RESENT			8	/* we saw part of "^Resent-" */
+#define STATE_RCPTHDR_DEFAULT		9	/* in_rcpt_hdr and in_rcpt 
 						   state our position */
-#define STATE_RCPTHDR_DQUOTE		9	/* duoble quotes */
-#define STATE_RCPTHDR_BRACKETS_START	10	/* entering <...> */
-#define STATE_RCPTHDR_IN_BRACKETS	11	/* an address inside <> */
-#define STATE_RCPTHDR_PARENTH_START	12	/* entering (...) */
-#define STATE_RCPTHDR_IN_PARENTH	13	/* a comment inside () */
-#define STATE_RCPTHDR_IN_ADDRESS	14	/* a bare address */
-#define STATE_RCPTHDR_BACKQUOTE		15	/* we saw a '\\' */
-#define STATE_HEADERS_END		16	/* we saw "^$", the blank line 
+#define STATE_RCPTHDR_DQUOTE		10	/* duoble quotes */
+#define STATE_RCPTHDR_BRACKETS_START	11	/* entering <...> */
+#define STATE_RCPTHDR_IN_BRACKETS	12	/* an address inside <> */
+#define STATE_RCPTHDR_PARENTH_START	13	/* entering (...) */
+#define STATE_RCPTHDR_IN_PARENTH	14	/* a comment inside () */
+#define STATE_RCPTHDR_IN_ADDRESS	15	/* a bare address */
+#define STATE_RCPTHDR_BACKQUOTE		16	/* we saw a '\\' */
+#define STATE_HEADERS_END		17	/* we saw "^$", the blank line 
 						   between headers and body */
 
 int msmtp_read_recipients(FILE *mailf, list_t *recipients, FILE **tmpfile, 
@@ -946,6 +947,8 @@ int msmtp_read_recipients(FILE *mailf, list_t *recipients, FILE **tmpfile,
     int parentheses_depth = 0;
     int parentheses_savestate = STATE_LINESTART_FRESH;
     int folded_rcpthdr_savestate = STATE_LINESTART_FRESH;
+    int resent_index = -1;
+    int resent_block = -1;	/* -1 = before, 0 = in, 1 = after first block */
     char *current_recipient = NULL;
     size_t current_recipient_len = 0;
     int forget_current_recipient = 0;
@@ -957,7 +960,21 @@ int msmtp_read_recipients(FILE *mailf, list_t *recipients, FILE **tmpfile,
      * of 10 means low wasted space and a low number of realloc()s per 
      * recipient. */
     const size_t bufsize_step = 10; 
-    
+    /* We need two recipient lists: one for normal To, Cc, Bcc headers, and one
+     * for Resent-To, Resent-Cc, Resent-Bcc. The first list gathers adresses
+     * from all To, Cc, Bcc headers that are found. The second list gathers
+     * adresses only for the first block of Resent-* headers. If a Resent- block
+     * was seen, then the first list is ignored, and only the second list is
+     * appended to the recipient list given by the caller. */
+    list_t *normal_recipients_list;
+    list_t *normal_recipients;
+    list_t *resent_recipients_list;    
+    list_t *resent_recipients;    
+
+    normal_recipients_list = list_new();
+    normal_recipients = normal_recipients_list;
+    resent_recipients_list = list_new();
+    resent_recipients = resent_recipients_list;
 
     if (!(*tmpfile = tempfile(PACKAGE_NAME)))
     {
@@ -988,12 +1005,18 @@ int msmtp_read_recipients(FILE *mailf, list_t *recipients, FILE **tmpfile,
 	    {
 		case STATE_LINESTART_FRESH:
 		    parentheses_depth = 0;
+		    resent_index = -1;
 		    if (c == 't' || c == 'T')
 			state = STATE_TO;
 		    else if (c == 'c' || c == 'C')
 			state = STATE_CC;
 		    else if (c == 'b' || c == 'B')
 			state = STATE_BCC1;
+		    else if (resent_block <= 0 && (c == 'r' || c == 'R'))
+		    {
+			resent_index = 0;
+			state = STATE_RESENT;
+		    }
 		    else if (c == '\n')
 			state = STATE_HEADERS_END;
 		    else
@@ -1001,6 +1024,7 @@ int msmtp_read_recipients(FILE *mailf, list_t *recipients, FILE **tmpfile,
 		    break;
 
 		case STATE_LINESTART_AFTER_RCPTHDR:
+		    resent_index = -1;
 		    if (c != ' ' && c != '\t' && current_recipient)
 			finish_current_recipient = 1;
 		    if (c == ' ' || c == '\t')
@@ -1011,6 +1035,11 @@ int msmtp_read_recipients(FILE *mailf, list_t *recipients, FILE **tmpfile,
 			state = STATE_CC;
 		    else if (c == 'b' || c == 'B')
 			state = STATE_BCC1;
+		    else if (resent_block <= 0 && (c == 'r' || c == 'R'))
+		    {
+			resent_index = 0;
+			state = STATE_RESENT;
+		    }
 		    else if (c == '\n')
 			state = STATE_HEADERS_END;
 		    else
@@ -1018,11 +1047,44 @@ int msmtp_read_recipients(FILE *mailf, list_t *recipients, FILE **tmpfile,
 		    break;
 
 		case STATE_OTHER_HDR:
+		    if (resent_block == 0 && resent_index != 6)
+			resent_block = 1;
 		    if (c == '\n')
 			state = STATE_LINESTART_FRESH;
 		    break;
 
+		case STATE_RESENT:
+		    if (resent_index == 0 && (c == 'e' || c == 'E'))
+			resent_index++;
+		    else if (resent_index == 1 && (c == 's' || c == 'S'))
+			resent_index++;
+		    else if (resent_index == 2 && (c == 'e' || c == 'E'))
+			resent_index++;
+		    else if (resent_index == 3 && (c == 'n' || c == 'N'))
+			resent_index++;
+		    else if (resent_index == 4 && (c == 't' || c == 'T'))
+			resent_index++;
+		    else if (resent_index == 5 && c == '-')
+		    {
+			if (resent_block == -1)
+			    resent_block = 0;
+			resent_index++;
+		    }
+		    else if (resent_index == 6 && (c == 't' || c == 'T'))
+			state = STATE_TO;
+		    else if (resent_index == 6 && (c == 'c' || c == 'C'))
+			state = STATE_CC;
+		    else if (resent_index == 6 && (c == 'b' || c == 'B'))
+			state = STATE_BCC1;
+		    else if (c == '\n')
+			state = STATE_LINESTART_FRESH;
+		    else
+			state = STATE_OTHER_HDR;
+		    break;
+		    
 		case STATE_TO:
+		    if (resent_block == 0 && resent_index != 6)
+			resent_block = 1;
 	    	    if (c == 'o' || c == 'O')
 	    		state = STATE_RCPTHDR_ALMOST;
 	    	    else if (c == '\n')
@@ -1032,6 +1094,8 @@ int msmtp_read_recipients(FILE *mailf, list_t *recipients, FILE **tmpfile,
 	    	    break;
 
 		case STATE_CC:
+		    if (resent_block == 0 && resent_index != 6)
+			resent_block = 1;
 		    if (c == 'c' || c == 'C')
 			state = STATE_RCPTHDR_ALMOST;
 		    else if (c == '\n')
@@ -1041,6 +1105,8 @@ int msmtp_read_recipients(FILE *mailf, list_t *recipients, FILE **tmpfile,
 		    break;
 
 		case STATE_BCC1:
+		    if (resent_block == 0 && resent_index != 6)
+			resent_block = 1;
 		    if (c == 'c' || c == 'C')
 			state = STATE_BCC2;
 		    else if (c == '\n')
@@ -1280,8 +1346,16 @@ int msmtp_read_recipients(FILE *mailf, list_t *recipients, FILE **tmpfile,
 	{
 	    /* The current recipient just ended. Add it to the list */
 	    current_recipient[current_recipient_len] = '\0';
-	    list_insert(recipients, current_recipient);
-	    recipients = recipients->next;
+	    if (resent_block == 0)
+	    {
+		list_insert(resent_recipients, current_recipient);
+		resent_recipients = resent_recipients->next;
+	    }
+	    else
+	    {
+		list_insert(normal_recipients, current_recipient);
+		normal_recipients = normal_recipients->next;
+	    }
 	    /* Reset for the next recipient */
 	    current_recipient = NULL;
 	    current_recipient_len = 0;
@@ -1319,6 +1393,29 @@ int msmtp_read_recipients(FILE *mailf, list_t *recipients, FILE **tmpfile,
 	}
     }
     
+    if (resent_block >= 0)
+    {
+	list_xfree(normal_recipients_list, free);
+	resent_recipients = resent_recipients_list;
+	while (!list_is_empty(resent_recipients))
+	{
+	    resent_recipients = resent_recipients->next;
+	    list_insert(recipients, resent_recipients->data);
+	    recipients = recipients->next;
+	}
+    }
+    else
+    {
+	list_xfree(resent_recipients_list, free);
+	normal_recipients = normal_recipients_list;
+	while (!list_is_empty(normal_recipients))
+	{
+	    normal_recipients = normal_recipients->next;
+	    list_insert(recipients, normal_recipients->data);
+	    recipients = recipients->next;
+	}
+    }
+
     if (ferror(mailf))
     {
 	*errstr = xasprintf(_("input error while reading the mail"));
@@ -1335,6 +1432,8 @@ int msmtp_read_recipients(FILE *mailf, list_t *recipients, FILE **tmpfile,
     return EX_OK;
 
 error_exit:
+    list_xfree(normal_recipients_list, free);
+    list_xfree(resent_recipients_list, free);
     if (*tmpfile)
     {
 	(void)fclose(*tmpfile);

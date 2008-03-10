@@ -3294,7 +3294,8 @@ int main(int argc, char *argv[])
 	goto exit;
     }
     /* Read recipients and/or the envelope from address from the mail. */
-    if (!conf.pretend && (conf.read_recipients || conf.read_envelope_from))
+    if (conf.sendmail && !conf.pretend 
+	    && (conf.read_recipients || conf.read_envelope_from))
     {
 	if (!(tmpfile = tempfile(PACKAGE_NAME)))
 	{

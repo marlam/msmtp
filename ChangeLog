@@ -1,4 +1,5 @@
 Version 1.4.14:
+- Fix a typo in the man page.
 - Add support for Resent-* headers to the -t/--read-recipients option. Fixes
   Debian bug #464474, reported by Tim Abbott.
 - Buffer read operations also when TLS/SSL is active. Fixes performance problems

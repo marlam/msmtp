@@ -368,8 +368,8 @@ broken servers. Do not use this unless you have to.
 .IP "dsn_notify (\fIoff\fP|\fIcondition\fP)"
 This command sets the condition(s) under which the mail system should send DSN
 (Delivery Status Notification) messages. The argument \fIoff\fP disables
-explicit DSN requests, which means the mail decides when to send DSN messages.
-This is the default.
+explicit DSN requests, which means the mail system decides when to send DSN
+messages. This is the default.
 The \fIcondition\fP must be \fInever\fP, to never request notification, or a
 comma separated list (no spaces!) of one or more of the following:
 \fIfailure\fP, to request notification on transmission failure, \fIdelay\fP, to

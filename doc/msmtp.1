@@ -8,7 +8,7 @@
 .\" under the terms of the GNU Free Documentation License, Version 1.2 or
 .\" any later version published by the Free Software Foundation; with no
 .\" Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
-.TH MSMTP 1 2007-12
+.TH MSMTP 1 2008-03
 .SH NAME
 msmtp \- An SMTP client 
 .SH SYNOPSIS
@@ -150,6 +150,8 @@ addition to the recipients given on the command line.
 If any Resent- headers are present, then the addresses from any Resent-To,
 Resent-Cc, and Resent-Bcc headers in the first block of Resent- headers are
 used instead.
+.IP "--read-envelope-from"
+Read the envelope from address from the From header of the mail.
 .IP "--"
 This marks the end of options. All following arguments will be treated as
 recipient addresses, even if they start with a '-'.
@@ -187,13 +189,13 @@ settings.
 .IP "--host=\fIhostname\fP
 Use only the settings from the command line; do not use any configuration file
 data.
-.IP "--from=\fIaddress\fP"
+.IP "--from=\fIaddress\fP or --read-envelope-from"
 Choose the first account from the system or user configuration file that has
 a matching envelope-from address as specified by a \fBfrom\fP command. This
 works only when neither \fB--account\fP nor \fB--host\fP is used.
 .PP
-If none of the above options is used (or if \fB--from\fP is used but no account
-has a matching \fBfrom\fP command), then the account "default" is used.
+If none of the above options is used (or if no account has a matching
+\fBfrom\fP command), then the account "default" is used.
 .PP
 Skip to the EXAMPLES section for a quick start.
 .SH CONFIGURATION FILES

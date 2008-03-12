@@ -1,7 +1,9 @@
 Version 1.4.14: 
 - The -t option now properly supports Resent-* headers.
 - The --read-envelope-from option was added. It allows to read the envelope from
-  address from the From: header.
+  address from the From header.
+- The environment variables SMTPSERVER and EMAIL can be used to configure msmtp
+  for simple use cases.
 - Support for the Mac OS X keychain was added by Jay Soffian.
 
 Version 1.4.13: 

@@ -133,7 +133,7 @@ contain a command and may contain an argument to that command.
 The argument may be enclosed in double quotes (").
 
 If the first character of a filename is the tilde (~), this tilde will be
-replaced by @code{$HOME}.  If a command accepts the argument @samp{on}, it also
+replaced by @code{HOME}.  If a command accepts the argument @samp{on}, it also
 accepts an empty argument and treats that as if it was @samp{on}.
 
 Commands form groups. Each group starts with the @samp{account} command and
@@ -303,8 +303,8 @@ broken servers. Do not use this unless you have to.
 Enable or disable automatic envelope-from addresses. The default is
 @samp{off}.@*
 When enabled, an envelope-from address of the form user@@domain will be
-generated.  The local part will be set to @code{$USER} or, if that fails, to
-@code{$LOGNAME} or, if that fails, to the login name of the current user.  The
+generated.  The local part will be set to @code{USER} or, if that fails, to
+@code{LOGNAME} or, if that fails, to the login name of the current user.  The
 domain part can be set with the @samp{maildomain} command (see 
 @ref{maildomain}).  If the maildomain is empty, the envelope-from address will
 only consist of the user name and not have a domain part.@*
@@ -608,8 +608,8 @@ If none of the above options is used (or if no account has a matching
 
 The standard exit codes from @code{sysexits.h} are used.
 
-@anchor{Environment / Files}
-@section Environment / Files
+@anchor{Files}
+@section Files
 
 @table @samp
 @item @code{SYSCONFDIR/msmtprc}
@@ -622,17 +622,30 @@ The @code{.netrc} file contains login information. If a password is not found
 in the configuration file, msmtp will search it in @code{.netrc} before 
 prompting the user for it. The syntax of @code{.netrc} is described in the 
 @code{netrc(5)} or @code{ftp(1)} manual page.
-@item @code{$USER}, @code{$LOGNAME}
+@end table
+
+@anchor{Environment}
+@section Environment
+
+@table @samp
+@item @code{USER}, @code{LOGNAME}
 These variables override the user's login name when constructing an 
 envelope-from address. @code{LOGNAME} is only used if @code{USER} is unset.
-@item @code{$TMPDIR}
+@item @code{TMPDIR}
 Directory to create temporary files in. If this is unset, a system specific 
 default directory is used.@*
 A temporary file is only created when the @samp{-t}/@samp{--read-recipients} 
-option is used. The file is then used to buffer the headers of the mail (but 
-not the body, so the file won't get very large).
+or @samp{--read-envelope-from} option is used. The file is then used to buffer
+the headers of the mail (but not the body, so the file won't get very large).
+@item @code{EMAIL}, @code{SMTPSERVER}
+These environment variables are used only if neither @samp{--host} nor
+@samp{--account} is used and there is no default account defined in the
+configuration files. In this case, the host name is taken from
+@code{SMTPSERVER}, and the envelope from address is taken from @code{EMAIL},
+unless overridden by @samp{--from} or @samp{--read-envelope-from}. Currently
+@code{SMTPSERVER} must contain a plain host name (no URL), and @code{EMAIL}
+must contain a plain address (no names or additional information).
 @end table
-
 
 @node Transport Layer Security
 @chapter Transport Layer Security
@@ -861,8 +874,8 @@ set explicitly with the @samp{from} command and @samp{--from} option.
 See @ref{auto_from}, @ref{from}.
 
 When @samp{auto_from} is enabled, an envelope-from address of the form
-user@@domain will be generated.  The local part will be set to @code{$USER} or,
-if that fails, to @code{$LOGNAME} or, if that fails, to the login name of the
+user@@domain will be generated.  The local part will be set to @code{USER} or,
+if that fails, to @code{LOGNAME} or, if that fails, to the login name of the
 current user.  The domain part can be set with the @samp{maildomain} command
 and @samp{--maildomain} option (see @ref{maildomain}).  If the maildomain is 
 empty, the envelope-from address will only consist of the user name and not 

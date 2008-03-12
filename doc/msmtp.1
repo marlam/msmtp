@@ -176,8 +176,8 @@ of the mail.
 Envelope-from addresses can be generated automatically (when \fIauto_from\fP
 is enabled) or set explicitly with the \fBfrom\fP command or \fB--from\fP 
 option. When \fIauto_from\fP is enabled, an envelope-from address of the form
-user@domain will be generated.  The local part will be set to \fB$USER\fP or,
-if that fails, to \fB$LOGNAME\fP or, if that fails, to the login name of the
+user@domain will be generated.  The local part will be set to \fBUSER\fP or,
+if that fails, to \fBLOGNAME\fP or, if that fails, to the login name of the
 current user.  The domain part can be set with the \fBmaildomain\fP command.
 If the maildomain is empty, the envelope-from address will only consist of 
 the user name and not have a domain part.
@@ -219,7 +219,7 @@ The argument may be enclosed in double quotes ("), for example if its first or
 last character is a blank.
 .br 
 If the first character of a filename is the tilde (~), this tilde will be
-replaced by $HOME.
+replaced by HOME.
 If a command accepts the argument \fIon\fP, it also accepts an empty argument
 and treats that as if it was \fIon\fP.
 .br
@@ -261,8 +261,8 @@ the default. See the \fBport\fP command above for default ports.
 .IP "auto_from [(\fIon\fP|\fIoff\fP)]
 Enable or disable automatic envelope-from addresses. The default is off.
 When enabled, an envelope-from address of the form user@domain will be
-generated.  The local part will be set to \fB$USER\fP or, if that fails, to
-\fB$LOGNAME\fP or, if that fails, to the login name of the current user.  The
+generated.  The local part will be set to \fBUSER\fP or, if that fails, to
+\fBLOGNAME\fP or, if that fails, to the login name of the current user.  The
 domain part can be set with the \fBmaildomain\fP command.  If the maildomain 
 is empty, the envelope-from address will only consist of the user name and not
 have a domain part. When auto_from is disabled, the envelope-from address must
@@ -579,7 +579,7 @@ Kind: Internet password
 Account: joe.smith
 .br
 Where: smtp://smtp.freemail.example
-.SH FILES / ENVIRONMENT
+.SH FILES
 .IP "SYSCONFDIR/msmtprc"
 System configuration file. Use
 .B --version
@@ -593,17 +593,28 @@ it. The syntax of .netrc is described in
 .BR netrc (5)
 or 
 .BR ftp (1).
-.IP "$USER, $LOGNAME"
+.SH ENVIRONMENT
+.IP "USER, LOGNAME"
 These variables override the user's login name when constructing an 
-envelope-from address. $LOGNAME is only used if $USER is unset.
-.IP "$TMPDIR"
+envelope-from address. LOGNAME is only used if USER is unset.
+.IP "TMPDIR"
 Directory to create temporary files in. If this is unset, a system specific
 default directory is used.
 .br
 A temporary file is only created when the
 .BR -t/--read-recipients
+or
+.BR --read-envelope-from
 option is used. The file is then used to buffer the headers of the mail (but not
 the body, so the file won't get very large).
+.IP "EMAIL, SMTPSERVER"
+These environment variables are used only if neither \fB--host\fP nor
+\fB--account\fP is used and there is no default account defined in the
+configuration files. In this case, the host name is taken from SMTPSERVER, and
+the envelope from address is taken from EMAIL, unless overridden by
+\fB--from\fP or \fB--read-envelope-from\fP. Currently SMTPSERVER must contain a
+plain host name (no URL), and EMAIL must contain a plain address (no names or
+additional information).
 .SH AUTHORS
 msmtp was written by Martin Lambers <marlam@marlam.de>.
 .br

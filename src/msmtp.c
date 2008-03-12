@@ -3219,6 +3219,10 @@ int main(int argc, char *argv[])
     list_t *account_list = NULL;
     char *loaded_system_conffile = NULL;
     char *loaded_user_conffile = NULL;
+    /* environment variables */
+    int allow_fallback_to_env;
+    char *env_email;
+    char *env_smtpserver;
     /* the account data that will be used */
     account_t *account = NULL;
     /* error handling */
@@ -3332,6 +3336,7 @@ int main(int argc, char *argv[])
 
     /* get the account to be used, either from the conffile(s) or from the 
      * command line */
+    allow_fallback_to_env = 0;
     if (!conf.cmdline_account->host)
     {	
 	if ((error_code = msmtp_get_conffile_accounts(&account_list, 
@@ -3354,37 +3359,56 @@ int main(int argc, char *argv[])
 	    if (!account)
 	    {
 		/* No envelope from address or no matching account. 
-		 * Use default. */
+		 * Use default if available, but allow fallback to environment
+		 * variables. */
 		conf.account_id = "default";
+		allow_fallback_to_env = 1;
 	    }
 	}
 	if (!account && !(account = 
 		    account_copy(find_account(account_list, conf.account_id))))
 	{
-	    if (loaded_system_conffile && loaded_user_conffile)
-	    {		
-		print_error(_("account %s not found in %s and %s"),
-		     	conf.account_id, loaded_system_conffile, 
-			loaded_user_conffile);
-	    }
-	    else if (loaded_system_conffile)
+	    env_email = getenv("EMAIL");
+    	    env_smtpserver = getenv("SMTPSERVER");
+	    if (allow_fallback_to_env 
+		    && (!conf.sendmail 
+			|| conf.cmdline_account->from || env_email)
+		    && env_smtpserver)
 	    {
-		print_error(_("account %s not found in %s"), conf.account_id, 
-			loaded_system_conffile);
+		if (conf.sendmail && !conf.cmdline_account->from)
+		{
+		    conf.cmdline_account->from = xstrdup(env_email);
+		}
+	    	conf.cmdline_account->host = xstrdup(env_smtpserver);
+		account = account_copy(conf.cmdline_account);
 	    }
-	    else if (loaded_user_conffile)
+	    else
 	    {
-		print_error(_("account %s not found in %s"), conf.account_id, 
-			loaded_user_conffile);
+		if (loaded_system_conffile && loaded_user_conffile)
+		{		
+		    print_error(_("account %s not found in %s and %s"),
+			    conf.account_id, loaded_system_conffile, 
+			    loaded_user_conffile);
+		}
+		else if (loaded_system_conffile)
+		{
+		    print_error(_("account %s not found in %s"), 
+			    conf.account_id, loaded_system_conffile);
+		}
+		else if (loaded_user_conffile)
+		{
+		    print_error(_("account %s not found in %s"), 
+			    conf.account_id, loaded_user_conffile);
+		}
+		else /* no conffile was read */
+		{
+		    print_error(_("account %s not found: "
+		    		"no configuration file available"),
+		    	    conf.account_id);
+		}
+		error_code = EX_CONFIG;
+		goto exit;
 	    }
-	    else /* no conffile was read */
-	    {
-		print_error(_("account %s not found: "
-			    "no configuration file available"),
-			conf.account_id);
-	    }
-	    error_code = EX_CONFIG;
-    	    goto exit;
 	}
 	override_account(account, conf.cmdline_account);
     }

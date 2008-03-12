@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: msmtp 1.4.14\n"
 "Report-Msgid-Bugs-To: marlam@marlam.de\n"
-"POT-Creation-Date: 2008-03-10 09:58+0100\n"
+"POT-Creation-Date: 2008-03-12 09:35+0100\n"
 "PO-Revision-Date: 2005-06-20 22:15+0200\n"
 "Last-Translator: Martin Lambers <marlam@marlam.de>\n"
 "Language-Team: German\n"
@@ -711,97 +711,97 @@ msgstr "extrahiere Empfängerliste aus Kommandozeile und Mail\n"
 msgid "reading recipients from the command line\n"
 msgstr "extrahiere Empfängerliste aus Kommandozeile\n"
 
-#: src/msmtp.c:3292
+#: src/msmtp.c:3296
 msgid "too many arguments"
 msgstr "zu viele Argumente"
 
-#: src/msmtp.c:3301
+#: src/msmtp.c:3306
 #, c-format
 msgid "cannot create temporary file: %s"
 msgstr "kann keine temporäre Datei erzeugen: %s"
 
-#: src/msmtp.c:3318
+#: src/msmtp.c:3323
 #, c-format
 msgid "cannot rewind temporary file: %s"
 msgstr "kann temporäre Datei nicht zurückspulen: %s"
 
-#: src/msmtp.c:3327
+#: src/msmtp.c:3332
 msgid "no recipients found"
 msgstr "keine Empfänger gefunden"
 
-#: src/msmtp.c:3365
+#: src/msmtp.c:3389
 #, c-format
 msgid "account %s not found in %s and %s"
 msgstr "Account %s nicht in %s und %s gefunden"
 
-#: src/msmtp.c:3371 src/msmtp.c:3376
+#: src/msmtp.c:3395 src/msmtp.c:3400
 #, c-format
 msgid "account %s not found in %s"
 msgstr "Account %s nicht in %s gefunden"
 
-#: src/msmtp.c:3381
+#: src/msmtp.c:3405
 #, c-format
 msgid "account %s not found: no configuration file available"
 msgstr "Account %s nicht gefunden: Keine Konfigurationsdatei verfügbar"
 
-#: src/msmtp.c:3431
+#: src/msmtp.c:3456
 #, c-format
 msgid "account %s from %s: %s"
 msgstr "Account %s aus %s: %s"
 
-#: src/msmtp.c:3459
+#: src/msmtp.c:3484
 msgid "this platform does not support syslog logging"
 msgstr "diese Plattform unterstützt Syslog nicht"
 
-#: src/msmtp.c:3468
+#: src/msmtp.c:3493
 #, c-format
 msgid "support for authentication method %s is not compiled in"
 msgstr ""
 "Unterstützung für Authentifizierungsmethode %s ist nicht einkompiliert worden"
 
-#: src/msmtp.c:3476
+#: src/msmtp.c:3501
 #, c-format
 msgid "cannot initialize networking: %s"
 msgstr "kann Netzwerkprogrammbibliothek nicht initialisieren: %s"
 
-#: src/msmtp.c:3487
+#: src/msmtp.c:3512
 #, c-format
 msgid "cannot initialize TLS library: %s"
 msgstr "kann TLS Programmbibliothek nicht initialisieren: %s"
 
-#: src/msmtp.c:3494
+#: src/msmtp.c:3519
 msgid "support for TLS is not compiled in"
 msgstr "Unterstützung für TLS ist nicht einkompiliert worden"
 
-#: src/msmtp.c:3525
+#: src/msmtp.c:3550
 #, c-format
 msgid "LMTP server message: %s"
 msgstr "Nachricht des LMTP Servers: %s"
 
-#: src/msmtp.c:3536
+#: src/msmtp.c:3561
 #, c-format
 msgid "could not send mail to all recipients (account %s from %s)"
 msgstr "konnte Mail nicht an alle Empfänger schicken (Account %s aus %s)"
 
-#: src/msmtp.c:3542
+#: src/msmtp.c:3567
 msgid "could not send mail to all recipients"
 msgstr "konnte Mail nicht an alle Empfänger schicken"
 
-#: src/msmtp.c:3557 src/msmtp.c:3612 src/msmtp.c:3633
+#: src/msmtp.c:3582 src/msmtp.c:3637 src/msmtp.c:3658
 #, c-format
 msgid "server message: %s"
 msgstr "Nachricht des Servers: %s"
 
-#: src/msmtp.c:3563
+#: src/msmtp.c:3588
 #, c-format
 msgid "could not send mail (account %s from %s)"
 msgstr "konnte Mail nicht verschicken (Account %s aus %s)"
 
-#: src/msmtp.c:3568
+#: src/msmtp.c:3593
 msgid "could not send mail"
 msgstr "konnte Mail nicht verschicken"
 
-#: src/msmtp.c:3578
+#: src/msmtp.c:3603
 #, c-format
 msgid "delivery to one or more recipients failed"
 msgstr "Zustellung an einen oder mehrere Empfänger fehlgeschlagen"

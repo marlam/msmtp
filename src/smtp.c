@@ -1407,6 +1407,7 @@ int smtp_send_envelope(smtp_server_t *srv,
     int data_reply_was_rcvd = 0;
     int pipeline_limit = 1;
     int piped_commands = 0;
+    int status;
 
     
     *error_msg = NULL;
@@ -1481,12 +1482,14 @@ int smtp_send_envelope(smtp_server_t *srv,
 		{
 		    return e;
 		}
-		if (smtp_msg_status(msg) != 250)
+		status = smtp_msg_status(msg);
+		if (status != 250)
 		{
 		    *error_msg = msg;
 		    *errstr = xasprintf(_("envelope from address %s not "
 				"accepted by the server"), envelope_from);
-		    return SMTP_EINVAL;
+		    return (status >= 400 && status <= 499 
+			    ? SMTP_EUNAVAIL : SMTP_EINVAL);
 		}
 		list_xfree(msg, free);
 		mailfrom_reply_was_rcvd = 1;
@@ -1498,13 +1501,15 @@ int smtp_send_envelope(smtp_server_t *srv,
 		{
 		    return e;
 		}
-		if (smtp_msg_status(msg) != 250)
+		status = smtp_msg_status(msg);
+		if (status != 250)
 		{
 		    *error_msg = msg;
 		    *errstr = xasprintf(_("recipient address %s not "
 				"accepted by the server"),
 			    (char *)(rcpt_recv->data));
-		    return SMTP_EINVAL;
+		    return (status >= 400 && status <= 499 
+			    ? SMTP_EUNAVAIL : SMTP_EINVAL);
 		}
 		list_xfree(msg, free);		
 	    }
@@ -1514,12 +1519,14 @@ int smtp_send_envelope(smtp_server_t *srv,
 		{
 		    return e;
 		}
+		status = smtp_msg_status(msg);
 		if (smtp_msg_status(msg) != 354)
 		{
 		    *error_msg = msg;
 		    *errstr = xasprintf(
 			    _("the server does not accept mail data"));
-		    return SMTP_EUNAVAIL;
+		    return (status >= 400 && status <= 499 
+			    ? SMTP_EUNAVAIL : SMTP_EINVAL);
 		}
 		list_xfree(msg, free);
 		data_reply_was_rcvd = 1;

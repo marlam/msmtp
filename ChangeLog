@@ -1,3 +1,7 @@
+Version 1.4.15:
+- Return EX_TEMPFAIL instead of EX_DATAERR in case of  4xx replies to the MAIL
+  FROM, RCPT TO and DATA commands. Reported by Kent Vinther Friis. Thanks!
+
 Version 1.4.14:
 - Add support for the SMTPSERVER and EMAIL environment variables. These
   variables are used when no other configuration is available. Suggested by

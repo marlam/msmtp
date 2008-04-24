@@ -1,4 +1,5 @@
 Version 1.4.15:
+- Updated the set_sendmail script by Gautam Iyer. Thanks!
 - Return EX_TEMPFAIL instead of EX_DATAERR in case of  4xx replies to the MAIL
   FROM, RCPT TO and DATA commands. Reported by Kent Vinther Friis. Thanks!
 

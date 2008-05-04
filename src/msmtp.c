@@ -275,8 +275,8 @@ char *msmtp_sanitize_string(char *str)
  *
  * This function will be called by smtp_auth() to get a password if none was
  * given. It tries to read a password from .netrc. If that fails, it tries to 
- * get it from the system's keychain (if available). If that fails, it reads a 
- * password with getpass().
+ * get it from the system's keychain (if available). If that fails, it tries to
+ * read a password from /dev/tty (not stdin) with getpass().
  * It must return NULL on failure or a password in an allocated buffer.
  */
 
@@ -289,6 +289,9 @@ char *msmtp_password_callback(const char *hostname, const char *user)
     char *prompt;
     char *gpw;
     char *password = NULL;
+#if !defined DJGPP && !defined W32_NATIVE && !defined __CYGWIN__
+    FILE *tty;
+#endif
 #ifdef HAVE_KEYCHAIN
     void *password_data;
     UInt32 password_length;
@@ -328,16 +331,31 @@ char *msmtp_password_callback(const char *hostname, const char *user)
     }
 #endif /* HAVE_KEYCHAIN */
 
+    /* Do not let getpass() read from stdin, because we read the mail from 
+     * there. DJGPP's getpass() always reads from stdin. On W32, gnulib's
+     * getpass() uses _getch(), which always reads from the 'console' and not
+     * stdin. On other systems, we test if /dev/tty can be opened before calling
+     * getpass(). */
+#ifndef DJGPP
     if (!password)
     {
-	prompt = xasprintf(_("password for %s at %s: "), user, hostname);
-	gpw = getpass(prompt);
-	free(prompt);
-	if (gpw)
+# if !defined W32_NATIVE && !defined __CYGWIN__
+	if ((tty = fopen("/dev/tty", "w+")))
 	{
-	    password = xstrdup(gpw);
+	    fclose(tty);
+# endif
+	    prompt = xasprintf(_("password for %s at %s: "), user, hostname);
+	    gpw = getpass(prompt);
+	    free(prompt);
+	    if (gpw)
+	    {
+		password = xstrdup(gpw);
+	    }
+# if !defined W32_NATIVE && !defined __CYGWIN__
 	}
+# endif
     }
+#endif
     
     return password;
 }

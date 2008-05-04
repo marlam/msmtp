@@ -1,5 +1,5 @@
 # DO NOT EDIT! GENERATED AUTOMATICALLY!
-# Copyright (C) 2004-2007 Free Software Foundation, Inc.
+# Copyright (C) 2002-2008 Free Software Foundation, Inc.
 #
 # This file is free software, distributed under the terms of the GNU
 # General Public License.  As a special exception to the GNU General
@@ -27,7 +27,6 @@ AC_DEFUN([gl_EARLY],
   AC_REQUIRE([AC_PROG_RANLIB])
   AC_REQUIRE([AC_GNU_SOURCE])
   AC_REQUIRE([gl_USE_SYSTEM_EXTENSIONS])
-  AC_REQUIRE([AC_FUNC_FSEEKO])
   dnl Some compilers (e.g., AIX 5.3 cc) need to be in c99 mode
   dnl for the builtin va_copy to work.  With Autoconf 2.60 or later,
   dnl AC_PROG_CC_STDC arranges for this.  With older Autoconf AC_PROG_CC_STDC
@@ -46,27 +45,25 @@ AC_DEFUN([gl_INIT],
   m4_pushdef([AC_LIBOBJ], m4_defn([gl_LIBOBJ]))
   m4_pushdef([AC_REPLACE_FUNCS], m4_defn([gl_REPLACE_FUNCS]))
   m4_pushdef([AC_LIBSOURCES], m4_defn([gl_LIBSOURCES]))
+  gl_COMMON
   gl_source_base='gnulib'
+  gl_EOVERFLOW
   gl_FUNC_ALLOCA
   gl_FUNC_BASE64
   gl_HMAC_MD5
   gl_MD5
   gl_FLOAT_H
-  gl_FUNC_FSEEKO
-  gl_STDIO_MODULE_INDICATOR([fseeko])
   gl_FUNC_GETDELIM
   gl_STDIO_MODULE_INDICATOR([getdelim])
   gl_FUNC_GETLINE
   gl_STDIO_MODULE_INDICATOR([getline])
   gl_GETOPT
-  gl_FUNC_GETPASS
+  gl_FUNC_GETPASS_GNU
   dnl you must add AM_GNU_GETTEXT([external]) or similar to configure.ac.
   AM_GNU_GETTEXT_VERSION([0.17])
   AC_SUBST([LIBINTL])
   AC_SUBST([LTLIBINTL])
   gl_INLINE
-  gl_FUNC_LSEEK
-  gl_UNISTD_MODULE_INDICATOR([lseek])
   gl_MEMXOR
   gl_FUNC_REALLOC_POSIX
   gl_STDLIB_MODULE_INDICATOR([realloc-posix])
@@ -115,6 +112,7 @@ AC_DEFUN([gl_INIT],
   m4_pushdef([AC_LIBOBJ], m4_defn([gltests_LIBOBJ]))
   m4_pushdef([AC_REPLACE_FUNCS], m4_defn([gltests_REPLACE_FUNCS]))
   m4_pushdef([AC_LIBSOURCES], m4_defn([gltests_LIBSOURCES]))
+  gl_COMMON
   gl_source_base='tests'
   m4_popdef([AC_LIBSOURCES])
   m4_popdef([AC_REPLACE_FUNCS])
@@ -223,7 +221,6 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/c-ctype.h
   lib/float+.h
   lib/float.in.h
-  lib/fseeko.c
   lib/getdelim.c
   lib/getline.c
   lib/getopt.c
@@ -235,7 +232,6 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/gettext.h
   lib/hmac-md5.c
   lib/hmac.h
-  lib/lseek.c
   lib/md5.c
   lib/md5.h
   lib/memxor.c
@@ -246,6 +242,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/printf-parse.h
   lib/realloc.c
   lib/size_max.h
+  lib/stdarg.in.h
   lib/stdbool.in.h
   lib/stdint.in.h
   lib/stdio.in.h
@@ -263,14 +260,12 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/xsize.h
   lib/xvasprintf.c
   lib/xvasprintf.h
-  m4/absolute-header.m4
   m4/alloca.m4
   m4/base64.m4
   m4/codeset.m4
   m4/eoverflow.m4
   m4/extensions.m4
   m4/float_h.m4
-  m4/fseeko.m4
   m4/getdelim.m4
   m4/getline.m4
   m4/getopt.m4
@@ -297,12 +292,11 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/lib-prefix.m4
   m4/lock.m4
   m4/longlong.m4
-  m4/lseek.m4
   m4/malloc.m4
   m4/md5.m4
   m4/memxor.m4
   m4/nls.m4
-  m4/onceonly_2_57.m4
+  m4/onceonly.m4
   m4/po.m4
   m4/printf-posix.m4
   m4/progtest.m4

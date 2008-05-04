@@ -7,3 +7,4 @@ absolute-header.m4
 malloc.m4
 realloc.m4
 stdlib_h.m4
+onceonly.m4

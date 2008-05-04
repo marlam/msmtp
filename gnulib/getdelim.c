@@ -1,5 +1,5 @@
 /* getdelim.c --- Implementation of replacement getdelim function.
-   Copyright (C) 1994, 1996, 1997, 1998, 2001, 2003, 2005, 2006, 2007 Free
+   Copyright (C) 1994, 1996, 1997, 1998, 2001, 2003, 2005, 2006, 2007, 2008 Free
    Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or
@@ -42,11 +42,6 @@
 # define funlockfile(x) ((void) 0)
 #endif
 
-/* Some systems, like OSF/1 4.0 and Woe32, don't have EOVERFLOW.  */
-#ifndef EOVERFLOW
-# define EOVERFLOW E2BIG
-#endif
-
 /* Read up to (and including) a DELIMITER from FP into *LINEPTR (and
    NUL-terminate it).  *LINEPTR is a pointer returned from malloc (or
    NULL), pointing to *N characters of space.  It is realloc'ed as
@@ -69,13 +64,15 @@ getdelim (char **lineptr, size_t *n, int delimiter, FILE *fp)
 
   if (*lineptr == NULL || *n == 0)
     {
+      char *new_lineptr;
       *n = 120;
-      *lineptr = (char *) realloc (*lineptr, *n);
-      if (*lineptr == NULL)
+      new_lineptr = (char *) realloc (*lineptr, *n);
+      if (new_lineptr == NULL)
 	{
 	  result = -1;
 	  goto unlock_return;
 	}
+      *lineptr = new_lineptr;
     }
 
   for (;;)

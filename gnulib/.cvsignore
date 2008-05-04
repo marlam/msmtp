@@ -18,3 +18,4 @@ unistd.in.h
 wchar.in.h
 c-ctype.c
 c-ctype.h
+stdarg.in.h

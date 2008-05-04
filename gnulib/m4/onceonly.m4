@@ -1,5 +1,5 @@
-# onceonly_2_57.m4 serial 4
-dnl Copyright (C) 2002-2003, 2005-2006 Free Software Foundation, Inc.
+# onceonly.m4 serial 5
+dnl Copyright (C) 2002-2003, 2005-2006, 2008 Free Software Foundation, Inc.
 dnl This file is free software, distributed under the terms of the GNU
 dnl General Public License.  As a special exception to the GNU General
 dnl Public License, this file may be distributed as part of a program
@@ -26,14 +26,15 @@ dnl DEFAULTS and INIT_PREPARE in order to check all requested headers at once,
 dnl thus reducing the size of 'configure'. Works with autoconf-2.57. The
 dnl size reduction is ca. 9%.
 
-dnl Autoconf version 2.57 or newer is recommended.
-AC_PREREQ(2.57)
+dnl Autoconf version 2.59 plus gnulib is required; this file is not needed
+dnl with Autoconf 2.60 or greater.
+AC_PREREQ([2.59])
 
 # AC_CHECK_HEADERS_ONCE(HEADER1 HEADER2 ...) is a once-only variant of
 # AC_CHECK_HEADERS(HEADER1 HEADER2 ...).
 AC_DEFUN([AC_CHECK_HEADERS_ONCE], [
   :
-  AC_FOREACH([gl_HEADER_NAME], [$1], [
+  m4_foreach_w([gl_HEADER_NAME], [$1], [
     AC_DEFUN([gl_CHECK_HEADER_]m4_quote(translit(gl_HEADER_NAME,
                                                  [./-], [___])), [
       m4_divert_text([INIT_PREPARE],
@@ -56,7 +57,7 @@ m4_define([gl_HEADERS_EXPANSION], [
 # AC_CHECK_FUNCS(FUNC1 FUNC2 ...).
 AC_DEFUN([AC_CHECK_FUNCS_ONCE], [
   :
-  AC_FOREACH([gl_FUNC_NAME], [$1], [
+  m4_foreach_w([gl_FUNC_NAME], [$1], [
     AC_DEFUN([gl_CHECK_FUNC_]m4_defn([gl_FUNC_NAME]), [
       m4_divert_text([INIT_PREPARE],
         [gl_func_list="$gl_func_list gl_FUNC_NAME"])
@@ -77,7 +78,7 @@ m4_define([gl_FUNCS_EXPANSION], [
 # AC_CHECK_DECLS(DECL1, DECL2, ...).
 AC_DEFUN([AC_CHECK_DECLS_ONCE], [
   :
-  AC_FOREACH([gl_DECL_NAME], [$1], [
+  m4_foreach_w([gl_DECL_NAME], [$1], [
     AC_DEFUN([gl_CHECK_DECL_]m4_defn([gl_DECL_NAME]), [
       AC_CHECK_DECLS(m4_defn([gl_DECL_NAME]))
     ])

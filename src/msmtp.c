@@ -286,17 +286,16 @@ char *msmtp_password_callback(const char *hostname, const char *user)
     char *netrc_filename;
     netrc_entry *netrc_hostlist;
     netrc_entry *netrc_host;
-    char *prompt;
-    char *gpw;
-    char *password = NULL;
-#if !defined DJGPP && !defined W32_NATIVE && !defined __CYGWIN__
-    FILE *tty;
-#endif
 #ifdef HAVE_KEYCHAIN
     void *password_data;
     UInt32 password_length;
     OSStatus status;
 #endif
+    FILE *tty;
+    int getpass_uses_tty;
+    char *prompt;
+    char *gpw;
+    char *password = NULL;
 
     homedir = get_homedir();
     netrc_filename = get_filename(homedir, NETRCFILE);
@@ -336,14 +335,22 @@ char *msmtp_password_callback(const char *hostname, const char *user)
      * getpass() uses _getch(), which always reads from the 'console' and not
      * stdin. On other systems, we test if /dev/tty can be opened before calling
      * getpass(). */
-#ifndef DJGPP
     if (!password)
     {
-# if !defined W32_NATIVE && !defined __CYGWIN__
+#ifdef DJGPP
+	getpass_uses_tty = 0;
+#elif defined W32_NATIVE || defined __CYGWIN__
+	getpass_uses_tty = 1;
+#else
+	getpass_uses_tty = 0;
 	if ((tty = fopen("/dev/tty", "w+")))
 	{
+	    getpass_uses_tty = 1;
 	    fclose(tty);
+	}
 # endif
+	if (getpass_uses_tty)
+	{
 	    prompt = xasprintf(_("password for %s at %s: "), user, hostname);
 	    gpw = getpass(prompt);
 	    free(prompt);
@@ -351,11 +358,8 @@ char *msmtp_password_callback(const char *hostname, const char *user)
 	    {
 		password = xstrdup(gpw);
 	    }
-# if !defined W32_NATIVE && !defined __CYGWIN__
 	}
-# endif
     }
-#endif
     
     return password;
 }

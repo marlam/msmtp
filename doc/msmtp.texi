@@ -219,7 +219,8 @@ Set your password for SMTP authentication. An empty argument unsets the
 password.  Authentication must be activated with the @samp{auth} command.
 If no password is set but one is needed during authentication, msmtp will try to
 find it in @code{~/.netrc}. If that fails, it will try to get it from a system 
-specific keychain (if available). If that fails, msmtp will prompt you for it.
+specific keychain (if available). If that fails but a controlling terminal is
+available, msmtp will prompt you for it.
 @xref{Authentication}.
 @anchor{ntlmdomain}
 @item ntlmdomain [@var{ntlmdomain}]
@@ -789,7 +790,8 @@ Authentication data can be set with the @samp{user} and @samp{password} commands
 or with the @samp{--user} option. See @ref{user}, @ref{password}, @ref{--user}.
 If no password is set but one is needed during authentication, msmtp will try to
 find it in @code{~/.netrc}. If that fails, it will try to get it from a system 
-specific keychain (if available). If that fails, msmtp will prompt you for it.
+specific keychain (if available). If that fails but a controlling terminal is
+available, msmtp will prompt you for it.
 
 Currently the only supported keychain is the Mac OS X keychain. 
 @xref{Using the Mac OS X Keychain}.

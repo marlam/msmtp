@@ -1,4 +1,7 @@
 EXTRA_DIST = \
+	msmtpq/README			\
+	msmtpq/msmtpq			\
+	msmtpq/msmtpQ			\
 	msmtpqueue/README		\
 	msmtpqueue/ChangeLog		\
 	msmtpqueue/msmtp-enqueue.sh	\

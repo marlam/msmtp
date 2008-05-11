@@ -1,0 +1,63 @@
+I've modified the scripts comprising Martin Lambers' msmtpqueue package
+in an attempt to package all queue functions into two routines called
+msmptq and msmtpQ. msmtpq is the queue management script while msmtpQ is
+the 'sendmail mode' function to either send a mail immediately out or to
+queue it. This is useful for a mail client, e.g. mutt's "set
+sendmail = ...". Mutt users, further, should enter
+  set sendmail_wait = -1
+into their .muttrc . msmtpQ takes care of waiting for msmtp (or the
+queuing function) to finish.
+
+As usual, credit goes to Martin Lambers for the idea ; any bugs, design
+errors, oversights, etc. belong to me.
+
+
+Therefore, for sending/enqueuing mail :
+
+-- msmtpQ    -- (the 'send' op) ; (synonym : msmtpQ) -- sending a mail
+   (from, e.g., mutt) will cause the passed mail to be sent directly out
+   to the remote server if the host is connected ; if the host is not
+   connected or if msmtp returns an error the mail is queued
+
+For queue management :
+
+-- msmtpq -r -- runs (flushes) the contents of the queue
+
+-- msmtpq -R -- allows selection of and sending individual mails
+
+-- msmtpq -d -- displays the contents of the queue
+
+-- msmtpq -p -- allows the specific purging of one or more mails
+
+-- msmtpq -a -- purges all mail in the queue
+
+-- msmtpq -h -- a helpful blurt
+
+Please note that :
+
+-- only one op, one of the above, can be executed ; if more than one op
+   is entered only the first is executed ; only the above combined ops
+   are accepted
+
+
+Installation :
+
+Copy msmtpq and msmtpQ to wherever is best for you (I use /usr/local/bin)
+
+Replace the msmtp invocation in your mail client with msmtpQ ; e.g. for
+mutt : set sendmail = /path/to/msmtpQ ; also for mutt
+set sendmail_wait = -1
+
+That's it.
+
+
+msmtpq issues & considerations :
+
+-- for testing whether a net connection is present / alive I use a ping to
+   (the ip address of) www.google.com ; is there a better, faster,
+   easier way ? Is it better to use a host within one's ISP's local net
+   as a target to test a connection ; e.g., a local dns server ? ; in
+   that case, substitute its IP address for 'www.google.com' (/bin/ping
+   can show which is faster) ; perhaps it's not such a big deal ...
+
+Chris Gianniotis <namtok@gmx.net>

@@ -1,3 +1,9 @@
+****************************************************************************
+* NOTE: Please have a look at the msmtpq scripts by Chris Gianniotis. They *
+* provide a more advanced alternative to the msmtpqueue scripts.           *
+****************************************************************************
+
+
 Scripts to queue mails and send them all at a later point with msmtp.
 
 These scripts may be useful for dialup connections: You can "send" all your

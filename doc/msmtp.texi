@@ -260,6 +260,7 @@ This command sets or unsets a certificate revocation list (CRL) file for TLS,
 to be used during strict server certificate verification as enabled by the
 @ref{tls_trust_file} command. This allows the verification procedure to detect
 revoked certificates.
+@xref{Transport Layer Security}.
 @anchor{tls_key_file}
 @item tls_key_file [@var{file}]
 @cmindex tls_key_file

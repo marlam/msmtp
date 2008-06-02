@@ -924,24 +924,70 @@ int tls_check_cert(tls_t *tls, const char *hostname, int verify, char **errstr)
  * see tls.h
  */
 
-int tls_init(tls_t *tls, const char *key_file, const char *cert_file, 
-	const char *trust_file, int force_sslv3, char **errstr)
+int tls_init(tls_t *tls, 
+	const char *key_file, const char *cert_file, const char *trust_file, 
+	int force_sslv3, int min_dh_prime_bits, const char *priorities,
+	char **errstr)
 {
 #ifdef HAVE_LIBGNUTLS
     int error_code;
+    const char *error_pos;
+    char *error_pos_str;
     
     if ((error_code = gnutls_init(&tls->session, GNUTLS_CLIENT)) != 0)
     {
-	*errstr = xasprintf(_("cannot initialize TLS Session: %s"), 
+	*errstr = xasprintf(_("cannot initialize TLS session: %s"), 
 		gnutls_strerror(error_code));
 	return TLS_ELIBFAILED;
     }
-    if ((error_code = gnutls_set_default_priority(tls->session)) != 0)
+    if (priorities)
     {
-	*errstr = xasprintf(_("cannot set priorities on TLS Session: %s"),
-		gnutls_strerror(error_code));
+# if HAVE_GNUTLS_PRIORITY_SET_DIRECT
+	error_pos = NULL;
+	if ((error_code = gnutls_priority_set_direct(tls->session, 
+			priorities, &error_pos)) != 0)
+	{
+	    if (error_pos)
+	    {
+		error_pos_str = xasprintf(
+			_("error in priority string at position %d"), 
+			error_pos - priorities + 1);
+		*errstr = xasprintf(
+			_("cannot set priorities for TLS session: %s"),
+			error_pos_str);
+		free(error_pos_str);
+		gnutls_deinit(tls->session);
+		return TLS_ELIBFAILED;
+	    }
+	    else
+	    {
+		*errstr = xasprintf(
+			_("cannot set priorities for TLS session: %s"),
+			gnutls_strerror(error_code));
+		gnutls_deinit(tls->session);
+		return TLS_ELIBFAILED;
+	    }
+	}
+# else
+	*errstr = xasprintf(_("cannot set priorities for TLS session: %s"),
+		_("the TLS library does not support this feature"));
 	gnutls_deinit(tls->session);
 	return TLS_ELIBFAILED;
+# endif
+    }
+    else
+    {
+	if ((error_code = gnutls_set_default_priority(tls->session)) != 0)
+	{
+	    *errstr = xasprintf(_("cannot set priorities for TLS session: %s"),
+	    	    gnutls_strerror(error_code));
+	    gnutls_deinit(tls->session);
+	    return TLS_ELIBFAILED;
+	}
+    }
+    if (min_dh_prime_bits >= 0)
+    {
+  	gnutls_dh_set_prime_bits(tls->session, min_dh_prime_bits);
     }
     if (force_sslv3)
     {
@@ -958,7 +1004,7 @@ int tls_init(tls_t *tls, const char *key_file, const char *cert_file,
     if ((error_code = gnutls_certificate_allocate_credentials(&tls->cred)) < 0)
     {
 	*errstr = xasprintf(
-		_("cannot allocate certificate for TLS Session: %s"),
+		_("cannot allocate certificate for TLS session: %s"),
 		gnutls_strerror(error_code));
 	gnutls_deinit(tls->session);
 	return TLS_ELIBFAILED;
@@ -969,7 +1015,7 @@ int tls_init(tls_t *tls, const char *key_file, const char *cert_file,
 		       	cert_file, key_file, GNUTLS_X509_FMT_PEM)) < 0)
 	{
 	    *errstr = xasprintf(_("cannot set X509 key file %s and/or "
-			"X509 cert file %s for TLS Session: %s"),
+			"X509 cert file %s for TLS session: %s"),
 	    	    key_file, cert_file, gnutls_strerror(error_code));
 	    gnutls_deinit(tls->session);
 	    gnutls_certificate_free_credentials(tls->cred);
@@ -982,7 +1028,7 @@ int tls_init(tls_t *tls, const char *key_file, const char *cert_file,
 			tls->cred, trust_file, GNUTLS_X509_FMT_PEM)) <= 0)
 	{
 	    *errstr = xasprintf(
-		    _("cannot set X509 trust file %s for TLS Session: %s"),
+		    _("cannot set X509 trust file %s for TLS session: %s"),
 	    	    trust_file, gnutls_strerror(error_code));
 	    gnutls_deinit(tls->session);
 	    gnutls_certificate_free_credentials(tls->cred);
@@ -993,7 +1039,7 @@ int tls_init(tls_t *tls, const char *key_file, const char *cert_file,
     if ((error_code = gnutls_credentials_set(tls->session, 
 		    GNUTLS_CRD_CERTIFICATE, tls->cred)) < 0)
     {
-	*errstr = xasprintf(_("cannot set credentials for TLS Session: %s"),
+	*errstr = xasprintf(_("cannot set credentials for TLS session: %s"),
 		gnutls_strerror(error_code));
 	gnutls_deinit(tls->session);
 	gnutls_certificate_free_credentials(tls->cred);
@@ -1007,6 +1053,22 @@ int tls_init(tls_t *tls, const char *key_file, const char *cert_file,
     
     SSL_METHOD *ssl_method = NULL;
     
+    /* FIXME: Implement support for 'min_dh_prime_bits' */
+    if (min_dh_prime_bits >= 0)
+    {
+	*errstr = xasprintf(
+		_("cannot set minimum number of DH prime bits for TLS: %s"),
+		_("feature not yet implemented for OpenSSL"));
+	return TLS_ELIBFAILED;
+    }
+    /* FIXME: Implement support for 'priorities' */
+    if (priorities)
+    {
+	*errstr = xasprintf(
+		_("cannot set priorities for TLS session: %s"),
+		_("feature not yet implemented for OpenSSL"));
+	return TLS_ELIBFAILED;
+    }
     ssl_method = force_sslv3 ? SSLv3_client_method() : SSLv23_client_method();
     if (!ssl_method)
     {

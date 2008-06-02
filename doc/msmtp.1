@@ -110,6 +110,11 @@ Enable or disable server certificate checks for TLS encryption. See the
 \fBtls_certcheck\fP command below.
 .IP "--tls-force-sslv3[=(\fIon\fP|\fIoff\fP)]"
 Force TLS/SSL version SSLv3. See the \fBtls_force_sslv3\fP command below.
+.IP "--tls-min-dh-prime-bits=[\fIbits\fP]"
+Set or unset minimum bit size of the DH prime. See the
+\fBtls_min_dh_prime_bits\fP command below.
+.IP "--tls-priorities=[\fIpriorities\fP]"
+Set or unset TLS priorities. See the \fBtls_priorities\fP command below.
 .IP "--domain=[\fIstring\fP]"
 Set the argument of the SMTP EHLO (or LMTP LHLO) command. See the \fBdomain\fP
 command below.
@@ -369,6 +374,17 @@ alias for \fBtls_certcheck off\fP.
 .IP "tls_force_sslv3 [(\fIon\fP|\fIoff\fP)]"
 Force TLS/SSL version SSLv3. This might be needed to use SSL with some old and 
 broken servers. Do not use this unless you have to.
+.IP "tls_min_sh_prime_bits [\fIbits\fP]"
+Set or unset the minimum number of DH prime bits that msmtp will accept for TLS
+sessions.  The default is set by the TLS library and can be selected by using
+an empty argument to this command.  Only lower the default if there is no other
+way to make TLS work with the remote server.
+.IP "tls_priorities [\fIpriorities\fP]"
+Set the priorities for TLS sessions.  The default is set by the TLS library and
+can be selected by using an empty argument to this command.  Currently this 
+command only works with sufficiently recent GnuTLS releases. See the GnuTLS
+documentation of the \fBgnutls_priority_init\fP function for a description of 
+the \fIpriorities\fP string.
 .IP "dsn_notify (\fIoff\fP|\fIcondition\fP)"
 This command sets the condition(s) under which the mail system should send DSN
 (Delivery Status Notification) messages. The argument \fIoff\fP disables

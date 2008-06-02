@@ -511,8 +511,9 @@ int msmtp_rmqs(account_t *acc, int debug, const char *rmqs_argument,
     if (acc->tls)
     {
 	if ((e = smtp_tls_init(&srv, acc->tls_key_file, acc->tls_cert_file, 
-			acc->tls_trust_file, acc->tls_force_sslv3, errstr)) 
-		!= TLS_EOK)
+			acc->tls_trust_file, acc->tls_force_sslv3,
+			acc->tls_min_dh_prime_bits, acc->tls_priorities, 
+			errstr)) != TLS_EOK)
 	{
 	    return exitcode_tls(e);
 	}
@@ -685,8 +686,9 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
     {
 	tci = tls_cert_info_new();
 	if ((e = smtp_tls_init(&srv, acc->tls_key_file, acc->tls_cert_file, 
-			acc->tls_trust_file, acc->tls_force_sslv3, errstr)) 
-		!= TLS_EOK)
+			acc->tls_trust_file, acc->tls_force_sslv3,
+			acc->tls_min_dh_prime_bits, acc->tls_priorities,
+			errstr)) != TLS_EOK)
 	{
 	    e = exitcode_tls(e);
 	    goto error_exit;
@@ -1555,8 +1557,9 @@ int msmtp_sendmail(account_t *acc, list_t *recipients,
     if (acc->tls)
     {
 	if ((e = smtp_tls_init(&srv, acc->tls_key_file, acc->tls_cert_file, 
-			acc->tls_trust_file, acc->tls_force_sslv3, errstr)) 
-		!= TLS_EOK)
+			acc->tls_trust_file, acc->tls_force_sslv3,
+			acc->tls_min_dh_prime_bits, acc->tls_priorities,
+			errstr)) != TLS_EOK)
 	{
 	    e = exitcode_tls(e);
 	    return e;
@@ -2307,6 +2310,9 @@ void msmtp_print_help(void)
 	    	"checks for TLS.\n"
 	    "  --tls-force-sslv3[=(on|off)] Enable/disable restriction to "
 	        "SSLv3.\n"
+	    "  --tls-min-dh-prime-bits=[b]  Set/unset minimum bit size of "
+	        "DH prime.\n"
+	    "  --tls-priorities=[prios]     Set/unset TLS priorities.\n"
             "Options specific to sendmail mode:\n"
 	    "  --auto-from[=(on|off)]       Enable/disable automatic "
 	        "envelope-from addresses.\n"
@@ -2363,74 +2369,82 @@ typedef struct
 } msmtp_cmdline_conf_t;
 
 /* long options without a corresponding short option */
-#define LONGONLYOPT_VERSION 		0
-#define LONGONLYOPT_HELP    		1
-#define LONGONLYOPT_HOST		2
-#define LONGONLYOPT_PORT		3
-#define LONGONLYOPT_TIMEOUT		4
-#define LONGONLYOPT_AUTH		5
-#define LONGONLYOPT_USER		6
-#define LONGONLYOPT_TLS			7
-#define LONGONLYOPT_TLS_STARTTLS	8
-#define LONGONLYOPT_TLS_TRUST_FILE	9
-#define LONGONLYOPT_TLS_KEY_FILE	10
-#define LONGONLYOPT_TLS_CERT_FILE	11
-#define LONGONLYOPT_TLS_CERTCHECK	12
-#define LONGONLYOPT_TLS_FORCE_SSLV3	13
-#define LONGONLYOPT_PROTOCOL		14
-#define LONGONLYOPT_DOMAIN		15
-#define LONGONLYOPT_KEEPBCC		16
-#define LONGONLYOPT_RMQS		17
-#define LONGONLYOPT_SYSLOG		18
-#define LONGONLYOPT_MAILDOMAIN		19
-#define LONGONLYOPT_AUTO_FROM		20
-#define LONGONLYOPT_READ_ENVELOPE_FROM	21
+#define LONGONLYOPT_VERSION 			0
+#define LONGONLYOPT_HELP    			1
+#define LONGONLYOPT_HOST			2
+#define LONGONLYOPT_PORT			3
+#define LONGONLYOPT_TIMEOUT			4
+#define LONGONLYOPT_AUTH			5
+#define LONGONLYOPT_USER			6
+#define LONGONLYOPT_TLS				7
+#define LONGONLYOPT_TLS_STARTTLS		8
+#define LONGONLYOPT_TLS_TRUST_FILE		9
+#define LONGONLYOPT_TLS_KEY_FILE		10
+#define LONGONLYOPT_TLS_CERT_FILE		11
+#define LONGONLYOPT_TLS_CERTCHECK		12
+#define LONGONLYOPT_TLS_FORCE_SSLV3		13
+#define LONGONLYOPT_TLS_MIN_DH_PRIME_BITS 	14
+#define LONGONLYOPT_TLS_PRIORITIES		15
+#define LONGONLYOPT_PROTOCOL			16
+#define LONGONLYOPT_DOMAIN			17
+#define LONGONLYOPT_KEEPBCC			18
+#define LONGONLYOPT_RMQS			19
+#define LONGONLYOPT_SYSLOG			20
+#define LONGONLYOPT_MAILDOMAIN			21
+#define LONGONLYOPT_AUTO_FROM			22
+#define LONGONLYOPT_READ_ENVELOPE_FROM		23
 
 int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
 {
     struct option options[] =
     {
-	{ "version",            no_argument,       0, LONGONLYOPT_VERSION },
-	{ "help",               no_argument,       0, LONGONLYOPT_HELP },
-	{ "pretend",            no_argument,       0, 'P' },
+	{ "version",               no_argument,       0, LONGONLYOPT_VERSION },
+	{ "help",                  no_argument,       0, LONGONLYOPT_HELP },
+	{ "pretend",               no_argument,       0, 'P' },
 	/* accept an optional argument for sendmail compatibility: */
-	{ "debug",              optional_argument, 0, 'd' },
-	{ "serverinfo",         no_argument,       0, 'S' },
-	{ "rmqs",               required_argument, 0, LONGONLYOPT_RMQS },
-	{ "file",               required_argument, 0, 'C' },
-	{ "account",            required_argument, 0, 'a' },
-	{ "host",               required_argument, 0, LONGONLYOPT_HOST },
-	{ "port",               required_argument, 0, LONGONLYOPT_PORT },
-	{ "timeout",            required_argument, 0, LONGONLYOPT_TIMEOUT},
+	{ "debug",                 optional_argument, 0, 'd' },
+	{ "serverinfo",            no_argument,       0, 'S' },
+	{ "rmqs",                  required_argument, 0, LONGONLYOPT_RMQS },
+	{ "file",                  required_argument, 0, 'C' },
+	{ "account",               required_argument, 0, 'a' },
+	{ "host",                  required_argument, 0, LONGONLYOPT_HOST },
+	{ "port",                  required_argument, 0, LONGONLYOPT_PORT },
+	{ "timeout",               required_argument, 0, LONGONLYOPT_TIMEOUT},
 	/* for compatibility with versions <= 1.4.1: */
-	{ "connect-timeout",    required_argument, 0, LONGONLYOPT_TIMEOUT},
-	{ "auto-from",          optional_argument, 0, LONGONLYOPT_AUTO_FROM },
-	{ "from",               required_argument, 0, 'f' },
-	{ "maildomain",         required_argument, 0, LONGONLYOPT_MAILDOMAIN },
-	{ "auth",               optional_argument, 0, LONGONLYOPT_AUTH },
-	{ "user",               required_argument, 0, LONGONLYOPT_USER },
-	{ "tls",                optional_argument, 0, LONGONLYOPT_TLS },
-	{ "tls-starttls",       optional_argument, 0, 
+	{ "connect-timeout",       required_argument, 0, LONGONLYOPT_TIMEOUT},
+	{ "auto-from",             optional_argument, 0, 
+	    LONGONLYOPT_AUTO_FROM },
+	{ "from",                  required_argument, 0, 'f' },
+	{ "maildomain",            required_argument, 0, 
+	    LONGONLYOPT_MAILDOMAIN },
+	{ "auth",                  optional_argument, 0, LONGONLYOPT_AUTH },
+	{ "user",                  required_argument, 0, LONGONLYOPT_USER },
+	{ "tls",                   optional_argument, 0, LONGONLYOPT_TLS },
+	{ "tls-starttls",          optional_argument, 0, 
 	    LONGONLYOPT_TLS_STARTTLS },
-	{ "tls-trust-file",     required_argument, 0, 
+	{ "tls-trust-file",        required_argument, 0, 
 	    LONGONLYOPT_TLS_TRUST_FILE },
-	{ "tls-key-file",       required_argument, 0, 
+	{ "tls-key-file",          required_argument, 0, 
 	    LONGONLYOPT_TLS_KEY_FILE },
-	{ "tls-cert-file",      required_argument, 0, 
+	{ "tls-cert-file",         required_argument, 0, 
 	    LONGONLYOPT_TLS_CERT_FILE },
-	{ "tls-certcheck",      optional_argument, 0, 
+	{ "tls-certcheck",         optional_argument, 0, 
 	    LONGONLYOPT_TLS_CERTCHECK },
-	{ "tls-force-sslv3",    optional_argument, 0, 
+	{ "tls-force-sslv3",       optional_argument, 0, 
 	    LONGONLYOPT_TLS_FORCE_SSLV3 },
-	{ "dsn-notify",         required_argument, 0, 'N' },
-	{ "dsn-return",         required_argument, 0, 'R' },
-	{ "protocol",           required_argument, 0, LONGONLYOPT_PROTOCOL },
-	{ "domain",             required_argument, 0, LONGONLYOPT_DOMAIN },
-	{ "keepbcc",            optional_argument, 0, LONGONLYOPT_KEEPBCC },
-	{ "logfile",            required_argument, 0, 'X' },
-	{ "syslog",             optional_argument, 0, LONGONLYOPT_SYSLOG },
-	{ "read-recipients",    no_argument,       0, 't' },
-	{ "read-envelope-from", no_argument,       0, 
+	{ "tls-min-dh-prime-bits", required_argument, 0, 
+	    LONGONLYOPT_TLS_MIN_DH_PRIME_BITS },
+	{ "tls-priorities", required_argument, 0, 
+	    LONGONLYOPT_TLS_PRIORITIES },
+	{ "dsn-notify",            required_argument, 0, 'N' },
+	{ "dsn-return",            required_argument, 0, 'R' },
+	{ "protocol",              required_argument, 0, LONGONLYOPT_PROTOCOL },
+	{ "domain",                required_argument, 0, LONGONLYOPT_DOMAIN },
+	{ "keepbcc",               optional_argument, 0, LONGONLYOPT_KEEPBCC },
+	{ "logfile",               required_argument, 0, 'X' },
+	{ "syslog",                optional_argument, 0, LONGONLYOPT_SYSLOG },
+	{ "read-recipients",       no_argument,       0, 't' },
+	{ "read-envelope-from",    no_argument,       0, 
 	    LONGONLYOPT_READ_ENVELOPE_FROM },
 	{ 0, 0, 0, 0 }
     };
@@ -2776,6 +2790,38 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
 		    error_code = 1;
 		}
 		conf->cmdline_account->mask |= ACC_TLS_FORCE_SSLV3;
+		break;
+		
+	    case LONGONLYOPT_TLS_MIN_DH_PRIME_BITS:
+		if (*optarg == '\0')
+		{
+		    conf->cmdline_account->tls_min_dh_prime_bits = -1;
+		}
+		else
+		{
+		    conf->cmdline_account->tls_min_dh_prime_bits = 
+			get_pos_int(optarg);
+		    if (conf->cmdline_account->tls_min_dh_prime_bits < 1)
+		    {
+			print_error(_("invalid argument %s for %s"), 
+			     	optarg, "--tls-min-dh-prime-bits");
+			error_code = 1;
+		    }
+		}
+		conf->cmdline_account->mask |= ACC_TLS_MIN_DH_PRIME_BITS;
+		break;		
+
+	    case LONGONLYOPT_TLS_PRIORITIES:
+		free(conf->cmdline_account->tls_priorities);
+		if (*optarg)
+		{
+		    conf->cmdline_account->tls_priorities = xstrdup(optarg);
+		}
+		else
+		{
+		    conf->cmdline_account->tls_priorities = NULL;
+		}
+		conf->cmdline_account->mask |= ACC_TLS_PRIORITIES;
 		break;
 
 	    case 'N':
@@ -3136,11 +3182,11 @@ void msmtp_print_conf(msmtp_cmdline_conf_t conf, account_t *account)
 	printf(_("using account %s from %s\n"), 
 		account->id, account->conffile);
     }
-    printf("host            = %s\n"
-	    "port            = %d\n",
+    printf("host                  = %s\n"
+	    "port                  = %d\n",
 	    account->host,
 	    account->port);
-    printf("timeout         = ");
+    printf("timeout               = ");
     if (account->timeout <= 0)
     {
 	printf(_("off\n"));
@@ -3156,11 +3202,11 @@ void msmtp_print_conf(msmtp_cmdline_conf_t conf, account_t *account)
 	    printf(_("1 second\n"));
 	}
     }
-    printf("protocol        = %s\n"
-	    "domain          = %s\n", 
+    printf("protocol              = %s\n"
+	    "domain                = %s\n", 
 	    account->protocol == SMTP_PROTO_SMTP ? "smtp" : "lmtp",
 	    account->domain);
-    printf("auth            = ");
+    printf("auth                  = ");
     if (!account->auth_mech)
     {
 	printf(_("none\n"));
@@ -3173,16 +3219,16 @@ void msmtp_print_conf(msmtp_cmdline_conf_t conf, account_t *account)
     {
 	printf("%s\n", account->auth_mech);
     }
-    printf("user            = %s\n"
-	    "password        = %s\n"
-	    "ntlmdomain      = %s\n"
-	    "tls             = %s\n"
-	    "tls_starttls    = %s\n"
-	    "tls_trust_file  = %s\n"
-	    "tls_key_file    = %s\n"
-	    "tls_cert_file   = %s\n"
-	    "tls_certcheck   = %s\n"
-	    "tls_force_sslv3 = %s\n",
+    printf("user                  = %s\n"
+	    "password              = %s\n"
+	    "ntlmdomain            = %s\n"
+	    "tls                   = %s\n"
+	    "tls_starttls          = %s\n"
+	    "tls_trust_file        = %s\n"
+	    "tls_key_file          = %s\n"
+	    "tls_cert_file         = %s\n"
+	    "tls_certcheck         = %s\n"
+	    "tls_force_sslv3       = %s\n",
 	    account->username ? account->username : _("(not set)"),
 	    account->password ? "*" : _("(not set)"),
 	    account->ntlmdomain ? account->ntlmdomain : _("(not set)"),
@@ -3193,16 +3239,27 @@ void msmtp_print_conf(msmtp_cmdline_conf_t conf, account_t *account)
 	    account->tls_cert_file ? account->tls_cert_file : _("(not set)"),
 	    account->tls_nocertcheck ? _("off") : _("on"),
 	    account->tls_force_sslv3 ? _("on") : _("off"));
+    printf("tls_min_dh_prime_bits = ");
+    if (account->tls_min_dh_prime_bits >= 0)
+    {
+	printf("%d\n", account->tls_min_dh_prime_bits);
+    }
+    else
+    {
+	printf("%s\n", _("(not set)"));
+    }
+    printf("tls_priorities        = %s\n",
+	    account->tls_priorities ? account->tls_priorities : _("(not set)"));
     if (conf.sendmail)
     {
-	printf("auto_from       = %s\n"
-		"maildomain      = %s\n"
-		"from            = %s\n"
-		"dsn_notify      = %s\n"
-		"dsn_return      = %s\n"
-		"keepbcc         = %s\n"
-		"logfile         = %s\n"
-		"syslog          = %s\n",
+	printf("auto_from             = %s\n"
+		"maildomain            = %s\n"
+		"from                  = %s\n"
+		"dsn_notify            = %s\n"
+		"dsn_return            = %s\n"
+		"keepbcc               = %s\n"
+		"logfile               = %s\n"
+		"syslog                = %s\n",
 		account->auto_from ? _("on") : _("off"),
 		account->maildomain ? account->maildomain : _("(not set)"),
 		account->from ? account->from : conf.read_envelope_from 

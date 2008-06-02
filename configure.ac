@@ -109,6 +109,7 @@ if test "$want_gnutls" = "yes"; then
 	have_tls=yes
         tls_lib="GNU TLS"
 	LIBS="$LIBS $LIBGNUTLS"
+	AC_CHECK_FUNCS([gnutls_priority_set_direct], [], [])
     fi
 fi
 if test "$want_openssl" = "yes" -a "$have_tls" = "no"; then

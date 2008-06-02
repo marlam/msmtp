@@ -106,18 +106,24 @@ void tls_clear(tls_t *tls);
 /*
  * tls_init()
  *
- * Initializes a tls_t. If both 'key_file' and 'ca_file' are not NULL, they are
- * set to be used when the peer request a certificate. If 'trust_file' is not
- * NULL, it will be used to verify the peer certificate.
+ * Initializes a tls_t. If both 'key_file' and 'cert_file' are not NULL, they 
+ * are set to be used when the peer request a certificate. If 'trust_file' is 
+ * not NULL, it will be used to verify the peer certificate.
  * All files must be in PEM format.
  * If 'force_sslv3' is set, then only the SSLv3 protocol will be accepted. This
  * option might be needed to talk to some obsolete broken servers. Only use this
  * if you have to.
+ * If 'min_dh_prime_bits' is greater than or equal to zero, then only DH primes
+ * that have at least the given size will be accepted. For values less than
+ * zero, the library default is used.
+ * If 'priorities' is not NULL, it must contain a string describing the TLS 
+ * priorities. This is library dependent; see gnutls_priority_init().
  * Used error codes: TLS_ELIBFAILED, TLS_EFILE
  */
 int tls_init(tls_t *tls, 
-	const char *key_file, const char *ca_file, const char *trust_file, 
-	int force_sslv3, char **errstr);
+	const char *key_file, const char *cert_file, const char *trust_file, 
+	int force_sslv3, int min_dh_prime_bits, const char *priorities,
+	char **errstr);
 
 /*
  * tls_start()

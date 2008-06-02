@@ -81,6 +81,8 @@ account_t *account_new(const char *conffile, const char *id)
     a->tls_trust_file = NULL;
     a->tls_nocertcheck = 0;
     a->tls_force_sslv3 = 0;
+    a->tls_min_dh_prime_bits = -1;
+    a->tls_priorities = NULL;
     a->logfile = NULL;
     a->syslog = NULL;
     return a;
@@ -127,6 +129,9 @@ account_t *account_copy(account_t *acc)
 	    acc->tls_trust_file ? xstrdup(acc->tls_trust_file) : NULL;
 	a->tls_nocertcheck = acc->tls_nocertcheck;
 	a->tls_force_sslv3 = acc->tls_force_sslv3;
+	a->tls_min_dh_prime_bits = acc->tls_min_dh_prime_bits;
+	a->tls_priorities = 
+	    acc->tls_priorities ? xstrdup(acc->tls_priorities) : NULL;
 	a->logfile = acc->logfile ? xstrdup(acc->logfile) : NULL;
 	a->syslog = acc->syslog ? xstrdup(acc->syslog) : NULL;
     }
@@ -158,6 +163,7 @@ void account_free(void *a)
 	free(p->tls_key_file);
 	free(p->tls_cert_file);
 	free(p->tls_trust_file);
+	free(p->tls_priorities);
 	free(p->dsn_return);
 	free(p->dsn_notify);
 	free(p->logfile);
@@ -486,13 +492,23 @@ void override_account(account_t *acc1, account_t *acc2)
 	acc1->tls_trust_file = 
 	    acc2->tls_trust_file ? xstrdup(acc2->tls_trust_file) : NULL;
     }
+    if (acc2->mask & ACC_TLS_NOCERTCHECK)
+    {
+	acc1->tls_nocertcheck = acc2->tls_nocertcheck;
+    }
     if (acc2->mask & ACC_TLS_FORCE_SSLV3)
     {
 	acc1->tls_force_sslv3 = acc2->tls_force_sslv3;
     }
-    if (acc2->mask & ACC_TLS_NOCERTCHECK)
+    if (acc2->mask & ACC_TLS_MIN_DH_PRIME_BITS)
     {
-	acc1->tls_nocertcheck = acc2->tls_nocertcheck;
+	acc1->tls_min_dh_prime_bits = acc2->tls_min_dh_prime_bits;
+    }
+    if (acc2->mask & ACC_TLS_PRIORITIES)
+    {
+	free(acc1->tls_priorities);
+	acc1->tls_priorities = acc2->tls_priorities 
+	    ? xstrdup(acc2->tls_priorities) : NULL;
     }
     if (acc2->mask & ACC_DSN_RETURN)
     {
@@ -1204,6 +1220,39 @@ int read_conffile(const char *conffile, FILE *f, list_t **acc_list,
 			line, arg, cmd);
 		e = CONF_ESYNTAX;
 		break;
+	    }
+	}
+	else if (strcmp(cmd, "tls_min_dh_prime_bits") == 0)
+	{
+	    acc->mask |= ACC_TLS_MIN_DH_PRIME_BITS;
+	    if (*arg == '\0')
+	    {
+		acc->tls_min_dh_prime_bits = -1;
+	    }
+	    else
+	    {
+		acc->tls_min_dh_prime_bits = get_pos_int(arg);
+		if (acc->tls_min_dh_prime_bits < 1)
+		{
+		    *errstr = xasprintf(
+			    _("line %d: invalid argument %s for command %s"),
+			    line, arg, cmd);
+		    e = CONF_ESYNTAX;
+		    break;
+		}
+	    }
+	}
+	else if (strcmp(cmd, "tls_priorities") == 0)
+	{
+	    acc->mask |= ACC_TLS_PRIORITIES;
+	    free(acc->tls_priorities);
+	    if (*arg == '\0')
+	    {
+		acc->tls_priorities = NULL;
+	    }
+	    else
+	    {
+		acc->tls_priorities = xstrdup(arg);
 	    }
 	}
 	else if (strcmp(cmd, "dsn_return") == 0)

@@ -1,7 +1,7 @@
 \input texinfo   @c -*-texinfo-*-
 @setfilename msmtp.info
-@set UPDATED May 5, 2008
-@set UPDATED-MONTH May 2008
+@set UPDATED June 2, 2008
+@set UPDATED-MONTH June 2008
 @set EDITION 1.4.15
 @set VERSION 1.4.15
 @settitle msmtp @value{VERSION}
@@ -291,6 +291,23 @@ alias for @samp{tls_starttls off}.
 Force TLS/SSL version SSLv3. This might be needed to use SSL with some old and 
 broken servers. Do not use this unless you have to.
 @xref{Transport Layer Security}.
+@anchor{tls_min_dh_prime_bits}
+@item tls_min_dh_prime_bits [@var{bits}]
+@cmindex tls_min_dh_prime_bits
+Set or unset the minimum number of DH prime bits that msmtp will accept for TLS
+sessions. The default is set by the TLS library and can be selected by using
+an empty argument to this command. Only lower the default if there is no other
+way to make TLS work with the remote server.
+@xref{Transport Layer Security}.
+@anchor{tls_priorities}
+@item tls_priorities [@var{priorities}]
+@cmindex tls_priorities
+Set the priorities for TLS sessions. The default is set by the TLS library and
+can be selected by using an empty argument to this command.  Currently this 
+command only works with sufficiently recent GnuTLS releases. See the GnuTLS
+documentation of the @samp{gnutls_priority_init} function for a description of 
+the @var{priorities} string.
+@xref{Transport Layer Security}.
 @end table
 
 @section Commands specific to sendmail mode
@@ -509,6 +526,14 @@ Enable or disable server certificate checks for TLS encryption.
 @itemx --tls-force-sslv3[=(on|off)]
 @opindex --tls-force-sslv3
 Force TLS/SSL version SSLv3. @xref{tls_force_sslv3}.
+@anchor{--tls-min-dh-prime-bits}
+@itemx --tls-min-dh-prime-bits=[@var{bits}]
+@opindex --tls-min-dh-prime-bits
+Set or unset minimum bit size of the DH prime. @xref{tls_min_dh_prime_bits}.
+@anchor{--tls-priorities}
+@itemx --tls-priorities=[@var{priorities}]
+@opindex --tls-priorities
+Set or unset TLS priorities. @xref{tls_priorities}.
 @end table
 
 @subsection Options specific to sendmail mode
@@ -725,6 +750,10 @@ client certificate. See @ref{tls_key_file}/@ref{--tls-key-file},
 Note that GnuTLS will only send a client certificate if it matches one of the
 CAs advertised by the server. If you set a client certificate but it is not send
 to the server, it probably was not issued by any CA that the server trusts.
+
+If you need to fine tune TLS parameters or have problems connecting to your
+server, have a look at the @ref{tls_force_sslv3}, @ref{tls_min_dh_prime_bits},
+and @ref{tls_priorities} commands.
 
 
 @node Authentication

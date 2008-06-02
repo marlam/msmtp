@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007
+ * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -42,30 +42,32 @@
  * An account
  */
 
-#define ACC_HOST		(1 << 0)
-#define ACC_PORT		(1 << 1)
-#define ACC_TIMEOUT		(1 << 2)
-#define ACC_PROTOCOL		(1 << 3)
-#define ACC_AUTO_FROM		(1 << 4)
-#define ACC_FROM		(1 << 5)
-#define ACC_DOMAIN		(1 << 6)
-#define ACC_MAILDOMAIN		(1 << 7)
-#define ACC_DSN_RETURN		(1 << 8)
-#define ACC_DSN_NOTIFY		(1 << 9)
-#define ACC_KEEPBCC		(1 << 10)
-#define ACC_AUTH_MECH		(1 << 11)
-#define ACC_USERNAME		(1 << 12)
-#define ACC_PASSWORD		(1 << 13)
-#define ACC_NTLMDOMAIN		(1 << 14)
-#define ACC_TLS			(1 << 15)
-#define ACC_TLS_NOSTARTTLS	(1 << 16)
-#define ACC_TLS_KEY_FILE	(1 << 17)
-#define ACC_TLS_CERT_FILE	(1 << 18)
-#define ACC_TLS_TRUST_FILE	(1 << 19)
-#define ACC_TLS_NOCERTCHECK	(1 << 20)
-#define ACC_TLS_FORCE_SSLV3	(1 << 21)
-#define ACC_LOGFILE		(1 << 22)
-#define ACC_SYSLOG		(1 << 23)
+#define ACC_HOST			(1 << 0)
+#define ACC_PORT			(1 << 1)
+#define ACC_TIMEOUT			(1 << 2)
+#define ACC_PROTOCOL			(1 << 3)
+#define ACC_AUTO_FROM			(1 << 4)
+#define ACC_FROM			(1 << 5)
+#define ACC_DOMAIN			(1 << 6)
+#define ACC_MAILDOMAIN			(1 << 7)
+#define ACC_DSN_RETURN			(1 << 8)
+#define ACC_DSN_NOTIFY			(1 << 9)
+#define ACC_KEEPBCC			(1 << 10)
+#define ACC_AUTH_MECH			(1 << 11)
+#define ACC_USERNAME			(1 << 12)
+#define ACC_PASSWORD			(1 << 13)
+#define ACC_NTLMDOMAIN			(1 << 14)
+#define ACC_TLS				(1 << 15)
+#define ACC_TLS_NOSTARTTLS		(1 << 16)
+#define ACC_TLS_KEY_FILE		(1 << 17)
+#define ACC_TLS_CERT_FILE		(1 << 18)
+#define ACC_TLS_TRUST_FILE		(1 << 19)
+#define ACC_TLS_NOCERTCHECK		(1 << 20)
+#define ACC_TLS_FORCE_SSLV3		(1 << 21)
+#define ACC_TLS_MIN_DH_PRIME_BITS	(1 << 22)
+#define ACC_TLS_PRIORITIES		(1 << 23)
+#define ACC_LOGFILE			(1 << 24)
+#define ACC_SYSLOG			(1 << 25)
 
 typedef struct
 {
@@ -103,6 +105,8 @@ typedef struct
 				   (without STARTTLS command)? */
     int tls_nocertcheck;	/* flag: do not check certificate? */
     int tls_force_sslv3;	/* flag: force SSLv3? */
+    int tls_min_dh_prime_bits;	/* parameter; -1 for default */
+    char *tls_priorities;	/* parameter; NULL for default */
     /* logging */
     char *logfile;		/* NULL or logfile */
     char *syslog;		/* NULL or syslog facility */

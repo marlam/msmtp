@@ -1,9 +1,9 @@
 Version 1.4.15:
+- Gnulib upate to 2008-06-02. Use getpass-gnu instead of getpass module.
 - Add msmtpq scripts by Chris Gianniotis to the scripts directory. Suggest
   them as a replacement in the README of the msmtpqueue scripts.
 - Do not let getpass() read from stdin, because we read the mail from there.
   Reported by Karol Lewandowski. Thanks!
-- Gnulib upate to 2008-05-04. Use getpass-gnu instead of getpass module.
 - Updated the set_sendmail script by Gautam Iyer. Thanks!
 - Return EX_TEMPFAIL instead of EX_DATAERR in case of  4xx replies to the MAIL
   FROM, RCPT TO and DATA commands. Reported by Kent Vinther Friis. Thanks!

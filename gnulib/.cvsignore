@@ -19,3 +19,4 @@ wchar.in.h
 c-ctype.c
 c-ctype.h
 stdarg.in.h
+stdio-impl.h

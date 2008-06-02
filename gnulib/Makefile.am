@@ -101,6 +101,15 @@ EXTRA_DIST += float.in.h
 
 ## end   gnulib module float
 
+## begin gnulib module fseeko
+
+
+EXTRA_DIST += fseeko.c stdio-impl.h
+
+EXTRA_libgnu_a_SOURCES += fseeko.c
+
+## end   gnulib module fseeko
+
 ## begin gnulib module getdelim
 
 
@@ -183,6 +192,15 @@ LINK_WARNING_H=$(top_srcdir)/build-aux/link-warning.h
 EXTRA_DIST += $(top_srcdir)/build-aux/link-warning.h
 
 ## end   gnulib module link-warning
+
+## begin gnulib module lseek
+
+
+EXTRA_DIST += lseek.c
+
+EXTRA_libgnu_a_SOURCES += lseek.c
+
+## end   gnulib module lseek
 
 ## begin gnulib module memxor
 

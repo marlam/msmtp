@@ -2434,7 +2434,7 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
 	    LONGONLYOPT_TLS_FORCE_SSLV3 },
 	{ "tls-min-dh-prime-bits", required_argument, 0, 
 	    LONGONLYOPT_TLS_MIN_DH_PRIME_BITS },
-	{ "tls-priorities", required_argument, 0, 
+	{ "tls-priorities",        required_argument, 0, 
 	    LONGONLYOPT_TLS_PRIORITIES },
 	{ "dsn-notify",            required_argument, 0, 'N' },
 	{ "dsn-return",            required_argument, 0, 'R' },

@@ -253,6 +253,13 @@ Authorities (CAs) in PEM format.@*
 On Debian based systems, you can install the @samp{ca-certificates} package and
 use the file @file{/etc/ssl/certs/ca-certificates.crt}.@*
 An empty argument disables this feature.
+@anchor{tls_crl_file}
+@item tls_crl_file [@var{file}]
+@cmindex tls_crl_file
+This command sets or unsets a certificate revocation list (CRL) file for TLS,
+to be used during strict server certificate verification as enabled by the
+@ref{tls_trust_file} command. This allows the verification procedure to detect
+revoked certificates.
 @anchor{tls_key_file}
 @item tls_key_file [@var{file}]
 @cmindex tls_key_file
@@ -509,6 +516,11 @@ Enable or disable STARTTLS for TLS encryption. @xref{tls_starttls}.
 @itemx --tls-trust-file=[@var{file}]
 @opindex --tls-trust-file
 Set or unset a trust file for TLS encryption. @xref{tls_trust_file}.
+@anchor{--tls-crl-file}
+@itemx --tls-crl-file=[@var{file}]
+@opindex --tls-crl-file
+Set or unset a certificate revocation list (CRL) file for TLS. 
+@xref{tls_crl_file}.
 @anchor{--tls-key-file}
 @itemx --tls-key-file=[@var{file}]
 @opindex --tls-key-file

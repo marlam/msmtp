@@ -511,9 +511,9 @@ int msmtp_rmqs(account_t *acc, int debug, const char *rmqs_argument,
     if (acc->tls)
     {
 	if ((e = smtp_tls_init(&srv, acc->tls_key_file, acc->tls_cert_file, 
-			acc->tls_trust_file, acc->tls_force_sslv3,
-			acc->tls_min_dh_prime_bits, acc->tls_priorities, 
-			errstr)) != TLS_EOK)
+			acc->tls_trust_file, acc->tls_crl_file, 
+			acc->tls_force_sslv3, acc->tls_min_dh_prime_bits,
+			acc->tls_priorities, errstr)) != TLS_EOK)
 	{
 	    return exitcode_tls(e);
 	}
@@ -686,9 +686,9 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
     {
 	tci = tls_cert_info_new();
 	if ((e = smtp_tls_init(&srv, acc->tls_key_file, acc->tls_cert_file, 
-			acc->tls_trust_file, acc->tls_force_sslv3,
-			acc->tls_min_dh_prime_bits, acc->tls_priorities,
-			errstr)) != TLS_EOK)
+			acc->tls_trust_file, acc->tls_crl_file,
+			acc->tls_force_sslv3, acc->tls_min_dh_prime_bits, 
+			acc->tls_priorities, errstr)) != TLS_EOK)
 	{
 	    e = exitcode_tls(e);
 	    goto error_exit;
@@ -1557,9 +1557,9 @@ int msmtp_sendmail(account_t *acc, list_t *recipients,
     if (acc->tls)
     {
 	if ((e = smtp_tls_init(&srv, acc->tls_key_file, acc->tls_cert_file, 
-			acc->tls_trust_file, acc->tls_force_sslv3,
-			acc->tls_min_dh_prime_bits, acc->tls_priorities,
-			errstr)) != TLS_EOK)
+			acc->tls_trust_file, acc->tls_crl_file,
+			acc->tls_force_sslv3, acc->tls_min_dh_prime_bits,
+			acc->tls_priorities, errstr)) != TLS_EOK)
 	{
 	    e = exitcode_tls(e);
 	    return e;
@@ -2302,6 +2302,8 @@ void msmtp_print_help(void)
 	    "  --tls[=(on|off)]             Enable/disable TLS encryption.\n"
 	    "  --tls-starttls[=(on|off)]    Enable/disable STARTTLS for TLS.\n"
 	    "  --tls-trust-file=[file]      Set/unset trust file for TLS.\n"
+	    "  --tls-crl-file=[file]        Set/unset revocation file for "
+	        "TLS.\n"
             "  --tls-key-file=[file]        Set/unset private key file for "
 	    	"TLS.\n"
 	    "  --tls-cert-file=[file]       Set/unset private cert file for "
@@ -2379,20 +2381,21 @@ typedef struct
 #define LONGONLYOPT_TLS				7
 #define LONGONLYOPT_TLS_STARTTLS		8
 #define LONGONLYOPT_TLS_TRUST_FILE		9
-#define LONGONLYOPT_TLS_KEY_FILE		10
-#define LONGONLYOPT_TLS_CERT_FILE		11
-#define LONGONLYOPT_TLS_CERTCHECK		12
-#define LONGONLYOPT_TLS_FORCE_SSLV3		13
-#define LONGONLYOPT_TLS_MIN_DH_PRIME_BITS 	14
-#define LONGONLYOPT_TLS_PRIORITIES		15
-#define LONGONLYOPT_PROTOCOL			16
-#define LONGONLYOPT_DOMAIN			17
-#define LONGONLYOPT_KEEPBCC			18
-#define LONGONLYOPT_RMQS			19
-#define LONGONLYOPT_SYSLOG			20
-#define LONGONLYOPT_MAILDOMAIN			21
-#define LONGONLYOPT_AUTO_FROM			22
-#define LONGONLYOPT_READ_ENVELOPE_FROM		23
+#define LONGONLYOPT_TLS_CRL_FILE		10
+#define LONGONLYOPT_TLS_KEY_FILE		11
+#define LONGONLYOPT_TLS_CERT_FILE		12
+#define LONGONLYOPT_TLS_CERTCHECK		13
+#define LONGONLYOPT_TLS_FORCE_SSLV3		14
+#define LONGONLYOPT_TLS_MIN_DH_PRIME_BITS 	15
+#define LONGONLYOPT_TLS_PRIORITIES		16
+#define LONGONLYOPT_PROTOCOL			17
+#define LONGONLYOPT_DOMAIN			18
+#define LONGONLYOPT_KEEPBCC			19
+#define LONGONLYOPT_RMQS			20
+#define LONGONLYOPT_SYSLOG			21
+#define LONGONLYOPT_MAILDOMAIN			22
+#define LONGONLYOPT_AUTO_FROM			23
+#define LONGONLYOPT_READ_ENVELOPE_FROM		24
 
 int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
 {
@@ -2424,6 +2427,8 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
 	    LONGONLYOPT_TLS_STARTTLS },
 	{ "tls-trust-file",        required_argument, 0, 
 	    LONGONLYOPT_TLS_TRUST_FILE },
+	{ "tls-crl-file",          required_argument, 0, 
+	    LONGONLYOPT_TLS_CRL_FILE },
 	{ "tls-key-file",          required_argument, 0, 
 	    LONGONLYOPT_TLS_KEY_FILE },
 	{ "tls-cert-file",         required_argument, 0, 
@@ -2728,6 +2733,20 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
 		    conf->cmdline_account->tls_trust_file = NULL;
 		}
 		conf->cmdline_account->mask |= ACC_TLS_TRUST_FILE;
+		break;
+
+	    case LONGONLYOPT_TLS_CRL_FILE:
+		free(conf->cmdline_account->tls_crl_file);
+		if (*optarg)
+		{
+		    conf->cmdline_account->tls_crl_file = 
+			expand_tilde(optarg);
+		}
+		else
+		{
+		    conf->cmdline_account->tls_crl_file = NULL;
+		}
+		conf->cmdline_account->mask |= ACC_TLS_CRL_FILE;
 		break;
 
 	    case LONGONLYOPT_TLS_KEY_FILE:
@@ -3225,6 +3244,7 @@ void msmtp_print_conf(msmtp_cmdline_conf_t conf, account_t *account)
 	    "tls                   = %s\n"
 	    "tls_starttls          = %s\n"
 	    "tls_trust_file        = %s\n"
+	    "tls_crl_file          = %s\n"
 	    "tls_key_file          = %s\n"
 	    "tls_cert_file         = %s\n"
 	    "tls_certcheck         = %s\n"
@@ -3235,6 +3255,7 @@ void msmtp_print_conf(msmtp_cmdline_conf_t conf, account_t *account)
 	    account->tls ? _("on") : _("off"), 
 	    account->tls_nostarttls ? _("off") : _("on"),
 	    account->tls_trust_file ? account->tls_trust_file : _("(not set)"),
+	    account->tls_crl_file ? account->tls_crl_file : _("(not set)"),
 	    account->tls_key_file ? account->tls_key_file : _("(not set)"),
 	    account->tls_cert_file ? account->tls_cert_file : _("(not set)"),
 	    account->tls_nocertcheck ? _("off") : _("on"),

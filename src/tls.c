@@ -680,6 +680,12 @@ int tls_check_cert(tls_t *tls, const char *hostname, int verify, char **errstr)
     }
     if (verify)
     {
+	if (status & GNUTLS_CERT_REVOKED)
+	{
+	    *errstr = xasprintf(_("%s: the certificate has been revoked"),
+	    	    error_msg);
+	    return TLS_ECERT;
+	}
 	if (status & GNUTLS_CERT_SIGNER_NOT_FOUND)
 	{
 	    *errstr = xasprintf(
@@ -693,12 +699,6 @@ int tls_check_cert(tls_t *tls, const char *hostname, int verify, char **errstr)
 		    error_msg);
 	    return TLS_ECERT;
 	}
-    }
-    if (status & GNUTLS_CERT_REVOKED)
-    {
-	*errstr = xasprintf(_("%s: the certificate has been revoked"),
-		error_msg);
-	return TLS_ECERT;
     }
     if (gnutls_certificate_type_get(tls->session) != GNUTLS_CRT_X509)
     {
@@ -925,7 +925,8 @@ int tls_check_cert(tls_t *tls, const char *hostname, int verify, char **errstr)
  */
 
 int tls_init(tls_t *tls, 
-	const char *key_file, const char *cert_file, const char *trust_file, 
+	const char *key_file, const char *cert_file,
+	const char *trust_file, const char *crl_file,
 	int force_sslv3, int min_dh_prime_bits, const char *priorities,
 	char **errstr)
 {
@@ -1036,6 +1037,19 @@ int tls_init(tls_t *tls,
 	}
 	tls->have_trust_file = 1;
     }
+    if (trust_file && crl_file)
+    {
+	if ((error_code = gnutls_certificate_set_x509_crl_file(
+			tls->cred, crl_file, GNUTLS_X509_FMT_PEM)) < 0)
+	{
+	    *errstr = xasprintf(
+		    _("cannot set X509 CRL file %s for TLS session: %s"),
+		    crl_file, gnutls_strerror(error_code));
+	    gnutls_deinit(tls->session);
+	    gnutls_certificate_free_credentials(tls->cred);
+	    return TLS_EFILE;
+	}
+    }
     if ((error_code = gnutls_credentials_set(tls->session, 
 		    GNUTLS_CRD_CERTIFICATE, tls->cred)) < 0)
     {
@@ -1069,6 +1083,15 @@ int tls_init(tls_t *tls,
 		_("feature not yet implemented for OpenSSL"));
 	return TLS_ELIBFAILED;
     }
+    /* FIXME: Implement support for 'crl_file' */
+    if (trust_file && crl_file)
+    {
+	*errstr = xasprintf(
+		_("cannot load CRL file: %s"),
+		_("feature not yet implemented for OpenSSL"));
+	return TLS_ELIBFAILED;
+    }
+
     ssl_method = force_sslv3 ? SSLv3_client_method() : SSLv23_client_method();
     if (!ssl_method)
     {

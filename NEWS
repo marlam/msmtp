@@ -1,4 +1,6 @@
 Version 1.4.15:
+- The configuration command tls_crl_file was added. This allows to use 
+  certificate revocation lists (CRLs) during certificate verification.
 - The configuration command tls_min_dh_prime_bits was added. This is needed to
   use TLS/SSL with servers that use a small DH prime size.
 - The configuration command tls_priorities was added. This allows to fine tune 

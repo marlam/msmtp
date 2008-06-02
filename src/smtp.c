@@ -532,11 +532,11 @@ int smtp_init(smtp_server_t *srv, const char *ehlo_domain, list_t **errmsg,
 #ifdef HAVE_TLS
 int smtp_tls_init(smtp_server_t *srv, const char *tls_key_file, 
 	const char *tls_cert_file, const char *tls_trust_file, 
-	int force_sslv3, int min_dh_prime_bits, const char *priorities,
-	char **errstr)
+	const char *tls_crl_file, int force_sslv3, int min_dh_prime_bits,
+	const char *priorities,	char **errstr)
 {
-    return tls_init(&srv->tls, tls_key_file, tls_cert_file, tls_trust_file, 
-	    force_sslv3, min_dh_prime_bits, priorities, errstr);
+    return tls_init(&srv->tls, tls_key_file, tls_cert_file, tls_trust_file,
+	    tls_crl_file, force_sslv3, min_dh_prime_bits, priorities, errstr);
 }
 #endif /* HAVE_TLS */
 

@@ -108,7 +108,9 @@ void tls_clear(tls_t *tls);
  *
  * Initializes a tls_t. If both 'key_file' and 'cert_file' are not NULL, they 
  * are set to be used when the peer request a certificate. If 'trust_file' is 
- * not NULL, it will be used to verify the peer certificate.
+ * not NULL, it will be used to verify the peer certificate. If additionally
+ * 'crl_file' is not NULL, then this file will be used during verification to
+ * check if a certificate has been revoked.
  * All files must be in PEM format.
  * If 'force_sslv3' is set, then only the SSLv3 protocol will be accepted. This
  * option might be needed to talk to some obsolete broken servers. Only use this
@@ -121,7 +123,8 @@ void tls_clear(tls_t *tls);
  * Used error codes: TLS_ELIBFAILED, TLS_EFILE
  */
 int tls_init(tls_t *tls, 
-	const char *key_file, const char *cert_file, const char *trust_file, 
+	const char *key_file, const char *cert_file,
+	const char *trust_file, const char *crl_file, 
 	int force_sslv3, int min_dh_prime_bits, const char *priorities,
 	char **errstr);
 

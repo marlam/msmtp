@@ -99,6 +99,9 @@ command below.
 .IP "--tls-trust-file=[\fIfile\fP]"
 Set or unset a trust file for TLS encryption. See the \fBtls_trust_file\fP
 command below.
+.IP "--tls-crl-file=[\fIfile\fP]"
+Set or unset a certificate revocation list (CRL) file for TLS. See the
+\fBtls_crl_file\fP command below.
 .IP "--tls-key-file=[\fIfile\fP]"
 Set or unset a key file for TLS encryption. See the \fBtls_key_file\fP command
 below.
@@ -353,6 +356,11 @@ one or more certificates of trusted Certification Authorities (CAs).
 .br
 On Debian based systems, you can install the \fBca-certificates\fP package and
 use the file \fB/etc/ssl/certs/ca-certificates.crt\fP.
+.IP "tls_crl_file [\fIfile\fP]"
+This command sets or unsets a certificate revocation list (CRL) file for TLS,
+to be used during strict server certificate verification as enabled by the
+\fBtls_trust_file\fP command. This allows the verification procedure to detect
+revoked certificates.
 .IP "tls_key_file [\fIfile\fP]"
 This command (together with the \fBtls_cert_file\fP command) enables msmtp to
 send a client certificate to the SMTP server if requested.

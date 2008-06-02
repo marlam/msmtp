@@ -79,6 +79,7 @@ account_t *account_new(const char *conffile, const char *id)
     a->tls_key_file = NULL;
     a->tls_cert_file = NULL;
     a->tls_trust_file = NULL;
+    a->tls_crl_file = NULL;
     a->tls_nocertcheck = 0;
     a->tls_force_sslv3 = 0;
     a->tls_min_dh_prime_bits = -1;
@@ -127,6 +128,8 @@ account_t *account_copy(account_t *acc)
 	    acc->tls_cert_file ? xstrdup(acc->tls_cert_file) : NULL;
 	a->tls_trust_file = 
 	    acc->tls_trust_file ? xstrdup(acc->tls_trust_file) : NULL;
+	a->tls_crl_file = 
+	    acc->tls_crl_file ? xstrdup(acc->tls_crl_file) : NULL;
 	a->tls_nocertcheck = acc->tls_nocertcheck;
 	a->tls_force_sslv3 = acc->tls_force_sslv3;
 	a->tls_min_dh_prime_bits = acc->tls_min_dh_prime_bits;
@@ -163,6 +166,7 @@ void account_free(void *a)
 	free(p->tls_key_file);
 	free(p->tls_cert_file);
 	free(p->tls_trust_file);
+	free(p->tls_crl_file);
 	free(p->tls_priorities);
 	free(p->dsn_return);
 	free(p->dsn_notify);
@@ -492,6 +496,12 @@ void override_account(account_t *acc1, account_t *acc2)
 	acc1->tls_trust_file = 
 	    acc2->tls_trust_file ? xstrdup(acc2->tls_trust_file) : NULL;
     }
+    if (acc2->mask & ACC_TLS_CRL_FILE)
+    {
+	free(acc1->tls_crl_file);
+	acc1->tls_crl_file = 
+	    acc2->tls_crl_file ? xstrdup(acc2->tls_crl_file) : NULL;
+    }
     if (acc2->mask & ACC_TLS_NOCERTCHECK)
     {
 	acc1->tls_nocertcheck = acc2->tls_nocertcheck;
@@ -583,6 +593,11 @@ int check_account(account_t *acc, int sendmail_mode, char **errstr)
 		_("tls requires either tls_trust_file (highly recommended) or "
 		    "a disabled tls_certcheck"));
 	return CONF_ESYNTAX;
+    }
+    if (acc->tls_crl_file && !acc->tls_trust_file)
+    {
+	*errstr = xasprintf(_("tls_crl_file requires tls_trust_file"));
+      	return CONF_ESYNTAX;
     }
 
     return CONF_EOK;
@@ -1180,6 +1195,19 @@ int read_conffile(const char *conffile, FILE *f, list_t **acc_list,
 	    else
 	    {
 		acc->tls_trust_file = expand_tilde(arg);
+	    }
+	}
+	else if (strcmp(cmd, "tls_crl_file") == 0)
+	{
+	    acc->mask |= ACC_TLS_CRL_FILE;
+	    free(acc->tls_crl_file);
+	    if (*arg == '\0')
+	    {
+		acc->tls_crl_file = NULL;
+	    }
+	    else
+	    {
+		acc->tls_crl_file = expand_tilde(arg);
 	    }
 	}
 	else if (strcmp(cmd, "tls_certcheck") == 0)

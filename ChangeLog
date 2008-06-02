@@ -1,8 +1,10 @@
 Version 1.4.15:
-- Add the new tls_min_dh_prime_bits configuration command and the
+- Added the new tls_crl_file configuration command and the corresponding
+  --tls-crl-file option.
+- Added the new tls_min_dh_prime_bits configuration command and the
   corresponding --tls-min-dh-prime-bits option. This closes Debian bug
   #440344.
-- Add the new tls_priorities configuration command and the corresponding
+- Added the new tls_priorities configuration command and the corresponding
   --tls-priorities option.
 - Gnulib upate to 2008-06-02. Use getpass-gnu instead of getpass module.
 - Add msmtpq scripts by Chris Gianniotis to the scripts directory. Suggest

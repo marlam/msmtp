@@ -62,12 +62,13 @@
 #define ACC_TLS_KEY_FILE		(1 << 17)
 #define ACC_TLS_CERT_FILE		(1 << 18)
 #define ACC_TLS_TRUST_FILE		(1 << 19)
-#define ACC_TLS_NOCERTCHECK		(1 << 20)
-#define ACC_TLS_FORCE_SSLV3		(1 << 21)
-#define ACC_TLS_MIN_DH_PRIME_BITS	(1 << 22)
-#define ACC_TLS_PRIORITIES		(1 << 23)
-#define ACC_LOGFILE			(1 << 24)
-#define ACC_SYSLOG			(1 << 25)
+#define ACC_TLS_CRL_FILE		(1 << 20)
+#define ACC_TLS_NOCERTCHECK		(1 << 21)
+#define ACC_TLS_FORCE_SSLV3		(1 << 22)
+#define ACC_TLS_MIN_DH_PRIME_BITS	(1 << 23)
+#define ACC_TLS_PRIORITIES		(1 << 24)
+#define ACC_LOGFILE			(1 << 25)
+#define ACC_SYSLOG			(1 << 26)
 
 typedef struct
 {
@@ -101,6 +102,7 @@ typedef struct
     char *tls_key_file;		/* file in PEM format */
     char *tls_cert_file;	/* file in PEM format */
     char *tls_trust_file;	/* file in PEM format */
+    char *tls_crl_file;		/* file in PEM format */
     int tls_nostarttls;		/* flag: start TLS immediatly 
 				   (without STARTTLS command)? */
     int tls_nocertcheck;	/* flag: do not check certificate? */

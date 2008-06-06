@@ -1,6 +1,6 @@
 \input texinfo   @c -*-texinfo-*-
 @setfilename msmtp.info
-@set UPDATED June 2, 2008
+@set UPDATED June 6, 2008
 @set UPDATED-MONTH June 2008
 @set EDITION 1.4.15
 @set VERSION 1.4.15
@@ -302,10 +302,11 @@ broken servers. Do not use this unless you have to.
 @anchor{tls_min_dh_prime_bits}
 @item tls_min_dh_prime_bits [@var{bits}]
 @cmindex tls_min_dh_prime_bits
-Set or unset the minimum number of DH prime bits that msmtp will accept for TLS
-sessions. The default is set by the TLS library and can be selected by using
-an empty argument to this command. Only lower the default if there is no other
-way to make TLS work with the remote server.
+Set or unset the minimum number of Diffie-Hellman (DH) prime bits that msmtp
+will accept for TLS sessions. The default is set by the TLS library and can be
+selected by using an empty argument to this command. Only lower the default
+(for example to 512 bits) if there is no other way to make TLS work with the
+remote server.
 @xref{Transport Layer Security}.
 @anchor{tls_priorities}
 @item tls_priorities [@var{priorities}]
@@ -542,7 +543,8 @@ Force TLS/SSL version SSLv3. @xref{tls_force_sslv3}.
 @anchor{--tls-min-dh-prime-bits}
 @itemx --tls-min-dh-prime-bits=[@var{bits}]
 @opindex --tls-min-dh-prime-bits
-Set or unset minimum bit size of the DH prime. @xref{tls_min_dh_prime_bits}.
+Set or unset minimum bit size of the Diffie-Hellman (DH) prime.
+@xref{tls_min_dh_prime_bits}.
 @anchor{--tls-priorities}
 @itemx --tls-priorities=[@var{priorities}]
 @opindex --tls-priorities

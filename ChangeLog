@@ -1,3 +1,7 @@
+Version 1.4.16:
+- Fix scripts/msmtpqueue/msmtp-runqueue.sh. An error made while applying a
+  patch accidently broke it. Reported by Thomas Weber. Thanks!
+
 Version 1.4.15:
 - Added the new tls_crl_file configuration command and the corresponding
   --tls-crl-file option.

@@ -1,4 +1,7 @@
 Version 1.4.16:
+- Accept both 250 and 251 in return of the RCPT TO command, as required by RFC
+  2821 sections 4.3.2 and 3.4. Reported and fixed by Matthias Bernhardt.
+  Thanks!
 - Fix scripts/msmtpqueue/msmtp-runqueue.sh. An error made while applying a
   patch accidently broke it. Reported by Thomas Weber. Thanks!
 

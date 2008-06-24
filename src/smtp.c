@@ -1503,7 +1503,7 @@ int smtp_send_envelope(smtp_server_t *srv,
 		    return e;
 		}
 		status = smtp_msg_status(msg);
-		if (status != 250)
+		if (status != 250 && status != 251)
 		{
 		    *error_msg = msg;
 		    *errstr = xasprintf(_("recipient address %s not "

@@ -1,3 +1,9 @@
+2008-07-28:
+- Use '#!/usr/bin/env bash' instead of '#!/bin/sh' because the scripts might
+  use features that are only available in bash and not in POSIX /bin/sh.
+- Avoid the variable name SECONDS in msmtp-runqueue.sh because it is predefined
+  by bash.
+
 2008-06-12:
 - Fix msmtp-runqueue.sh. An error made while applying the previous patch
   accidently broke it. Reported by Thomas Weber. Thanks!

@@ -1,3 +1,6 @@
+Version 1.4.16:
+- No significant changes.
+
 Version 1.4.15:
 - The configuration command tls_crl_file was added. This allows to use 
   certificate revocation lists (CRLs) during certificate verification.

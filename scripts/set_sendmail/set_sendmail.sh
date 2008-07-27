@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/usr/bin/env bash
 # Created   : Tue 03 Jul 2007 11:54:53 PM EDT
 # Modified  : Thu 13 Sep 2007 06:35:56 AM PDT
 # Author    : Gautam Iyer <gi1242@users.sourceforge.net>

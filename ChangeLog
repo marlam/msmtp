@@ -1,4 +1,8 @@
 Version 1.4.16:
+- Changed all scripts to '#!/usr/bin/env bash' instead of '#!/bin/sh' or 
+  '#!/bin/bash', because they use bash features that are not available in POSIX
+  /bin/sh and because bash might not live in /bin, e.g. on BSD systems. This is
+  a quick fix for Debian bug #489635.
 - Accept both 250 and 251 in return of the RCPT TO command, as required by RFC
   2821 sections 4.3.2 and 3.4. Reported and fixed by Matthias Bernhardt.
   Thanks!

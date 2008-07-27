@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 QUEUEDIR="$HOME/.msmtpqueue"
 LOCKFILE="$QUEUEDIR/.lock"
@@ -7,10 +7,10 @@ MAXWAIT=120
 OPTIONS=$@
 
 # wait for a lock that another instance has set
-SECONDS=0
-while [ -e "$LOCKFILE" -a "$SECONDS" -lt "$MAXWAIT" ]; do
+WAIT=0
+while [ -e "$LOCKFILE" -a "$WAIT" -lt "$MAXWAIT" ]; do
 	sleep 1
-	SECONDS="`expr "$SECONDS" + 1`"
+	WAIT="`expr "$WAIT" + 1`"
 done
 if [ -e "$LOCKFILE" ]; then
 	echo "Cannot use $QUEUEDIR: waited $MAXWAIT seconds for"

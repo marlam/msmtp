@@ -3,7 +3,7 @@
 #--------------------------------------------------------------
 #
 #  msmtpq : queue funtions to manage the msmtp queue,
-#    as it was defined by Martin Lambers
+#             as it was defined by Martin Lambers
 #  Copyright (C) 2008 Chris Gianniotis
 #
 #  This program is free software: you can redistribute it and/or modify
@@ -12,6 +12,12 @@
 #  your option) any later version.
 #
 #--------------------------------------------------------------
+
+# msmtpq is meant to be used to maintain the msmtp queue
+# there is a separate log file for all events & operations on the msmtp
+#   queue that is defined below
+
+# msmtpQ is meant to be used directly by an email client - in 'sendmail' mode
 
 #--------------------------------------------------------------
 # the msmtp queue contains unique filenames of the following form :
@@ -24,180 +30,285 @@
 #   if you send more than one mail per second
 #--------------------------------------------------------------
 
-# set these two vars to the locations of your msmtp queue and log file
-#   where they are or where you'd like them to be
-#     note that the LOG setting should (might ?) be the same
-#     as the 'logfile' setting in .msmtprc
-#   if the queue dir doesn't yet exist, better to create it (0700)
-#     before using this routine
-Q=~/.msmtp.queue                     # the queue - modify this to reflect where you'd like it to be
-umask 077                            # set secure permissions on created directories and files
-declare -i CNT                       # a count of mail(s) in the queue
+## ======================================================================================
+## !!!   please define the following vars before using the msmtpq & msmtpQ routines   !!!
+## ======================================================================================
 
-usage() {
-  echo
-  [ -n "$1" ] && { dsp '' "$@" '' ; echo ; }
-  echo '  usage : msmtpq functions'
-  echo
-  echo '          msmtpq <op>'
-  echo '          ops : -r   run (flush) mail queue'
-  echo '                -d   display (list) queue contents'
-  echo '                -p   purge a single mail from queue'
-  echo '                -a   purge all mail in queue'
-  echo '                -h   this helpful blurt'
-  echo
-  echo '       - note that only one op per invocation is allowed'
-  echo '       - if more than one op is specified, the first one'
-  echo '           only is executed'
-  echo
+# set the queue var to the location of the msmtp queue directory
+#   if the queue dir doesn't yet exist, better to create it (0700)
+#     before using this routine (it will only complain ...)
+#
+Q=~/.msmtp.queue                     # the queue - modify this to reflect where you'd like it to be
+[ -d "$Q" ] || {\
+  echo ;\
+  echo "  msmtpq : can't find msmtp queue directory [ $Q ]" ;\
+  echo "  quitting" ;\
+  echo ;\
+  exit 1 ; \
+}                                    # if queue dir not present - complain ; quit
+
+# set the queue log file var to the location of the msmtp queue log file
+#   where it is or where you'd like it to be
+#     ( note that the LOG setting could be the same as the )
+#     ( 'logfile' setting in .msmtprc - but there may be   )
+#     ( some advantage in keeping the two logs separate    )
+#   if you don't want the log please unset (comment out) this var
+#
+LOG=~/log/msmtp.queue.log            # the log   - modify to taste ...
+[ -w "$LOG" ] || {\
+  echo ;\
+  echo "  msmtpq : can't find msmtp queue log file [ $LOG ]" ;\
+  echo "  quitting" ;\
+  echo ;\
+  exit 1 ; \
+}                                    # if queue log not present - complain ; quit
+
+# the location of the msmtp executable
+MSMTP='/usr/local/bin/msmtp'
+[ -w "$LOG" ] || {\
+  echo ;\
+  echo "  msmtpq : can't find msmtp executable [ $MSMTP ]" ;\
+  echo "  quitting" ;\
+  echo ;\
+  exit 1 ; \
+}                                    # if queue log not present - complain ; quit
+## ======================================================================================
+
+umask 077                            # set secure permissions on created directories and files
+
+declare -i CNT                       # a count of mail(s) currently in the queue
+
+usage() {        # <-- error msg
+  [ -n "$1" ] && dsp -L '' "$@"
+  dsp -L ''\
+         'usage : msmtpq functions' ''\
+         '        msmtpq <op>'\
+         '        ops : -r   run (flush) mail queue'\
+         '              -R   send individual mail(s) in queue'\
+         '              -d   display (list) queue contents'\
+         '              -p   purge individual mail(s) from queue'\
+         '              -a   purge all mail in queue'\
+         '              -h   this helpful blurt' ''\
+         '     - note that only one op per invocation is allowed'\
+         '     - if more than one op is specified, the first one'\
+         '         only is executed' ''
   [ -n "$1" ] && exit 1
   exit 0
 }
 
 # display a message, possibly an error
-# usage : dsp [ -e ] msg [ msg ] ...
+# usage : dsp [ -e ] [ -l ] msg [ msg ] ...
 #  opts : -e  an error ; display msg & terminate w/prejudice
+#  opts : -L  don't log this ; display msg only
 dsp() {
-  local A E
+  local ARG ERR NOL PFX
 
-  if [ "$1" == '-e' ] ; then
-    E='t'                            # it's an error
-    shift                            # shift opt off
-  fi
+  [ "$1" == '-e' ] && \
+    { ERR='t' ; shift ; }            # set error flag ; shift opt off
+  [ "$1" == '-L' ] && \
+    { NOL='t' ; shift ; }            # set don't log flag ; shift opt off
 
-  for A ; do                         # each message line
-    if [ -n "$A" ] ; then            # line has content
-      echo "  $A"                    # send it out
-    else                             # no content
+  for ARG ; do                       # each msg line out ; no content - send blank
+    if [ -n "$ARG" ] ; then          # line has content
+      echo "  $ARG"                  # send it out
+    else
       echo                           # send out blank
     fi
   done
 
-  [ -n "$E" ] && exit 1              # error ; leave w/error return
+  if [ -n "$LOG" ] && [ -z "$NOL" ] ; then   # logging allowed (not suppressed)
+    PFX="$(/bin/date +'%Y %d %b %H:%M:%S')"  # time stamp prefix - "2008 13 Mar 03:59:45 "
+    for ARG ; do                     # each msg line out
+      [ -n "$ARG" ] && \
+        echo "$PFX : $ARG" >> "$LOG" # line has content ; send it to log
+    done
+  fi
+
+  [ -n "$ERR" ] && exit 1            # error ; leave w/error return
 }
 
-# verify that the msmtp queue is present
-  # the first version can be used if you'd like to create the queue dir
-  # if it's not found ; I'd rather just be warned if it's not there
-check_queue() {                      # make certain queue dir is present
-  #if [ ! -d "$Q" ] ; then            # queue dir present or
-	#  /bin/mkdir -p "$Q" || dsp -e 'could not create queue dir'
-  #fi                                 # create it
-  [ ! -d "$Q" ] && \
-    dsp -e "can't find msmtp queue [ $Q ]"  # queue dir not present - complain
+# is anything in the queue ?
+# sets CNT global var  or
+# exits w/passed msg
+cnt_queue() {         # <-- op label
+  CNT=$(/bin/ls -1 ${Q}/*.mail 2> /dev/null | \
+        /usr/bin/wc -l)              # take num mails in queue
+
+  if (( CNT == 0 )) ; then           # no mail in Q
+    dsp -L '' "mail queue is empty (nothing to $1)" ''  # inform user
+    exit 0                           # depart
+  fi
 }
 
-# run (flush) queue
-run_queue() {                        # run queue
-  local LOK="${Q}/.lock" MLF MSF     # lock file name ; queued mail filename pairs
-  local -i MAX=120 SEC=0 RC          # max seconds to gain a lock ; seconds waiting
+# write/remove queue lockfile for a queue op
+lock_queue() {        # <-- '-u' to remove lockfile
+  local LOK="${Q}/.lock"             # lock file name
+  local -i MAX=120 SEC=0             # max seconds to gain a lock ; seconds waiting
 
-  if (( $(/bin/ls -1 ${Q}/*.mail 2> /dev/null | \
-          /usr/bin/wc -l) > 0 )) ; then              # if any mail in Q
-                                                     # attempt to lock queue
+  if [ -z "$1" ] ; then              # lock queue
     while [ -e "$LOK" ] && (( SEC < MAX )) ; do      # if a lock file there
 	    /bin/sleep 1                                   # wait a second
 	    (( ++SEC ))                                    # accumulate seconds
     done                                             # try again while locked for MAX secs
     if [ -e "$LOK" ] ; then                          # lock file still there, give up
 	    dsp -e '' "cannot use $Q : waited $MAX seconds for"\
-	              "  lockfile [ $LOK ] to vanish, giving up"\
-	              'if you are sure that no other instance of this script'\
-	              '  is running, then delete the lock file' ''
+	           "  lockfile [ $LOK ] to vanish ; giving up"\
+	           'if you are sure that no other instance of this script'\
+	           '  is running, then delete the lock file manually' ''
     fi
 
-    /bin/touch "$LOK" || exit 1      # lock queue
+    /bin/touch "$LOK" || \
+      dsp -e "couldn't create queue lock file [ $LOK ]"  # lock queue
+  elif [ "$1" == '-u' ] ; then       # unlock queue
+    /bin/rm -f "$LOK"                # remove the lock
+  fi
+}
 
-    for MLF in ${Q}/*.mail ; do      # process all mails
-	    dsp "sending $MLF ..."         # scratch user's itch
-	    MSF="${MLF%.*}.msmtp"
-	    if [ ! -f "$MSF" ] ; then      # no corresponding MSF file found
-		    dsp "corresponding file $MSF not found"\
-		        'please check this ...'  # give user the bad news
-		    continue                     # crank on
-	    fi
-	    /usr/bin/msmtp $(/bin/cat "$MSF") < "$MLF"  # the mail goes out the door
-      RC=$?
-	    if [ $RC == 0 ] ; then         # send was successful
-		    /bin/rm -f "$MLF" "$MSF"     # nuke the mail files
-		    dsp "$MLF sent successfully" # good news to user
-	    else                           # send was unsuccessful
-		    dsp "$MLF send failed"\
-            "msmtp rc = $RC"\
-            'check this out ...'     # bad news ...
-	    fi
-    done
-  else                               # no mails in queue
-    dsp '' 'mail queue is empty'\
-        'nothing to run/flush' ''    # inform user
+# send a queued mail out via msmtp
+send_mail() {    # <-- mail id
+  local MLF="${Q}/${1}.mail"         # queued mail
+  local MSF="${Q}/${1}.msmtp"        # filename pairs
+  local -i RC                        # msmtp exit code
+
+  if [ ! -f "$MSF" ] ; then          # no corresponding MSF file found
+    dsp "was preparing to send .mail file [ $MLF ] but"\
+        "  corresponding .msmtp file [ $MSF ] was not found in queue"\
+        '  skipping this mail ; this is worth an investigation ...'
+    return                           # give user the bad news (but allow continuation)
   fi
 
-  /bin/rm -f "$LOK"                  # remove the lock
+  # verify net connection - ping ip addr of www.google.com
+  if /bin/ping -qnc 1 -w 2 64.233.183.147 &> /dev/null ; then  # connected
+    #*#*#/usr/bin/msmtp $(/bin/cat "$MSF") < "$MLF" # this mail goes out the door
+    #*#*#/usr/local/bin/msmtp $(/bin/cat "$MSF") < "$MLF" # this mail goes out the door
+    ##$MSMTP $(/bin/cat "$MSF") < "$MLF" # this mail goes out the door
+    $MSMTP $(< "$MSF") < "$MLF"      # this mail goes out the door
+    RC=$?
+    if (( $RC == 0 )) ; then         # send was successful
+      /bin/rm -f "$MLF" "$MSF"       #   nuke the mail files
+      dsp "mail [ $1 ] from queue ; send was successful ; purged from queue"  # good news to user
+      ALT='t'                        # set queue changed flag
+    else                             # send was unsuccessful
+      dsp "mail [ $1 ] from queue ; send failed ; msmtp rc = $RC"             # bad news ...
+    fi
+    return $RC
+  else                               # not connected
+    dsp -L "mail [ $1 ] from queue ; couldn't be sent - host not connected"
+  fi
+}
+
+# run (flush) queue
+run_queue() {                        # run queue
+  local M LST="$(/bin/ls $Q/*.mail 2>/dev/null)"   # list of mails in queue
+
+  if [ -n "$LST" ] ; then            # something in queue
+    lock_queue                       # lock queue
+    for M in $LST ; do               # process all mails
+      send_mail "$(/usr/bin/basename $M .mail)"  # send mail id only
+    done
+    lock_queue -u                    # unlock queue
+  else                               # queue is empty
+    dsp -L '' 'mail queue is empty (nothing to send)' '' # inform user
+  fi
 }
 
 # display queue contents
 display_queue() {
   local M LST="$(/bin/ls $Q/*.mail 2>/dev/null)"   # list of mails in queue
 
-  (( CNT = 0 ))
   if [ -n "$LST" ] ; then            # list has contents (any mails in queue)
     for M in $LST ; do               # cycle through each
-      dsp '' "mail id = [ $(/usr/bin/basename $M .mail) ]"     # show mail id
+      dsp -L '' "mail id = [ $(/usr/bin/basename $M .mail) ]"  # show mail id
       /bin/egrep -s --colour -h '(^From:|^To:|^Subject:)' "$M" # show mail info
-      (( CNT++ ))                    # bump counter
     done
     echo
   else                               # no mails ; no contents
-    dsp '' 'no mail in queue' ''     # inform user
+    dsp -L '' 'no mail in queue' ''  # inform user
   fi
 }
 
-# delete all mail in queue
-purge_all_mail() { # <-- 'one mail' opt (-1)
-  local YN I C                       # confirmation response ; question text ; ack text
+# delete all mail in queue, after confirmation
+purge_queue() {
+  local YN                           # confirmation response
 
-  if [ "$1" == '-1' ] ; then         # queue contains single mail
-    I="remove the only mail from the queue"
-    C="single mail purged from queue"
-  else                               # queue contains multiple mails
-    I="remove (purge) all mail from the queue"
-    C="msmtp queue purged"
-  fi
-
-  display_queue
-  echo -n "  $I [y/N] ? ...: " ; read YN
+  cnt_queue 'purge'
+  display_queue                      # show queue contents
+  echo -n "  remove (purge) all mail from the queue [y/N] ? ..: " ; read YN
   case $YN in                        # nuke all mail in queue (dir)
-    y|Y) /bin/rm -f "$Q"/*.* ; dsp '' "$C ..." ''          ;;
-    *)   dsp '' 'nothing done ; queue is untouched ...' '' ;;
+    y|Y) /bin/rm -f "$Q"/*.*
+         dsp '' 'msmtp queue purged (all mail) ...' ''
+         ;;
+    *)   dsp -L '' 'nothing done ; queue is untouched ...' ''
+         ;;
   esac
 }
 
-# purge a single mail from queue
-purge_one_mail() {
-  local ID                           # id of mail being deleted
+# delete a single mail from queue
+delete_mail() {  # <-- mail id
+  /bin/rm -f "$Q"/"$1".*             # msmtp - nukes a single mail (both files) in queue
+  dsp '' "mail [ $1 ] purged from queue ..."
+  ALT='t'                            # mark that a queue alteration has taken place
+}
+
+# pick a single mail from queue ; delete or send it
+select_mail() {  # <-- '-purge' or '-send'
+  local YN ID                        # user's approval ; id of mail
 
   while true ; do                    # purge an individual mail from queue
-    display_queue                    # show queue contents, if any
-    if (( CNT > 0 )) ; then          # something there
-      if (( CNT == 1 )) ; then       # only one mail
-        purge_all_mail -1            # purge it
-      else                           # more than one mail
-        echo '  remove (purge) a mail from the queue ; enter its id'
-        echo -n '    ( <cr> only to exit ) ...: ' ; read ID
-        if [ -n "$ID" ] ; then       # <-- file name (only, no suff)
-          if [ -n "$(/bin/ls "$Q"/"$ID".* 2>/dev/null)" ] ; then
-            /bin/rm -f "$Q"/"$ID".*  # msmtp - nukes a single mail in queue (dir)
-            dsp '' "mail [ $ID ] purged ..."
-          else                       # invalid id entered
-            dsp '' "mail [ $ID ] not found ; bad id ..."
-          fi
-        else                         # nothing entered
-          dsp '' 'nothing done ; queue is untouched ...' ''
-          break
-        fi
+    cnt_queue "${1:1}"               # count queue entries
+    display_queue                    # show queue contents
+    if (( CNT == 1 )) ; then         # only one mail in queue
+      ID="$(/usr/bin/basename $(/bin/ls $Q/*.mail 2>/dev/null) .mail)"
+      dsp -L '' "mail id = [ $ID ]"  # show mail id
+      if [ "$1" == '-purge' ] ; then # purging
+        echo '  remove (purge) this single mail - id = [ $ID ]'
+        echo -n '    from the queue'
+      else                           # sending
+        echo '  send (run) this single mail - id = [ $ID ]'
+        echo -n '    in the queue'
       fi
-    else
-      break
+      echo -n ' [y/N] ? ..: ' ; read YN
+      case $YN in                    # perform op on single mail in queue (or not)
+        y|Y) if [ "$1" == '-purge' ] ; then  # purging
+               /bin/rm -f "$Q"/*.*   # purge queue w/o selection
+               dsp '' "mail [ $ID ] - purged from queue ..." ''
+             else                    # sending
+               run_queue             # run queue w/o selection
+             fi
+             ;;
+        *)   dsp -L '' 'nothing done ; queue is untouched ...' ''
+             break
+             ;;
+      esac
+      break                          # goodbye
+    else                             # more than one mail
+      if [ "$1" == '-purge' ] ; then # purging
+        echo '  remove (purge) an individual mail from the queue ; enter its id'
+      else                           # sending
+        echo '  send (flush) an individual mail from the queue ; enter its id'
+      fi
+      echo -n '    ( <cr> only to exit ) ...: ' ; read ID
+      if [ -n "$ID" ] ; then         # <-- file name (only, no suff)
+        if [ -n "$(/bin/ls "$Q"/"$ID".* 2>/dev/null)" ] ; then # id is valid
+          if [ "$1" == '-purge' ] ; then # purge mode
+            delete_mail "$ID"        # vaporise the mail
+          else                       # send mode
+            lock_queue               # lock queue
+            send_mail "$ID"          # send out the mail
+            lock_queue -u            # unlock queue
+          fi
+        else                         # invalid id entered
+          dsp -L '' "mail [ $ID ] not found ; bad id ..."
+        fi
+        dsp -L '' "--------------------------------------------------"
+      else                           # nothing entered
+        if [ -n "$ALT" ] ; then      # queue was changed
+          dsp -L '' 'done ...' ''
+        else                         # queue is untouched
+          dsp -L '' 'nothing done ; queue is untouched ...' ''
+        fi
+        break                        # say goodbye
+      fi
     fi
   done
 }
@@ -208,14 +319,14 @@ purge_one_mail() {
 
 [ -z "$1" ] && usage 'msmtpq requires an instruction'
 
-check_queue                          # check that queue directory is present ...
 OP=${1:1}                            # trim off first char of OP
 case "$OP" in                        # sort ops ; run according to spec
-  r) run_queue      ;;               # run (flush) the queue
-  d) display_queue  ;;               # display (list) all mail in queue
-  p) purge_one_mail ;;               # purge an individual mail from queue
-  a) purge_all_mail ;;               # purge all mail in queue
-  h) usage          ;;               # show help
+  r) run_queue          ;;           # run (flush) the queue
+  R) select_mail -send  ;;           # send individual mail(s) in queue
+  d) display_queue      ;;           # display (list) all mail in queue
+  p) select_mail -purge ;;           # purge individual mail(s) from queue
+  a) purge_queue        ;;           # purge all mail in queue
+  h) usage              ;;           # show help
   *) usage "[ $A ] is an unknown msmtpq option" ;;
 esac
 

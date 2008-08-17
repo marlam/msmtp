@@ -3,7 +3,7 @@
 #--------------------------------------------------------------
 #
 #  msmtpQ : queue funtions to use the msmtp queue,
-#    as it was defined by Martin Lambers
+#             as it was defined by Martin Lambers
 #  Copyright (C) 2008 Chris Gianniotis
 #
 #  This program is free software: you can redistribute it and/or modify
@@ -12,6 +12,16 @@
 #  your option) any later version.
 #
 #--------------------------------------------------------------
+
+# msmtpQ is meant to be used directly by an email client - in 'sendmail' mode
+# there is a separate log file for all events & operations on the msmtp
+#   queue that is defined below
+
+# msmtpq is meant to be used to maintain the msmtp queue
+
+# mutt users should make the following setting in their .muttrc
+# in addition to the set sendmail ... line
+#   set sendmail_wait = -1
 
 #--------------------------------------------------------------
 # the msmtp queue contains unique filenames of the following form :
@@ -24,163 +34,166 @@
 #   if you send more than one mail per second
 #--------------------------------------------------------------
 
-# msmtpQ is meant to be used directly by an email client - in 'sendmail' mode
+## ======================================================================================
+## !!!   please define the following vars before using the msmtpq & msmtpQ routines   !!!
+## ======================================================================================
 
-# set these two vars to the locations of your msmtp queue and log file
-#   where they are or where you'd like them to be
-#     note that the LOG setting should (might ?) be the same
-#     as the 'logfile' setting in .msmtprc
+# set the queue var to the location of the msmtp queue directory
 #   if the queue dir doesn't yet exist, better to create it (0700)
-#     before using this routine
+#     before using this routine (it will only complain ...)
+#
 Q=~/.msmtp.queue                     # the queue - modify this to reflect where you'd like it to be
-LOG=~/log/msmtp.log                  # the log   - modify to taste ...
+[ -d "$Q" ] || {\
+  echo ;\
+  echo "  msmtpq : can't find msmtp queue directory [ $Q ]" ;\
+  echo "  quitting" ;\
+  echo ;\
+  exit 1 ; \
+}                                    # if queue dir not present - complain ; quit
+
+# set the queue log file var to the location of the msmtp queue log file
+#   where it is or where you'd like it to be
+#     ( note that the LOG setting could be the same as the )
+#     ( 'logfile' setting in .msmtprc - but there may be   )
+#     ( some advantage in keeping the two logs separate    )
+#   if you don't want the log at all please unset (comment out) this var
+#
+LOG=~/log/msmtp.queue.log            # the log   - modify to taste ...
+[ -w "$LOG" ] || {\
+  echo ;\
+  echo "  msmtpq : can't find msmtp queue log file [ $LOG ]" ;\
+  echo "  quitting" ;\
+  echo ;\
+  exit 1 ; \
+}                                    # if queue log not present - complain ; quit
+
+# the location of the msmtp executable
+MSMTP='/usr/local/bin/msmtp'
+[ -w "$LOG" ] || {\
+  echo ;\
+  echo "  msmtpq : can't find msmtp executable [ $MSMTP ]" ;\
+  echo "  quitting" ;\
+  echo ;\
+  exit 1 ; \
+}                                    # if queue log not present - complain ; quit
+## ======================================================================================
 
 umask 077                            # set secure permissions on created directories and files
-declare -i CNT                       # a count of mail(s) in the queue
-#declare TMP                          # temporary message storage
 
 usage() {
   echo
-  echo '  usage : msmtpQ functions'
+  echo '  usage : msmtpQ'
+  echo '          msmtpQ -h   this helpful (?) blurt'
   echo
-  echo '          msmtpQ [ --temp-file ]'
-  echo
-  echo '            -h   this helpful blurt'
-  echo
-  echo '  the --temp-file opt uses a temporary file'
-  echo '    as internal storage rather than a'
-  echo '    variable - this is still experimental'
-  echo
-  echo '  anything else on the msmtpQ command'
-  echo '    line is passed through to msmtp'
-  echo '    (not to mention the mail text'
-  echo '     via standard in ...)'
+  echo '  any/all args on the msmtpQ command'
+  echo '    line are passed through to msmtp'
+  echo '    (not to mention the mail body text'
+  echo '     passed via standard in ...)'
   echo
   exit 0
 }
 
 # log a message, possibly an error
 # usage : log_msg [ -e ] msg [ msg ] ...
-#  opts : -e  an error ; log msg & terminate w/prejudice
+#  opts : -e <exit code>  an error ; log msg & terminate w/prejudice
 #
 log_msg() {
-  local A E
+  local ERR ARG RC PFX
 
-  if [ "$1" == '-e' ] ; then         # error opt
-    E='t'                            # note it
-    shift                            # shift it off
+  if [ "$1" == '-e' ] ; then
+    ERR='t'                          # set error flag
+    RC="$2"                          # take error exit code
+    shift 2                          # shift opt & its arg off
   fi
 
-  for A ; do                         # each message line
-    if [ -n "$A" ] ; then            # line has content
-      echo "  msmtpQ : $A" >> "$LOG" # send it to log
-    else                             # no content
-      echo "  msmtpQ :" >> "$LOG"    # send blank line to log
-    fi
-  done
+  if [ -n "$LOG" ] ; then            # logging not suppressed
+    PFX="$(/bin/date +'%Y %d %b %H:%M:%S')"  # time stamp prefix - "2008 13 Mar 03:59:45 "
+    for ARG ; do                     # each msg line out
+      echo "$PFX : $ARG" >> "$LOG"   # send it to log
+    done
+  fi
 
-  [ -n "$E" ] && exit 1              # error ; leave w/error return
+  if [ -n "$ERR" ] ; then            # an error ; leave w/error return
+    if [ "$RC" != 0 ] ; then         # exit code != 0 => display the exit code
+      [ -n "$LOG" ] && \
+        echo "    exit code = $RC" >> "$LOG" # logging ok ; send exit code to log
+      exit $RC                       # exit w/exit code
+    else                             # exit code == 0 => don't display an exit code
+      exit 1
+    fi
+  fi
 }
 
-# verify that the msmtp queue is present
-  # the first version can be used if you'd like to create the queue dir
-  # if it's not found ; I'd rather just be warned if it's not there
-check_queue() {                      # make certain queue dir is present
-  #if [ ! -d "$Q" ] ; then            # queue dir present or
-	#  /bin/mkdir -p "$Q" || log_msg -e 'could not create queue dir'
-  #fi                                 # create it
-  [ ! -d "$Q" ] && \
-    log_msg -e "can't find msmtp queue [ $Q ]" # queue dir not present - complain
+# make base filename
+make_base() {
+  local -i INC                       # increment counter for basename collision
+
+  #BASE="${Q}/$(/bin/date +%Y-%m-%d-%H.%M.%S)"  # make base filename for queue
+  ID="$(/bin/date +%Y-%m-%d-%H.%M.%S)"     # make filename id for queue
+  BASE="${Q}/$ID"                    # make base filename for queue
+  if [ -f "$BASE.*" ] ; then         # ensure base filename is unique
+    INC=1                            # initial increment
+	  while [ -f "${BASE}-${INC}.*" ] ; do   # base filename exists
+      (( ++INC ))                    # bump increment
+	  done
+	  ID="${ID}-${INC}"                # unique ; set id
+	  BASE="${BASE}-${INC}"            # unique ; set base filename
+  fi
 }
 
 # enqueue a mail
 enqueue_mail() { # <-- all mail args ; mail text via TMP
-  local BASE="${Q}/$(/bin/date +%Y-%m-%d-%H.%M.%S)"  # make base filename for queue
-  local -i INC RC                    # increment counter for basename collision
+  local -i RC
 
-  if [ -f "$BASE.*" ] ; then         # ensure base filename is unique
-    INC=1                            # initial increment
-	  while [ -f "${BASE}-${INC}.*" ] ; do   # base filename exists
-      (( ++INC ))                    # filename exists ; bump increment
-	  done
-	  BASE="${BASE}-${INC}"            # unique ; set base filename
-  fi
-
-  # write msmtp command line to .msmtp queue file
-  echo "$@" > "${BASE}.msmtp" || \
-    log_msg -e "writing msmtp cmd line to [ ${BASE}.msmtp ] failed"
-
-  # write mail body to .mail queue file
-  if [ -n "$VAR" ] ; then
-    echo "$TMP" > "${BASE}.mail"     # write mail body from var
-    RC=$?
-  else
-    /bin/cat "$TMP" > "${BASE}.mail" # write mail body from temp fil
-    RC=$?
-  fi
-
-  if [ $RC == 0 ] ; then             # enqueuement was successful
-    log_msg "queued mail as : $BASE [ $@ ]"
-    exit 0
-  else                               # enqueuement failed
-    log_msg -e "writing mail to [ ${BASE}.mail ] failed"
+  # write msmtp command line to queue .msmtp file (queue .mail file is already there)
+  echo "$@" > "${BASE}.msmtp"
+  RC=$?                              # take exit code
+  if (( $RC == 0 )) ; then           # queueing was successful
+    #log_msg "enqueued mail as : $BASE [ $* ] : successful"
+    log_msg "enqueued mail as : [ $ID ] ( $* ) : successful"
+  else                               # write failed
+    log_msg -e "$RC" "queueing - writing msmtp cmd line { $* }"\
+                     "           to [ ${ID}.msmtp ] : failed"
   fi
 }
 
 # send a mail (if possible, otherwise enqueue it)
-# if send is successful, msmtp itself will log it (if enabled in .msmtprc)
+# if send is successful, msmtp will also log it (if enabled in ~/.msmtprc)
 send_mail() {    # <-- all mail args ; mail text via TMP
   local -i RC                        # msmtp return code
 
   if /bin/ping -qnc 1 -w 2 64.233.183.147 &> /dev/null ; then  # ping ip addr of www.google.com
-    if [ -n "$VAR" ] ; then          # connected to the net
-      echo "$TMP" | /usr/bin/msmtp "$@" > /dev/null      # send mail using var
-    else
-      /bin/cat "$TMP" | /usr/bin/msmtp "$@" > /dev/null  # send mail using temp fil
-    fi
+    #*#*#/bin/cat "${BASE}.mail" | /usr/bin/msmtp "$@" > /dev/null  # send mail using queue .mail fil
+    #*#*#/bin/cat "${BASE}.mail" | /usr/local/bin/msmtp "$@" > /dev/null  # send mail using queue .mail fil
+    ##/bin/cat "${BASE}.mail" | $MSMTP "$@" > /dev/null  # send mail using queue .mail fil
+    $MSMTP "$@" < "${BASE}.mail" > /dev/null  # send mail using queue .mail fil
     RC=$?                            # take exit code
-    if [ $RC == 0 ] ; then           # send was successful
+    if (( $RC == 0 )) ; then         # send was successful
+      log_msg "mail for [ $* ] : send was successful"
+      /bin/rm -f "${BASE}.mail"      # remove queue .mail file
       exit 0                         # msmtp will log it
-    else                             # send not ok
-      log_msg "msmtpQ mail send for [ $@ ] was unsuccessful"\
-              "msmtp rc = $RC ; enqueuing the mail"  # log notification
+    else                             # send not ok - log msg
+      log_msg "mail for [ $* ] : send was unsuccessful ; msmtp exit code was $RC"
       enqueue_mail "$@"              # enqueue the mail
     fi
-  else                               # not connected to net
-    log_msg "msmtpQ mail send for [ $@ ] couldn't be done ; host not connected"\
-            "enqueuing the mail"     # log notification
-    enqueue_mail "$@"                # enqueue mail
+  else                               # not connected to net ; log msg
+    log_msg "mail for [ $* ] : couldn't be sent - host not connected"
+    enqueue_mail "$@"                # enqueue the mail
   fi
-}
-
-cleanup() {                          # remove temporary message file
-  /bin/rm -f "$TMP"
 }
 
 #
 ## -- entry point
 #
 
-OP='s'                               # default op is 'send'
-VAR='t'                              # use a var rather than a temp file
+[ -z "$1" ] && log_msg 'msmtpQ was invoked with no cmd line args ; why was that ?'
 
-[ -z "$1" ] && log_msg 'msmtpQ was executed with no cmd line args'
+[ "$1" == '-h' ] && usage
 
-if [ "$1" == '--temp-file' ] ; then
-  unset VAR
-  shift
-fi
-
-check_queue                          # check that queue directory is present ...
-
-if [ -n "$VAR" ] ; then              # use a var for message body
-  TMP="$(/bin/cat)"                  # get the mail body from stdin
-else                                 # use temp file for msg body
-  trap cleanup 0 1 2 3 6 9 14 15
-  TMP="$(/bin/mktemp -qt msmtpQ.tmp.XXXXXXXXXX)" || \
-        log_msg -e 'cannot create temp file'  # make temp file
-  #TMP="/tmp/msmtpQ.$$.tmp"           # make temp fil name
-  /bin/cat > "$TMP"                  # take piped mail into temp fil
-fi
+make_base                            # make base queue filename for this mail
+/bin/cat > "${BASE}.mail"            # take piped mail into queue .mail fil
+RC=$?                                # take exit code
+[ $RC != 0 ] && \
+  log_msg -e "$RC" "creating mail body file [ ${BASE}.mail ] : failed" # test for error
 
 send_mail "$@"                       # send the mail if possible, queue it if not

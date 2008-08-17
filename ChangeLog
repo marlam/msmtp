@@ -1,3 +1,6 @@
+Version 1.4.17:
+- Updated the msmtpq/msmtpQ scripts.
+
 Version 1.4.16:
 - Changed all scripts to '#!/usr/bin/env bash' instead of '#!/bin/sh' or 
   '#!/bin/bash', because they use bash features that are not available in POSIX

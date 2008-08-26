@@ -1,4 +1,6 @@
 Version 1.4.17:
+- Added a vim syntax file for msmtprc files to scripts/vim. The file was
+  written by Simon Ruderich. Thanks!
 - Updated the msmtpq/msmtpQ scripts.
 
 Version 1.4.16:

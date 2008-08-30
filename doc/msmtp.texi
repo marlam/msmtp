@@ -837,7 +837,7 @@ find it in @code{~/.netrc}. If that fails, it will try to get it from a system
 specific keychain (if available). If that fails but a controlling terminal is
 available, msmtp will prompt you for it.
 
-Currently the only supported keychain is the Mac OS X keychain. 
+Currently supported keychains are the GNOME keychain and the Mac OS X keychain. 
 @xref{Using the Mac OS X Keychain}.
 
 The authentication method can be chosen with the @samp{auth} command or 

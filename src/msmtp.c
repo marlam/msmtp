@@ -57,6 +57,9 @@ extern int optind;
 #include <netdb.h>
 #include <arpa/inet.h>
 #endif
+#ifdef HAVE_GNOMEKEYRING
+#include <gnome-keyring.h>
+#endif
 #ifdef HAVE_KEYCHAIN
 #include <Security/Security.h>
 #endif
@@ -286,6 +289,11 @@ char *msmtp_password_callback(const char *hostname, const char *user)
     char *netrc_filename;
     netrc_entry *netrc_hostlist;
     netrc_entry *netrc_host;
+#ifdef HAVE_GNOMEKEYRING
+    const char *protocol = "smtp";
+    GList *found_list = NULL;
+    GnomeKeyringNetworkPasswordData *found;
+#endif
 #ifdef HAVE_KEYCHAIN
     void *password_data;
     UInt32 password_length;
@@ -310,23 +318,48 @@ char *msmtp_password_callback(const char *hostname, const char *user)
     }
     free(netrc_filename);
 
-#ifdef HAVE_KEYCHAIN
-    if (SecKeychainFindInternetPassword(
-		NULL,
-		strlen(hostname), hostname,
-		0, NULL,
-		strlen(user), user,
-		0, (char *)NULL,
-		0,
-		kSecProtocolTypeSMTP,
-		kSecAuthenticationTypeDefault,
-		&password_length, &password_data,
-		NULL) == noErr)
+#ifdef HAVE_GNOMEKEYRING
+    if (!password)
     {
-	password = xmalloc((password_length + 1) * sizeof(char));
-	strncpy(password, password_data, (size_t)password_length);
-	password[password_length] = '\0';
-	SecKeychainItemFreeContent(NULL, password_data);
+    	g_set_application_name(PACKAGE);
+    	if (gnome_keyring_find_network_password_sync(
+		    user,     /* user */
+		    NULL,     /* domain */
+		    hostname, /* server */
+		    NULL,     /* object */
+		    protocol, /* protocol */
+		    NULL,     /* authtype */
+		    0,        /* port */
+		    &found_list) == GNOME_KEYRING_RESULT_OK)
+	{
+	    found = (GnomeKeyringNetworkPasswordData *) found_list->data;
+	    if (found->password)
+		password = g_strdup(found->password);
+	}
+	gnome_keyring_network_password_list_free(found_list);
+    }
+#endif /* HAVE_GNOMEKEYRING */
+
+#ifdef HAVE_KEYCHAIN
+    if (!password)
+    {
+	if (SecKeychainFindInternetPassword(
+	    	    NULL,
+	    	    strlen(hostname), hostname,
+	    	    0, NULL,
+	    	    strlen(user), user,
+	    	    0, (char *)NULL,
+	    	    0,
+	    	    kSecProtocolTypeSMTP,
+	    	    kSecAuthenticationTypeDefault,
+	    	    &password_length, &password_data,
+	    	    NULL) == noErr)
+	{
+	    password = xmalloc((password_length + 1) * sizeof(char));
+	    strncpy(password, password_data, (size_t)password_length);
+	    password[password_length] = '\0';
+	    SecKeychainItemFreeContent(NULL, password_data);
+	}
     }
 #endif /* HAVE_KEYCHAIN */
 

@@ -181,6 +181,19 @@ if test "$libidn" != "no"; then
     fi
 fi
 
+dnl gnome-keyring support (requires pkg-config).
+AC_ARG_WITH([gnome-keyring],
+    [AC_HELP_STRING([--with-gnome-keyring],[Support GNOME Keyring])],
+    [gnome_keyring=$withval],[gnome_keyring=no])
+if test "$gnome_keyring" != "no"; then
+    PKG_CHECK_MODULES([GNOMEKEYRING],[gnome-keyring-1],[
+        CFLAGS="$CFLAGS $GNOMEKEYRING_CFLAGS"
+        LIBS="$LIBS $GNOMEKEYRING_LIBS"
+        AC_DEFINE([HAVE_GNOMEKEYRING],[1],
+            [Define to 1 if you have GNOME Keyring API.])
+        ],[AC_MSG_WARN([Cannot find GNOME Keyring API, disabling])])
+fi
+
 dnl MacOS X Keychain Services (Security Framework)
 AC_CACHE_CHECK([for SecKeychainGetVersion],
     ac_cv_func_SecKeychainGetVersion,
@@ -225,8 +238,10 @@ AC_CONFIG_FILES([Makefile build-aux/Makefile gnulib/Makefile \
 AC_OUTPUT
 
 echo
-echo "Install prefix ....... : $prefix"
-echo "TLS/SSL support ...... : $have_tls (Library: $tls_lib)"
-echo "GNU SASL support ..... : $libgsasl"
-echo "GNU Libidn support ... : $libidn"
-echo "NLS support .......... : $USE_NLS"
+echo "Install prefix ......... : $prefix"
+echo "TLS/SSL support ........ : $have_tls (Library: $tls_lib)"
+echo "GNU SASL support ....... : $libgsasl"
+echo "GNU Libidn support ..... : $libidn"
+echo "NLS support ............ : $USE_NLS"
+echo "GNOME Keyring support .. : $gnome_keyring"
+echo "MacOS X Keychain support : $ac_cv_func_SecKeychainGetVersion"

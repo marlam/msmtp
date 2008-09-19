@@ -952,7 +952,7 @@ int tls_init(tls_t *tls,
 	    {
 		error_pos_str = xasprintf(
 			_("error in priority string at position %d"), 
-			error_pos - priorities + 1);
+			(int)(error_pos - priorities + 1));
 		*errstr = xasprintf(
 			_("cannot set priorities for TLS session: %s"),
 			error_pos_str);

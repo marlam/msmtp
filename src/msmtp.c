@@ -44,24 +44,24 @@ extern int optind;
 # include <syslog.h>
 #endif
 #ifdef W32_NATIVE
-#include <io.h>
-#include <fcntl.h>
-#include <windows.h>
-#include <winsock2.h>
+# include <io.h>
+# include <fcntl.h>
+# include <windows.h>
+# include <winsock2.h>
 #elif defined DJGPP
-#include <io.h>
-#include <fcntl.h>
-#include <netdb.h>
-#include <arpa/inet.h>
+# include <io.h>
+# include <fcntl.h>
+# include <netdb.h>
+# include <arpa/inet.h>
 #else /* UNIX */
-#include <netdb.h>
-#include <arpa/inet.h>
+# include <netdb.h>
+# include <arpa/inet.h>
 #endif
 #ifdef HAVE_GNOMEKEYRING
-#include <gnome-keyring.h>
+# include <gnome-keyring.h>
 #endif
 #ifdef HAVE_KEYCHAIN
-#include <Security/Security.h>
+# include <Security/Security.h>
 #endif
 
 #include "getpass.h"
@@ -2256,6 +2256,18 @@ void msmtp_print_version(void)
     printf(_(", LOCALEDIR is %s"), LOCALEDIR);
 #else
     printf(_("disabled"));
+#endif
+    printf("\n");
+    printf(_("Keyring support: "));
+#if !defined HAVE_GNOMEKEYRING && !defined HAVE_KEYCHAIN
+    printf(_("none"));
+#else
+# ifdef HAVE_GNOMEKEYRING
+    printf(_("Gnome "));
+# endif
+# ifdef HAVE_KEYCHAIN
+    printf(_("MacOS "));
+# endif
 #endif
     printf("\n");
     sysconfdir = get_sysconfdir();

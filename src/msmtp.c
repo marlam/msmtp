@@ -6,6 +6,7 @@
  * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008
  * Martin Lambers <marlam@marlam.de>
  * Jay Soffian <jaysoffian@gmail.com> (Mac OS X keychain support)
+ * Satoru SATOH <satoru.satoh@gmail.com> (GNOME keyring support)
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by

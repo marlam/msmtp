@@ -218,7 +218,9 @@ name.  Authentication must be activated with the @samp{auth} command.
 Set your password for SMTP authentication. An empty argument unsets the
 password.  Authentication must be activated with the @samp{auth} command.
 If no password is set but one is needed during authentication, msmtp will try to
-find it in @code{~/.netrc}. If that fails, it will try to get it from a system 
+find it in @code{~/.netrc}. If that fails, it will try to find it in 
+@code{SYSCONFDIR/netrc} (use @code{--version} to find out what @code{SYSCONFDIR}
+is on your platform). If that fails, it will try to get it from a system 
 specific keychain (if available). If that fails but a controlling terminal is
 available, msmtp will prompt you for it.
 @xref{Authentication}.
@@ -658,11 +660,11 @@ The system configuration file. Use the @samp{--version} option to find out what
 @code{SYSCONFDIR} is on your platform.
 @item @code{~/.msmtprc}
 The default user configuration file.
-@item @code{~/.netrc}
-The @code{.netrc} file contains login information. If a password is not found 
-in the configuration file, msmtp will search it in @code{.netrc} before 
-prompting the user for it. The syntax of @code{.netrc} is described in the 
-@code{netrc(5)} or @code{ftp(1)} manual page.
+@item @code{~/.netrc} and @code{SYSCONFDIR/netrc}
+The @code{netrc} file contains login information. If a password is not found 
+in the configuration file, msmtp will search it in @code{~/.netrc} and 
+@code{SYSCONFDIR} before prompting the user for it. The syntax of @code{netrc}
+files is described in the @code{netrc(5)} or @code{ftp(1)} manual page.
 @end table
 
 @anchor{Environment}
@@ -833,7 +835,9 @@ which methods are supported by your version of msmtp.
 Authentication data can be set with the @samp{user} and @samp{password} commands
 or with the @samp{--user} option. See @ref{user}, @ref{password}, @ref{--user}.
 If no password is set but one is needed during authentication, msmtp will try to
-find it in @code{~/.netrc}. If that fails, it will try to get it from a system 
+find it in @code{~/.netrc}. If that fails, it will try to find it in 
+@code{SYSCONFDIR/netrc} (use @code{--version} to find out what @code{SYSCONFDIR}
+is on your platform). If that fails, it will try to get it from a system 
 specific keychain (if available). If that fails but a controlling terminal is
 available, msmtp will prompt you for it.
 

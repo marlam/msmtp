@@ -84,15 +84,18 @@ extern int optind;
 #ifdef W32_NATIVE
 #define SYSCONFFILE	"msmtprc.txt"
 #define USERCONFFILE	"msmtprc.txt"
-#define NETRCFILE	"netrc.txt"
+#define SYSNETRCFILE	"netrc.txt"
+#define USERNETRCFILE	"netrc.txt"
 #elif defined (DJGPP)
 #define SYSCONFFILE	"msmtprc"
 #define USERCONFFILE	"_msmtprc"
-#define NETRCFILE	"_netrc"
+#define SYSNETRCFILE	"netrc"
+#define USERNETRCFILE	"_netrc"
 #else /* UNIX */
 #define SYSCONFFILE	"msmtprc"
 #define USERCONFFILE	".msmtprc"
-#define NETRCFILE	".netrc"
+#define SYSNETRCFILE	".netrc"
+#define USERNETRCFILE	".netrc"
 #endif
 
 /* The name of this program */
@@ -286,7 +289,7 @@ char *msmtp_sanitize_string(char *str)
 
 char *msmtp_password_callback(const char *hostname, const char *user)
 {
-    char *homedir;
+    char *netrc_directory;
     char *netrc_filename;
     netrc_entry *netrc_hostlist;
     netrc_entry *netrc_host;
@@ -306,9 +309,9 @@ char *msmtp_password_callback(const char *hostname, const char *user)
     char *gpw;
     char *password = NULL;
 
-    homedir = get_homedir();
-    netrc_filename = get_filename(homedir, NETRCFILE);
-    free(homedir);
+    netrc_directory = get_homedir();
+    netrc_filename = get_filename(netrc_directory, USERNETRCFILE);
+    free(netrc_directory);
     if ((netrc_hostlist = parse_netrc(netrc_filename)))
     {
 	if ((netrc_host = search_netrc(netrc_hostlist, hostname, user)))
@@ -318,6 +321,22 @@ char *msmtp_password_callback(const char *hostname, const char *user)
 	free_netrc_entry_list(netrc_hostlist);
     }
     free(netrc_filename);
+
+    if (!password)
+    {
+	netrc_directory = get_sysconfdir();
+	netrc_filename = get_filename(netrc_directory, SYSNETRCFILE);
+	free(netrc_directory);
+	if ((netrc_hostlist = parse_netrc(netrc_filename)))
+	{
+	    if ((netrc_host = search_netrc(netrc_hostlist, hostname, user)))
+	    {
+		password = xstrdup(netrc_host->password);
+	    }
+	    free_netrc_entry_list(netrc_hostlist);
+	}
+	free(netrc_filename);
+    }
 
 #ifdef HAVE_GNOMEKEYRING
     if (!password)
@@ -394,7 +413,7 @@ char *msmtp_password_callback(const char *hostname, const char *user)
 	    }
 	}
     }
-    
+
     return password;
 }
 

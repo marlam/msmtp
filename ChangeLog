@@ -1,4 +1,6 @@
 Version 1.4.17:
+- Support for SYSCONFDIR/netrc (as a fallback for ~/.netrc) was added by Jim
+  Pryor. Thanks!
 - Support for the GNOME Keyring was added by Satoru SATOH. Thanks a lot!
 - Added a vim syntax file for msmtprc files to scripts/vim. The file was
   written by Simon Ruderich. Thanks!

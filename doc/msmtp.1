@@ -289,9 +289,11 @@ one available for you (see below).
 You probably need to set a username (with \fBuser\fP) and password (with 
 \fBpassword\fP). 
 If no password is set but one is needed during authentication, msmtp will try to
-find it in ~/.netrc. If that fails, it will try to get it from a system specific
-keychain (if available). If that fails but a controlling terminal is available,
-msmtp will prompt you for it.
+find it in ~/.netrc. If that fails, it will try to find it in SYSCONFDIR/netrc
+(use \fB--version\fP to find out what SYSCONFDIR is on your platform). If that
+fails, it will try to get it from a system specific keychain (if available). If
+that fails but a controlling terminal is available, msmtp will prompt you for
+it.
 .br
 Currently supported keychains are the GNOME keychain and the Mac OS X keychain.
 See the EXAMPLES section below.
@@ -325,9 +327,11 @@ name. Authentication must be activated with the \fBauth\fP command.
 Set your password for SMTP authentication. An empty argument unsets the
 password. Authentication must be activated with the \fBauth\fP command.
 If no password is set but one is needed during authentication, msmtp will try to
-find it in ~/.netrc. If that fails, it will try to get it from a system specific
-keychain (if available). If that fails but a controlling terminal is available,
-msmtp will prompt you for it.
+find it in ~/.netrc. If that fails, it will try to find it in SYSCONFDIR/netrc
+(use \fB--version\fP to find out what SYSCONFDIR is on your platform). If that
+fails, it will try to get it from a system specific keychain (if available). If
+that fails but a controlling terminal is available, msmtp will prompt you for
+it.
 .IP "ntlmdomain [\fIdomain\fP]"
 Set a domain for the \fIntlm\fP authentication method. The default is to use no
 domain (equivalent to an empty argument), but some servers seem to require one,
@@ -613,10 +617,10 @@ System configuration file. Use
 to find out what SYSCONFDIR is on your platform.
 .IP "~/.msmtprc"
 User configuration file.
-.IP "~/.netrc"
-The .netrc file contains login information. If a password is not found in the
-configuration file, msmtp will search it in .netrc before prompting the user for
-it. The syntax of .netrc is described in 
+.IP "~/.netrc and SYSCONFDIR/netrc"
+The netrc file contains login information. If a password is not found in the
+configuration file, msmtp will search it in ~/.netrc and SYSCONFDIR/netrc before
+prompting the user for it. The syntax of netrc files is described in 
 .BR netrc (5)
 or 
 .BR ftp (1).

@@ -186,28 +186,38 @@ AC_ARG_WITH([gnome-keyring],
     [AC_HELP_STRING([--with-gnome-keyring],[Support GNOME Keyring])],
     [gnome_keyring=$withval],[gnome_keyring=no])
 if test "$gnome_keyring" != "no"; then
-    PKG_CHECK_MODULES([GNOMEKEYRING],[gnome-keyring-1],[
-        CFLAGS="$CFLAGS $GNOMEKEYRING_CFLAGS"
-        LIBS="$LIBS $GNOMEKEYRING_LIBS"
-        AC_DEFINE([HAVE_GNOMEKEYRING],[1],
-            [Define to 1 if you have GNOME Keyring API.])
-        ],[AC_MSG_WARN([Cannot find GNOME Keyring API, disabling])])
+    PKG_CHECK_MODULES([GNOMEKEYRING], [gnome-keyring-1],
+        [gnome_keyring="yes"
+	 CFLAGS="$CFLAGS $GNOMEKEYRING_CFLAGS"
+         LIBS="$LIBS $GNOMEKEYRING_LIBS"
+         AC_DEFINE([HAVE_GNOMEKEYRING], [1],
+	     [Define to 1 if you have GNOME Keyring API.])],
+	[gnome_keyring="no"
+	 AC_MSG_WARN([Cannot find GNOME Keyring API, disabling])])
 fi
 
 dnl MacOS X Keychain Services (Security Framework)
-AC_CACHE_CHECK([for SecKeychainGetVersion],
-    ac_cv_func_SecKeychainGetVersion,
-    [ac_save_LIBS="$LIBS"
-    LIBS="$LIBS -Wl,-framework -Wl,Security"
-    AC_TRY_LINK([#include <Security/Security.h>],
-        [SecKeychainGetVersion(NULL);],
-        [ac_cv_func_SecKeychainGetVersion=yes],
-        [ac_cv_func_SecKeychainGetVersion=no])
-    LIBS="$ac_save_LIBS"])
-if test $ac_cv_func_SecKeychainGetVersion = yes; then
-    AC_DEFINE([HAVE_KEYCHAIN], 1,
-        [Define to 1 if you have the MacOS X Keychain Services API.])
-    LIBS="$LIBS -Wl,-framework -Wl,Security"
+AC_ARG_WITH([macosx-keyring],
+    [AC_HELP_STRING([--with-macosx-keyring],[Support Mac OS X Keyring])],
+    [macosx_keyring=$withval],[macosx_keyring=no])
+if test "$macosx_keyring" != "no"; then
+    AC_CACHE_CHECK([for SecKeychainGetVersion],
+	ac_cv_func_SecKeychainGetVersion,
+        [ac_save_LIBS="$LIBS"
+         LIBS="$LIBS -Wl,-framework -Wl,Security"
+         AC_TRY_LINK([#include <Security/Security.h>],
+            [SecKeychainGetVersion(NULL);],
+            [ac_cv_func_SecKeychainGetVersion=yes],
+            [ac_cv_func_SecKeychainGetVersion=no])
+         LIBS="$ac_save_LIBS"])
+    if test $ac_cv_func_SecKeychainGetVersion = yes; then
+        macosx_keyring=yes
+        AC_DEFINE([HAVE_MACOSXKEYRING], 1,
+            [Define to 1 if you have the MacOS X Keychain Services API.])
+        LIBS="$LIBS -Wl,-framework -Wl,Security"
+    else
+        macosx_keyring=no
+    fi
 fi
 
 dnl Global #defines for all source files
@@ -244,4 +254,4 @@ echo "GNU SASL support ....... : $libgsasl"
 echo "GNU Libidn support ..... : $libidn"
 echo "NLS support ............ : $USE_NLS"
 echo "GNOME Keyring support .. : $gnome_keyring"
-echo "MacOS X Keychain support : $ac_cv_func_SecKeychainGetVersion"
+echo "MacOS X Keychain support : $macosx_keyring"

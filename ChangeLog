@@ -1,4 +1,6 @@
 Version 1.4.17:
+- Unified handling of the Gnome and MacOS keyrings. Both are disabled by default
+  and must be enabled using --with-*-keyring options.
 - Support for SYSCONFDIR/netrc (as a fallback for ~/.netrc) was added by Jim
   Pryor. Thanks!
 - Support for the GNOME Keyring was added by Satoru SATOH. Thanks a lot!

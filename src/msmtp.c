@@ -61,7 +61,7 @@ extern int optind;
 #ifdef HAVE_GNOMEKEYRING
 # include <gnome-keyring.h>
 #endif
-#ifdef HAVE_KEYCHAIN
+#ifdef HAVE_MACOSXKEYRING
 # include <Security/Security.h>
 #endif
 
@@ -298,7 +298,7 @@ char *msmtp_password_callback(const char *hostname, const char *user)
     GList *found_list = NULL;
     GnomeKeyringNetworkPasswordData *found;
 #endif
-#ifdef HAVE_KEYCHAIN
+#ifdef HAVE_MACOSXKEYRING
     void *password_data;
     UInt32 password_length;
     OSStatus status;
@@ -360,7 +360,7 @@ char *msmtp_password_callback(const char *hostname, const char *user)
     }
 #endif /* HAVE_GNOMEKEYRING */
 
-#ifdef HAVE_KEYCHAIN
+#ifdef HAVE_MACOSXKEYRING
     if (!password)
     {
 	if (SecKeychainFindInternetPassword(
@@ -381,7 +381,7 @@ char *msmtp_password_callback(const char *hostname, const char *user)
 	    SecKeychainItemFreeContent(NULL, password_data);
 	}
     }
-#endif /* HAVE_KEYCHAIN */
+#endif /* HAVE_MACOSXKEYRING */
 
     /* Do not let getpass() read from stdin, because we read the mail from 
      * there. DJGPP's getpass() always reads from stdin. On W32, gnulib's
@@ -401,7 +401,7 @@ char *msmtp_password_callback(const char *hostname, const char *user)
 	    getpass_uses_tty = 1;
 	    fclose(tty);
 	}
-# endif
+#endif
 	if (getpass_uses_tty)
 	{
 	    prompt = xasprintf(_("password for %s at %s: "), user, hostname);
@@ -2279,13 +2279,13 @@ void msmtp_print_version(void)
 #endif
     printf("\n");
     printf(_("Keyring support: "));
-#if !defined HAVE_GNOMEKEYRING && !defined HAVE_KEYCHAIN
+#if !defined HAVE_GNOMEKEYRING && !defined HAVE_MACOSXKEYRING
     printf(_("none"));
 #else
 # ifdef HAVE_GNOMEKEYRING
     printf(_("Gnome "));
 # endif
-# ifdef HAVE_KEYCHAIN
+# ifdef HAVE_MACOSXKEYRING
     printf(_("MacOS "));
 # endif
 #endif

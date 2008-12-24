@@ -8,4 +8,6 @@ EXTRA_DIST = \
 	msmtpqueue/msmtp-listqueue.sh	\
 	msmtpqueue/msmtp-runqueue.sh	\
 	set_sendmail/set_sendmail.conf	\
-	set_sendmail/set_sendmail.sh
+	set_sendmail/set_sendmail.sh	\
+	vim/README			\
+	vim/msmtp.vim

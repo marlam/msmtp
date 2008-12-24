@@ -8,3 +8,6 @@ malloc.m4
 realloc.m4
 stdlib_h.m4
 onceonly.m4
+errno_h.m4
+gnulib-comp.m4
+threadlib.m4

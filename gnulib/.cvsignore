@@ -22,3 +22,7 @@ stdarg.in.h
 stdio-impl.h
 errno.in.h
 stdio-write.c
+close.c
+fclose.c
+gethostname.c
+w32sock.h

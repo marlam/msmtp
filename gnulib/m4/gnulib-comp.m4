@@ -52,14 +52,20 @@ AC_DEFUN([gl_INIT],
   gl_source_base='gnulib'
   gl_FUNC_ALLOCA
   gl_FUNC_BASE64
+  gl_FUNC_CLOSE
+  gl_UNISTD_MODULE_INDICATOR([close])
   gl_HMAC_MD5
   gl_MD5
   gl_HEADER_ERRNO_H
+  gl_FUNC_FCLOSE
+  gl_STDIO_MODULE_INDICATOR([fclose])
   gl_FLOAT_H
   gl_FUNC_FSEEKO
   gl_STDIO_MODULE_INDICATOR([fseeko])
   gl_FUNC_GETDELIM
   gl_STDIO_MODULE_INDICATOR([getdelim])
+  gl_FUNC_GETHOSTNAME
+  gl_UNISTD_MODULE_INDICATOR([gethostname])
   gl_FUNC_GETLINE
   gl_STDIO_MODULE_INDICATOR([getline])
   gl_GETOPT
@@ -239,11 +245,14 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/base64.h
   lib/c-ctype.c
   lib/c-ctype.h
+  lib/close.c
   lib/errno.in.h
+  lib/fclose.c
   lib/float+.h
   lib/float.in.h
   lib/fseeko.c
   lib/getdelim.c
+  lib/gethostname.c
   lib/getline.c
   lib/getopt.c
   lib/getopt.in.h
@@ -278,6 +287,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/vasnprintf.c
   lib/vasnprintf.h
   lib/vasprintf.c
+  lib/w32sock.h
   lib/wchar.in.h
   lib/xalloc.h
   lib/xasprintf.c
@@ -287,12 +297,15 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/xvasprintf.h
   m4/alloca.m4
   m4/base64.m4
+  m4/close.m4
   m4/codeset.m4
   m4/errno_h.m4
   m4/extensions.m4
+  m4/fclose.m4
   m4/float_h.m4
   m4/fseeko.m4
   m4/getdelim.m4
+  m4/gethostname.m4
   m4/getline.m4
   m4/getopt.m4
   m4/getpass.m4

@@ -11,3 +11,6 @@ onceonly.m4
 errno_h.m4
 gnulib-comp.m4
 threadlib.m4
+close.m4
+fclose.m4
+gethostname.m4

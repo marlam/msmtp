@@ -1,7 +1,5 @@
 Since version 0.7.2, msmtp can be compiled to a native Windows application
 using MinGW (http://www.mingw.org/).
-Since version 1.4.17, Windows 2000 or newer is required, older versions may
-not work.
 
 
 Differences between the UNIX and Windows versions
@@ -33,20 +31,3 @@ Differences between the UNIX and Windows versions
 - The timeout setting works for network input/output, but has no effect for
   the connection attempt. This is because I do not know how to do this on W32.
   See src/net.c, function net_connect() for W32_NATIVE. Patches are welcome.
-
-
-Compiling the source
-====================
-
-You need:
-- MinGW with MSYS installed.
-
-You may want:
-- Some of the optional libraries, e.g. GnuTLS or GSASL.
-  If you link against DLLs, don't forget to copy them to a directory where
-  Windows can find them when you run msmtp.
-
-Run configure, compile, and install:
-./configure --with-libgnutls-prefix=/... --prefix=/c/msmtp
-make
-make install

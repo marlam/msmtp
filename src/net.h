@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007
+ * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -64,7 +64,7 @@ int net_lib_init(char **errstr);
  * address of the server will be stored in '*address', or NULL if this 
  * information is not available.
  * The strings must be deallocated when not used anymore.
- * The file descriptor is returned in 'fd'.
+ * The file descriptor is returned in 'fd'. It can be closed with close().
  *
  * Used error codes: NET_EHOSTNOTFOUND, NET_ESOCKET, NET_ECONNECT
  */

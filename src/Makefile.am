@@ -11,7 +11,13 @@ msmtp_SOURCES = \
 	stream.c stream.h \
 	tools.c tools.h
 
-msmtp_LDADD = @tls_obj@ $(top_builddir)/gnulib/libgnu.a @LIBINTL@
+msmtp_LDADD = @tls_obj@	\
+	$(top_builddir)/gnulib/libgnu.a \
+	$(GETADDRINFO_LIB) 		\
+	$(HOSTENT_LIB)			\
+	$(SERVENT_LIB)			\
+	$(LIBSOCKET)			\
+	$(LIBINTL)
 
 msmtp_DEPENDENCIES = @tls_obj@
 

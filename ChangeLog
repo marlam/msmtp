@@ -1,4 +1,6 @@
 Version 1.4.17:
+- Remove most W32-specific code from net.c and use the appropriate gnulib
+  modules instead.
 - Gnulib upate to 2008-12-24.
 - Unified handling of the Gnome and MacOS keyrings. Both are disabled by default
   and must be enabled using --with-*-keyring options.

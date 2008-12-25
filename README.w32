@@ -1,5 +1,7 @@
 Since version 0.7.2, msmtp can be compiled to a native Windows application
 using MinGW (http://www.mingw.org/).
+Since version 1.4.17, Windows 2000 or newer is required, older versions may
+not work.
 
 
 Differences between the UNIX and Windows versions
@@ -28,12 +30,9 @@ Differences between the UNIX and Windows versions
 - The name of the .netrc file is "netrc.txt". It is expected to be in the same 
   directory as the user configuration file.
 
-- The timeout setting has no effect for connection attempts. This is because I
-  do not know how to do this on W32. See src/net.c, function net_connect() for
-  W32_NATIVE. Patches are welcome.
-  Additionaly, the timeout setting only works for input/output when the IPv6 
-  enabled binary is used. This is because older Windows systems have a broken 
-  timeout implementation. 
+- The timeout setting works for network input/output, but has no effect for
+  the connection attempt. This is because I do not know how to do this on W32.
+  See src/net.c, function net_connect() for W32_NATIVE. Patches are welcome.
 
 
 Compiling the source
@@ -43,20 +42,11 @@ You need:
 - MinGW with MSYS installed.
 
 You may want:
-- Either GnuTLS or OpenSSL. 
+- Some of the optional libraries, e.g. GnuTLS or GSASL.
   If you link against DLLs, don't forget to copy them to a directory where
   Windows can find them when you run msmtp.
 
-Run configure with arguments similar to
-./configure CPPFLAGS="-I/path/to/openssl/outinc" \
-	LDFLAGS="-L/path/to/openssl-dlls"
-	--prefix=/c/msmtp
-or
-./configure CPPFLAGS="-I/path/to/gnutls/include" \
-	LDFLAGS="-L/path/to/gnutls/lib"
-	--prefix=/c/msmtp
-
-IMPORTANT NOTE: Use --enable-win2000-and-older to disable IPv6 support and 
-network input/output timeouts. The resulting binary will run on Windows 2000 and
-older systems. By default, the resulting binary will only work on Windows XP and
-newer!
+Run configure, compile, and install:
+./configure --with-libgnutls-prefix=/... --prefix=/c/msmtp
+make
+make install

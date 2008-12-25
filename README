@@ -22,8 +22,7 @@ Features include:
 msmtp runs on UNIX-like systems, Windows, and DOS.
 In particular, supported platforms include:
 GNU/Linux (glibc, uclibc or dietlibc), FreeBSD, NetBSD, OpenBSD, Solaris, AIX,
-HP-UX, MacOS X, OpenDarwin, Cygwin on Win32, Windows 9x/ME/NT/2000/XP/2003, 
-MS-DOS/FreeDOS+DJGPP+Watt32.
+HP-UX, MacOS X, OpenDarwin, Cygwin on Win32, Windows 9x/ME/NT/2000/XP/2003.
 
 Optional features, depending on external libraries (see the file INSTALL for
 usage instructions):

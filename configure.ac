@@ -50,28 +50,6 @@ dnl Functions
 AC_CHECK_FUNCS([syslog], [], [])
 AC_SEARCH_LIBS([nanosleep], [rt posix4])
 
-dnl Networking libraries, getaddrinfo()
-if test "$windows" = "yes"; then
-    LIBS="$LIBS -lws2_32"
-    AC_ARG_ENABLE([win2000-and-older], 
-        AC_HELP_STRING([--enable-win2000-and-older], 
-            [build a binary that works on Windows 2000 and older systems]),
-        [win2000_and_older=$enableval])
-    if test "$win2000_and_older" != "yes"; then
-        AC_DEFINE([HAVE_GETADDRINFO], [], [Have getaddrinfo() function])
-    fi
-else
-    AC_CHECK_FUNC([socket], [], 
-        [AC_CHECK_LIB([socket], [socket], [LIBS="$LIBS -lsocket"])])
-    AC_CHECK_FUNC([getaddrinfo], 
-        [AC_DEFINE(HAVE_GETADDRINFO, [], [Have getaddrinfo() function])
-            [have_getaddrinfo=yes]],
-        [AC_CHECK_FUNC([gethostbyname], [], 
-            [AC_CHECK_LIB([nsl], [gethostbyname], [LIBS="$LIBS -lnsl"])])
-         AC_CHECK_FUNC([hstrerror], [], 
-            [AC_CHECK_LIB([resolv], [hstrerror], [LIBS="$LIBS -lresolv"])])])
-fi
-
 dnl TLS/SSL
 have_tls=no
 tls_lib=none

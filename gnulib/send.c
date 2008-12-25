@@ -1,4 +1,4 @@
-/* setsockopt.c --- wrappers for Windows setsockopt function
+/* send.c --- wrappers for Windows send function
 
    Copyright (C) 2008 Free Software Foundation, Inc.
 
@@ -23,31 +23,16 @@
 /* Get winsock2.h. */
 #include <sys/socket.h>
 
-/* Get struct timeval */
-#include <sys/time.h>
-
 /* Get set_winsock_errno, FD_TO_SOCKET etc. */
 #include "w32sock.h"
 
-#undef setsockopt
+#undef send
 
 int
-rpl_setsockopt (int fd, int level, int optname, const void *optval, int optlen)
+rpl_send (int fd, const void *buf, int len, int flags)
 {
-  int r;
   SOCKET sock = FD_TO_SOCKET (fd);
-
-  if (level == SOL_SOCKET && (optname == SO_RCVTIMEO || optname == SO_SNDTIMEO))
-    {
-      struct timeval *tv = optval;
-      int milliseconds = tv->tv_sec * 1000 + tv->tv_usec / 1000;
-      r = setsockopt (sock, level, optname, &milliseconds, sizeof(int));
-    }
-  else
-    {
-      r = setsockopt (sock, level, optname, optval, optlen);
-    }
-
+  int r = send (sock, buf, len, flags);
   if (r < 0)
     set_winsock_errno ();
 

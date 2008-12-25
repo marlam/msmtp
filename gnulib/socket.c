@@ -1,4 +1,4 @@
-/* setsockopt.c --- wrappers for Windows setsockopt function
+/* socket.c --- wrappers for Windows socket function
 
    Copyright (C) 2008 Free Software Foundation, Inc.
 
@@ -23,33 +23,21 @@
 /* Get winsock2.h. */
 #include <sys/socket.h>
 
-/* Get struct timeval */
-#include <sys/time.h>
-
 /* Get set_winsock_errno, FD_TO_SOCKET etc. */
 #include "w32sock.h"
 
-#undef setsockopt
-
 int
-rpl_setsockopt (int fd, int level, int optname, const void *optval, int optlen)
+rpl_socket (int domain, int type, int protocol)
 {
-  int r;
-  SOCKET sock = FD_TO_SOCKET (fd);
+  /* We have to use WSASocket() to create non-overlapped IO sockets.
+     Overlapped IO sockets cannot be used with read/write.  */
+  SOCKET fh = WSASocket (domain, type, protocol, NULL, 0, 0);
 
-  if (level == SOL_SOCKET && (optname == SO_RCVTIMEO || optname == SO_SNDTIMEO))
+  if (fh == INVALID_SOCKET)
     {
-      struct timeval *tv = optval;
-      int milliseconds = tv->tv_sec * 1000 + tv->tv_usec / 1000;
-      r = setsockopt (sock, level, optname, &milliseconds, sizeof(int));
+      set_winsock_errno ();
+      return -1;
     }
   else
-    {
-      r = setsockopt (sock, level, optname, optval, optlen);
-    }
-
-  if (r < 0)
-    set_winsock_errno ();
-
-  return r;
+    return SOCKET_TO_FD (fh);
 }

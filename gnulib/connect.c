@@ -1,4 +1,4 @@
-/* setsockopt.c --- wrappers for Windows setsockopt function
+/* connect.c --- wrappers for Windows connect function
 
    Copyright (C) 2008 Free Software Foundation, Inc.
 
@@ -23,33 +23,25 @@
 /* Get winsock2.h. */
 #include <sys/socket.h>
 
-/* Get struct timeval */
-#include <sys/time.h>
-
 /* Get set_winsock_errno, FD_TO_SOCKET etc. */
 #include "w32sock.h"
 
-#undef setsockopt
+#undef connect
 
 int
-rpl_setsockopt (int fd, int level, int optname, const void *optval, int optlen)
+rpl_connect (int fd, struct sockaddr *sockaddr, int len)
 {
-  int r;
   SOCKET sock = FD_TO_SOCKET (fd);
-
-  if (level == SOL_SOCKET && (optname == SO_RCVTIMEO || optname == SO_SNDTIMEO))
-    {
-      struct timeval *tv = optval;
-      int milliseconds = tv->tv_sec * 1000 + tv->tv_usec / 1000;
-      r = setsockopt (sock, level, optname, &milliseconds, sizeof(int));
-    }
-  else
-    {
-      r = setsockopt (sock, level, optname, optval, optlen);
-    }
-
+  int r = connect (sock, sockaddr, len);
   if (r < 0)
-    set_winsock_errno ();
+    {
+      /* EINPROGRESS is not returned by WinSock 2.0; for backwards
+	 compatibility, connect(2) uses EWOULDBLOCK.  */
+      if (WSAGetLastError () == WSAEWOULDBLOCK)
+	WSASetLastError (WSAEINPROGRESS);
+
+      set_winsock_errno ();
+    }
 
   return r;
 }

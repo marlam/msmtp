@@ -14,3 +14,14 @@ threadlib.m4
 close.m4
 fclose.m4
 gethostname.m4
+arpa_inet_h.m4
+getaddrinfo.m4
+hostent.m4
+inet_ntop.m4
+netdb_h.m4
+netinet_in_h.m4
+printf.m4
+servent.m4
+snprintf.m4
+sockets.m4
+sys_time_h.m4

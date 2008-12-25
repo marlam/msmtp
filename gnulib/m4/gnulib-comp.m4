@@ -51,9 +51,16 @@ AC_DEFUN([gl_INIT],
   gl_COMMON
   gl_source_base='gnulib'
   gl_FUNC_ALLOCA
+  gl_HEADER_ARPA_INET
+  AC_PROG_MKDIR_P
   gl_FUNC_BASE64
   gl_FUNC_CLOSE
   gl_UNISTD_MODULE_INDICATOR([close])
+  AC_REQUIRE([gl_HEADER_SYS_SOCKET])
+  if test "$ac_cv_header_winsock2_h" = yes; then
+    AC_LIBOBJ([connect])
+  fi
+  gl_SYS_SOCKET_MODULE_INDICATOR([connect])
   gl_HMAC_MD5
   gl_MD5
   gl_HEADER_ERRNO_H
@@ -62,6 +69,8 @@ AC_DEFUN([gl_INIT],
   gl_FLOAT_H
   gl_FUNC_FSEEKO
   gl_STDIO_MODULE_INDICATOR([fseeko])
+  gl_GETADDRINFO
+  gl_NETDB_MODULE_INDICATOR([getaddrinfo])
   gl_FUNC_GETDELIM
   gl_STDIO_MODULE_INDICATOR([getdelim])
   gl_FUNC_GETHOSTNAME
@@ -74,13 +83,43 @@ AC_DEFUN([gl_INIT],
   AM_GNU_GETTEXT_VERSION([0.17])
   AC_SUBST([LIBINTL])
   AC_SUBST([LTLIBINTL])
+  gl_HOSTENT
+  gl_INET_NTOP
+  gl_ARPA_INET_MODULE_INDICATOR([inet_ntop])
   gl_INLINE
   gl_FUNC_LSEEK
   gl_UNISTD_MODULE_INDICATOR([lseek])
   gl_MEMXOR
+  gl_HEADER_NETDB
+  gl_HEADER_NETINET_IN
+  AC_PROG_MKDIR_P
   gl_FUNC_REALLOC_POSIX
   gl_STDLIB_MODULE_INDICATOR([realloc-posix])
+  AC_REQUIRE([gl_HEADER_SYS_SOCKET])
+  if test "$ac_cv_header_winsock2_h" = yes; then
+    AC_LIBOBJ([recv])
+  fi
+  gl_SYS_SOCKET_MODULE_INDICATOR([recv])
+  AC_REQUIRE([gl_HEADER_SYS_SOCKET])
+  if test "$ac_cv_header_winsock2_h" = yes; then
+    AC_LIBOBJ([send])
+  fi
+  gl_SYS_SOCKET_MODULE_INDICATOR([send])
+  gl_SERVENT
+  AC_REQUIRE([gl_HEADER_SYS_SOCKET])
+  if test "$ac_cv_header_winsock2_h" = yes; then
+    AC_LIBOBJ([setsockopt])
+  fi
+  gl_SYS_SOCKET_MODULE_INDICATOR([setsockopt])
   gl_SIZE_MAX
+  gl_FUNC_SNPRINTF
+  gl_STDIO_MODULE_INDICATOR([snprintf])
+  AC_REQUIRE([gl_HEADER_SYS_SOCKET])
+  if test "$ac_cv_header_winsock2_h" = yes; then
+    AC_LIBOBJ([socket])
+  fi
+  gl_SYS_SOCKET_MODULE_INDICATOR([socket])
+  gl_SOCKETS
   gl_TYPE_SOCKLEN_T
   gl_STDARG_H
   AM_STDBOOL_H
@@ -89,6 +128,8 @@ AC_DEFUN([gl_INIT],
   gl_STDLIB_H
   gl_HEADER_SYS_SOCKET
   gl_MODULE_INDICATOR([sys_socket])
+  AC_PROG_MKDIR_P
+  gl_HEADER_SYS_TIME_H
   AC_PROG_MKDIR_P
   gl_SYSEXITS
   gl_UNISTD_H
@@ -239,6 +280,7 @@ AC_DEFUN([gl_FILE_LIST], [
   build-aux/config.rpath
   build-aux/link-warning.h
   lib/alloca.in.h
+  lib/arpa_inet.in.h
   lib/asnprintf.c
   lib/asprintf.c
   lib/base64.c
@@ -246,11 +288,14 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/c-ctype.c
   lib/c-ctype.h
   lib/close.c
+  lib/connect.c
   lib/errno.in.h
   lib/fclose.c
   lib/float+.h
   lib/float.in.h
   lib/fseeko.c
+  lib/gai_strerror.c
+  lib/getaddrinfo.c
   lib/getdelim.c
   lib/gethostname.c
   lib/getline.c
@@ -263,17 +308,27 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/gettext.h
   lib/hmac-md5.c
   lib/hmac.h
+  lib/inet_ntop.c
   lib/lseek.c
   lib/md5.c
   lib/md5.h
   lib/memxor.c
   lib/memxor.h
+  lib/netdb.in.h
+  lib/netinet_in.in.h
   lib/printf-args.c
   lib/printf-args.h
   lib/printf-parse.c
   lib/printf-parse.h
   lib/realloc.c
+  lib/recv.c
+  lib/send.c
+  lib/setsockopt.c
   lib/size_max.h
+  lib/snprintf.c
+  lib/socket.c
+  lib/sockets.c
+  lib/sockets.h
   lib/stdarg.in.h
   lib/stdbool.in.h
   lib/stdint.in.h
@@ -282,6 +337,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/stdio.in.h
   lib/stdlib.in.h
   lib/sys_socket.in.h
+  lib/sys_time.in.h
   lib/sysexits.in.h
   lib/unistd.in.h
   lib/vasnprintf.c
@@ -296,6 +352,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/xvasprintf.c
   lib/xvasprintf.h
   m4/alloca.m4
+  m4/arpa_inet_h.m4
   m4/base64.m4
   m4/close.m4
   m4/codeset.m4
@@ -304,6 +361,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/fclose.m4
   m4/float_h.m4
   m4/fseeko.m4
+  m4/getaddrinfo.m4
   m4/getdelim.m4
   m4/gethostname.m4
   m4/getline.m4
@@ -314,8 +372,10 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/glibc21.m4
   m4/gnulib-common.m4
   m4/hmac-md5.m4
+  m4/hostent.m4
   m4/iconv.m4
   m4/include_next.m4
+  m4/inet_ntop.m4
   m4/inline.m4
   m4/intdiv0.m4
   m4/intl.m4
@@ -335,13 +395,19 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/malloc.m4
   m4/md5.m4
   m4/memxor.m4
+  m4/netdb_h.m4
+  m4/netinet_in_h.m4
   m4/nls.m4
   m4/onceonly.m4
   m4/po.m4
   m4/printf-posix.m4
+  m4/printf.m4
   m4/progtest.m4
   m4/realloc.m4
+  m4/servent.m4
   m4/size_max.m4
+  m4/snprintf.m4
+  m4/sockets.m4
   m4/socklen.m4
   m4/sockpfaf.m4
   m4/stdarg.m4
@@ -351,6 +417,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/stdio_h.m4
   m4/stdlib_h.m4
   m4/sys_socket_h.m4
+  m4/sys_time_h.m4
   m4/sysexits.m4
   m4/threadlib.m4
   m4/uintmax_t.m4

@@ -32,6 +32,7 @@
 #include <strings.h>
 #include <ctype.h>
 #include <errno.h>
+#include <unistd.h>
 
 #ifdef HAVE_LIBGSASL
 # include <gsasl.h>
@@ -1892,5 +1893,5 @@ void smtp_close(smtp_server_t *srv)
 	tls_close(&srv->tls);
     }
 #endif /* HAVE_TLS */
-    net_close_socket(srv->fd);
+    close(srv->fd);
 }

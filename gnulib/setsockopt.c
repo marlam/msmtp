@@ -39,7 +39,7 @@ rpl_setsockopt (int fd, int level, int optname, const void *optval, int optlen)
 
   if (level == SOL_SOCKET && (optname == SO_RCVTIMEO || optname == SO_SNDTIMEO))
     {
-      struct timeval *tv = optval;
+      const struct timeval *tv = optval;
       int milliseconds = tv->tv_sec * 1000 + tv->tv_usec / 1000;
       r = setsockopt (sock, level, optname, &milliseconds, sizeof(int));
     }

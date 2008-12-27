@@ -15,7 +15,7 @@
 
 
 # Specification in the form of a command-line invocation:
-#   gnulib-tool --import --dir=. --local-dir=/home/martin/projects/gnulib/gnulib-local --lib=libgnu --source-base=gnulib --m4-base=gnulib/m4 --doc-base=doc --tests-base=tests --aux-dir=build-aux --avoid=xalloc-die --no-libtool --macro-prefix=gl base64 c-ctype close connect crypto/hmac-md5 crypto/md5 getaddrinfo gethostname getopt getpass-gnu gettext havelib recv send setsockopt socket sockets socklen sysexits xalloc xvasprintf
+#   gnulib-tool --import --dir=. --local-dir=/home/martin/projects/gnulib/gnulib-local --lib=libgnu --source-base=gnulib --m4-base=gnulib/m4 --doc-base=doc --tests-base=tests --aux-dir=build-aux --avoid=xalloc-die --no-libtool --macro-prefix=gl base64 c-ctype close connect crypto/hmac-md5 crypto/md5 getaddrinfo gethostname getopt getpass-gnu gettext havelib recv send setsockopt socket sockets socklen strerror sysexits xalloc xvasprintf
 
 # Specification in the form of a few gnulib-tool.m4 macro invocations:
 gl_LOCAL_DIR([/home/martin/projects/gnulib/gnulib-local])
@@ -38,6 +38,7 @@ gl_MODULES([
   socket
   sockets
   socklen
+  strerror
   sysexits
   xalloc
   xvasprintf

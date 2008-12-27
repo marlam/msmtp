@@ -126,6 +126,9 @@ AC_DEFUN([gl_INIT],
   gl_STDINT_H
   gl_STDIO_H
   gl_STDLIB_H
+  gl_FUNC_STRERROR
+  gl_STRING_MODULE_INDICATOR([strerror])
+  gl_HEADER_STRING_H
   gl_HEADER_SYS_SOCKET
   gl_MODULE_INDICATOR([sys_socket])
   AC_PROG_MKDIR_P
@@ -309,6 +312,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/hmac-md5.c
   lib/hmac.h
   lib/inet_ntop.c
+  lib/intprops.h
   lib/lseek.c
   lib/md5.c
   lib/md5.h
@@ -336,6 +340,8 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/stdio-write.c
   lib/stdio.in.h
   lib/stdlib.in.h
+  lib/strerror.c
+  lib/string.in.h
   lib/sys_socket.in.h
   lib/sys_time.in.h
   lib/sysexits.in.h
@@ -416,6 +422,8 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/stdint_h.m4
   m4/stdio_h.m4
   m4/stdlib_h.m4
+  m4/strerror.m4
+  m4/string_h.m4
   m4/sys_socket_h.m4
   m4/sys_time_h.m4
   m4/sysexits.m4

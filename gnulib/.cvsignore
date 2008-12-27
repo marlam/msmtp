@@ -41,3 +41,6 @@ socket.c
 sockets.c
 sockets.h
 sys_time.in.h
+intprops.h
+strerror.c
+string.in.h

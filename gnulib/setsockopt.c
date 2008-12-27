@@ -23,7 +23,7 @@
 /* Get winsock2.h. */
 #include <sys/socket.h>
 
-/* Get struct timeval */
+/* Get struct timeval. */
 #include <sys/time.h>
 
 /* Get set_winsock_errno, FD_TO_SOCKET etc. */
@@ -41,7 +41,7 @@ rpl_setsockopt (int fd, int level, int optname, const void *optval, int optlen)
     {
       const struct timeval *tv = optval;
       int milliseconds = tv->tv_sec * 1000 + tv->tv_usec / 1000;
-      r = setsockopt (sock, level, optname, &milliseconds, sizeof(int));
+      r = setsockopt (sock, level, optname, &milliseconds, sizeof (int));
     }
   else
     {

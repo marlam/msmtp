@@ -25,3 +25,5 @@ servent.m4
 snprintf.m4
 sockets.m4
 sys_time_h.m4
+strerror.m4
+string_h.m4

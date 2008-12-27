@@ -1,6 +1,7 @@
 Version 1.4.17:
 - Msmtp now also reads SYSCONFDIR/netrc if the password was not found in 
   ~/.netrc.
+- Support for the GNOME keyring was added by Satoru SATOH.
 
 Version 1.4.16:
 - No significant changes.

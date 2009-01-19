@@ -27,3 +27,14 @@ sockets.m4
 sys_time_h.m4
 strerror.m4
 string_h.m4
+clock_time.m4
+gettime.m4
+gettimeofday.m4
+nanosleep.m4
+sigaction.m4
+signal_h.m4
+signalblocking.m4
+sys_select_h.m4
+time_h.m4
+timespec.m4
+multiarch.m4

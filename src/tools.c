@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2004, 2005, 2006, 2007
+ * Copyright (C) 2004, 2005, 2006, 2007, 2009
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -567,24 +567,12 @@ error_exit:
  * see tools.h
  */
 
-/* Helper function that sleeps for the tenth of a second */
-static void sleep_tenth_second(void)
-{
-#ifdef W32_NATIVE
-    Sleep(100);
-#elif defined DJGPP
-    usleep(100000);
-#else /* POSIX */
-    struct timespec tenth_second = { 0, 100000000 };
-    nanosleep(&tenth_second, NULL);
-#endif
-}
-
 int lock_file(FILE *f, int lock_type, int timeout)
 {
     int fd;
     int lock_success;
     int tenth_seconds;
+    struct timespec tenth_second = { 0, 100000000 };
 #ifndef W32_NATIVE
     struct flock lock;
 #endif /* not W32_NATIVE */
@@ -612,7 +600,7 @@ int lock_file(FILE *f, int lock_type, int timeout)
 	}
 	else
 	{
-	    sleep_tenth_second();
+	    nanosleep(&tenth_second, NULL);
 	    tenth_seconds++;
 	}
     }

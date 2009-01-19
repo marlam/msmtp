@@ -1,5 +1,5 @@
-# stdint.m4 serial 31
-dnl Copyright (C) 2001-2008 Free Software Foundation, Inc.
+# stdint.m4 serial 33
+dnl Copyright (C) 2001-2009 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -9,7 +9,7 @@ dnl Test whether <stdint.h> is supported or must be substituted.
 
 AC_DEFUN([gl_STDINT_H],
 [
-  AC_PREREQ(2.59)dnl
+  AC_PREREQ([2.59])dnl
 
   dnl Check for long long int and unsigned long long int.
   AC_REQUIRE([AC_TYPE_LONG_LONG_INT])
@@ -229,7 +229,7 @@ struct s {
     gl_STDINT_TYPE_PROPERTIES
     STDINT_H=stdint.h
   fi
-  AC_SUBST(STDINT_H)
+  AC_SUBST([STDINT_H])
 ])
 
 dnl gl_STDINT_BITSIZEOF(TYPES, INCLUDES)
@@ -292,7 +292,7 @@ AC_DEFUN([gl_CHECK_TYPES_SIGNED],
     eval result=\$gl_cv_type_${gltype}_signed
     GLTYPE=`echo $gltype | tr 'abcdefghijklmnopqrstuvwxyz ' 'ABCDEFGHIJKLMNOPQRSTUVWXYZ_'`
     if test "$result" = yes; then
-      AC_DEFINE_UNQUOTED([HAVE_SIGNED_${GLTYPE}], 1)
+      AC_DEFINE_UNQUOTED([HAVE_SIGNED_${GLTYPE}], [1])
       eval HAVE_SIGNED_${GLTYPE}=1
     else
       eval HAVE_SIGNED_${GLTYPE}=0
@@ -348,7 +348,7 @@ AC_DEFUN([gl_INTEGER_TYPE_SUFFIX],
     eval result=\$gl_cv_type_${gltype}_suffix
     test "$result" = no && result=
     eval ${GLTYPE}_SUFFIX=\$result
-    AC_DEFINE_UNQUOTED([${GLTYPE}_SUFFIX], $result)
+    AC_DEFINE_UNQUOTED([${GLTYPE}_SUFFIX], [$result])
   done
   m4_foreach_w([gltype], [$1],
     [AC_SUBST(translit(gltype,[abcdefghijklmnopqrstuvwxyz ],[ABCDEFGHIJKLMNOPQRSTUVWXYZ_])[_SUFFIX])])
@@ -373,13 +373,22 @@ dnl Compute HAVE_SIGNED_t, BITSIZEOF_t and t_SUFFIX, for all the types t
 dnl of interest to stdint.in.h.
 AC_DEFUN([gl_STDINT_TYPE_PROPERTIES],
 [
-  gl_STDINT_BITSIZEOF([ptrdiff_t sig_atomic_t size_t wchar_t wint_t],
+  AC_REQUIRE([gl_MULTIARCH])
+  if test $APPLE_UNIVERSAL_BUILD = 0; then
+    gl_STDINT_BITSIZEOF([ptrdiff_t size_t],
+      [gl_STDINT_INCLUDES])
+  fi
+  gl_STDINT_BITSIZEOF([sig_atomic_t wchar_t wint_t],
     [gl_STDINT_INCLUDES])
   gl_CHECK_TYPES_SIGNED([sig_atomic_t wchar_t wint_t],
     [gl_STDINT_INCLUDES])
   gl_cv_type_ptrdiff_t_signed=yes
   gl_cv_type_size_t_signed=no
-  gl_INTEGER_TYPE_SUFFIX([ptrdiff_t sig_atomic_t size_t wchar_t wint_t],
+  if test $APPLE_UNIVERSAL_BUILD = 0; then
+    gl_INTEGER_TYPE_SUFFIX([ptrdiff_t size_t],
+      [gl_STDINT_INCLUDES])
+  fi
+  gl_INTEGER_TYPE_SUFFIX([sig_atomic_t wchar_t wint_t],
     [gl_STDINT_INCLUDES])
 ])
 

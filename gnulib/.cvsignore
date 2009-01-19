@@ -44,3 +44,15 @@ sys_time.in.h
 intprops.h
 strerror.c
 string.in.h
+gettime.c
+gettimeofday.c
+nanosleep.c
+sig-handler.h
+sigaction.c
+signal.in.h
+sigprocmask.c
+sys_select.in.h
+time.in.h
+timespec.h
+alloca.c
+winsock-select.c

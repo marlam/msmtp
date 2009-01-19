@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008
+ * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2009
  * Martin Lambers <marlam@marlam.de>
  * Jay Soffian <jaysoffian@gmail.com> (Mac OS X keychain support)
  * Satoru SATOH <satoru.satoh@gmail.com> (GNOME keyring support)
@@ -38,25 +38,14 @@ extern char *optarg;
 extern int optind;
 #include <unistd.h>
 #include <sysexits.h>
+#include <netdb.h>
+#include <arpa/inet.h>
+#include <fcntl.h>
 #ifdef ENABLE_NLS
 # include <locale.h>
 #endif
 #ifdef HAVE_SYSLOG
 # include <syslog.h>
-#endif
-#ifdef W32_NATIVE
-# include <io.h>
-# include <fcntl.h>
-# include <windows.h>
-# include <winsock2.h>
-#elif defined DJGPP
-# include <io.h>
-# include <fcntl.h>
-# include <netdb.h>
-# include <arpa/inet.h>
-#else /* UNIX */
-# include <netdb.h>
-# include <arpa/inet.h>
 #endif
 #ifdef HAVE_GNOMEKEYRING
 # include <gnome-keyring.h>
@@ -3417,10 +3406,7 @@ int main(int argc, char *argv[])
 
     
     /* Avoid the side effects of text mode interpretations on DOS systems. */
-#ifdef W32_NATIVE
-    _setmode(_fileno(stdin), _O_BINARY);
-    _fmode = _O_BINARY;
-#elif defined DJGPP
+#if defined W32_NATIVE || defined DJGPP
     setmode(fileno(stdin), O_BINARY);
     _fmode = O_BINARY;
 #endif

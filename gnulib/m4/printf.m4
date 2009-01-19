@@ -1,5 +1,5 @@
-# printf.m4 serial 24
-dnl Copyright (C) 2003, 2007-2008 Free Software Foundation, Inc.
+# printf.m4 serial 27
+dnl Copyright (C) 2003, 2007-2009 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -230,7 +230,7 @@ AC_DEFUN([gl_PRINTF_INFINITE_LONG_DOUBLE],
   dnl The user can set or unset the variable gl_printf_safe to indicate
   dnl that he wishes a safe handling of non-IEEE-754 'long double' values.
   if test -n "$gl_printf_safe"; then
-    AC_DEFINE([CHECK_PRINTF_SAFE], 1,
+    AC_DEFINE([CHECK_PRINTF_SAFE], [1],
       [Define if you wish *printf() functions that have a safe handling of
        non-IEEE-754 'long double' values.])
   fi
@@ -811,13 +811,15 @@ dnl Result is gl_cv_func_printf_enomem.
 AC_DEFUN([gl_PRINTF_ENOMEM],
 [
   AC_REQUIRE([AC_PROG_CC])
+  AC_REQUIRE([gl_MULTIARCH])
   AC_REQUIRE([AC_CANONICAL_HOST]) dnl for cross-compiles
   AC_CACHE_CHECK([whether printf survives out-of-memory conditions],
     [gl_cv_func_printf_enomem],
     [
       gl_cv_func_printf_enomem="guessing no"
       if test "$cross_compiling" = no; then
-        AC_LANG_CONFTEST([AC_LANG_SOURCE([
+        if test $APPLE_UNIVERSAL_BUILD = 0; then
+          AC_LANG_CONFTEST([AC_LANG_SOURCE([
 ]GL_NOCRASH[
 changequote(,)dnl
 #include <stdio.h>
@@ -866,21 +868,27 @@ int main()
 }
 changequote([,])dnl
           ])])
-        if AC_TRY_EVAL([ac_link]) && test -s conftest$ac_exeext; then
-          (./conftest
-           result=$?
-           if test $result != 0 && test $result != 77; then result=1; fi
-           exit $result
-          ) >/dev/null 2>/dev/null
-          case $? in
-            0) gl_cv_func_printf_enomem="yes" ;;
-            77) gl_cv_func_printf_enomem="guessing no" ;;
-            *) gl_cv_func_printf_enomem="no" ;;
-          esac
+          if AC_TRY_EVAL([ac_link]) && test -s conftest$ac_exeext; then
+            (./conftest
+             result=$?
+             if test $result != 0 && test $result != 77; then result=1; fi
+             exit $result
+            ) >/dev/null 2>/dev/null
+            case $? in
+              0) gl_cv_func_printf_enomem="yes" ;;
+              77) gl_cv_func_printf_enomem="guessing no" ;;
+              *) gl_cv_func_printf_enomem="no" ;;
+            esac
+          else
+            gl_cv_func_printf_enomem="guessing no"
+          fi
+          rm -fr conftest*
         else
+          dnl A universal build on Apple MacOS X platforms.
+          dnl The result would be 'no' in 32-bit mode and 'yes' in 64-bit mode.
+          dnl But we need a configuration result that is valid in both modes.
           gl_cv_func_printf_enomem="guessing no"
         fi
-        rm -fr conftest*
       fi
       if test "$gl_cv_func_printf_enomem" = "guessing no"; then
 changequote(,)dnl
@@ -1134,7 +1142,7 @@ AC_DEFUN([gl_SNPRINTF_SIZE1],
 #include <stdio.h>
 int main()
 {
-  static char buf[8] = "DEADBEEF";
+  static char buf[8] = { 'D', 'E', 'A', 'D', 'B', 'E', 'E', 'F' };
   snprintf (buf, 1, "%d", 12345);
   return buf[1] != 'E';
 }],
@@ -1152,7 +1160,7 @@ dnl     ---------------------------------------------------------------------
 dnl     #include <stdio.h>
 dnl     int main()
 dnl     {
-dnl       static char buf[8] = "DEADBEEF";
+dnl       static char buf[8] = { 'D', 'E', 'A', 'D', 'B', 'E', 'E', 'F' };
 dnl       snprintf (buf, 0, "%d", 12345);
 dnl       return buf[0] != 'D';
 dnl     }
@@ -1173,7 +1181,7 @@ dnl       return ret;
 dnl     }
 dnl     int main()
 dnl     {
-dnl       static char buf[8] = "DEADBEEF";
+dnl       static char buf[8] = { 'D', 'E', 'A', 'D', 'B', 'E', 'E', 'F' };
 dnl       my_snprintf (buf, 0, "%d", 12345);
 dnl       return buf[0] != 'D';
 dnl     }
@@ -1201,7 +1209,7 @@ static int my_snprintf (char *buf, int size, const char *format, ...)
 }
 int main()
 {
-  static char buf[8] = "DEADBEEF";
+  static char buf[8] = { 'D', 'E', 'A', 'D', 'B', 'E', 'E', 'F' };
   my_snprintf (buf, 0, "%d", 12345);
   return buf[0] != 'D';
 }],

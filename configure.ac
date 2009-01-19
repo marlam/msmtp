@@ -3,7 +3,7 @@ dnl Process this file with autoconf to produce a configure script.
 #
 # This file is part of msmtp, an SMTP client.
 #
-# Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008
+# Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008, 2009
 # Christophe Nowicki
 # Martin Lambers <marlam@marlam.de>
 # Jay Soffian <jaysoffian@gmail.com> (Mac OS X keychain support)
@@ -48,7 +48,6 @@ AM_GNU_GETTEXT([external])
 
 dnl Functions
 AC_CHECK_FUNCS([syslog], [], [])
-AC_SEARCH_LIBS([nanosleep], [rt posix4])
 
 dnl TLS/SSL
 have_tls=no

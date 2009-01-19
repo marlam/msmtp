@@ -1,5 +1,5 @@
-# threadlib.m4 serial 1 (gettext-0.18)
-dnl Copyright (C) 2005-2008 Free Software Foundation, Inc.
+# threadlib.m4 serial 3 (gettext-0.18)
+dnl Copyright (C) 2005-2009 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -45,7 +45,7 @@ AC_DEFUN([gl_THREADLIB_EARLY_BODY],
     [AC_REQUIRE([AC_GNU_SOURCE])])
   dnl Check for multithreading.
   m4_divert_text([DEFAULTS], [gl_use_threads_default=])
-  AC_ARG_ENABLE(threads,
+  AC_ARG_ENABLE([threads],
 AC_HELP_STRING([--enable-threads={posix|solaris|pth|win32}], [specify multithreading API])
 AC_HELP_STRING([--disable-threads], [build without multithread safety]),
     [gl_use_threads=$enableval],
@@ -104,7 +104,8 @@ AC_DEFUN([gl_THREADLIB_BODY],
     if test "$gl_use_threads" = yes || test "$gl_use_threads" = posix; then
       # On OSF/1, the compiler needs the flag -pthread or -D_REENTRANT so that
       # it groks <pthread.h>. It's added above, in gl_THREADLIB_EARLY_BODY.
-      AC_CHECK_HEADER(pthread.h, gl_have_pthread_h=yes, gl_have_pthread_h=no)
+      AC_CHECK_HEADER([pthread.h],
+        [gl_have_pthread_h=yes], [gl_have_pthread_h=no])
       if test "$gl_have_pthread_h" = yes; then
         # Other possible tests:
         #   -lpthreads (FSU threads, PCthreads)
@@ -122,7 +123,7 @@ AC_DEFUN([gl_THREADLIB_BODY],
         if test -n "$gl_have_pthread"; then
           # The program links fine without libpthread. But it may actually
           # need to link with libpthread in order to create multiple threads.
-          AC_CHECK_LIB(pthread, pthread_kill,
+          AC_CHECK_LIB([pthread], [pthread_kill],
             [LIBMULTITHREAD=-lpthread LTLIBMULTITHREAD=-lpthread
              # On Solaris and HP-UX, most pthread functions exist also in libc.
              # Therefore pthread_in_use() needs to actually try to create a
@@ -130,19 +131,19 @@ AC_DEFUN([gl_THREADLIB_BODY],
              # pthread_create will actually create a thread.
              case "$host_os" in
                solaris* | hpux*)
-                 AC_DEFINE([PTHREAD_IN_USE_DETECTION_HARD], 1,
+                 AC_DEFINE([PTHREAD_IN_USE_DETECTION_HARD], [1],
                    [Define if the pthread_in_use() detection is hard.])
              esac
             ])
         else
           # Some library is needed. Try libpthread and libc_r.
-          AC_CHECK_LIB(pthread, pthread_kill,
+          AC_CHECK_LIB([pthread], [pthread_kill],
             [gl_have_pthread=yes
              LIBTHREAD=-lpthread LTLIBTHREAD=-lpthread
              LIBMULTITHREAD=-lpthread LTLIBMULTITHREAD=-lpthread])
           if test -z "$gl_have_pthread"; then
             # For FreeBSD 4.
-            AC_CHECK_LIB(c_r, pthread_kill,
+            AC_CHECK_LIB([c_r], [pthread_kill],
               [gl_have_pthread=yes
                LIBTHREAD=-lc_r LTLIBTHREAD=-lc_r
                LIBMULTITHREAD=-lc_r LTLIBMULTITHREAD=-lc_r])
@@ -150,11 +151,11 @@ AC_DEFUN([gl_THREADLIB_BODY],
         fi
         if test -n "$gl_have_pthread"; then
           gl_threads_api=posix
-          AC_DEFINE([USE_POSIX_THREADS], 1,
+          AC_DEFINE([USE_POSIX_THREADS], [1],
             [Define if the POSIX multithreading library can be used.])
           if test -n "$LIBMULTITHREAD" || test -n "$LTLIBMULTITHREAD"; then
             if test $gl_have_weak = yes; then
-              AC_DEFINE([USE_POSIX_THREADS_WEAK], 1,
+              AC_DEFINE([USE_POSIX_THREADS_WEAK], [1],
                 [Define if references to the POSIX multithreading library should be made weak.])
               LIBTHREAD=
               LTLIBTHREAD=
@@ -179,10 +180,10 @@ AC_DEFUN([gl_THREADLIB_BODY],
           LTLIBTHREAD=-lthread
           LIBMULTITHREAD="$LIBTHREAD"
           LTLIBMULTITHREAD="$LTLIBTHREAD"
-          AC_DEFINE([USE_SOLARIS_THREADS], 1,
+          AC_DEFINE([USE_SOLARIS_THREADS], [1],
             [Define if the old Solaris multithreading library can be used.])
           if test $gl_have_weak = yes; then
-            AC_DEFINE([USE_SOLARIS_THREADS_WEAK], 1,
+            AC_DEFINE([USE_SOLARIS_THREADS_WEAK], [1],
               [Define if references to the old Solaris multithreading library should be made weak.])
             LIBTHREAD=
             LTLIBTHREAD=
@@ -192,11 +193,11 @@ AC_DEFUN([gl_THREADLIB_BODY],
     fi
     if test "$gl_use_threads" = pth; then
       gl_save_CPPFLAGS="$CPPFLAGS"
-      AC_LIB_LINKFLAGS(pth)
+      AC_LIB_LINKFLAGS([pth])
       gl_have_pth=
       gl_save_LIBS="$LIBS"
       LIBS="$LIBS -lpth"
-      AC_TRY_LINK([#include <pth.h>], [pth_self();], gl_have_pth=yes)
+      AC_TRY_LINK([#include <pth.h>], [pth_self();], [gl_have_pth=yes])
       LIBS="$gl_save_LIBS"
       if test -n "$gl_have_pth"; then
         gl_threads_api=pth
@@ -204,11 +205,11 @@ AC_DEFUN([gl_THREADLIB_BODY],
         LTLIBTHREAD="$LTLIBPTH"
         LIBMULTITHREAD="$LIBTHREAD"
         LTLIBMULTITHREAD="$LTLIBTHREAD"
-        AC_DEFINE([USE_PTH_THREADS], 1,
+        AC_DEFINE([USE_PTH_THREADS], [1],
           [Define if the GNU Pth multithreading library can be used.])
         if test -n "$LIBMULTITHREAD" || test -n "$LTLIBMULTITHREAD"; then
           if test $gl_have_weak = yes; then
-            AC_DEFINE([USE_PTH_THREADS_WEAK], 1,
+            AC_DEFINE([USE_PTH_THREADS_WEAK], [1],
               [Define if references to the GNU Pth multithreading library should be made weak.])
             LIBTHREAD=
             LTLIBTHREAD=
@@ -226,7 +227,7 @@ AC_DEFUN([gl_THREADLIB_BODY],
              esac
            }; then
           gl_threads_api=win32
-          AC_DEFINE([USE_WIN32_THREADS], 1,
+          AC_DEFINE([USE_WIN32_THREADS], [1],
             [Define if the Win32 multithreading API can be used.])
         fi
       fi
@@ -234,10 +235,10 @@ AC_DEFUN([gl_THREADLIB_BODY],
   fi
   AC_MSG_CHECKING([for multithread API to use])
   AC_MSG_RESULT([$gl_threads_api])
-  AC_SUBST(LIBTHREAD)
-  AC_SUBST(LTLIBTHREAD)
-  AC_SUBST(LIBMULTITHREAD)
-  AC_SUBST(LTLIBMULTITHREAD)
+  AC_SUBST([LIBTHREAD])
+  AC_SUBST([LTLIBTHREAD])
+  AC_SUBST([LIBMULTITHREAD])
+  AC_SUBST([LTLIBMULTITHREAD])
 ])
 
 AC_DEFUN([gl_THREADLIB],

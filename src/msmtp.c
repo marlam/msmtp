@@ -83,7 +83,7 @@ extern int optind;
 #else /* UNIX */
 #define SYSCONFFILE	"msmtprc"
 #define USERCONFFILE	".msmtprc"
-#define SYSNETRCFILE	".netrc"
+#define SYSNETRCFILE	"netrc"
 #define USERNETRCFILE	".netrc"
 #endif
 

@@ -1,7 +1,9 @@
 Version 1.4.18:
+- Update gnulib to 2009-03-07. Remove gnulib modules fseek/fseeko/lseek because
+  they cause errors on MinGW: files opened with "r+" cannot be written to.
+  Provide our own fseeko instead if it does not exist; see configure.ac.
 - Use "netrc" as SYSNETRCFILE, not ".netrc". Reported by Jim Pryor.
 - Use more gnulib modules to remove more W32 workarounds from the source.
-- Update gnulib to 2009-01-18.
 - Add missing gnulib module strerror for meaningful error messages on W32.
 
 Version 1.4.17:

@@ -43,6 +43,19 @@ case "${target}" in *-*-mingw32*) windows=yes ;; *) windows=no ;; esac
 dnl gnulib 
 gl_INIT
 
+dnl We provide a replacement for the fseeko() function ourselves instead
+dnl of using the gnulib module because the gnulib module has a bug;
+dnl see http://article.gmane.org/gmane.comp.lib.gnulib.bugs/16923
+AC_CHECK_FUNCS([fseeko fseeko64])
+AH_VERBATIM([fseeko], [
+#ifndef HAVE_FSEEKO
+# ifdef HAVE_FSEEKO64
+#  define fseeko(s,o,w) fseeko64(s,o,w)
+# else
+#  define fseeko(s,o,w) fseek(s,o,w)
+# endif
+#endif])
+
 dnl Gettext
 AM_GNU_GETTEXT([external])
 

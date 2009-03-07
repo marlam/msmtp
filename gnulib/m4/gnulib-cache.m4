@@ -15,10 +15,10 @@
 
 
 # Specification in the form of a command-line invocation:
-#   gnulib-tool --import --dir=. --local-dir=/home/martin/projects/gnulib/gnulib-local --lib=libgnu --source-base=gnulib --m4-base=gnulib/m4 --doc-base=doc --tests-base=tests --aux-dir=build-aux --avoid=xalloc-die --no-libtool --macro-prefix=gl arpa_inet base64 c-ctype close connect crypto/hmac-md5 crypto/md5 getaddrinfo gethostname getopt getpass-gnu gettext havelib nanosleep netdb recv select send setsockopt socket sockets socklen strerror sysexits xalloc xvasprintf
+#   gnulib-tool --import --dir=. --lib=libgnu --source-base=gnulib --m4-base=gnulib/m4 --doc-base=doc --tests-base=tests --aux-dir=build-aux --avoid=fseek --avoid=fseeko --avoid=lseek --avoid=xalloc-die --no-libtool --macro-prefix=gl --no-vc-files arpa_inet base64 c-ctype close connect crypto/hmac-md5 crypto/md5 getaddrinfo gethostname getopt getpass-gnu gettext havelib nanosleep netdb recv select send setsockopt socket sockets socklen strerror sysexits xalloc xvasprintf
 
 # Specification in the form of a few gnulib-tool.m4 macro invocations:
-gl_LOCAL_DIR([/home/martin/projects/gnulib/gnulib-local])
+gl_LOCAL_DIR([])
 gl_MODULES([
   arpa_inet
   base64
@@ -47,7 +47,7 @@ gl_MODULES([
   xalloc
   xvasprintf
 ])
-gl_AVOID([xalloc-die])
+gl_AVOID([fseek fseeko lseek xalloc-die])
 gl_SOURCE_BASE([gnulib])
 gl_M4_BASE([gnulib/m4])
 gl_PO_BASE([])
@@ -57,3 +57,4 @@ gl_LIB([libgnu])
 gl_MAKEFILE_NAME([])
 gl_MACRO_PREFIX([gl])
 gl_PO_DOMAIN([])
+gl_VC_FILES([false])

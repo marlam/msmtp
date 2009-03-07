@@ -3469,7 +3469,7 @@ int main(int argc, char *argv[])
 	    print_error("%s", msmtp_sanitize_string(errstr));
 	    goto exit;
 	}
-	if (fseek(tmpfile, 0L, SEEK_SET) != 0)
+	if (fseeko(tmpfile, 0, SEEK_SET) != 0)
 	{
 	    print_error(_("cannot rewind temporary file: %s"), 
 		    msmtp_sanitize_string(strerror(errno)));

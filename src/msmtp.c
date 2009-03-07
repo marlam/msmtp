@@ -2290,7 +2290,7 @@ void msmtp_print_version(void)
     free(userconffile);
     free(homedir);
     printf("\n");
-    printf(_("Copyright (C) 2008 Martin Lambers and others.\n"
+    printf(_("Copyright (C) 2009 Martin Lambers and others.\n"
 		"This is free software.  You may redistribute copies of "
 		    "it under the terms of\n"
 		"the GNU General Public License "

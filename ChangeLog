@@ -1,4 +1,5 @@
 Version 1.4.18:
+- Update gnulib to 2009-04-11.
 - Update gnulib to 2009-03-07. Remove gnulib modules fseek/fseeko/lseek because
   they cause errors on MinGW: files opened with "r+" cannot be written to.
   Provide our own fseeko instead if it does not exist; see configure.ac.

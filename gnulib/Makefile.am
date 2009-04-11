@@ -71,7 +71,7 @@ BUILT_SOURCES += $(ARPA_INET_H)
 
 # We need the following in order to create <arpa/inet.h> when the system
 # doesn't have one.
-arpa/inet.h:
+arpa/inet.h: arpa_inet.in.h
 	@MKDIR_P@ arpa
 	rm -f $@-t $@
 	{ echo '/* DO NOT EDIT! GENERATED AUTOMATICALLY! */'; \
@@ -109,11 +109,19 @@ libgnu_a_SOURCES += c-ctype.h c-ctype.c
 ## begin gnulib module close
 
 
-EXTRA_DIST += close.c w32sock.h
+EXTRA_DIST += close.c
 
 EXTRA_libgnu_a_SOURCES += close.c
 
 ## end   gnulib module close
+
+## begin gnulib module close-hook
+
+libgnu_a_SOURCES += close-hook.c
+
+EXTRA_DIST += close-hook.h
+
+## end   gnulib module close-hook
 
 ## begin gnulib module connect
 
@@ -425,9 +433,9 @@ EXTRA_libgnu_a_SOURCES += recv.c
 ## begin gnulib module select
 
 
-EXTRA_DIST += winsock-select.c
+EXTRA_DIST += select.c
 
-EXTRA_libgnu_a_SOURCES += winsock-select.c
+EXTRA_libgnu_a_SOURCES += select.c
 
 ## end   gnulib module select
 
@@ -478,6 +486,7 @@ signal.h: signal.in.h
 	      -e 's|@''HAVE_SIGINFO_T''@|$(HAVE_SIGINFO_T)|g' \
 	      -e 's|@''HAVE_SIGACTION''@|$(HAVE_SIGACTION)|g' \
 	      -e 's|@''HAVE_STRUCT_SIGACTION_SA_SIGACTION''@|$(HAVE_STRUCT_SIGACTION_SA_SIGACTION)|g' \
+	      -e 's|@''HAVE_TYPE_VOLATILE_SIG_ATOMIC_T''@|$(HAVE_TYPE_VOLATILE_SIG_ATOMIC_T)|g' \
 	      -e '/definition of GL_LINK_WARNING/r $(LINK_WARNING_H)' \
 	      < $(srcdir)/signal.in.h; \
 	} > $@-t
@@ -524,6 +533,8 @@ EXTRA_libgnu_a_SOURCES += socket.c
 ## begin gnulib module sockets
 
 libgnu_a_SOURCES += sockets.h sockets.c
+
+EXTRA_DIST += w32sock.h
 
 ## end   gnulib module sockets
 
@@ -860,6 +871,7 @@ sys/select.h: sys_select.in.h
 	      -e 's|@''HAVE_SYS_SELECT_H''@|$(HAVE_SYS_SELECT_H)|g' \
 	      -e 's|@''GNULIB_SELECT''@|$(GNULIB_SELECT)|g' \
 	      -e 's|@''HAVE_WINSOCK2_H''@|$(HAVE_WINSOCK2_H)|g' \
+	      -e 's|@''REPLACE_SELECT''@|$(REPLACE_SELECT)|g' \
 	      -e '/definition of GL_LINK_WARNING/r $(LINK_WARNING_H)' \
 	      < $(srcdir)/sys_select.in.h; \
 	} > $@-t

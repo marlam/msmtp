@@ -1799,18 +1799,18 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 			size_t converted_len = allocated - length;
 #  if DCHAR_IS_TCHAR
 			/* Convert from UTF-8 to locale encoding.  */
-			if (u8_conv_to_encoding (locale_charset (),
-						 iconveh_question_mark,
-						 arg, arg_end - arg, NULL,
-						 &converted, &converted_len)
-			    < 0)
+			converted =
+			  u8_conv_to_encoding (locale_charset (),
+					       iconveh_question_mark,
+					       arg, arg_end - arg, NULL,
+					       converted, &converted_len);
 #  else
 			/* Convert from UTF-8 to UTF-16/UTF-32.  */
 			converted =
 			  U8_TO_DCHAR (arg, arg_end - arg,
 				       converted, &converted_len);
-			if (converted == NULL)
 #  endif
+			if (converted == NULL)
 			  {
 			    int saved_errno = errno;
 			    if (!(result == resultbuf || result == NULL))
@@ -1927,18 +1927,18 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 			size_t converted_len = allocated - length;
 #  if DCHAR_IS_TCHAR
 			/* Convert from UTF-16 to locale encoding.  */
-			if (u16_conv_to_encoding (locale_charset (),
-						  iconveh_question_mark,
-						  arg, arg_end - arg, NULL,
-						  &converted, &converted_len)
-			    < 0)
+			converted =
+			  u16_conv_to_encoding (locale_charset (),
+						iconveh_question_mark,
+						arg, arg_end - arg, NULL,
+						converted, &converted_len);
 #  else
 			/* Convert from UTF-16 to UTF-8/UTF-32.  */
 			converted =
 			  U16_TO_DCHAR (arg, arg_end - arg,
 					converted, &converted_len);
-			if (converted == NULL)
 #  endif
+			if (converted == NULL)
 			  {
 			    int saved_errno = errno;
 			    if (!(result == resultbuf || result == NULL))
@@ -2055,18 +2055,18 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 			size_t converted_len = allocated - length;
 #  if DCHAR_IS_TCHAR
 			/* Convert from UTF-32 to locale encoding.  */
-			if (u32_conv_to_encoding (locale_charset (),
-						  iconveh_question_mark,
-						  arg, arg_end - arg, NULL,
-						  &converted, &converted_len)
-			    < 0)
+			converted =
+			  u32_conv_to_encoding (locale_charset (),
+						iconveh_question_mark,
+						arg, arg_end - arg, NULL,
+						converted, &converted_len);
 #  else
 			/* Convert from UTF-32 to UTF-8/UTF-16.  */
 			converted =
 			  U32_TO_DCHAR (arg, arg_end - arg,
 					converted, &converted_len);
-			if (converted == NULL)
 #  endif
+			if (converted == NULL)
 			  {
 			    int saved_errno = errno;
 			    if (!(result == resultbuf || result == NULL))
@@ -2493,14 +2493,13 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 		  }
 
 		  /* Convert from TCHAR_T[] to DCHAR_T[].  */
-		  tmpdst = NULL;
-		  tmpdst_len = 0;
-		  if (DCHAR_CONV_FROM_ENCODING (locale_charset (),
-						iconveh_question_mark,
-						tmpsrc, characters,
-						NULL,
-						&tmpdst, &tmpdst_len)
-		      < 0)
+		  tmpdst =
+		    DCHAR_CONV_FROM_ENCODING (locale_charset (),
+					      iconveh_question_mark,
+					      tmpsrc, characters,
+					      NULL,
+					      NULL, &tmpdst_len);
+		  if (tmpdst == NULL)
 		    {
 		      int saved_errno = errno;
 		      free (tmpsrc);
@@ -5216,14 +5215,13 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 # else
 			tmpsrc = tmp;
 # endif
-			tmpdst = NULL;
-			tmpdst_len = 0;
-			if (DCHAR_CONV_FROM_ENCODING (locale_charset (),
-						      iconveh_question_mark,
-						      tmpsrc, count,
-						      NULL,
-						      &tmpdst, &tmpdst_len)
-			    < 0)
+			tmpdst =
+			  DCHAR_CONV_FROM_ENCODING (locale_charset (),
+						    iconveh_question_mark,
+						    tmpsrc, count,
+						    NULL,
+						    NULL, &tmpdst_len);
+			if (tmpdst == NULL)
 			  {
 			    int saved_errno = errno;
 			    if (!(result == resultbuf || result == NULL))

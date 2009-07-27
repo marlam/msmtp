@@ -62,7 +62,7 @@ AC_DEFUN([gl_INIT],
   gl_SYS_SOCKET_MODULE_INDICATOR([connect])
   gl_HMAC_MD5
   gl_MD5
-  AC_REQUIRE([gl_HEADER_ERRNO_H])
+  gl_HEADER_ERRNO_H
   gl_FUNC_FCLOSE
   gl_STDIO_MODULE_INDICATOR([fclose])
   gl_FLOAT_H
@@ -75,6 +75,8 @@ AC_DEFUN([gl_INIT],
   gl_FUNC_GETLINE
   gl_STDIO_MODULE_INDICATOR([getline])
   gl_GETOPT
+  gl_FUNC_GETPAGESIZE
+  gl_UNISTD_MODULE_INDICATOR([getpagesize])
   gl_FUNC_GETPASS_GNU
   dnl you must add AM_GNU_GETTEXT([external]) or similar to configure.ac.
   AM_GNU_GETTEXT_VERSION([0.17])
@@ -86,8 +88,10 @@ AC_DEFUN([gl_INIT],
   gl_INET_NTOP
   gl_ARPA_INET_MODULE_INDICATOR([inet_ntop])
   gl_INLINE
+  gl_FUNC_MEMCHR
+  gl_STRING_MODULE_INDICATOR([memchr])
   gl_MEMXOR
-  AC_REQUIRE([gl_MULTIARCH])
+  gl_MULTIARCH
   gl_FUNC_NANOSLEEP
   gl_HEADER_NETDB
   gl_HEADER_NETINET_IN
@@ -291,6 +295,7 @@ AC_DEFUN([gltests_LIBSOURCES], [
 AC_DEFUN([gl_FILE_LIST], [
   build-aux/config.rpath
   build-aux/link-warning.h
+  lib/alignof.h
   lib/alloca.c
   lib/alloca.in.h
   lib/arpa_inet.in.h
@@ -317,6 +322,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/getopt.in.h
   lib/getopt1.c
   lib/getopt_int.h
+  lib/getpagesize.c
   lib/getpass.c
   lib/getpass.h
   lib/gettext.h
@@ -328,6 +334,8 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/intprops.h
   lib/md5.c
   lib/md5.h
+  lib/memchr.c
+  lib/memchr.valgrind
   lib/memxor.c
   lib/memxor.h
   lib/nanosleep.c
@@ -393,6 +401,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/gethostname.m4
   m4/getline.m4
   m4/getopt.m4
+  m4/getpagesize.m4
   m4/getpass.m4
   m4/gettext.m4
   m4/gettime.m4
@@ -422,7 +431,9 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/longlong.m4
   m4/malloc.m4
   m4/md5.m4
+  m4/memchr.m4
   m4/memxor.m4
+  m4/mmap-anon.m4
   m4/multiarch.m4
   m4/nanosleep.m4
   m4/netdb_h.m4

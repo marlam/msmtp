@@ -1,4 +1,4 @@
-# include_next.m4 serial 12
+# include_next.m4 serial 14
 dnl Copyright (C) 2006-2009 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
@@ -104,8 +104,14 @@ EOF
 # For each arg foo.h, if #include_next works, define NEXT_FOO_H to be
 # '<foo.h>'; otherwise define it to be
 # '"///usr/include/foo.h"', or whatever other absolute file name is suitable.
+# Also, if #include_next works as first preprocessing directive in a file,
+# define NEXT_AS_FIRST_DIRECTIVE_FOO_H to be '<foo.h>'; otherwise define it to
+# be
+# '"///usr/include/foo.h"', or whatever other absolute file name is suitable.
 # That way, a header file with the following line:
 #	#@INCLUDE_NEXT@ @NEXT_FOO_H@
+# or
+#	#@INCLUDE_NEXT_AS_FIRST_DIRECTIVE@ @NEXT_AS_FIRST_DIRECTIVE_FOO_H@
 # behaves (after sed substitution) as if it contained
 #	#include_next <foo.h>
 # even if the compiler does not support include_next.
@@ -123,15 +129,15 @@ AC_DEFUN([gl_CHECK_NEXT_HEADERS],
 
   m4_foreach_w([gl_HEADER_NAME], [$1],
     [AS_VAR_PUSHDEF([gl_next_header],
-		    [gl_cv_next_]m4_quote(m4_defn([gl_HEADER_NAME])))
+		    [gl_cv_next_]m4_defn([gl_HEADER_NAME]))
      if test $gl_cv_have_include_next = yes; then
        AS_VAR_SET([gl_next_header], ['<'gl_HEADER_NAME'>'])
      else
        AC_CACHE_CHECK(
-	 [absolute name of <]m4_quote(m4_defn([gl_HEADER_NAME]))[>],
-	 m4_quote(m4_defn([gl_next_header])),
+	 [absolute name of <]m4_defn([gl_HEADER_NAME])[>],
+	 m4_defn([gl_next_header]),
 	 [AS_VAR_PUSHDEF([gl_header_exists],
-			 [ac_cv_header_]m4_quote(m4_defn([gl_HEADER_NAME])))
+			 [ac_cv_header_]m4_defn([gl_HEADER_NAME]))
 	  if test AS_VAR_GET(gl_header_exists) = yes; then
 	    AC_LANG_CONFTEST(
 	      [AC_LANG_SOURCE(
@@ -153,8 +159,8 @@ AC_DEFUN([gl_CHECK_NEXT_HEADERS],
 	    dnl so use subshell.
 	    AS_VAR_SET([gl_next_header],
 	      ['"'`(eval "$gl_absname_cpp conftest.$ac_ext") 2>&AS_MESSAGE_LOG_FD |
-	       sed -n '\#/]m4_quote(m4_defn([gl_HEADER_NAME]))[#{
-		 s#.*"\(.*/]m4_quote(m4_defn([gl_HEADER_NAME]))[\)".*#\1#
+	       sed -n '\#/]m4_defn([gl_HEADER_NAME])[#{
+		 s#.*"\(.*/]m4_defn([gl_HEADER_NAME])[\)".*#\1#
 		 s#^/[^/]#//&#
 		 p
 		 q
@@ -165,7 +171,17 @@ AC_DEFUN([gl_CHECK_NEXT_HEADERS],
 	  AS_VAR_POPDEF([gl_header_exists])])
      fi
      AC_SUBST(
-       AS_TR_CPP([NEXT_]m4_quote(m4_defn([gl_HEADER_NAME]))),
+       AS_TR_CPP([NEXT_]m4_defn([gl_HEADER_NAME])),
        [AS_VAR_GET([gl_next_header])])
+     if test $gl_cv_have_include_next = yes || test $gl_cv_have_include_next = buggy; then
+       # INCLUDE_NEXT_AS_FIRST_DIRECTIVE='include_next'
+       gl_next_as_first_directive='<'gl_HEADER_NAME'>'
+     else
+       # INCLUDE_NEXT_AS_FIRST_DIRECTIVE='include'
+       gl_next_as_first_directive=AS_VAR_GET([gl_next_header])
+     fi
+     AC_SUBST(
+       AS_TR_CPP([NEXT_AS_FIRST_DIRECTIVE_]m4_defn([gl_HEADER_NAME])),
+       [$gl_next_as_first_directive])
      AS_VAR_POPDEF([gl_next_header])])
 ])

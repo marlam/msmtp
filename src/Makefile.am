@@ -13,6 +13,7 @@ msmtp_SOURCES = \
 
 msmtp_LDADD = @tls_obj@	\
 	$(top_builddir)/gnulib/libgnu.a \
+	$(GETHOSTNAME_LIB)		\
 	$(GETADDRINFO_LIB) 		\
 	$(HOSTENT_LIB)			\
 	$(SERVENT_LIB)			\

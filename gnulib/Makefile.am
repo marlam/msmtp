@@ -235,7 +235,7 @@ EXTRA_libgnu_a_SOURCES += getdelim.c
 ## begin gnulib module gethostname
 
 
-EXTRA_DIST += gethostname.c
+EXTRA_DIST += gethostname.c w32sock.h
 
 EXTRA_libgnu_a_SOURCES += gethostname.c
 

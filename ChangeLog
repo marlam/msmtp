@@ -1,5 +1,4 @@
 Version 1.4.18:
-- Avoid the gnulib module gethostname because it does not work with W32.
 - Add find_alias_for_msmtp.sh script by Jim Lofft.
 - Update gnulib to 2009-07-27.
 - Increase SMTP_MAXCMDLEN so that it is large enough to handle the potentially

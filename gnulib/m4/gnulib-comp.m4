@@ -70,8 +70,6 @@ AC_DEFUN([gl_INIT],
   gl_NETDB_MODULE_INDICATOR([getaddrinfo])
   gl_FUNC_GETDELIM
   gl_STDIO_MODULE_INDICATOR([getdelim])
-  gl_FUNC_GETHOSTNAME
-  gl_UNISTD_MODULE_INDICATOR([gethostname])
   gl_FUNC_GETLINE
   gl_STDIO_MODULE_INDICATOR([getline])
   gl_GETOPT
@@ -316,7 +314,6 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/gai_strerror.c
   lib/getaddrinfo.c
   lib/getdelim.c
-  lib/gethostname.c
   lib/getline.c
   lib/getopt.c
   lib/getopt.in.h
@@ -398,7 +395,6 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/float_h.m4
   m4/getaddrinfo.m4
   m4/getdelim.m4
-  m4/gethostname.m4
   m4/getline.m4
   m4/getopt.m4
   m4/getpagesize.m4

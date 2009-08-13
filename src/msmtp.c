@@ -2565,6 +2565,7 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
 		conf->pretend = 1;
 		break;
 		
+	    case 'v':
 	    case 'd':
 		conf->print_conf = 1;
 		conf->debug = 1;
@@ -3061,7 +3062,6 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
 	    case 'n':
 	    case 'O':
 	    case 'o':
-	    case 'v':
 		break;
 		
 	    /* unknown option */

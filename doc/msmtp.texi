@@ -1,6 +1,6 @@
 \input texinfo   @c -*-texinfo-*-
 @setfilename msmtp.info
-@set UPDATED March 7, 2009
+@set UPDATED August 13, 2009
 @set VERSION 1.4.18
 @settitle msmtp @value{VERSION}
 
@@ -434,8 +434,10 @@ Print help.
 @opindex --pretend
 Print the configuration settings that would be used, but do not take further
 action.  An asterisk ('*') will be printed instead of the password.
+@item -v
 @item -d
 @itemx --debug
+@opindex -v
 @opindex -d
 @opindex --debug
 Print lots of debugging information, including the whole conversation with the
@@ -622,7 +624,7 @@ recipient addresses, even if they start with a '-'.
 The following options are accepted but ignored for sendmail compatibility:
 @samp{-B@var{type}}, @samp{-bm}, @samp{-F@var{name}}, @samp{-G}, @samp{-hN},
 @samp{-i}, @samp{-L @var{tag}}, @samp{-m}, @samp{-n}, 
-@samp{-O option=@var{value}}, @samp{-ox @var{value}}, @samp{-v}
+@samp{-O option=@var{value}}, @samp{-ox @var{value}}
 
 @anchor{Choosing an account}
 @section Choosing an account

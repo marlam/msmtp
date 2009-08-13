@@ -1,4 +1,6 @@
 Version 1.4.18:
+- Script msmtpq: do not hardcode IP address of www.google.com when testing
+  connectivity. Use host name instead. Closes Debian bug #538328.
 - Make the option -v an alias for -d/--debug, for compatibility with other 
   implementations of the sendmail interface. Closes Debian bug #487272.
 - Add find_alias_for_msmtp.sh script by Jim Lofft.

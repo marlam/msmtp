@@ -177,8 +177,8 @@ send_mail() {    # <-- mail id
     return                           # give user the bad news (but allow continuation)
   fi
 
-  # verify net connection - ping ip addr of www.google.com
-  if /bin/ping -qnc 1 -w 2 64.233.183.147 &> /dev/null ; then  # connected
+  # verify net connection - ping www.google.com
+  if /bin/ping -qnc 1 -w 2 www.google.com &> /dev/null ; then  # connected
     #*#*#/usr/bin/msmtp $(/bin/cat "$MSF") < "$MLF" # this mail goes out the door
     #*#*#/usr/local/bin/msmtp $(/bin/cat "$MSF") < "$MLF" # this mail goes out the door
     ##$MSMTP $(/bin/cat "$MSF") < "$MLF" # this mail goes out the door

@@ -162,7 +162,7 @@ enqueue_mail() { # <-- all mail args ; mail text via TMP
 send_mail() {    # <-- all mail args ; mail text via TMP
   local -i RC                        # msmtp return code
 
-  if /bin/ping -qnc 1 -w 2 64.233.183.147 &> /dev/null ; then  # ping ip addr of www.google.com
+  if /bin/ping -qnc 1 -w 2 www.google.com &> /dev/null ; then  # ping www.google.com
     #*#*#/bin/cat "${BASE}.mail" | /usr/bin/msmtp "$@" > /dev/null  # send mail using queue .mail fil
     #*#*#/bin/cat "${BASE}.mail" | /usr/local/bin/msmtp "$@" > /dev/null  # send mail using queue .mail fil
     ##/bin/cat "${BASE}.mail" | $MSMTP "$@" > /dev/null  # send mail using queue .mail fil

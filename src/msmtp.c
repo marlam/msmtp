@@ -866,12 +866,12 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
 		printf(_("%ld bytes"), srv.cap.size);
 		if (srv.cap.size > 1024 * 1024)
 		{
-		    printf(_(" = %.2f MB"), 
-			    (float)srv.cap.size / (1024.0 * 1024.0));
+		    printf(_(" = %.2f MiB"),
+			    (float)srv.cap.size / (float)(1024 * 1024));
 		}
 		else if (srv.cap.size > 1024)
 		{
-		    printf(_(" = %.2f KB"), (float)srv.cap.size / 1024.0);
+		    printf(_(" = %.2f KiB"), (float)srv.cap.size / 1024.0f);
 		}
 		printf("\n");
 	    }

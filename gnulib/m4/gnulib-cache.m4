@@ -15,7 +15,7 @@
 
 
 # Specification in the form of a command-line invocation:
-#   gnulib-tool --import --dir=. --lib=libgnu --source-base=gnulib --m4-base=gnulib/m4 --doc-base=doc --tests-base=tests --aux-dir=build-aux --avoid=fseek --avoid=fseeko --avoid=lseek --avoid=xalloc-die --no-libtool --macro-prefix=gl --no-vc-files arpa_inet base64 c-ctype close connect crypto/hmac-md5 crypto/md5 getaddrinfo gethostname getopt getpass-gnu gettext havelib nanosleep netdb recv select send setsockopt socket sockets socklen strerror sysexits xalloc xvasprintf
+#   gnulib-tool --import --dir=. --lib=libgnu --source-base=gnulib --m4-base=gnulib/m4 --doc-base=doc --tests-base=tests --aux-dir=build-aux --avoid=fseek --avoid=fseeko --avoid=lseek --avoid=xalloc-die --no-libtool --macro-prefix=gl --no-vc-files arpa_inet base64 c-ctype close connect crypto/hmac-md5 crypto/md5 getaddrinfo gethostname getopt-gnu getpass-gnu gettext havelib nanosleep netdb recv select send setsockopt socket sockets socklen strerror sysexits xalloc xvasprintf
 
 # Specification in the form of a few gnulib-tool.m4 macro invocations:
 gl_LOCAL_DIR([])
@@ -29,7 +29,7 @@ gl_MODULES([
   crypto/md5
   getaddrinfo
   gethostname
-  getopt
+  getopt-gnu
   getpass-gnu
   gettext
   havelib

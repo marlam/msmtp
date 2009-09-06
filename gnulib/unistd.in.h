@@ -29,6 +29,9 @@
 #ifndef _GL_UNISTD_H
 #define _GL_UNISTD_H
 
+/* NetBSD 5.0 mis-defines NULL.  Also get size_t.  */
+#include <stddef.h>
+
 /* mingw doesn't define the SEEK_* or *_FILENO macros in <unistd.h>.  */
 #if !(defined SEEK_CUR && defined SEEK_END && defined SEEK_SET)
 # include <stdio.h>
@@ -41,6 +44,11 @@
 #if @GNULIB_WRITE@ && @REPLACE_WRITE@ && @GNULIB_UNISTD_H_SIGPIPE@
 /* Get ssize_t.  */
 # include <sys/types.h>
+#endif
+
+/* Get getopt(), optarg, optind, opterr, optopt.  */
+#if @GNULIB_UNISTD_H_GETOPT@
+# include <getopt.h>
 #endif
 
 #if @GNULIB_GETHOSTNAME@
@@ -98,6 +106,15 @@
 # define STDERR_FILENO 2
 #endif
 
+/* Ensure *_OK functions exist.  */
+#ifndef F_OK
+# define F_OK 0
+# define X_OK 1
+# define W_OK 2
+# define R_OK 4
+#endif
+
+
 /* Declare overridden functions.  */
 
 #ifdef __cplusplus
@@ -130,6 +147,63 @@ extern int chown (const char *file, uid_t uid, gid_t gid);
 #endif
 
 
+#if @GNULIB_OPENAT@
+# if @REPLACE_FCHOWNAT@
+#  undef fchownat
+#  define fchownat rpl_fchownat
+# endif
+# if !@HAVE_FCHOWNAT@ || @REPLACE_FCHOWNAT@
+int fchownat (int fd, char const *file, uid_t owner, gid_t group, int flag);
+# endif
+# if !@HAVE_UNLINKAT@
+int unlinkat (int fd, char const *file, int flag);
+# endif
+#elif defined GNULIB_POSIXCHECK
+# undef fchownat
+# define fchownat(d,n,o,g,f)			    \
+    (GL_LINK_WARNING ("fchownat is not portable - " \
+                      "use gnulib module openat for portability"), \
+     fchownat (d, n, o, g, f))
+# undef unlinkat
+# define unlinkat(d,n,f)                         \
+    (GL_LINK_WARNING ("unlinkat is not portable - " \
+                      "use gnulib module openat for portability"), \
+     unlinkat (d, n, f))
+#endif /* @GNULIB_OPENAT@ */
+
+
+#if @GNULIB_FACCESSAT@
+# if !@HAVE_FACCESSAT@
+int faccessat (int fd, char const *file, int mode, int flag);
+# endif
+#elif defined GNULIB_POSIXCHECK
+# undef faccessat
+# define faccessat(d,n,m,f)			    \
+    (GL_LINK_WARNING ("faccessat is not portable - " \
+                      "use gnulib module faccessat for portability"), \
+     faccessat (d, n, m, f))
+#endif
+
+#if @GNULIB_SYMLINKAT@
+# if !@HAVE_SYMLINKAT@
+int symlinkat (char const *contents, int fd, char const *file);
+# endif
+# if !@HAVE_READLINKAT@
+ssize_t readlinkat (int fd, char const *file, char *buf, size_t len);
+# endif
+#elif defined GNULIB_POSIXCHECK
+# undef symlinkat
+# define symlinkat(c,d,n)			     \
+    (GL_LINK_WARNING ("symlinkat is not portable - " \
+                      "use gnulib module symlinkat for portability"), \
+     symlinkat (c, d, n))
+# undef readlinkat
+# define readlinkat(d,n,b,l)			     \
+    (GL_LINK_WARNING ("faccessat is not portable - " \
+                      "use gnulib module symlinkat for portability"), \
+     readlinkat (d, n, b, l))
+#endif
+
 #if @GNULIB_CLOSE@
 # if @REPLACE_CLOSE@
 /* Automatically included by modules that need a replacement for close.  */
@@ -137,7 +211,7 @@ extern int chown (const char *file, uid_t uid, gid_t gid);
 #  define close rpl_close
 extern int close (int);
 # endif
-#elif @UNISTD_H_HAVE_WINSOCK2_H@
+#elif @UNISTD_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS@
 # undef close
 # define close close_used_without_requesting_gnulib_module_close
 #elif defined GNULIB_POSIXCHECK
@@ -167,6 +241,28 @@ extern int dup2 (int oldfd, int newfd);
     (GL_LINK_WARNING ("dup2 is unportable - " \
                       "use gnulib module dup2 for portability"), \
      dup2 (o, n))
+#endif
+
+
+#if @GNULIB_DUP3@
+/* Copy the file descriptor OLDFD into file descriptor NEWFD, with the
+   specified flags.
+   The flags are a bitmask, possibly including O_CLOEXEC (defined in <fcntl.h>)
+   and O_TEXT, O_BINARY (defined in "binary-io.h").
+   Close NEWFD first if it is open.
+   Return newfd if successful, otherwise -1 and errno set.
+   See the Linux man page at
+   <http://www.kernel.org/doc/man-pages/online/pages/man2/dup3.2.html>.  */
+# if @HAVE_DUP3@
+#  define dup3 rpl_dup3
+# endif
+extern int dup3 (int oldfd, int newfd, int flags);
+#elif defined GNULIB_POSIXCHECK
+# undef dup3
+# define dup3(o,n,f) \
+    (GL_LINK_WARNING ("dup3 is unportable - " \
+                      "use gnulib module dup3 for portability"), \
+     dup3 (o, n, f))
 #endif
 
 
@@ -218,11 +314,11 @@ extern int fchdir (int /*fd*/);
 #  define dup rpl_dup
 extern int dup (int);
 
-#  if @REPLACE_DUP2@
-#   undef dup2
-#  endif
-#  define dup2 rpl_dup2_fchdir
-extern int dup2 (int, int);
+/* Gnulib internal hooks needed to maintain the fchdir metadata.  */
+extern int _gl_register_fd (int fd, const char *filename);
+extern void _gl_unregister_fd (int fd);
+extern int _gl_register_dup (int oldfd, int newfd);
+extern const char *_gl_directory_name (int fd);
 
 # endif
 #elif defined GNULIB_POSIXCHECK
@@ -320,7 +416,8 @@ extern int getdomainname(char *name, size_t len);
 
 #if @GNULIB_GETDTABLESIZE@
 # if !@HAVE_GETDTABLESIZE@
-/* Return the maximum number of file descriptors in the current process.  */
+/* Return the maximum number of file descriptors in the current process.
+   In POSIX, this is same as sysconf (_SC_OPEN_MAX).  */
 extern int getdtablesize (void);
 # endif
 #elif defined GNULIB_POSIXCHECK
@@ -370,7 +467,6 @@ extern int gethostname(char *name, size_t len);
    See <http://www.opengroup.org/susv3xsh/getlogin.html>.
  */
 # if !@HAVE_DECL_GETLOGIN_R@
-#  include <stddef.h>
 extern int getlogin_r (char *name, size_t size);
 # endif
 #elif defined GNULIB_POSIXCHECK
@@ -524,6 +620,28 @@ extern int link (const char *path1, const char *path2);
 #endif
 
 
+#if @GNULIB_PIPE2@
+/* Create a pipe, applying the given flags when opening the read-end of the
+   pipe and the write-end of the pipe.
+   The flags are a bitmask, possibly including O_CLOEXEC (defined in <fcntl.h>)
+   and O_TEXT, O_BINARY (defined in "binary-io.h").
+   Store the read-end as fd[0] and the write-end as fd[1].
+   Return 0 upon success, or -1 with errno set upon failure.
+   See also the Linux man page at
+   <http://www.kernel.org/doc/man-pages/online/pages/man2/pipe2.2.html>.  */
+# if @HAVE_PIPE2@
+#  define pipe2 rpl_pipe2
+# endif
+extern int pipe2 (int fd[2], int flags);
+#elif defined GNULIB_POSIXCHECK
+# undef pipe2
+# define pipe2(f,o) \
+    (GL_LINK_WARNING ("pipe2 is unportable - " \
+                      "use gnulib module pipe2 for portability"), \
+     pipe2 (f, o))
+#endif
+
+
 #if @GNULIB_READLINK@
 /* Read the contents of the symbolic link FILE and place the first BUFSIZE
    bytes of it into BUF.  Return the number of bytes placed into BUF if
@@ -531,7 +649,6 @@ extern int link (const char *path1, const char *path2);
    See the POSIX:2001 specification
    <http://www.opengroup.org/susv3xsh/readlink.html>.  */
 # if !@HAVE_READLINK@
-#  include <stddef.h>
 extern int readlink (const char *file, char *buf, size_t bufsize);
 # endif
 #elif defined GNULIB_POSIXCHECK
@@ -567,12 +684,6 @@ extern unsigned int sleep (unsigned int n);
 # undef write
 # define write rpl_write
 extern ssize_t write (int fd, const void *buf, size_t count);
-#endif
-
-
-#ifdef FCHDIR_REPLACEMENT
-/* gnulib internal function.  */
-extern void _gl_unregister_fd (int fd);
 #endif
 
 

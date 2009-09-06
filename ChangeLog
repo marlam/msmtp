@@ -1,4 +1,5 @@
 Version 1.4.18:
+- Update gnulib to 2009-09-06.
 - Use proper binary prefixes when handling sizes.
 - Scripts msmtpq and msmtpQ: do not hardcode IP address of www.google.com when
   testing connectivity. Use host name instead. Closes Debian bug #538328.

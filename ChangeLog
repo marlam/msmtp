@@ -1,4 +1,5 @@
 Version 1.4.19:
+- Disable security checks on the user configuration file when run as root.
 - Remove DOS line endings from find_alias_for_msmtp.sh. Reported by Emmanuel
   Bouthenot.
 

@@ -3112,6 +3112,7 @@ int msmtp_get_conffile_accounts(list_t **account_list,
     list_t *user_account_list;
     list_t *lps;
     list_t *lpu;
+    int securitycheck;
     int e;
 
 
@@ -3124,8 +3125,9 @@ int msmtp_get_conffile_accounts(list_t **account_list,
     system_confdir = get_sysconfdir();
     system_conffile = get_filename(system_confdir, SYSCONFFILE);
     free(system_confdir);
-    if ((e = get_conf(system_conffile, 0, &system_account_list, &errstr)) 
-	    != CONF_EOK)
+    securitycheck = 0;
+    if ((e = get_conf(system_conffile, securitycheck,
+                    &system_account_list, &errstr)) != CONF_EOK)
     {
 	if (e == CONF_ECANTOPEN)
 	{
@@ -3166,8 +3168,13 @@ int msmtp_get_conffile_accounts(list_t **account_list,
 	real_user_conffile = get_filename(homedir, USERCONFFILE);
 	free(homedir);
     }
-    if ((e = get_conf(real_user_conffile, 1, &user_account_list, &errstr)) 
-	    != CONF_EOK)
+#ifdef W32_NATIVE
+    securitcheck = 1;
+#else
+    securitycheck = (geteuid() != 0);
+#endif
+    if ((e = get_conf(real_user_conffile, securitycheck,
+                    &user_account_list, &errstr)) != CONF_EOK)
     {
 	if (e == CONF_ECANTOPEN)
 	{

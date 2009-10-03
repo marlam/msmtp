@@ -22,7 +22,7 @@ dnl Process this file with autoconf to produce a configure script.
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-AC_INIT([msmtp], [1.4.18], [marlam@marlam.de])
+AC_INIT([msmtp], [1.4.19], [marlam@marlam.de])
 AC_CONFIG_SRCDIR([src/msmtp.c])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([build-aux])

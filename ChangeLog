@@ -1,4 +1,6 @@
 Version 1.4.19:
+- Properly mask minus characters in the man page to prevent groff from
+  converting them to hyphens. Reported by Emmanuel Bouthenot.
 - Disable security checks on the user configuration file when run as root.
   Fixes Debian bug #534829.
 - Remove DOS line endings from find_alias_for_msmtp.sh. Reported by Emmanuel

@@ -1,4 +1,8 @@
 Version 1.4.19:
+- Properly handle NUL characters in the Common Name or Subject Alternative
+  Name fields of certificates when using OpenSSL. This fixes the security
+  problem described in <http://www.blackhat.com/presentations/bh-usa-09/
+  MARLINSPIKE/BHUSA09-Marlinspike-DefeatSSL-PAPER1.pdf>.
 - Properly mask minus characters in the man page to prevent groff from
   converting them to hyphens. Reported by Emmanuel Bouthenot.
 - Disable security checks on the user configuration file when run as root.

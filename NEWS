@@ -1,5 +1,8 @@
 Version 1.4.19:
-- No significant changes.
+- When using OpenSSL, msmtp now correctly handles NUL characters in the Common
+  Name and Subject Alternative Name fields of certificates. This fixes a 
+  security problem. Note that msmtp is not affected by this problem if GnuTLS is
+  used.
 
 Version 1.4.18:
 - No significant changes.

@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008
+ * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2009
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -811,7 +811,7 @@ int tls_check_cert(tls_t *tls, const char *hostname, int verify, char **errstr)
     /* needed to get the common name: */
     X509_NAME *x509_subject;
     char *buf;
-    int bufsize;
+    int length;
     /* needed to get the DNS subjectAltNames: */
     STACK *subj_alt_names;
     int subj_alt_names_count;
@@ -873,6 +873,14 @@ int tls_check_cert(tls_t *tls, const char *hostname, int verify, char **errstr)
 	    subj_alt_name = sk_GENERAL_NAME_value(subj_alt_names, i);
 	    if (subj_alt_name->type == GEN_DNS) 
 	    {
+                if ((size_t)(subj_alt_name->d.ia5->length)
+                        != strlen((char *)(subj_alt_name->d.ia5->data)))
+                {
+                    *errstr = xasprintf(_("%s: certificate subject "
+                                "alternative name contains NUL"), error_msg);
+                    X509_free(x509cert);
+                    return TLS_ECERT;
+                }
 		if ((match_found = hostname_match(hostname_ascii, 
 				(char *)(subj_alt_name->d.ia5->data))))
 		{
@@ -891,12 +899,11 @@ int tls_check_cert(tls_t *tls, const char *hostname, int verify, char **errstr)
 	    X509_free(x509cert);
 	    return TLS_ECERT;
 	}
-	bufsize = X509_NAME_get_text_by_NID(x509_subject, NID_commonName, 
+	length = X509_NAME_get_text_by_NID(x509_subject, NID_commonName,
 		NULL, 0);
-	bufsize++;
-	buf = xmalloc((size_t)bufsize);
+	buf = xmalloc((size_t)length + 1);
 	if (X509_NAME_get_text_by_NID(x509_subject, NID_commonName, 
-		    buf, bufsize) == -1)
+		    buf, length + 1) == -1)
 	{
 	    *errstr = xasprintf(_("%s: cannot get certificate common name"),
 		    error_msg);
@@ -904,6 +911,14 @@ int tls_check_cert(tls_t *tls, const char *hostname, int verify, char **errstr)
 	    free(buf);
 	    return TLS_ECERT;
 	}
+        if ((size_t)length != strlen(buf))
+        {
+            *errstr = xasprintf(_("%s: certificate common name contains NUL"),
+                    error_msg);
+            X509_free(x509cert);
+            free(buf);
+            return TLS_ECERT;
+        }
 	match_found = hostname_match(hostname_ascii, buf);
 	free(buf);
     }

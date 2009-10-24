@@ -3169,7 +3169,7 @@ int msmtp_get_conffile_accounts(list_t **account_list,
 	free(homedir);
     }
 #ifdef W32_NATIVE
-    securitcheck = 1;
+    securitycheck = 1;
 #else
     securitycheck = (geteuid() != 0);
 #endif

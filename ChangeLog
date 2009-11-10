@@ -1,3 +1,6 @@
+Version 1.4.20:
+- Add pt_BR translation, provided by Rudá Moura. Thanks!
+
 Version 1.4.19:
 - Properly handle NUL characters in the Common Name or Subject Alternative
   Name fields of certificates when using OpenSSL. This fixes the security

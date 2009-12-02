@@ -60,4 +60,4 @@ msmtpq issues & considerations :
    that case, substitute its IP address for 'www.google.com' (/bin/ping
    can show which is faster) ; perhaps it's not such a big deal ...
 
-Chris Gianniotis <namtok@gmx.net>
+Chris Gianniotis <namtok@zonnet.nl>

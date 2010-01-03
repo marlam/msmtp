@@ -1,4 +1,5 @@
 Version 1.4.20:
+- Fix minor quoting issues in the man page.
 - Add pt_BR translation, provided by Rudá Moura. Thanks!
 
 Version 1.4.19:

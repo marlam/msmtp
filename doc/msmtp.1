@@ -49,7 +49,7 @@ of the system and user configuration files.
 Print help.
 .IP "\-P, \-\-pretend"
 Print the configuration settings that would be used, but do not take further
-action.  An asterisk ('*') will be printed instead of your password.
+action.  An asterisk (`*') will be printed instead of your password.
 .IP "\-v, \-d, \-\-debug"
 Print lots of debugging information, including the whole conversation with the
 SMTP server. Be careful with this option: the (potentially dangerous) output
@@ -163,7 +163,7 @@ used instead.
 Read the envelope from address from the From header of the mail.
 .IP "\-\-"
 This marks the end of options. All following arguments will be treated as
-recipient addresses, even if they start with a '\-'.
+recipient addresses, even if they start with a `\-'.
 .RE
 .PP
 The following options are accepted but ignored for sendmail compatibility:
@@ -219,7 +219,7 @@ The user configuration file must have no more permissions than user read/write.
 Configuration data from either file can be changed by command line options.
 .PP
 A configuration file is a simple text file.  Empty lines and comment lines
-(whose first non-blank character is '#') are ignored.
+(whose first non-blank character is `#') are ignored.
 .br
 Every other line must contain a command and may contain an argument to that
 command.

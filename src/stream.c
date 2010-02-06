@@ -1,6 +1,6 @@
 /*
  * stream.c
- * 
+ *
  * This file is part of msmtp, an SMTP client.
  *
  * Copyright (C) 2005, 2007
@@ -35,7 +35,7 @@
 
 /*
  * stream_gets()
- * 
+ *
  * see stream.h
  */
 
@@ -47,26 +47,26 @@ int stream_gets(FILE *f, char *str, size_t size, size_t *len, char **errstr)
     i = 0;
     while (i + 1 < size)
     {
-	if (fread(&c, sizeof(char), 1, f) == 1)
-	{
-	    str[i++] = c;
-	    if (c == '\n')
-	    {
-		break;
-	    }
-	}
-	else
-	{
-	    if (ferror(f))
-	    {
-		*errstr = xasprintf(_("input error"));
-		return STREAM_EIO;
-	    }
-	    else /* EOF */
-	    {
-		break;
-	    }
-	}
+        if (fread(&c, sizeof(char), 1, f) == 1)
+        {
+            str[i++] = c;
+            if (c == '\n')
+            {
+                break;
+            }
+        }
+        else
+        {
+            if (ferror(f))
+            {
+                *errstr = xasprintf(_("input error"));
+                return STREAM_EIO;
+            }
+            else /* EOF */
+            {
+                break;
+            }
+        }
     }
     str[i] = '\0';
     *len = i;

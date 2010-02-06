@@ -28,16 +28,16 @@
 
 /*
  * If a function with an 'errstr' argument returns a value != NET_EOK,
- * '*errstr' either points to an allocates string containing an error 
+ * '*errstr' either points to an allocates string containing an error
  * description or is NULL.
  * If such a function returns NET_EOK, 'errstr' will not be changed.
  */
-#define NET_EOK			0	/* no error */
-#define NET_ELIBFAILED		1	/* The underlying library failed */
-#define NET_EHOSTNOTFOUND	2	/* Host not found */
-#define NET_ESOCKET		3	/* Cannot create socket */
-#define NET_ECONNECT		4	/* Cannot connect */
-#define NET_EIO			5	/* Input/output error */
+#define NET_EOK                 0       /* no error */
+#define NET_ELIBFAILED          1       /* The underlying library failed */
+#define NET_EHOSTNOTFOUND       2       /* Host not found */
+#define NET_ESOCKET             3       /* Cannot create socket */
+#define NET_ECONNECT            4       /* Cannot connect */
+#define NET_EIO                 5       /* Input/output error */
 
 /*
  * net_lib_init()
@@ -49,34 +49,34 @@
 int net_lib_init(char **errstr);
 
 /*
- * net_open_socket() 
+ * net_open_socket()
  *
  * Opens a TCP socket to 'hostname':'port'.
  * 'hostname' may be a host name or a network address.
- * 'timeout' is measured in secondes. If it is <= 0, no timeout will be set, 
+ * 'timeout' is measured in secondes. If it is <= 0, no timeout will be set,
  * which means that the OS dependent default timeout value will be used.
  * The timeout will not only apply to the connection attempt but also to all
  * following read/write operations on the socket.
- * If 'canonical_name' is not NULL, a pointer to a string containing the 
+ * If 'canonical_name' is not NULL, a pointer to a string containing the
  * canonical hostname of the server will be stored in '*canonical_name', or NULL
  * if this information is not available.
- * If 'address' is not NULL, a pointer to a string containing the network 
- * address of the server will be stored in '*address', or NULL if this 
+ * If 'address' is not NULL, a pointer to a string containing the network
+ * address of the server will be stored in '*address', or NULL if this
  * information is not available.
  * The strings must be deallocated when not used anymore.
  * The file descriptor is returned in 'fd'. It can be closed with close().
  *
  * Used error codes: NET_EHOSTNOTFOUND, NET_ESOCKET, NET_ECONNECT
  */
-int net_open_socket(const char *hostname, int port, int timeout, int *fd, 
-	char **canonical_name, char **address, char **errstr);
+int net_open_socket(const char *hostname, int port, int timeout, int *fd,
+        char **canonical_name, char **address, char **errstr);
 
 /*
  * net_gets()
- * 
+ *
  * Reads in at most one less than 'size' characters from 'fd' and stores them
  * into the buffer pointed to by 'str'. Reading stops after an EOF or a newline.
- * If a newline is read, it is stored into the buffer. A '\0' is stored after 
+ * If a newline is read, it is stored into the buffer. A '\0' is stored after
  * the last character in the buffer. The length of the resulting string (the
  * number of characters excluding the terminating '\0') will be stored in 'len'.
  * 'readbuf' will be used as an input buffer and must of course be the same for
@@ -84,7 +84,7 @@ int net_open_socket(const char *hostname, int port, int timeout, int *fd,
  * Used error codes: NET_EIO
  */
 int net_gets(int fd, readbuf_t *readbuf,
-	char *str, size_t size, size_t *len, char **errstr);
+        char *str, size_t size, size_t *len, char **errstr);
 
 /*
  * net_puts()

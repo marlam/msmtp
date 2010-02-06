@@ -28,19 +28,19 @@
 
 /*
  * If a function with an 'errstr' argument returns a value != STREAM_EOK,
- * '*errstr' either points to an allocates string containing an error 
+ * '*errstr' either points to an allocates string containing an error
  * description or is NULL.
  * If such a function returns STREAM_EOK, 'errstr' will not be changed.
  */
-#define STREAM_EOK		0	/* no error */
-#define STREAM_EIO		1	/* Input/output error */
+#define STREAM_EOK              0       /* no error */
+#define STREAM_EIO              1       /* Input/output error */
 
 /*
  * stream_gets()
- * 
+ *
  * Reads in at most one less than 'size' characters from 'f' and stores them
  * into the buffer pointed to by 'str'. Reading stops after an EOF or a newline.
- * If a newline is read, it is stored into the buffer. A '\0' is stored after 
+ * If a newline is read, it is stored into the buffer. A '\0' is stored after
  * the last character in the buffer. The length of the resulting string (the
  * number of characters excluding the terminating '\0') will be stored in 'len'.
  * Used error codes: STREAM_EIO

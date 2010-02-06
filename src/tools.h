@@ -43,7 +43,7 @@ const char *get_prgname(const char *argv0);
 /*
  * get_sysconfdir()
  *
- * Get the system configuration directory (or something similar, depending 
+ * Get the system configuration directory (or something similar, depending
  * on the OS). Returns a pointer to an allocated string.
  * Cannot fail because it uses safe defaults as fallback.
  */
@@ -85,7 +85,7 @@ char *get_filename(const char *directory, const char *name);
  * in the following way:
  * If the first character of 'filename' is '~', it will be replaced by
  * the user's home directory.
- * If the first character of 'filename' is not '~', the returned string 
+ * If the first character of 'filename' is not '~', the returned string
  * will simply be a copy of 'filename'.
  */
 char *expand_tilde(const char *filename);
@@ -111,7 +111,7 @@ int check_secure(const char *pathname);
  * given the platform; on UNIX this means mode 0600). The file will be created
  * in $TMPDIR or, if this variable is unset, in a system specific directory for
  * temporary files. It will be automatically deleted when closed.
- * 'base' is a suggestion for the file name prefix. It may be empty or even 
+ * 'base' is a suggestion for the file name prefix. It may be empty or even
  * NULL, but if it is a string, it must contain only ASCII characters that are
  * safe for filenames on all systems. This function may ignore this suggestion.
  * Return value is the resulting stream (opened with "w+") or NULL on error, in
@@ -122,7 +122,7 @@ FILE *tempfile(const char *base);
 /*
  * lock_file()
  *
- * Locks a file for reading (if lock_type is TOOLS_LOCK_READ) or writing (if 
+ * Locks a file for reading (if lock_type is TOOLS_LOCK_READ) or writing (if
  * lock_type is TOOLS_LOCK_WRITE). Returns 0 in case of success, 1 if the file
  * could not be locked before the given timeout (in seconds) because some other
  * process holds a lock on the file, and 2 if the file could not be locked due

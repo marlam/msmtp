@@ -58,24 +58,24 @@
 const char *get_prgname(const char *argv0)
 {
     const char *prgname;
-    
+
     if (argv0)
     {
-	prgname = strrchr(argv0, PATH_SEP);
-	if (!prgname)
-	{
-	    prgname = argv0;
-	}
-	else
-	{
-	    prgname++;
-	}
+        prgname = strrchr(argv0, PATH_SEP);
+        if (!prgname)
+        {
+            prgname = argv0;
+        }
+        else
+        {
+            prgname++;
+        }
     }
     else
     {
-	prgname = "";
+        prgname = "";
     }
-    
+
     return prgname;
 }
 
@@ -95,28 +95,28 @@ char *get_sysconfdir(void)
     DWORD len;
     DWORD type;
     long l;
-    
+
     l = RegOpenKeyEx(HKEY_LOCAL_MACHINE,
-	    "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\"
-	    "Shell Folders", 0, KEY_READ, &hkey);
+            "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\"
+            "Shell Folders", 0, KEY_READ, &hkey);
     if (l != ERROR_SUCCESS)
     {
-	return xstrdup("C:");
+        return xstrdup("C:");
     }
     len = MAX_PATH;
     l = RegQueryValueEx(hkey, "Common AppData", NULL, &type, sysconfdir, &len);
     if (l != ERROR_SUCCESS || len >= MAX_PATH)
     {
-	if (l != ERROR_SUCCESS || len >= MAX_PATH)
-	{
-	    return xstrdup("C:");
-	}
+        if (l != ERROR_SUCCESS || len >= MAX_PATH)
+        {
+            return xstrdup("C:");
+        }
     }
     RegCloseKey(hkey);
     return xstrdup((char *)sysconfdir);
 
 #else /* UNIX or DJGPP */
-    
+
 #ifdef SYSCONFDIR
     return xstrdup(SYSCONFDIR);
 #else
@@ -143,60 +143,60 @@ char *get_username(void)
 #else /* UNIX */
     struct passwd *pw;
 #endif
-	 
+
     username = getenv("USER");
     if (username)
     {
-	username = xstrdup(username);
+        username = xstrdup(username);
     }
     else
-    {	
-	username = getenv("LOGNAME");
-	if (username)
-	{
-	    username = xstrdup(username);
-	}
-	else
-	{
+    {
+        username = getenv("LOGNAME");
+        if (username)
+        {
+            username = xstrdup(username);
+        }
+        else
+        {
 #ifdef W32_NATIVE
-	    if (GetUserName(buf, &size))
-	    {
-		username = xstrdup((char *)buf);
-	    }
-	    else
-	    {
-		/* last resort */
-		username = xstrdup("unknown");
-	    }
+            if (GetUserName(buf, &size))
+            {
+                username = xstrdup((char *)buf);
+            }
+            else
+            {
+                /* last resort */
+                username = xstrdup("unknown");
+            }
 #elif defined DJGPP
-	    /* DJGPP's getlogin() checks USER, then LOGNAME, and then uses 
-	     * "dosuser" as a last resort. We already checked USER and LOGNAME
-	     * and choose "unknown" as a last resort to be consistent with the
-	     * other systems. */
-	    username = xstrdup("unknown");
+            /* DJGPP's getlogin() checks USER, then LOGNAME, and then uses
+             * "dosuser" as a last resort. We already checked USER and LOGNAME
+             * and choose "unknown" as a last resort to be consistent with the
+             * other systems. */
+            username = xstrdup("unknown");
 #else /* UNIX */
-	    username = getlogin();
-	    if (username)
-	    {
-		username = xstrdup(username);
-	    }
-	    else
-	    {
-	    	pw = getpwuid(getuid());		
-		if (pw && pw->pw_name)
-		{
-		    username = xstrdup(pw->pw_name);
-	    	}
-		else
-		{
-		    /* last resort */
-		    username = xstrdup("unknown");
-		}
-	    }
+            username = getlogin();
+            if (username)
+            {
+                username = xstrdup(username);
+            }
+            else
+            {
+                pw = getpwuid(getuid());
+                if (pw && pw->pw_name)
+                {
+                    username = xstrdup(pw->pw_name);
+                }
+                else
+                {
+                    /* last resort */
+                    username = xstrdup("unknown");
+                }
+            }
 #endif
-	}
+        }
     }
-    
+
     return username;
 }
 
@@ -217,70 +217,70 @@ char *get_homedir(void)
     DWORD len;
     DWORD type;
     long l;
-    
+
     if ((home = getenv("HOME")))
     {
-	home = xstrdup(home);
+        home = xstrdup(home);
     }
     else
     {
-	home = NULL;
-	l = RegOpenKeyEx(HKEY_CURRENT_USER,
-		"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\"
-		"Shell Folders", 0, KEY_READ, &hkey);
-	if (l == ERROR_SUCCESS)
-	{
-	    len = MAX_PATH;
-	    l = RegQueryValueEx(hkey, "AppData", NULL, &type, homebuf, &len);
-	    if (l == ERROR_SUCCESS && len < MAX_PATH)
-	    {
-		RegCloseKey(hkey);
-		home = xstrdup((char *)homebuf);
-	    }
-	}
-	if (!home)
-	{
-	    home = xstrdup("C:");
-	}
+        home = NULL;
+        l = RegOpenKeyEx(HKEY_CURRENT_USER,
+                "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\"
+                "Shell Folders", 0, KEY_READ, &hkey);
+        if (l == ERROR_SUCCESS)
+        {
+            len = MAX_PATH;
+            l = RegQueryValueEx(hkey, "AppData", NULL, &type, homebuf, &len);
+            if (l == ERROR_SUCCESS && len < MAX_PATH)
+            {
+                RegCloseKey(hkey);
+                home = xstrdup((char *)homebuf);
+            }
+        }
+        if (!home)
+        {
+            home = xstrdup("C:");
+        }
     }
-    
+
     return home;
 
 #elif defined DJGPP
-    
+
     char *home;
-    
+
     if ((home = getenv("HOME")))
     {
-	home = xstrdup(home);
+        home = xstrdup(home);
     }
     else
     {
-	home = xstrdup("C:");
+        home = xstrdup("C:");
     }
-    
+
     return home;
 
 #else /* UNIX */
 
     char *home;
     struct passwd *pw;
-    
+
     if ((home = getenv("HOME")))
     {
-	home = xstrdup(home);
+        home = xstrdup(home);
     }
     else
     {
-	pw = getpwuid(getuid());
-	if (pw && pw->pw_dir)
-	{
-	    home = xstrdup(pw->pw_dir);
-	}
-	else
-	{
-	    home = xstrdup("");
-	}
+        pw = getpwuid(getuid());
+        if (pw && pw->pw_dir)
+        {
+            home = xstrdup(pw->pw_dir);
+        }
+        else
+        {
+            home = xstrdup("");
+        }
     }
 
     return home;
@@ -299,13 +299,13 @@ char *get_filename(const char *directory, const char *name)
 {
     char *path;
     size_t dirlen;
-    
+
     dirlen = strlen(directory);
     path = xmalloc((dirlen + strlen(name) + 2) * sizeof(char));
     strcpy(path, directory);
     if (dirlen == 0 || path[dirlen - 1] != PATH_SEP)
     {
-	path[dirlen++] = PATH_SEP;
+        path[dirlen++] = PATH_SEP;
     }
     strcpy(path + dirlen, name);
 
@@ -323,19 +323,19 @@ char *expand_tilde(const char *filename)
 {
     char *new_filename;
     size_t homedirlen;
-    
+
     if (filename[0] == '~')
     {
-	new_filename = get_homedir();
-	homedirlen = strlen(new_filename);
-	new_filename = xrealloc(new_filename, 
-		(homedirlen + strlen(filename)) * sizeof(char));
-	strcpy(new_filename + homedirlen, filename + 1);
-	return new_filename;
+        new_filename = get_homedir();
+        homedirlen = strlen(new_filename);
+        new_filename = xrealloc(new_filename,
+                (homedirlen + strlen(filename)) * sizeof(char));
+        strcpy(new_filename + homedirlen, filename + 1);
+        return new_filename;
     }
-    else 
+    else
     {
-	return xstrdup(filename);
+        return xstrdup(filename);
     }
 }
 
@@ -349,7 +349,7 @@ char *expand_tilde(const char *filename)
 int check_secure(const char *pathname)
 {
 #if defined W32_NATIVE || defined DJGPP || defined __CYGWIN__
-    
+
     return 0;
 
 #else /* UNIX */
@@ -358,17 +358,17 @@ int check_secure(const char *pathname)
 
     if (stat(pathname, &statbuf) < 0)
     {
-	return 3;
+        return 3;
     }
-    
+
     if (statbuf.st_uid != geteuid())
     {
-	return 1;
+        return 1;
     }
-    if (statbuf.st_mode & (S_IXUSR | S_IRGRP | S_IWGRP | S_IXGRP 
-		| S_IROTH | S_IWOTH | S_IXOTH))
+    if (statbuf.st_mode & (S_IXUSR | S_IRGRP | S_IWGRP | S_IXGRP
+                | S_IROTH | S_IWOTH | S_IXOTH))
     {
-	return 2;
+        return 2;
     }
 
     return 0;
@@ -384,7 +384,7 @@ int check_secure(const char *pathname)
  * UNIX.
  *
  * 1. unlink() on DOS and Windows is not POSIX conformant: it does not wait
- *    until the last file descriptor is closed before unlinking the file. 
+ *    until the last file descriptor is closed before unlinking the file.
  *    Instead, it fails (Windows) or may even mess up the file system (DOS).
  * 2. Windows does not have mkstemp.
  * 3. If a file is opened with O_TEMPORARY on Windows or DOS, it will be deleted
@@ -401,40 +401,40 @@ int mkstemp_unlink(char *template)
     int i;
     int try;
     int ret;
-    const char alnum[] 
-	= "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"; 
+    const char alnum[]
+        = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
     templatelen = strlen(template);
     if (templatelen < 6)
     {
-	errno = EINVAL;
-	return -1;
+        errno = EINVAL;
+        return -1;
     }
     X = template + templatelen - 6;
     if (strcmp(X, "XXXXXX") != 0)
     {
-	errno = EINVAL;
-	return -1;
+        errno = EINVAL;
+        return -1;
     }
-    
+
     srand((unsigned int)time(NULL));
 
     /* We have 62^6 possible filenames. We try 62^2=3844 times. */
     ret = -1;
     for (try = 0; ret == -1 && try < 3844; try++)
     {
-	for (i = 0; i < 6; i++)
-	{
-	    X[i] = alnum[rand() % 36];
-	}
+        for (i = 0; i < 6; i++)
+        {
+            X[i] = alnum[rand() % 36];
+        }
 #ifdef W32_NATIVE
-	ret = _open(template, _O_CREAT | _O_EXCL | _O_RDWR 
-		| _O_TEMPORARY | _O_BINARY, 
-		_S_IREAD | _S_IWRITE);
+        ret = _open(template, _O_CREAT | _O_EXCL | _O_RDWR
+                | _O_TEMPORARY | _O_BINARY,
+                _S_IREAD | _S_IWRITE);
 #else /* DJGPP */
-	ret = open(template, O_CREAT | O_EXCL | O_RDWR 
-		| O_TEMPORARY | _O_BINARY, 
-		S_IRUSR | S_IWUSR);
+        ret = open(template, O_CREAT | O_EXCL | O_RDWR
+                | O_TEMPORARY | _O_BINARY,
+                S_IRUSR | S_IWUSR);
 #endif /* DJGPP */
     }
 
@@ -462,31 +462,31 @@ FILE *tempfile(const char *base)
 
     if (!base || (*base == '\0'))
     {
-	base = "tmp";
+        base = "tmp";
     }
     /* the directory for the temp file */
     if (!(dir = getenv("TMPDIR")))
     {
-	/* system dependent default location */
+        /* system dependent default location */
 #ifdef W32_NATIVE
-	/* there is no registry key for this (?) */
-	if (!(dir = getenv("TEMP")))
-	{
-	    if (!(dir = getenv("TMP")))
-	    {
-		dir = "C:";
-	    }		    
-	}
+        /* there is no registry key for this (?) */
+        if (!(dir = getenv("TEMP")))
+        {
+            if (!(dir = getenv("TMP")))
+            {
+                dir = "C:";
+            }
+        }
 #elif defined DJGPP
-	dir = "C:";
+        dir = "C:";
 #else /* UNIX */
 #ifdef P_tmpdir
-	dir = P_tmpdir;
+        dir = P_tmpdir;
 #else
-	dir = "/tmp";
+        dir = "/tmp";
 #endif
 #endif /* UNIX */
-    }    
+    }
     dirlen = strlen(dir);
 
     /* the proposed file name */
@@ -495,17 +495,17 @@ FILE *tempfile(const char *base)
     /* shorten the base to two characters because of 8.3 filenames */
     if (baselen > 2)
     {
-	baselen = 2;
+        baselen = 2;
     }
 #endif
-    
+
     /* build the template */
     templatelen = dirlen + 1 + baselen + 6;
     template = xmalloc((templatelen + 1) * sizeof(char));
     strncpy(template, dir, dirlen);
     if (dirlen == 0 || template[dirlen - 1] != PATH_SEP)
     {
-	template[dirlen++] = PATH_SEP;
+        template[dirlen++] = PATH_SEP;
     }
     /* template is long enough */
     strncpy(template + dirlen, base, baselen);
@@ -518,7 +518,7 @@ FILE *tempfile(const char *base)
     if ((fd = mkstemp(template)) == -1)
 #endif /* UNIX */
     {
-	goto error_exit;
+        goto error_exit;
     }
 
     /* UNIX only: set the permissions (not every mkstemp() sets them to 0600)
@@ -527,11 +527,11 @@ FILE *tempfile(const char *base)
 #ifndef W32_NATIVE
     if (fchmod(fd, S_IRUSR | S_IWUSR) == -1)
     {
-	goto error_exit;
+        goto error_exit;
     }
     if (unlink(template) != 0)
     {
-	goto error_exit;
+        goto error_exit;
     }
 #endif /* not W32_NATIVE */
 #endif /* not DJGPP */
@@ -539,7 +539,7 @@ FILE *tempfile(const char *base)
     /* get the stream from the filedescriptor */
     if (!(f = fdopen(fd, "w+")))
     {
-	goto error_exit;
+        goto error_exit;
     }
     free(template);
 
@@ -549,12 +549,12 @@ error_exit:
     saved_errno = errno;
     if (fd >= 0)
     {
-	close(fd);
+        close(fd);
     }
     if (template)
     {
-	(void)remove(template);
-	free(template);
+        (void)remove(template);
+        free(template);
     }
     errno = saved_errno;
     return NULL;
@@ -578,7 +578,7 @@ int lock_file(FILE *f, int lock_type, int timeout)
 #endif /* not W32_NATIVE */
 
     fd = fileno(f);
-#ifndef W32_NATIVE   
+#ifndef W32_NATIVE
     lock.l_type = (lock_type == TOOLS_LOCK_WRITE) ? F_WRLCK : F_RDLCK;
     lock.l_whence = SEEK_SET;
     lock.l_start = 0;
@@ -587,22 +587,22 @@ int lock_file(FILE *f, int lock_type, int timeout)
     tenth_seconds = 0;
     for (;;)
     {
-	errno = 0;
+        errno = 0;
 #ifdef W32_NATIVE
-	lock_success = (_locking(fd, _LK_NBLCK, LONG_MAX) != -1);
+        lock_success = (_locking(fd, _LK_NBLCK, LONG_MAX) != -1);
 #else /* UNIX, DJGPP */
-	lock_success = (fcntl(fd, F_SETLK, &lock) != -1);
+        lock_success = (fcntl(fd, F_SETLK, &lock) != -1);
 #endif
-	if (lock_success || (errno != EACCES && errno != EAGAIN) 
-	    || tenth_seconds / 10 >= timeout)
-	{
-	    break;
-	}
-	else
-	{
-	    nanosleep(&tenth_second, NULL);
-	    tenth_seconds++;
-	}
+        if (lock_success || (errno != EACCES && errno != EAGAIN)
+            || tenth_seconds / 10 >= timeout)
+        {
+            break;
+        }
+        else
+        {
+            nanosleep(&tenth_second, NULL);
+            tenth_seconds++;
+        }
     }
     return (lock_success ? 0 : (tenth_seconds / 10 >= timeout ? 1 : 2));
 }
@@ -623,14 +623,14 @@ char *string_replace(char *str, const char *s, const char *r)
 
     while ((p = strstr(str + next_pos, s)))
     {
-	new_str = xmalloc((strlen(str) + rlen - 1) * sizeof(char));
-	strncpy(new_str, str, (size_t)(p - str));
-	strcpy(new_str + (size_t)(p - str), r);
-	strcpy(new_str + (size_t)(p - str) + rlen, 
-		str + (size_t)(p - str) + slen);
-	next_pos = (size_t)(p - str) + rlen;
-	free(str);
-	str = new_str;
+        new_str = xmalloc((strlen(str) + rlen - 1) * sizeof(char));
+        strncpy(new_str, str, (size_t)(p - str));
+        strcpy(new_str + (size_t)(p - str), r);
+        strcpy(new_str + (size_t)(p - str) + rlen,
+                str + (size_t)(p - str) + slen);
+        next_pos = (size_t)(p - str) + rlen;
+        free(str);
+        str = new_str;
     }
     return str;
 }

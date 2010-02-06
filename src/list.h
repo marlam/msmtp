@@ -24,12 +24,12 @@
 #define LIST_H
 
 /*
- * A list element stores a pointer to arbitrary data. A list consists of 
- * at least one head element and one foot element, both without data 
+ * A list element stores a pointer to arbitrary data. A list consists of
+ * at least one head element and one foot element, both without data
  * (pointer data = NULL). foot->next points to foot.
- */ 
- 
-typedef struct _list 
+ */
+
+typedef struct _list
 {
     void *data;
     struct _list *next;
@@ -41,12 +41,12 @@ typedef struct _list
  */
 
 
-/* 
+/*
  * Creates a new, empty list. Returns the pointer to the head element.
  */
 list_t *list_new(void);
 
-/* 
+/*
  * Deletes a complete list, freeing its memory. Needs the head element
  * as parameter. See also list_xfree().
  */

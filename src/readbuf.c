@@ -1,6 +1,6 @@
 /*
  * readbuf.c
- * 
+ *
  * This file is part of msmtp, an SMTP client.
  *
  * Copyright (C) 2008

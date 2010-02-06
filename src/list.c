@@ -31,7 +31,7 @@
 #include "list.h"
 
 
-/* 
+/*
  * list_new()
  */
 
@@ -49,7 +49,7 @@ list_t *list_new(void)
 }
 
 
-/* 
+/*
  * list_free()
  */
 
@@ -59,15 +59,15 @@ void list_free(list_t *l)
 
     while (l->next != l)
     {
-	p = l;
-	l = l->next;
-	free(p);
+        p = l;
+        l = l->next;
+        free(p);
     }
     free(l);
 }
 
 
-/* 
+/*
  * list_xfree()
  */
 
@@ -77,16 +77,16 @@ void list_xfree(list_t *l, void (*destruct)(void *))
 
     while (l->next != l)
     {
-	p = l;
-	l = l->next;
-	destruct(p->data);
-	free(p);
+        p = l;
+        l = l->next;
+        destruct(p->data);
+        free(p);
     }
     free(l);
 }
 
 
-/* 
+/*
  * list_insert()
  */
 
@@ -101,7 +101,7 @@ void list_insert(list_t *l, void *data)
 }
 
 
-/* 
+/*
  * list_remove()
  */
 
@@ -115,7 +115,7 @@ void list_remove(list_t *l)
 }
 
 
-/* 
+/*
  * list_xremove()
  */
 
@@ -130,7 +130,7 @@ void list_xremove(list_t *l, void (*destruct)(void *))
 }
 
 
-/* 
+/*
  * list_is_empty()
  */
 
@@ -148,7 +148,7 @@ list_t *list_last(list_t *e)
 {
     while (!(list_is_empty(e)))
     {
-	e = e->next;
+        e = e->next;
     }
     return e;
 }

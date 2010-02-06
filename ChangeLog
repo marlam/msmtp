@@ -1,4 +1,5 @@
 Version 1.4.20:
+- Change whitespace: Avoid tabs and whitespace at end of lines.
 - Update the documentation of keyring usage.
 - Add the msmtp-gnome-tool.py script to manage Gnome Keyring passwords for
   msmtp. Thanks to Gaizka Villate and Emmanuel Bouthenot.

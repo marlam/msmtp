@@ -12,5 +12,6 @@ Thanks go to:
 - Jim Fohlin for good suggestions and lots of testing
 - Jay Soffian for Mac OS X keychain support
 - Satoru SATOH for GNOME Keyring support
+- Gaizka Villate and Emmanuel Bouthenot for msmtp-gnome-tool.py
 
 - all senders of bug reports and problem descriptions

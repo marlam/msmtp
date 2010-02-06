@@ -1,4 +1,7 @@
 Version 1.4.20:
+- Update the documentation of keyring usage.
+- Add the msmtp-gnome-tool.py script to manage Gnome Keyring passwords for
+  msmtp. Thanks to Gaizka Villate and Emmanuel Bouthenot.
 - Fix minor quoting issues in the man page.
 - Add pt_BR translation, provided by Rudá Moura. Thanks!
 

@@ -1,6 +1,6 @@
 \input texinfo   @c -*-texinfo-*-
 @setfilename msmtp.info
-@set UPDATED October 3, 2009
+@set UPDATED February 6, 2010
 @set VERSION 1.4.19
 @settitle msmtp @value{VERSION}
 
@@ -219,7 +219,7 @@ If no password is set but one is needed during authentication, msmtp will try to
 find it in @code{~/.netrc}. If that fails, it will try to find it in 
 @code{SYSCONFDIR/netrc} (use @code{--version} to find out what @code{SYSCONFDIR}
 is on your platform). If that fails, it will try to get it from a system 
-specific keychain (if available). If that fails but a controlling terminal is
+specific keyring (if available). If that fails but a controlling terminal is
 available, msmtp will prompt you for it.
 @xref{Authentication}.
 @anchor{ntlmdomain}
@@ -838,11 +838,15 @@ If no password is set but one is needed during authentication, msmtp will try to
 find it in @code{~/.netrc}. If that fails, it will try to find it in 
 @code{SYSCONFDIR/netrc} (use @code{--version} to find out what @code{SYSCONFDIR}
 is on your platform). If that fails, it will try to get it from a system 
-specific keychain (if available). If that fails but a controlling terminal is
+specific keyring (if available). If that fails but a controlling terminal is
 available, msmtp will prompt you for it.
 
-Currently supported keychains are the GNOME keychain and the Mac OS X keychain. 
-@xref{Using the Mac OS X Keychain}.
+Currently supported keyrings are the Gnome Keyring and the Mac OS X Keychain.
+The script @code{msmtp-gnome-tool.py} can be used to manage Gnome Keyring
+passwords for msmtp. To manage Mac OS X Keychain passwords, use the Keychain
+Access GUI application. The @samp{account name} is same as the msmtp @samp{user}
+argument. The @samp{keychain item name} is @code{smtp://<hostname>} where
+@code{<hostname>} matches the msmtp @samp{host} argument.
 
 The authentication method can be chosen with the @samp{auth} command or 
 @samp{--auth} option, but it is usually sufficient to just use the @samp{on} 
@@ -856,25 +860,6 @@ because all the others methods put the authentication data at risk.
 
 If you really want to risk your authentication data, you have to force msmtp to
 do that by manually setting the authentication method while TLS is off.
-
-@section Using the Mac OS X Keychain
-@anchor{Using the Mac OS X Keychain}
-
-A Mac OS X user can store a password in a keychain item using the Keychain
-Access GUI application. The @samp{account name} is simply the value of the
-msmtp @samp{user} argument. However, the @samp{keychain item name} is
-@code{smtp://<hostname>} where @code{<hostname>} matches the msmtp @samp{host}
-argument. Using @code{smtp://} is needed so that the item is created of kind
-@samp{internet password}.  For example, selecting @samp{File->Get Info} on a
-keychain item that corresponds to @samp{host smtp.freemail.example} and
-@samp{user joe.smith} will show:
-
-@example
-   Name: smtp.freemail.example
-   Kind: Internet password
-Account: joe.smith
-  Where: smtp://smtp.freemail.example
-@end example
 
 
 @node Delivery Status Notifications

@@ -1,3 +1,6 @@
+Version 1.4.20:
+- The new script msmtp-gnome-tool.py manages Gnome Keyring passwords for msmtp.
+
 Version 1.4.19:
 - When using OpenSSL, msmtp now correctly handles NUL characters in the Common
   Name and Subject Alternative Name fields of certificates. This fixes a 

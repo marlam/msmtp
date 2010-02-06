@@ -8,7 +8,7 @@
 .\" under the terms of the GNU Free Documentation License, Version 1.2 or
 .\" any later version published by the Free Software Foundation; with no
 .\" Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
-.TH MSMTP 1 2009-10
+.TH MSMTP 1 2010-02
 .SH NAME
 msmtp \- An SMTP client 
 .SH SYNOPSIS
@@ -292,18 +292,22 @@ You probably need to set a username (with \fBuser\fP) and password (with
 If no password is set but one is needed during authentication, msmtp will try to
 find it in ~/.netrc. If that fails, it will try to find it in SYSCONFDIR/netrc
 (use \fB\-\-version\fP to find out what SYSCONFDIR is on your platform). If that
-fails, it will try to get it from a system specific keychain (if available). If
+fails, it will try to get it from a system specific keyring (if available). If
 that fails but a controlling terminal is available, msmtp will prompt you for
 it.
 .br
-Currently supported keychains are the GNOME keychain and the Mac OS X keychain.
-See the EXAMPLES section below.
+Currently supported keyrings are the Gnome Keyring and the Mac OS X Keychain.
+The script \fBmsmtp-gnome-tool.py\fP can be used to manage Gnome Keyring
+passwords for msmtp. To manage Mac OS X Keychain passwords, use the Keychain
+Access GUI application. The \fIaccount name\fP is same as the msmtp \fBuser\fP
+argument. The \fIkeychain item name\fP is \fBsmtp://<hostname>\fP where
+\fB<hostname>\fP matches the msmtp \fBhost\fP argument.
 .br
-Available methods are \fIplain\fP, \fIcram\-md5\fP, \fIdigest\-md5\fP,
-\fIgssapi\fP, \fIexternal\fP, \fIlogin\fP, and \fIntlm\fP.  Note that one or 
-more of these methods may be unavailable due to lack of support in the
-underlying authentication library. Use the \fB\-\-version\fP option to find out
-which methods are supported.
+Available authentication methods are \fIplain\fP, \fIcram\-md5\fP,
+\fIdigest\-md5\fP, \fIgssapi\fP, \fIexternal\fP, \fIlogin\fP, and \fIntlm\fP.
+Note that one or more of these methods may be unavailable due to lack of support
+in the underlying authentication library. Use the \fB\-\-version\fP option to
+find out which methods are supported.
 .br
 The \fIplain\fP and \fIlogin\fP methods send your authentication data in
 cleartext over the net, and the \fIntlm\fP method may be vulnerable to attacks.
@@ -592,26 +596,6 @@ the following Mutt configuration lines:
 Define a default account, and put the following in your ~/.mailrc:
 .br
 .B set sendmail="/path/to/msmtp"
-
-.PP
-.B Using the Mac OS X Keychain
-.PP
-A Mac OS X user can store a password in a keychain item using the Keychain
-Access GUI application. The \fIaccount name\fP is simply the value of the
-msmtp \fBuser\fP argument. However, the \fIkeychain item name\fP is 
-\fBsmtp://<hostname>\fP where \fB<hostname>\fP matches the msmtp \fBhost\fP
-argument. Using \fBsmtp://\fP is needed so that the item is created of kind
-\fIinternet password\fP.  For example, selecting \fIFile\->Get Info\fP on a
-keychain item that corresponds to \fBhost smtp.freemail.example\fP and
-\fBuser joe.smith\fP will show:
-.br
-Name: smtp.freemail.example
-.br
-Kind: Internet password
-.br
-Account: joe.smith
-.br
-Where: smtp://smtp.freemail.example
 .SH FILES
 .IP "SYSCONFDIR/msmtprc"
 System configuration file. Use

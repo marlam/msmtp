@@ -261,6 +261,18 @@ to be used during strict server certificate verification as enabled by the
 @ref{tls_trust_file} command. This allows the verification procedure to detect
 revoked certificates.
 @xref{Transport Layer Security}.
+@anchor{tls_fingerprint}
+@item tls_fingerprint [@var{fingerprint}]
+@cmindex tls_fingerprint
+This command sets or unsets the fingerprint of a particular TLS certificate.
+This certificate will then be trusted, regardless of its contents. This can be
+used to trust broken certificates (e.g. with a non-matching hostname) or in
+situations where @samp{tls_trust_file} cannot be used for some reason.
+You can give either an SHA1 (recommended) or an MD5 fingerprint in the format
+@code{01:23:45:67:@dots{}}.
+You can use @samp{--serverinfo --tls --tls-certcheck=off} to get the peer
+certificate's fingerprints.
+@xref{Transport Layer Security}.
 @anchor{tls_key_file}
 @item tls_key_file [@var{file}]
 @cmindex tls_key_file
@@ -525,6 +537,11 @@ Set or unset a trust file for TLS encryption. @xref{tls_trust_file}.
 @opindex --tls-crl-file
 Set or unset a certificate revocation list (CRL) file for TLS. 
 @xref{tls_crl_file}.
+@anchor{--tls-fingerprint}
+@itemx --tls-fingerprint=[@var{fingerprint}]
+@opindex --tls-fingerprint
+Set ot unset the fingerprint of a trusted TLS certificate.
+@xref{tls_fingerprint}.
 @anchor{--tls-key-file}
 @itemx --tls-key-file=[@var{file}]
 @opindex --tls-key-file
@@ -722,11 +739,13 @@ information can be displayed in server information mode.
 
 To use TLS, it is required to either enable full server certificate verification
 using the @samp{tls_trust_file} command or @samp{--tls-trust-file} option, or to
-disable all certificate checks using @samp{tls_certcheck off} or 
-@samp{--tls-certcheck=off}. WARNING: When certificate checks are disabled, 
-TLS/SSL sessions are vulnerable to man-in-the-middle attacks!
-See @ref{tls_trust_file}, @ref{--tls-trust-file}, @ref{tls_certcheck}, 
-@ref{--tls-certcheck}.
+trust one particular peer certificate using the @samp{tls_fingerprint} command
+or @samp{--tls-fingerprint} option, or to disable all certificate checks using
+@samp{tls_certcheck off} or @samp{--tls-certcheck=off}.
+WARNING: When certificate checks are disabled, TLS/SSL sessions are vulnerable
+to man-in-the-middle attacks!
+See @ref{tls_trust_file}, @ref{--tls-trust-file}, @ref{tls_fingerprint},
+@ref{--tls-fingerprint}, @ref{tls_certcheck}, @ref{--tls-certcheck}.
 
 If your system has a file that collects all system-wide trusted CA
 certificates, it is easiest to just use this in the @samp{defaults} section of

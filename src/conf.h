@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008
+ * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2010
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -63,12 +63,13 @@
 #define ACC_TLS_CERT_FILE               (1 << 18)
 #define ACC_TLS_TRUST_FILE              (1 << 19)
 #define ACC_TLS_CRL_FILE                (1 << 20)
-#define ACC_TLS_NOCERTCHECK             (1 << 21)
-#define ACC_TLS_FORCE_SSLV3             (1 << 22)
-#define ACC_TLS_MIN_DH_PRIME_BITS       (1 << 23)
-#define ACC_TLS_PRIORITIES              (1 << 24)
-#define ACC_LOGFILE                     (1 << 25)
-#define ACC_SYSLOG                      (1 << 26)
+#define ACC_TLS_FINGERPRINT             (1 << 21)
+#define ACC_TLS_NOCERTCHECK             (1 << 22)
+#define ACC_TLS_FORCE_SSLV3             (1 << 23)
+#define ACC_TLS_MIN_DH_PRIME_BITS       (1 << 24)
+#define ACC_TLS_PRIORITIES              (1 << 25)
+#define ACC_LOGFILE                     (1 << 26)
+#define ACC_SYSLOG                      (1 << 27)
 
 typedef struct
 {
@@ -103,6 +104,8 @@ typedef struct
     char *tls_cert_file;        /* file in PEM format */
     char *tls_trust_file;       /* file in PEM format */
     char *tls_crl_file;         /* file in PEM format */
+    unsigned char *tls_sha1_fingerprint; /* certificate fingerprint */
+    unsigned char *tls_md5_fingerprint;  /* certificate fingerprint */
     int tls_nostarttls;         /* flag: start TLS immediatly
                                    (without STARTTLS command)? */
     int tls_nocertcheck;        /* flag: do not check certificate? */
@@ -171,6 +174,14 @@ int is_off(char *s);
  * Gets a positive integer. Returns -1 on error.
  */
 int get_pos_int(const char *arg);
+
+/*
+ * get_fingerprint()
+ *
+ * Gets a fingerprint of the given length and returns it in an allocated array.
+ * Returns NULL on error.
+ */
+unsigned char *get_fingerprint(const char *arg, size_t len);
 
 /*
  * check_auth_arg()

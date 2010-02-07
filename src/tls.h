@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008
+ * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2010
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -54,8 +54,11 @@
 
 typedef struct
 {
-    int have_trust_file;
     int is_active;
+    int have_trust_file;
+    int have_sha1_fingerprint;
+    int have_md5_fingerprint;
+    unsigned char fingerprint[20];
 #ifdef HAVE_LIBGNUTLS
     gnutls_session_t session;
     gnutls_certificate_credentials_t cred;
@@ -110,7 +113,10 @@ void tls_clear(tls_t *tls);
  * are set to be used when the peer request a certificate. If 'trust_file' is
  * not NULL, it will be used to verify the peer certificate. If additionally
  * 'crl_file' is not NULL, then this file will be used during verification to
- * check if a certificate has been revoked.
+ * check if a certificate has been revoked. If 'trust_file' is NULL and one of
+ * 'sha1_fingerprint' or 'md5_fingerprint' is not NULL, then the fingerprint of
+ * the peer certificate will be compared to the given fingerprint and the
+ * certificate is trusted when they match.
  * All files must be in PEM format.
  * If 'force_sslv3' is set, then only the SSLv3 protocol will be accepted. This
  * option might be needed to talk to some obsolete broken servers. Only use this
@@ -125,6 +131,8 @@ void tls_clear(tls_t *tls);
 int tls_init(tls_t *tls,
         const char *key_file, const char *cert_file,
         const char *trust_file, const char *crl_file,
+        const unsigned char *sha1_fingerprint,
+        const unsigned char *md5_fingerprint,
         int force_sslv3, int min_dh_prime_bits, const char *priorities,
         char **errstr);
 

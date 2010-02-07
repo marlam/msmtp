@@ -1,4 +1,6 @@
 Version 1.4.20:
+- The new command tls_fingerprint allows one to trust one particular TLS
+  certificate, in case tls_trust_file cannot be used for some reason.
 - The new script msmtp-gnome-tool.py manages Gnome Keyring passwords for msmtp.
 
 Version 1.4.19:

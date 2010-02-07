@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008
+ * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2010
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -80,6 +80,8 @@ account_t *account_new(const char *conffile, const char *id)
     a->tls_cert_file = NULL;
     a->tls_trust_file = NULL;
     a->tls_crl_file = NULL;
+    a->tls_sha1_fingerprint = NULL;
+    a->tls_md5_fingerprint = NULL;
     a->tls_nocertcheck = 0;
     a->tls_force_sslv3 = 0;
     a->tls_min_dh_prime_bits = -1;
@@ -130,6 +132,24 @@ account_t *account_copy(account_t *acc)
             acc->tls_trust_file ? xstrdup(acc->tls_trust_file) : NULL;
         a->tls_crl_file =
             acc->tls_crl_file ? xstrdup(acc->tls_crl_file) : NULL;
+        if (acc->tls_sha1_fingerprint)
+        {
+            a->tls_sha1_fingerprint = xmalloc(20);
+            memcpy(a->tls_sha1_fingerprint, acc->tls_sha1_fingerprint, 20);
+        }
+        else
+        {
+            a->tls_sha1_fingerprint = NULL;
+        }
+        if (acc->tls_md5_fingerprint)
+        {
+            a->tls_md5_fingerprint = xmalloc(16);
+            memcpy(a->tls_md5_fingerprint, acc->tls_md5_fingerprint, 16);
+        }
+        else
+        {
+            a->tls_md5_fingerprint = NULL;
+        }
         a->tls_nocertcheck = acc->tls_nocertcheck;
         a->tls_force_sslv3 = acc->tls_force_sslv3;
         a->tls_min_dh_prime_bits = acc->tls_min_dh_prime_bits;
@@ -167,6 +187,8 @@ void account_free(void *a)
         free(p->tls_cert_file);
         free(p->tls_trust_file);
         free(p->tls_crl_file);
+        free(p->tls_sha1_fingerprint);
+        free(p->tls_md5_fingerprint);
         free(p->tls_priorities);
         free(p->dsn_return);
         free(p->dsn_notify);
@@ -270,6 +292,54 @@ int get_pos_int(const char *s)
     }
 
     return x;
+}
+
+
+/*
+ * get_fingerprint()
+ *
+ * see conf.h
+ */
+
+unsigned char *get_fingerprint(const char *s, size_t len)
+{
+    unsigned char *fingerprint = xmalloc(len);
+    unsigned char hex[2];
+    size_t i, j;
+    char c;
+
+    if (strlen(s) != 2 * len + (len - 1))
+    {
+        free(fingerprint);
+        return NULL;
+    }
+    for (i = 0; i < len; i++)
+    {
+        for (j = 0; j < 2; j++)
+        {
+            c = c_toupper((unsigned char)s[3 * i + j]);
+            if (c >= '0' && c <= '9')
+            {
+                hex[j] = c - '0';
+            }
+            else if (c >= 'A' && c <= 'F')
+            {
+                hex[j] = c - 'A' + 10;
+            }
+            else
+            {
+                free(fingerprint);
+                return NULL;
+            }
+        }
+        if (i < len - 1 && s[3 * i + 2] != ':')
+        {
+            free(fingerprint);
+            return NULL;
+        }
+        fingerprint[i] = (hex[0] << 4) | hex[1];
+    }
+    return fingerprint;
 }
 
 
@@ -502,6 +572,29 @@ void override_account(account_t *acc1, account_t *acc2)
         acc1->tls_crl_file =
             acc2->tls_crl_file ? xstrdup(acc2->tls_crl_file) : NULL;
     }
+    if (acc2->mask & ACC_TLS_FINGERPRINT)
+    {
+        free(acc1->tls_sha1_fingerprint);
+        if (acc2->tls_sha1_fingerprint)
+        {
+            acc1->tls_sha1_fingerprint = xmalloc(20);
+            memcpy(acc1->tls_sha1_fingerprint, acc2->tls_sha1_fingerprint, 20);
+        }
+        else
+        {
+            acc1->tls_sha1_fingerprint = NULL;
+        }
+        free(acc1->tls_md5_fingerprint);
+        if (acc2->tls_md5_fingerprint)
+        {
+            acc1->tls_md5_fingerprint = xmalloc(16);
+            memcpy(acc1->tls_md5_fingerprint, acc2->tls_md5_fingerprint, 16);
+        }
+        else
+        {
+            acc1->tls_md5_fingerprint = NULL;
+        }
+    }
     if (acc2->mask & ACC_TLS_NOCERTCHECK)
     {
         acc1->tls_nocertcheck = acc2->tls_nocertcheck;
@@ -587,11 +680,26 @@ int check_account(account_t *acc, int sendmail_mode, char **errstr)
                 _("cannot use tls_trust_file with tls_certcheck turned off"));
         return CONF_ESYNTAX;
     }
-    if (acc->tls && !acc->tls_trust_file && !acc->tls_nocertcheck)
+    if (acc->tls_nocertcheck
+            && (acc->tls_sha1_fingerprint || acc->tls_md5_fingerprint))
     {
         *errstr = xasprintf(
-                _("tls requires either tls_trust_file (highly recommended) or "
-                    "a disabled tls_certcheck"));
+                _("cannot use tls_fingerprint with tls_certcheck turned off"));
+        return CONF_ESYNTAX;
+    }
+    if (acc->tls_trust_file
+            && (acc->tls_sha1_fingerprint || acc->tls_md5_fingerprint))
+    {
+        *errstr = xasprintf(
+                _("cannot use both tls_trust_file and tls_fingerprint"));
+        return CONF_ESYNTAX;
+    }
+    if (acc->tls && !acc->tls_trust_file && !acc->tls_sha1_fingerprint
+            && !acc->tls_md5_fingerprint && !acc->tls_nocertcheck)
+    {
+        *errstr = xasprintf(
+                _("tls requires either tls_trust_file (highly recommended) "
+                    "or tls_fingerprint or a disabled tls_certcheck"));
         return CONF_ESYNTAX;
     }
     if (acc->tls_crl_file && !acc->tls_trust_file)
@@ -1208,6 +1316,33 @@ int read_conffile(const char *conffile, FILE *f, list_t **acc_list,
             else
             {
                 acc->tls_crl_file = expand_tilde(arg);
+            }
+        }
+        else if (strcmp(cmd, "tls_fingerprint") == 0)
+        {
+            acc->mask |= ACC_TLS_FINGERPRINT;
+            free(acc->tls_sha1_fingerprint);
+            acc->tls_sha1_fingerprint = NULL;
+            free(acc->tls_md5_fingerprint);
+            acc->tls_md5_fingerprint = NULL;
+            if (*arg != '\0')
+            {
+                if (strlen(arg) == 2 * 20 + 19)
+                {
+                    acc->tls_sha1_fingerprint = get_fingerprint(arg, 20);
+                }
+                else if (strlen(arg) == 2 * 16 + 15)
+                {
+                    acc->tls_md5_fingerprint = get_fingerprint(arg, 16);
+                }
+                if (!acc->tls_sha1_fingerprint && !acc->tls_md5_fingerprint)
+                {
+                    *errstr = xasprintf(
+                            _("line %d: invalid argument %s for command %s"),
+                            line, arg, cmd);
+                    e = CONF_ESYNTAX;
+                    break;
+                }
             }
         }
         else if (strcmp(cmd, "tls_certcheck") == 0)

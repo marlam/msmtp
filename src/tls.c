@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2009
+ * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -71,8 +71,10 @@
 
 void tls_clear(tls_t *tls)
 {
-    tls->have_trust_file = 0;
     tls->is_active = 0;
+    tls->have_trust_file = 0;
+    tls->have_sha1_fingerprint = 0;
+    tls->have_md5_fingerprint = 0;
 }
 
 
@@ -641,14 +643,18 @@ int hostname_match(const char *hostname, const char *certname)
 /*
  * tls_check_cert()
  *
- * If the 'verify' flag is set, perform a real verification of the peer's
- * certificate. If this succeeds, the connection can be considered secure.
- * If the 'verify' flag is not set, perform only a few sanity checks of the
+ * If the 'tls->have_trust_file' flag is set, perform a real verification of
+ * the peer's certificate. If this succeeds, the connection can be considered
+ * secure.
+ * If the 'tls->have_sha1_fingerprint' or 'tls->have_md5_fingerprint' flag is
+ * set, compare the 'tls->fingerprint' data with the peer certificate's
+ * fingerprint. If this succeeds, the connection can be considered secure.
+ * If none of these flags is set, perform only a few sanity checks of the
  * peer's certificate. You cannot trust the connection when this succeeds.
  * Used error codes: TLS_ECERT
  */
 
-int tls_check_cert(tls_t *tls, const char *hostname, int verify, char **errstr)
+int tls_check_cert(tls_t *tls, const char *hostname, char **errstr)
 {
 #ifdef HAVE_LIBGNUTLS
     int error_code;
@@ -659,11 +665,14 @@ int tls_check_cert(tls_t *tls, const char *hostname, int verify, char **errstr)
     unsigned int i;
     gnutls_x509_crt_t cert;
     time_t t1, t2;
+    size_t size;
+    unsigned char fingerprint[20];
 #ifdef HAVE_LIBIDN
     char *hostname_ascii;
 #endif
 
-    if (verify)
+    if (tls->have_trust_file || tls->have_sha1_fingerprint
+            || tls->have_md5_fingerprint)
     {
         error_msg = _("TLS certificate verification failed");
     }
@@ -672,8 +681,74 @@ int tls_check_cert(tls_t *tls, const char *hostname, int verify, char **errstr)
         error_msg = _("TLS certificate check failed");
     }
 
-    /* If 'verify' is true, this function uses the trusted CAs in the
-     * credentials structure. So you must have installed one or more CA
+    if (tls->have_sha1_fingerprint || tls->have_md5_fingerprint)
+    {
+        /* If one of these matches, we trust the peer and do not perform any
+         * other checks. */
+        if (!(cert_list = gnutls_certificate_get_peers(
+                        tls->session, &cert_list_size)))
+        {
+            *errstr = xasprintf(_("%s: no certificate was found"), error_msg);
+            return TLS_ECERT;
+        }
+        if (gnutls_x509_crt_init(&cert) < 0)
+        {
+            *errstr = xasprintf(
+                    _("%s: cannot initialize certificate structure"),
+                    error_msg);
+            return TLS_ECERT;
+        }
+        if (gnutls_x509_crt_import(cert, &cert_list[0], GNUTLS_X509_FMT_DER)
+                < 0)
+        {
+            *errstr = xasprintf(_("%s: error parsing certificate %u of %u"),
+                    error_msg, 0 + 1, cert_list_size);
+            return TLS_ECERT;
+        }
+        if (tls->have_sha1_fingerprint)
+        {
+            size = 20;
+            if (gnutls_x509_crt_get_fingerprint(cert, GNUTLS_DIG_SHA,
+                        fingerprint, &size) != 0)
+            {
+                *errstr = xasprintf(_("%s: error getting SHA1 fingerprint"),
+                        error_msg);
+                gnutls_x509_crt_deinit(cert);
+                return TLS_ECERT;
+            }
+            if (memcmp(fingerprint, tls->fingerprint, 20) != 0)
+            {
+                *errstr = xasprintf(_("%s: the certificate fingerprint "
+                            "does not match"), error_msg);
+                gnutls_x509_crt_deinit(cert);
+                return TLS_ECERT;
+            }
+        }
+        else
+        {
+            size = 16;
+            if (gnutls_x509_crt_get_fingerprint(cert, GNUTLS_DIG_MD5,
+                        fingerprint, &size) != 0)
+            {
+                *errstr = xasprintf(_("%s: error getting MD5 fingerprint"),
+                        error_msg);
+                gnutls_x509_crt_deinit(cert);
+                return TLS_ECERT;
+            }
+            if (memcmp(fingerprint, tls->fingerprint, 16) != 0)
+            {
+                *errstr = xasprintf(_("%s: the certificate fingerprint "
+                            "does not match"), error_msg);
+                gnutls_x509_crt_deinit(cert);
+                return TLS_ECERT;
+            }
+        }
+        gnutls_x509_crt_deinit(cert);
+        return TLS_EOK;
+    }
+
+    /* If 'tls->have_trust_file' is true, this function uses the trusted CAs
+     * in the credentials structure. So you must have installed one or more CA
      * certificates. */
     gnutls_certificate_set_verify_flags(tls->cred,
             GNUTLS_VERIFY_ALLOW_X509_V1_CA_CRT);
@@ -683,7 +758,7 @@ int tls_check_cert(tls_t *tls, const char *hostname, int verify, char **errstr)
         *errstr = xasprintf("%s: %s", error_msg, gnutls_strerror(error_code));
         return TLS_ECERT;
     }
-    if (verify)
+    if (tls->have_trust_file)
     {
         if (status & GNUTLS_CERT_REVOKED)
         {
@@ -818,9 +893,12 @@ int tls_check_cert(tls_t *tls, const char *hostname, int verify, char **errstr)
     GENERAL_NAME *subj_alt_name;
     /* did we find a name matching hostname? */
     int match_found;
+    /* needed for fingerprint checking */
+    unsigned int usize;
+    unsigned char fingerprint[20];
 
 
-    if (verify)
+    if (tls->have_trust_file)
     {
         error_msg = _("TLS certificate verification failed");
     }
@@ -836,10 +914,55 @@ int tls_check_cert(tls_t *tls, const char *hostname, int verify, char **errstr)
         return TLS_ECERT;
     }
 
+    if (tls->have_sha1_fingerprint || tls->have_md5_fingerprint)
+    {
+        /* If one of these matches, we trust the peer and do not perform any
+         * other checks. */
+        if (tls->have_sha1_fingerprint)
+        {
+            usize = 20;
+            if (!X509_digest(x509cert, EVP_sha1(), fingerprint, &usize))
+            {
+                *errstr = xasprintf(_("%s: error getting SHA1 fingerprint"),
+                        error_msg);
+                X509_free(x509cert);
+                return TLS_ECERT;
+            }
+            if (memcmp(fingerprint, tls->fingerprint, 20) != 0)
+            {
+                *errstr = xasprintf(_("%s: the certificate fingerprint "
+                            "does not match"), error_msg);
+                X509_free(x509cert);
+                return TLS_ECERT;
+            }
+        }
+        else
+        {
+            usize = 16;
+            if (!X509_digest(x509cert, EVP_md5(), fingerprint, &usize))
+            {
+                *errstr = xasprintf(_("%s: error getting MD5 fingerprint"),
+                        error_msg);
+                X509_free(x509cert);
+                return TLS_ECERT;
+            }
+            if (memcmp(fingerprint, tls->fingerprint, 16) != 0)
+            {
+                *errstr = xasprintf(_("%s: the certificate fingerprint "
+                            "does not match"), error_msg);
+                X509_free(x509cert);
+                return TLS_ECERT;
+            }
+        }
+        X509_free(x509cert);
+        return TLS_EOK;
+    }
+
     /* Get result of OpenSSL's default verify function */
     if ((status = SSL_get_verify_result(tls->ssl)) != X509_V_OK)
     {
-        if (verify || (status != X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY
+        if (tls->have_trust_file
+                || (status != X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY
                     && status != X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT
                     && status != X509_V_ERR_SELF_SIGNED_CERT_IN_CHAIN))
         {
@@ -947,6 +1070,8 @@ int tls_check_cert(tls_t *tls, const char *hostname, int verify, char **errstr)
 int tls_init(tls_t *tls,
         const char *key_file, const char *cert_file,
         const char *trust_file, const char *crl_file,
+        const unsigned char *sha1_fingerprint,
+        const unsigned char *md5_fingerprint,
         int force_sslv3, int min_dh_prime_bits, const char *priorities,
         char **errstr)
 {
@@ -1070,6 +1195,16 @@ int tls_init(tls_t *tls,
             return TLS_EFILE;
         }
     }
+    if (sha1_fingerprint)
+    {
+        memcpy(tls->fingerprint, sha1_fingerprint, 20);
+        tls->have_sha1_fingerprint = 1;
+    }
+    else if (md5_fingerprint)
+    {
+        memcpy(tls->fingerprint, md5_fingerprint, 16);
+        tls->have_md5_fingerprint = 1;
+    }
     if ((error_code = gnutls_credentials_set(tls->session,
                     GNUTLS_CRD_CERTIFICATE, tls->cred)) < 0)
     {
@@ -1157,6 +1292,16 @@ int tls_init(tls_t *tls,
             return TLS_EFILE;
         }
         tls->have_trust_file = 1;
+    }
+    if (sha1_fingerprint)
+    {
+        memcpy(tls->fingerprint, sha1_fingerprint, 20);
+        tls->have_sha1_fingerprint = 1;
+    }
+    else if (md5_fingerprint)
+    {
+        memcpy(tls->fingerprint, md5_fingerprint, 16);
+        tls->have_md5_fingerprint = 1;
     }
     if (!(tls->ssl = SSL_new(tls->ssl_ctx)))
     {
@@ -1291,8 +1436,7 @@ int tls_start(tls_t *tls, int fd, const char *hostname, int no_certcheck,
     }
     if (!no_certcheck)
     {
-        if ((error_code = tls_check_cert(tls, hostname,
-                        tls->have_trust_file, errstr)) != TLS_EOK)
+        if ((error_code = tls_check_cert(tls, hostname, errstr)) != TLS_EOK)
         {
             gnutls_deinit(tls->session);
             gnutls_certificate_free_credentials(tls->cred);
@@ -1347,8 +1491,7 @@ int tls_start(tls_t *tls, int fd, const char *hostname, int no_certcheck,
     }
     if (!no_certcheck)
     {
-        if ((error_code = tls_check_cert(tls, hostname, tls->have_trust_file,
-                        errstr)) != TLS_EOK)
+        if ((error_code = tls_check_cert(tls, hostname, errstr)) != TLS_EOK)
         {
             SSL_free(tls->ssl);
             SSL_CTX_free(tls->ssl_ctx);

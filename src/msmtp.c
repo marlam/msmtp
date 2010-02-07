@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2009
+ * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010
  * Martin Lambers <marlam@marlam.de>
  * Jay Soffian <jaysoffian@gmail.com> (Mac OS X keychain support)
  * Satoru SATOH <satoru.satoh@gmail.com> (GNOME keyring support)
@@ -430,36 +430,34 @@ void msmtp_time_to_string(time_t *t, char *buf, size_t bufsize)
 #endif
 }
 
+void msmtp_fingerprint_string(char *s, unsigned char *fingerprint, size_t len)
+{
+    const char *hex = "0123456789ABCDEF";
+    size_t i;
+
+    for (i = 0; i < len; i++)
+    {
+        s[3 * i + 0] = hex[(fingerprint[i] & 0xf0) >> 4];
+        s[3 * i + 1] = hex[fingerprint[i] & 0x0f];
+        s[3 * i + 2] = (i < len - 1 ? ':' : '\0');
+    }
+}
+
 void msmtp_print_tls_cert_info(tls_cert_info_t *tci)
 {
     const char *info_fieldname[6] = { N_("Common Name"), N_("Organization"),
         N_("Organizational unit"), N_("Locality"), N_("State or Province"),
         N_("Country") };
-    char hex[] = "0123456789ABCDEF";
     char sha1_fingerprint_string[60];
     char md5_fingerprint_string[48];
     char timebuf[128];          /* should be long enough for every locale */
     char *tmp;
     int i;
 
-    for (i = 0; i < 20; i++)
-    {
-        sha1_fingerprint_string[3 * i] =
-            hex[(tci->sha1_fingerprint[i] & 0xf0) >> 4];
-        sha1_fingerprint_string[3 * i + 1] =
-            hex[tci->sha1_fingerprint[i] & 0x0f];
-        sha1_fingerprint_string[3 * i + 2] = ':';
-    }
-    sha1_fingerprint_string[59] = '\0';
-    for (i = 0; i < 16; i++)
-    {
-        md5_fingerprint_string[3 * i] =
-            hex[(tci->md5_fingerprint[i] & 0xf0) >> 4];
-        md5_fingerprint_string[3 * i + 1] =
-            hex[tci->md5_fingerprint[i] & 0x0f];
-        md5_fingerprint_string[3 * i + 2] = ':';
-    }
-    md5_fingerprint_string[47] = '\0';
+    msmtp_fingerprint_string(sha1_fingerprint_string,
+            tci->sha1_fingerprint, 20);
+    msmtp_fingerprint_string(md5_fingerprint_string,
+            tci->md5_fingerprint, 16);
 
     printf(_("TLS certificate information:\n"));
     printf("    %s:\n", _("Owner"));
@@ -554,6 +552,7 @@ int msmtp_rmqs(account_t *acc, int debug, const char *rmqs_argument,
     {
         if ((e = smtp_tls_init(&srv, acc->tls_key_file, acc->tls_cert_file,
                         acc->tls_trust_file, acc->tls_crl_file,
+                        acc->tls_sha1_fingerprint, acc->tls_md5_fingerprint,
                         acc->tls_force_sslv3, acc->tls_min_dh_prime_bits,
                         acc->tls_priorities, errstr)) != TLS_EOK)
         {
@@ -729,6 +728,7 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
         tci = tls_cert_info_new();
         if ((e = smtp_tls_init(&srv, acc->tls_key_file, acc->tls_cert_file,
                         acc->tls_trust_file, acc->tls_crl_file,
+                        acc->tls_sha1_fingerprint, acc->tls_md5_fingerprint,
                         acc->tls_force_sslv3, acc->tls_min_dh_prime_bits,
                         acc->tls_priorities, errstr)) != TLS_EOK)
         {
@@ -1600,6 +1600,7 @@ int msmtp_sendmail(account_t *acc, list_t *recipients,
     {
         if ((e = smtp_tls_init(&srv, acc->tls_key_file, acc->tls_cert_file,
                         acc->tls_trust_file, acc->tls_crl_file,
+                        acc->tls_sha1_fingerprint, acc->tls_md5_fingerprint,
                         acc->tls_force_sslv3, acc->tls_min_dh_prime_bits,
                         acc->tls_priorities, errstr)) != TLS_EOK)
         {
@@ -2358,6 +2359,9 @@ void msmtp_print_help(void)
             "  --tls-trust-file=[file]      Set/unset trust file for TLS.\n"
             "  --tls-crl-file=[file]        Set/unset revocation file for "
                 "TLS.\n"
+            "  --tls-fingerprint=[f]        Set/unset trusted certificate "
+                "fingerprint for\n"
+            "                               TLS.\n"
             "  --tls-key-file=[file]        Set/unset private key file for "
                 "TLS.\n"
             "  --tls-cert-file=[file]       Set/unset private cert file for "
@@ -2436,20 +2440,21 @@ typedef struct
 #define LONGONLYOPT_TLS_STARTTLS                8
 #define LONGONLYOPT_TLS_TRUST_FILE              9
 #define LONGONLYOPT_TLS_CRL_FILE                10
-#define LONGONLYOPT_TLS_KEY_FILE                11
-#define LONGONLYOPT_TLS_CERT_FILE               12
-#define LONGONLYOPT_TLS_CERTCHECK               13
-#define LONGONLYOPT_TLS_FORCE_SSLV3             14
-#define LONGONLYOPT_TLS_MIN_DH_PRIME_BITS       15
-#define LONGONLYOPT_TLS_PRIORITIES              16
-#define LONGONLYOPT_PROTOCOL                    17
-#define LONGONLYOPT_DOMAIN                      18
-#define LONGONLYOPT_KEEPBCC                     19
-#define LONGONLYOPT_RMQS                        20
-#define LONGONLYOPT_SYSLOG                      21
-#define LONGONLYOPT_MAILDOMAIN                  22
-#define LONGONLYOPT_AUTO_FROM                   23
-#define LONGONLYOPT_READ_ENVELOPE_FROM          24
+#define LONGONLYOPT_TLS_FINGERPRINT             11
+#define LONGONLYOPT_TLS_KEY_FILE                12
+#define LONGONLYOPT_TLS_CERT_FILE               13
+#define LONGONLYOPT_TLS_CERTCHECK               14
+#define LONGONLYOPT_TLS_FORCE_SSLV3             15
+#define LONGONLYOPT_TLS_MIN_DH_PRIME_BITS       16
+#define LONGONLYOPT_TLS_PRIORITIES              17
+#define LONGONLYOPT_PROTOCOL                    18
+#define LONGONLYOPT_DOMAIN                      19
+#define LONGONLYOPT_KEEPBCC                     20
+#define LONGONLYOPT_RMQS                        21
+#define LONGONLYOPT_SYSLOG                      22
+#define LONGONLYOPT_MAILDOMAIN                  23
+#define LONGONLYOPT_AUTO_FROM                   24
+#define LONGONLYOPT_READ_ENVELOPE_FROM          25
 
 int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
 {
@@ -2483,6 +2488,8 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
             LONGONLYOPT_TLS_TRUST_FILE },
         { "tls-crl-file",          required_argument, 0,
             LONGONLYOPT_TLS_CRL_FILE },
+        { "tls-fingerprint",       required_argument, 0,
+            LONGONLYOPT_TLS_FINGERPRINT },
         { "tls-key-file",          required_argument, 0,
             LONGONLYOPT_TLS_KEY_FILE },
         { "tls-cert-file",         required_argument, 0,
@@ -2802,6 +2809,34 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
                     conf->cmdline_account->tls_crl_file = NULL;
                 }
                 conf->cmdline_account->mask |= ACC_TLS_CRL_FILE;
+                break;
+
+            case LONGONLYOPT_TLS_FINGERPRINT:
+                free(conf->cmdline_account->tls_sha1_fingerprint);
+                conf->cmdline_account->tls_sha1_fingerprint = NULL;
+                free(conf->cmdline_account->tls_md5_fingerprint);
+                conf->cmdline_account->tls_md5_fingerprint = NULL;
+                if (*optarg)
+                {
+                    if (strlen(optarg) == 2 * 20 + 19)
+                    {
+                        conf->cmdline_account->tls_sha1_fingerprint =
+                            get_fingerprint(optarg, 20);
+                    }
+                    else if (strlen(optarg) == 2 * 16 + 15)
+                    {
+                        conf->cmdline_account->tls_md5_fingerprint =
+                            get_fingerprint(optarg, 16);
+                    }
+                    if (!conf->cmdline_account->tls_sha1_fingerprint
+                            && !conf->cmdline_account->tls_md5_fingerprint)
+                    {
+                        print_error(_("invalid argument %s for %s"),
+                                optarg, "--tls-fingerprint");
+                        error_code = 1;
+                    }
+                }
+                conf->cmdline_account->mask |= ACC_TLS_FINGERPRINT;
                 break;
 
             case LONGONLYOPT_TLS_KEY_FILE:
@@ -3257,6 +3292,8 @@ int msmtp_get_conffile_accounts(list_t **account_list,
 
 void msmtp_print_conf(msmtp_cmdline_conf_t conf, account_t *account)
 {
+    char fingerprint_string[2 * 20 + 19 + 1];
+
     if (account->id && account->conffile)
     {
         printf(_("using account %s from %s\n"),
@@ -3299,6 +3336,16 @@ void msmtp_print_conf(msmtp_cmdline_conf_t conf, account_t *account)
     {
         printf("%s\n", account->auth_mech);
     }
+    if (account->tls_sha1_fingerprint)
+    {
+        msmtp_fingerprint_string(fingerprint_string,
+                account->tls_sha1_fingerprint, 20);
+    }
+    else if (account->tls_md5_fingerprint)
+    {
+        msmtp_fingerprint_string(fingerprint_string,
+                account->tls_md5_fingerprint, 16);
+    }
     printf("user                  = %s\n"
             "password              = %s\n"
             "ntlmdomain            = %s\n"
@@ -3306,6 +3353,7 @@ void msmtp_print_conf(msmtp_cmdline_conf_t conf, account_t *account)
             "tls_starttls          = %s\n"
             "tls_trust_file        = %s\n"
             "tls_crl_file          = %s\n"
+            "tls_fingerprint       = %s\n"
             "tls_key_file          = %s\n"
             "tls_cert_file         = %s\n"
             "tls_certcheck         = %s\n"
@@ -3317,6 +3365,8 @@ void msmtp_print_conf(msmtp_cmdline_conf_t conf, account_t *account)
             account->tls_nostarttls ? _("off") : _("on"),
             account->tls_trust_file ? account->tls_trust_file : _("(not set)"),
             account->tls_crl_file ? account->tls_crl_file : _("(not set)"),
+            account->tls_sha1_fingerprint || account->tls_md5_fingerprint
+                ? fingerprint_string : _("(not set)"),
             account->tls_key_file ? account->tls_key_file : _("(not set)"),
             account->tls_cert_file ? account->tls_cert_file : _("(not set)"),
             account->tls_nocertcheck ? _("off") : _("on"),

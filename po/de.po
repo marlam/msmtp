@@ -17,56 +17,56 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: gnulib/getopt.c:529 gnulib/getopt.c:545
-#, fuzzy, c-format
+#, c-format
 msgid "%s: option '%s' is ambiguous\n"
-msgstr "%s: Option `%s' ist nicht eindeutig\n"
+msgstr "%s: Option '%s' ist nicht eindeutig\n"
 
 #: gnulib/getopt.c:578 gnulib/getopt.c:582
-#, fuzzy, c-format
+#, c-format
 msgid "%s: option '--%s' doesn't allow an argument\n"
-msgstr "%s: Option `--%s' akzeptiert kein Argument\n"
+msgstr "%s: Option '--%s' akzeptiert kein Argument\n"
 
 #: gnulib/getopt.c:591 gnulib/getopt.c:596
-#, fuzzy, c-format
+#, c-format
 msgid "%s: option '%c%s' doesn't allow an argument\n"
-msgstr "%s: Option `%c%s' akzeptiert kein Argument\n"
+msgstr "%s: Option '%c%s' akzeptiert kein Argument\n"
 
 #: gnulib/getopt.c:639 gnulib/getopt.c:658 gnulib/getopt.c:961
 #: gnulib/getopt.c:980
-#, fuzzy, c-format
+#, c-format
 msgid "%s: option '%s' requires an argument\n"
-msgstr "%s: Option `%s' erwartet ein Argument\n"
+msgstr "%s: Option '%s' erwartet ein Argument\n"
 
 #: gnulib/getopt.c:696 gnulib/getopt.c:699
-#, fuzzy, c-format
+#, c-format
 msgid "%s: unrecognized option '--%s'\n"
-msgstr "%s: unbekannte Option `--%s'\n"
+msgstr "%s: unbekannte Option '--%s'\n"
 
 #: gnulib/getopt.c:707 gnulib/getopt.c:710
-#, fuzzy, c-format
+#, c-format
 msgid "%s: unrecognized option '%c%s'\n"
-msgstr "%s: unbekannte Option `%c%s'\n"
+msgstr "%s: unbekannte Option '%c%s'\n"
 
 #: gnulib/getopt.c:759 gnulib/getopt.c:762
-#, fuzzy, c-format
+#, c-format
 msgid "%s: invalid option -- '%c'\n"
-msgstr "%s: ungültige Option `%c'\n"
+msgstr "%s: ungültige Option '%c'\n"
 
 #: gnulib/getopt.c:812 gnulib/getopt.c:829 gnulib/getopt.c:1032
 #: gnulib/getopt.c:1050
-#, fuzzy, c-format
+#, c-format
 msgid "%s: option requires an argument -- '%c'\n"
-msgstr "%s: Option `%c' erwartet ein Argument\n"
+msgstr "%s: Option '%c' erwartet ein Argument\n"
 
 #: gnulib/getopt.c:882 gnulib/getopt.c:898
-#, fuzzy, c-format
+#, c-format
 msgid "%s: option '-W %s' is ambiguous\n"
-msgstr "%s: Option `-W %s' ist nicht eindeutig\n"
+msgstr "%s: Option '-W %s' ist nicht eindeutig\n"
 
 #: gnulib/getopt.c:922 gnulib/getopt.c:940
-#, fuzzy, c-format
+#, c-format
 msgid "%s: option '-W %s' doesn't allow an argument\n"
-msgstr "%s: Option `-W %s' akzeptiert kein Argument\n"
+msgstr "%s: Option '-W %s' akzeptiert kein Argument\n"
 
 #: src/conf.c:655
 #, c-format

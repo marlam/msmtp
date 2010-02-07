@@ -19,7 +19,6 @@ msmtp_LDADD = @tls_obj@	\
 	$(SERVENT_LIB)			\
 	$(INET_NTOP_LIB)		\
 	$(LIBSOCKET)			\
-	$(LIB_CLOCK_GETTIME)		\
 	$(LIB_NANOSLEEP)		\
 	$(LIBINTL)
 

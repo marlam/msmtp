@@ -360,6 +360,7 @@ int check_auth_arg(char *arg)
     else if (strcmp(arg, "plain") == 0
             || strcmp(arg, "cram-md5") == 0
             || strcmp(arg, "digest-md5") == 0
+            || strcmp(arg, "scram-sha-1") == 0
             || strcmp(arg, "gssapi") == 0
             || strcmp(arg, "external") == 0
             || strcmp(arg, "login") == 0

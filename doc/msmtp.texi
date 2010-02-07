@@ -76,7 +76,8 @@ options and exit codes are compatible to sendmail.
 Supported SMTP features include:
 @itemize
 @item Authentication methods PLAIN, LOGIN, CRAM-MD5 and EXTERNAL
-(and GSSAPI, DIGEST-MD5 and NTLM when compiled with GNU SASL support)
+(and GSSAPI, SCRAM-SHA-1, DIGEST-MD5, and NTLM when compiled with GNU SASL
+support)
 @item TLS encrypted connections with the OpenSSL or GnuTLS libraries
 (including server certificate verification and the possibility to send
 a client certificate)
@@ -203,7 +204,8 @@ This command enables or disables SMTP authentication and optionally chooses an
 authentication method to use. It should not be necessary to choose a method;
 with the argument @samp{on}, msmtp will choose the best one available.
 Accepted methods are @samp{plain}, @samp{cram-md5}, @samp{digest-md5},
-@samp{gssapi}, @samp{external}, @samp{login}, and @samp{ntlm}.
+@samp{scram-sha-1}, @samp{gssapi}, @samp{external}, @samp{login}, and
+@samp{ntlm}.
 @xref{Authentication}.@*
 @anchor{user}
 @item user [@var{username}]
@@ -819,6 +821,10 @@ safely be used without TLS.
 This authentication method needs a user name and a password. 
 The authentication data is not sent in plain text, which means this method can 
 safely be used without TLS.
+@item @samp{SCRAM-SHA-1}@*
+This authentication method needs a user name and a password.
+The authentication data is not sent in plain text, which means this method can
+safely be used without TLS.
 @item @samp{GSSAPI}@*
 This authentication method needs a user name. The Kerberos framework takes care
 of secure authentication, therefore this method can safely be used without TLS.
@@ -874,8 +880,9 @@ argument to let msmtp choose the method itself. See @ref{auth}, @ref{--auth}.
 If msmtp chooses the method itself, it will never choose an insecure method.
 If TLS is active, all methods are considered secure in this context, because the
 connection to the server is protected by TLS. If TLS is not active, only the
-CRAM-MD5, DIGEST-MD5, and GSSAPI methods are considered secure in this context,
-because all the others methods put the authentication data at risk.
+CRAM-MD5, DIGEST-MD5, SCRAM-SHA-1, and GSSAPI methods are considered secure in
+this context, because all the others methods put the authentication data at
+risk.
 
 If you really want to risk your authentication data, you have to force msmtp to
 do that by manually setting the authentication method while TLS is off.

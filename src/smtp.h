@@ -67,10 +67,11 @@
 #define SMTP_CAP_AUTH_LOGIN             (1 << 6)
 #define SMTP_CAP_AUTH_CRAM_MD5          (1 << 7)
 #define SMTP_CAP_AUTH_DIGEST_MD5        (1 << 8)
-#define SMTP_CAP_AUTH_GSSAPI            (1 << 9)
-#define SMTP_CAP_AUTH_EXTERNAL          (1 << 10)
-#define SMTP_CAP_AUTH_NTLM              (1 << 11)
-#define SMTP_CAP_ETRN                   (1 << 12)
+#define SMTP_CAP_AUTH_SCRAM_SHA_1       (1 << 9)
+#define SMTP_CAP_AUTH_GSSAPI            (1 << 10)
+#define SMTP_CAP_AUTH_EXTERNAL          (1 << 11)
+#define SMTP_CAP_AUTH_NTLM              (1 << 12)
+#define SMTP_CAP_ETRN                   (1 << 13)
 
 
 /*

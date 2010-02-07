@@ -496,6 +496,10 @@ int smtp_init(smtp_server_t *srv, const char *ehlo_domain, list_t **errmsg,
             {
                 srv->cap.flags |= SMTP_CAP_AUTH_DIGEST_MD5;
             }
+            if (strstr(s + 9, "SCRAM-SHA-1"))
+            {
+                srv->cap.flags |= SMTP_CAP_AUTH_SCRAM_SHA_1;
+            }
             if (strstr(s + 9, "GSSAPI"))
             {
                 srv->cap.flags |= SMTP_CAP_AUTH_GSSAPI;
@@ -923,6 +927,8 @@ int smtp_server_supports_authmech(smtp_server_t *srv, const char *mech)
                 && strcmp(mech, "CRAM-MD5") == 0)
             || ((srv->cap.flags & SMTP_CAP_AUTH_DIGEST_MD5)
                 && strcmp(mech, "DIGEST-MD5") == 0)
+            || ((srv->cap.flags & SMTP_CAP_AUTH_SCRAM_SHA_1)
+                && strcmp(mech, "SCRAM-SHA-1") == 0)
             || ((srv->cap.flags & SMTP_CAP_AUTH_EXTERNAL)
                 && strcmp(mech, "EXTERNAL") == 0)
             || ((srv->cap.flags & SMTP_CAP_AUTH_GSSAPI)
@@ -1030,6 +1036,11 @@ int smtp_auth(smtp_server_t *srv,
         {
             auth_mech = "GSSAPI";
         }
+        else if (gsasl_client_support_p(ctx, "SCRAM-SHA-1")
+                && (srv->cap.flags & SMTP_CAP_AUTH_SCRAM_SHA_1))
+        {
+            auth_mech = "SCRAM-SHA-1";
+        }
         else if (gsasl_client_support_p(ctx, "DIGEST-MD5")
                 && (srv->cap.flags & SMTP_CAP_AUTH_DIGEST_MD5))
         {
@@ -1083,8 +1094,8 @@ int smtp_auth(smtp_server_t *srv,
     /* Check availability of required authentication data */
     if (strcmp(auth_mech, "EXTERNAL") != 0)
     {
-        /* GSSAPI, DIGEST-MD5, CRAM-MD5, PLAIN, LOGIN, NTLM all need a user
-         * name */
+        /* GSSAPI, SCRAM-SHA-1, DIGEST-MD5, CRAM-MD5, PLAIN, LOGIN, NTLM all
+         * need a user name */
         if (!user)
         {
             gsasl_done(ctx);
@@ -1092,7 +1103,8 @@ int smtp_auth(smtp_server_t *srv,
                     auth_mech);
             return SMTP_EUNAVAIL;
         }
-        /* DIGEST-MD5, CRAM-MD5, PLAIN, LOGIN, NTLM all need a password */
+        /* SCRAM-SHA-1, DIGEST-MD5, CRAM-MD5, PLAIN, LOGIN, NTLM all need a
+         * password */
         if (strcmp(auth_mech, "GSSAPI") != 0 && !password)
         {
             if (!password_callback
@@ -1132,7 +1144,7 @@ int smtp_auth(smtp_server_t *srv,
         gsasl_property_set(sctx, GSASL_PASSWORD, password);
     }
     free(callback_password);
-    /* For DIGEST-MD5 and GSSAPI */
+    /* For DIGEST-MD5 and GSSAPI (and SCRAM-SHA-1?) */
     gsasl_property_set(sctx, GSASL_SERVICE, "smtp");
     if (hostname)
     {

@@ -917,6 +917,10 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
             {
                 printf("DIGEST-MD5 ");
             }
+            if (srv.cap.flags & SMTP_CAP_AUTH_SCRAM_SHA_1)
+            {
+                printf("SCRAM-SHA-1 ");
+            }
             if (srv.cap.flags & SMTP_CAP_AUTH_GSSAPI)
             {
                 printf("GSSAPI ");
@@ -2233,6 +2237,10 @@ void msmtp_print_version(void)
     if (smtp_client_supports_authmech("DIGEST-MD5"))
     {
         printf("digest-md5 ");
+    }
+    if (smtp_client_supports_authmech("SCRAM-SHA-1"))
+    {
+        printf("scram-sha-1 ");
     }
     if (smtp_client_supports_authmech("GSSAPI"))
     {

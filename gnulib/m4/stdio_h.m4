@@ -1,5 +1,5 @@
-# stdio_h.m4 serial 18
-dnl Copyright (C) 2007-2009 Free Software Foundation, Inc.
+# stdio_h.m4 serial 25
+dnl Copyright (C) 2007-2010 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -7,6 +7,7 @@ dnl with or without modifications, as long as this notice is preserved.
 AC_DEFUN([gl_STDIO_H],
 [
   AC_REQUIRE([gl_STDIO_H_DEFAULTS])
+  AC_REQUIRE([AC_C_INLINE])
   gl_CHECK_NEXT_HEADERS([stdio.h])
   dnl No need to create extra modules for these functions. Everyone who uses
   dnl <stdio.h> likely needs them.
@@ -30,6 +31,13 @@ AC_DEFUN([gl_STDIO_H],
       AC_LIBOBJ([stdio-write])
     fi
   ])
+
+  dnl Check for declarations of anything we want to poison if the
+  dnl corresponding gnulib module is not in use, and which is not
+  dnl guaranteed by C89.
+  gl_WARN_ON_USE_PREPARE([[#include <stdio.h>
+    ]], [dprintf fpurge fseeko ftello getdelim getline popen renameat
+    snprintf vdprintf vsnprintf])
 ])
 
 AC_DEFUN([gl_STDIO_MODULE_INDICATOR],
@@ -67,7 +75,9 @@ AC_DEFUN([gl_STDIO_H_DEFAULTS],
   GNULIB_PUTC=0;                 AC_SUBST([GNULIB_PUTC])
   GNULIB_PUTCHAR=0;              AC_SUBST([GNULIB_PUTCHAR])
   GNULIB_PUTS=0;                 AC_SUBST([GNULIB_PUTS])
+  GNULIB_REMOVE=0;               AC_SUBST([GNULIB_REMOVE])
   GNULIB_RENAME=0;               AC_SUBST([GNULIB_RENAME])
+  GNULIB_RENAMEAT=0;             AC_SUBST([GNULIB_RENAMEAT])
   GNULIB_SNPRINTF=0;             AC_SUBST([GNULIB_SNPRINTF])
   GNULIB_SPRINTF_POSIX=0;        AC_SUBST([GNULIB_SPRINTF_POSIX])
   GNULIB_STDIO_H_SIGPIPE=0;      AC_SUBST([GNULIB_STDIO_H_SIGPIPE])
@@ -87,8 +97,7 @@ AC_DEFUN([gl_STDIO_H_DEFAULTS],
   HAVE_DECL_SNPRINTF=1;          AC_SUBST([HAVE_DECL_SNPRINTF])
   HAVE_DECL_VSNPRINTF=1;         AC_SUBST([HAVE_DECL_VSNPRINTF])
   HAVE_DPRINTF=1;                AC_SUBST([HAVE_DPRINTF])
-  HAVE_FSEEKO=1;                 AC_SUBST([HAVE_FSEEKO])
-  HAVE_FTELLO=1;                 AC_SUBST([HAVE_FTELLO])
+  HAVE_RENAMEAT=1;               AC_SUBST([HAVE_RENAMEAT])
   HAVE_VASPRINTF=1;              AC_SUBST([HAVE_VASPRINTF])
   HAVE_VDPRINTF=1;               AC_SUBST([HAVE_VDPRINTF])
   REPLACE_DPRINTF=0;             AC_SUBST([REPLACE_DPRINTF])
@@ -102,12 +111,15 @@ AC_DEFUN([gl_STDIO_H_DEFAULTS],
   REPLACE_FSEEKO=0;              AC_SUBST([REPLACE_FSEEKO])
   REPLACE_FTELL=0;               AC_SUBST([REPLACE_FTELL])
   REPLACE_FTELLO=0;              AC_SUBST([REPLACE_FTELLO])
+  REPLACE_GETDELIM=0;            AC_SUBST([REPLACE_GETDELIM])
   REPLACE_GETLINE=0;             AC_SUBST([REPLACE_GETLINE])
   REPLACE_OBSTACK_PRINTF=0;      AC_SUBST([REPLACE_OBSTACK_PRINTF])
   REPLACE_PERROR=0;              AC_SUBST([REPLACE_PERROR])
   REPLACE_POPEN=0;               AC_SUBST([REPLACE_POPEN])
   REPLACE_PRINTF=0;              AC_SUBST([REPLACE_PRINTF])
+  REPLACE_REMOVE=0;              AC_SUBST([REPLACE_REMOVE])
   REPLACE_RENAME=0;              AC_SUBST([REPLACE_RENAME])
+  REPLACE_RENAMEAT=0;            AC_SUBST([REPLACE_RENAMEAT])
   REPLACE_SNPRINTF=0;            AC_SUBST([REPLACE_SNPRINTF])
   REPLACE_SPRINTF=0;             AC_SUBST([REPLACE_SPRINTF])
   REPLACE_STDIO_WRITE_FUNCS=0;   AC_SUBST([REPLACE_STDIO_WRITE_FUNCS])
@@ -135,6 +147,6 @@ AC_DEFUN([gl_STDIN_LARGE_OFFSET],
   choke me
 # endif
 #endif]])],
-	[gl_cv_var_stdin_large_offset=yes],
-	[gl_cv_var_stdin_large_offset=no])])
+        [gl_cv_var_stdin_large_offset=yes],
+        [gl_cv_var_stdin_large_offset=no])])
 ])

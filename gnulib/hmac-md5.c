@@ -1,5 +1,5 @@
 /* hmac-md5.c -- hashed message authentication codes
-   Copyright (C) 2005, 2006 Free Software Foundation, Inc.
+   Copyright (C) 2005, 2006, 2009, 2010 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@
 
 int
 hmac_md5 (const void *key, size_t keylen,
-	  const void *in, size_t inlen, void *resbuf)
+          const void *in, size_t inlen, void *resbuf)
 {
   struct md5_ctx inner;
   struct md5_ctx outer;

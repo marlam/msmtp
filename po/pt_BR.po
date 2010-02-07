@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: msmtp 1.4.15\n"
 "Report-Msgid-Bugs-To: marlam@marlam.de\n"
-"POT-Creation-Date: 2010-02-07 13:04+0100\n"
+"POT-Creation-Date: 2010-02-07 13:19+0100\n"
 "PO-Revision-Date: 2009-11-01 17:59-0200\n"
 "Last-Translator: Ruda Moura <ruda.moura@gmail.com>\n"
 "Language-Team: Portuguese\n"
@@ -16,61 +16,56 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: gnulib/getopt.c:526 gnulib/getopt.c:542
-#, c-format
-msgid "%s: option `%s' is ambiguous\n"
+#: gnulib/getopt.c:529 gnulib/getopt.c:545
+#, fuzzy, c-format
+msgid "%s: option '%s' is ambiguous\n"
 msgstr "%s: a opção `%s' é ambígua\n"
 
-#: gnulib/getopt.c:575 gnulib/getopt.c:579
-#, c-format
-msgid "%s: option `--%s' doesn't allow an argument\n"
+#: gnulib/getopt.c:578 gnulib/getopt.c:582
+#, fuzzy, c-format
+msgid "%s: option '--%s' doesn't allow an argument\n"
 msgstr "%s: a opção `--%s' não permite um argumento\n"
 
-#: gnulib/getopt.c:588 gnulib/getopt.c:593
-#, c-format
-msgid "%s: option `%c%s' doesn't allow an argument\n"
+#: gnulib/getopt.c:591 gnulib/getopt.c:596
+#, fuzzy, c-format
+msgid "%s: option '%c%s' doesn't allow an argument\n"
 msgstr "%s: a opção `%c%s' não permite um argumento\n"
 
-#: gnulib/getopt.c:636 gnulib/getopt.c:655 gnulib/getopt.c:971
-#: gnulib/getopt.c:990
-#, c-format
-msgid "%s: option `%s' requires an argument\n"
+#: gnulib/getopt.c:639 gnulib/getopt.c:658 gnulib/getopt.c:961
+#: gnulib/getopt.c:980
+#, fuzzy, c-format
+msgid "%s: option '%s' requires an argument\n"
 msgstr "%s: a opção `%s' requer um argumento\n"
 
-#: gnulib/getopt.c:693 gnulib/getopt.c:696
-#, c-format
-msgid "%s: unrecognized option `--%s'\n"
+#: gnulib/getopt.c:696 gnulib/getopt.c:699
+#, fuzzy, c-format
+msgid "%s: unrecognized option '--%s'\n"
 msgstr "%s: a opção `--%s' não é reconhecida\n"
 
-#: gnulib/getopt.c:704 gnulib/getopt.c:707
-#, c-format
-msgid "%s: unrecognized option `%c%s'\n"
+#: gnulib/getopt.c:707 gnulib/getopt.c:710
+#, fuzzy, c-format
+msgid "%s: unrecognized option '%c%s'\n"
 msgstr "%s: a opção `%c%s' não é reconhecida\n"
 
 #: gnulib/getopt.c:759 gnulib/getopt.c:762
-#, c-format
-msgid "%s: illegal option -- %c\n"
-msgstr "%s: opção ilegal -- %c\n"
-
-#: gnulib/getopt.c:768 gnulib/getopt.c:771
-#, c-format
-msgid "%s: invalid option -- %c\n"
+#, fuzzy, c-format
+msgid "%s: invalid option -- '%c'\n"
 msgstr "%s: opção inválida -- %c\n"
 
-#: gnulib/getopt.c:823 gnulib/getopt.c:839 gnulib/getopt.c:1043
-#: gnulib/getopt.c:1061
-#, c-format
-msgid "%s: option requires an argument -- %c\n"
+#: gnulib/getopt.c:812 gnulib/getopt.c:829 gnulib/getopt.c:1032
+#: gnulib/getopt.c:1050
+#, fuzzy, c-format
+msgid "%s: option requires an argument -- '%c'\n"
 msgstr "%s: a opção requer um argumento -- %c\n"
 
-#: gnulib/getopt.c:892 gnulib/getopt.c:908
-#, c-format
-msgid "%s: option `-W %s' is ambiguous\n"
+#: gnulib/getopt.c:882 gnulib/getopt.c:898
+#, fuzzy, c-format
+msgid "%s: option '-W %s' is ambiguous\n"
 msgstr "%s: a opção `-W %s' é ambígua\n"
 
-#: gnulib/getopt.c:932 gnulib/getopt.c:950
-#, c-format
-msgid "%s: option `-W %s' doesn't allow an argument\n"
+#: gnulib/getopt.c:922 gnulib/getopt.c:940
+#, fuzzy, c-format
+msgid "%s: option '-W %s' doesn't allow an argument\n"
 msgstr "%s: a opção `-W %s' não permite um argumento\n"
 
 #: src/conf.c:655
@@ -1312,3 +1307,6 @@ msgstr "não pude escrever na conexão TLS: %s"
 #: src/tls.c:1712
 msgid "cannot write to TLS connection"
 msgstr "não pude escrever na conexão TLS"
+
+#~ msgid "%s: illegal option -- %c\n"
+#~ msgstr "%s: opção ilegal -- %c\n"

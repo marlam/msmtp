@@ -1,5 +1,5 @@
 # DO NOT EDIT! GENERATED AUTOMATICALLY!
-# Copyright (C) 2002-2009 Free Software Foundation, Inc.
+# Copyright (C) 2002-2010 Free Software Foundation, Inc.
 #
 # This file is free software, distributed under the terms of the GNU
 # General Public License.  As a special exception to the GNU General
@@ -52,7 +52,6 @@ AC_DEFUN([gl_INIT],
   gl_HEADER_ARPA_INET
   AC_PROG_MKDIR_P
   gl_FUNC_BASE64
-  gl_CLOCK_TIME
   gl_FUNC_CLOSE
   gl_UNISTD_MODULE_INDICATOR([close])
   AC_REQUIRE([gl_HEADER_SYS_SOCKET])
@@ -77,15 +76,11 @@ AC_DEFUN([gl_INIT],
   gl_FUNC_GETOPT_GNU
   gl_MODULE_INDICATOR([getopt-gnu])
   gl_FUNC_GETOPT_POSIX
-  gl_FUNC_GETPAGESIZE
-  gl_UNISTD_MODULE_INDICATOR([getpagesize])
   gl_FUNC_GETPASS_GNU
   dnl you must add AM_GNU_GETTEXT([external]) or similar to configure.ac.
   AM_GNU_GETTEXT_VERSION([0.17])
   AC_SUBST([LIBINTL])
   AC_SUBST([LTLIBINTL])
-  gl_GETTIME
-  gl_FUNC_GETTIMEOFDAY
   gl_HOSTENT
   gl_INET_NTOP
   gl_ARPA_INET_MODULE_INDICATOR([inet_ntop])
@@ -159,7 +154,6 @@ AC_DEFUN([gl_INIT],
   AC_PROG_MKDIR_P
   gl_SYSEXITS
   gl_HEADER_TIME_H
-  gl_TIMESPEC
   gl_UNISTD_H
   gl_FUNC_VASNPRINTF
   gl_FUNC_VASPRINTF
@@ -195,7 +189,7 @@ AC_DEFUN([gl_INIT],
     if test -n "$gl_LIBOBJS"; then
       # Remove the extension.
       sed_drop_objext='s/\.o$//;s/\.obj$//'
-      for i in `for i in $gl_LIBOBJS; do echo "$i"; done | sed "$sed_drop_objext" | sort | uniq`; do
+      for i in `for i in $gl_LIBOBJS; do echo "$i"; done | sed -e "$sed_drop_objext" | sort | uniq`; do
         gl_libobjs="$gl_libobjs $i.$ac_objext"
         gl_ltlibobjs="$gl_ltlibobjs $i.lo"
       done
@@ -234,7 +228,7 @@ AC_DEFUN([gl_INIT],
     if test -n "$gltests_LIBOBJS"; then
       # Remove the extension.
       sed_drop_objext='s/\.o$//;s/\.obj$//'
-      for i in `for i in $gltests_LIBOBJS; do echo "$i"; done | sed "$sed_drop_objext" | sort | uniq`; do
+      for i in `for i in $gltests_LIBOBJS; do echo "$i"; done | sed -e "$sed_drop_objext" | sort | uniq`; do
         gltests_libobjs="$gltests_libobjs $i.$ac_objext"
         gltests_ltlibobjs="$gltests_ltlibobjs $i.lo"
       done
@@ -305,8 +299,9 @@ AC_DEFUN([gltests_LIBSOURCES], [
 # This macro records the list of files which have been installed by
 # gnulib-tool and may be removed by future gnulib-tool invocations.
 AC_DEFUN([gl_FILE_LIST], [
+  build-aux/arg-nonnull.h
   build-aux/config.rpath
-  build-aux/link-warning.h
+  build-aux/warn-on-use.h
   lib/alignof.h
   lib/alloca.c
   lib/alloca.in.h
@@ -334,12 +329,9 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/getopt.in.h
   lib/getopt1.c
   lib/getopt_int.h
-  lib/getpagesize.c
   lib/getpass.c
   lib/getpass.h
   lib/gettext.h
-  lib/gettime.c
-  lib/gettimeofday.c
   lib/hmac-md5.c
   lib/hmac.h
   lib/inet_ntop.c
@@ -385,11 +377,11 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/sys_time.in.h
   lib/sysexits.in.h
   lib/time.in.h
-  lib/timespec.h
   lib/unistd.in.h
   lib/vasnprintf.c
   lib/vasnprintf.h
   lib/vasprintf.c
+  lib/verify.h
   lib/w32sock.h
   lib/wchar.in.h
   lib/xalloc.h
@@ -402,7 +394,6 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/alloca.m4
   m4/arpa_inet_h.m4
   m4/base64.m4
-  m4/clock_time.m4
   m4/close.m4
   m4/codeset.m4
   m4/errno_h.m4
@@ -414,11 +405,8 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/gethostname.m4
   m4/getline.m4
   m4/getopt.m4
-  m4/getpagesize.m4
   m4/getpass.m4
   m4/gettext.m4
-  m4/gettime.m4
-  m4/gettimeofday.m4
   m4/glibc2.m4
   m4/glibc21.m4
   m4/gnulib-common.m4
@@ -483,12 +471,12 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/sysexits.m4
   m4/threadlib.m4
   m4/time_h.m4
-  m4/timespec.m4
   m4/uintmax_t.m4
   m4/unistd_h.m4
   m4/vasnprintf.m4
   m4/vasprintf.m4
   m4/visibility.m4
+  m4/warn-on-use.m4
   m4/wchar.m4
   m4/wchar_t.m4
   m4/wint_t.m4

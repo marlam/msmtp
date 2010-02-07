@@ -1,6 +1,6 @@
 /* A substitute for ISO C99 <wchar.h>, for platforms that have issues.
 
-   Copyright (C) 2007-2009 Free Software Foundation, Inc.
+   Copyright (C) 2007-2010 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -30,9 +30,9 @@
 @PRAGMA_SYSTEM_HEADER@
 #endif
 
-#if defined __need_mbstate_t || (defined __hpux && ((defined _INTTYPES_INCLUDED && !defined strtoimax) || defined _GL_JUST_INCLUDE_SYSTEM_WCHAR_H)) || defined _GL_ALREADY_INCLUDING_WCHAR_H
+#if defined __need_mbstate_t || defined __need_wint_t || (defined __hpux && ((defined _INTTYPES_INCLUDED && !defined strtoimax) || defined _GL_JUST_INCLUDE_SYSTEM_WCHAR_H)) || defined _GL_ALREADY_INCLUDING_WCHAR_H
 /* Special invocation convention:
-   - Inside uClibc header files.
+   - Inside glibc and uClibc header files.
    - On HP-UX 11.00 we have a sequence of nested includes
      <wchar.h> -> <stdlib.h> -> <stdint.h>, and the latter includes <wchar.h>,
      once indirectly <stdint.h> -> <sys/types.h> -> <inttypes.h> -> <wchar.h>
@@ -55,10 +55,13 @@
 /* Tru64 with Desktop Toolkit C has a bug: <stdio.h> must be included before
    <wchar.h>.
    BSD/OS 4.0.1 has a bug: <stddef.h>, <stdio.h> and <time.h> must be
-   included before <wchar.h>.  */
-#include <stddef.h>
-#include <stdio.h>
-#include <time.h>
+   included before <wchar.h>.
+   But avoid namespace pollution on glibc systems.  */
+#ifndef __GLIBC__
+# include <stddef.h>
+# include <stdio.h>
+# include <time.h>
+#endif
 
 /* Include the original <wchar.h> if it exists.
    Some builds of uClibc lack it.  */
@@ -72,7 +75,9 @@
 #ifndef _GL_WCHAR_H
 #define _GL_WCHAR_H
 
-/* The definition of GL_LINK_WARNING is copied here.  */
+/* The definition of _GL_ARG_NONNULL is copied here.  */
+
+/* The definition of _GL_WARN_ON_USE is copied here.  */
 
 #ifdef __cplusplus
 extern "C" {
@@ -110,10 +115,10 @@ extern wint_t btowc (int c);
 # endif
 #elif defined GNULIB_POSIXCHECK
 # undef btowc
-# define btowc(c) \
-    (GL_LINK_WARNING ("btowc is unportable - " \
-                      "use gnulib module btowc for portability"), \
-     btowc (c))
+# if HAVE_RAW_DECL_BTOWC
+_GL_WARN_ON_USE (btowc, "btowc is unportable - "
+                 "use gnulib module btowc for portability");
+# endif
 #endif
 
 
@@ -129,10 +134,10 @@ extern int wctob (wint_t wc);
 # endif
 #elif defined GNULIB_POSIXCHECK
 # undef wctob
-# define wctob(w) \
-    (GL_LINK_WARNING ("wctob is unportable - " \
-                      "use gnulib module wctob for portability"), \
-     wctob (w))
+# if HAVE_RAW_DECL_WCTOB
+_GL_WARN_ON_USE (wctob, "wctob is unportable - "
+                 "use gnulib module wctob for portability");
+# endif
 #endif
 
 
@@ -147,10 +152,10 @@ extern int mbsinit (const mbstate_t *ps);
 # endif
 #elif defined GNULIB_POSIXCHECK
 # undef mbsinit
-# define mbsinit(p) \
-    (GL_LINK_WARNING ("mbsinit is unportable - " \
-                      "use gnulib module mbsinit for portability"), \
-     mbsinit (p))
+# if HAVE_RAW_DECL_MBSINIT
+_GL_WARN_ON_USE (mbsinit, "mbsinit is unportable - "
+                 "use gnulib module mbsinit for portability");
+# endif
 #endif
 
 
@@ -165,10 +170,10 @@ extern size_t mbrtowc (wchar_t *pwc, const char *s, size_t n, mbstate_t *ps);
 # endif
 #elif defined GNULIB_POSIXCHECK
 # undef mbrtowc
-# define mbrtowc(w,s,n,p) \
-    (GL_LINK_WARNING ("mbrtowc is unportable - " \
-                      "use gnulib module mbrtowc for portability"), \
-     mbrtowc (w, s, n, p))
+# if HAVE_RAW_DECL_MBRTOWC
+_GL_WARN_ON_USE (mbrtowc, "mbrtowc is unportable - "
+                 "use gnulib module mbrtowc for portability");
+# endif
 #endif
 
 
@@ -183,10 +188,10 @@ extern size_t mbrlen (const char *s, size_t n, mbstate_t *ps);
 # endif
 #elif defined GNULIB_POSIXCHECK
 # undef mbrlen
-# define mbrlen(s,n,p) \
-    (GL_LINK_WARNING ("mbrlen is unportable - " \
-                      "use gnulib module mbrlen for portability"), \
-     mbrlen (s, n, p))
+# if HAVE_RAW_DECL_MBRLEN
+_GL_WARN_ON_USE (mbrlen, "mbrlen is unportable - "
+                 "use gnulib module mbrlen for portability");
+# endif
 #endif
 
 
@@ -197,14 +202,15 @@ extern size_t mbrlen (const char *s, size_t n, mbstate_t *ps);
 #  define mbsrtowcs rpl_mbsrtowcs
 # endif
 # if !@HAVE_MBSRTOWCS@ || @REPLACE_MBSRTOWCS@
-extern size_t mbsrtowcs (wchar_t *dest, const char **srcp, size_t len, mbstate_t *ps);
+extern size_t mbsrtowcs (wchar_t *dest, const char **srcp, size_t len, mbstate_t *ps)
+     _GL_ARG_NONNULL ((2));
 # endif
 #elif defined GNULIB_POSIXCHECK
 # undef mbsrtowcs
-# define mbsrtowcs(d,s,l,p) \
-    (GL_LINK_WARNING ("mbsrtowcs is unportable - " \
-                      "use gnulib module mbsrtowcs for portability"), \
-     mbsrtowcs (d, s, l, p))
+# if HAVE_RAW_DECL_MBSRTOWCS
+_GL_WARN_ON_USE (mbsrtowcs, "mbsrtowcs is unportable - "
+                 "use gnulib module mbsrtowcs for portability");
+# endif
 #endif
 
 
@@ -215,14 +221,15 @@ extern size_t mbsrtowcs (wchar_t *dest, const char **srcp, size_t len, mbstate_t
 #  define mbsnrtowcs rpl_mbsnrtowcs
 # endif
 # if !@HAVE_MBSNRTOWCS@ || @REPLACE_MBSNRTOWCS@
-extern size_t mbsnrtowcs (wchar_t *dest, const char **srcp, size_t srclen, size_t len, mbstate_t *ps);
+extern size_t mbsnrtowcs (wchar_t *dest, const char **srcp, size_t srclen, size_t len, mbstate_t *ps)
+     _GL_ARG_NONNULL ((2));
 # endif
 #elif defined GNULIB_POSIXCHECK
 # undef mbsnrtowcs
-# define mbsnrtowcs(d,s,n,l,p) \
-    (GL_LINK_WARNING ("mbsnrtowcs is unportable - " \
-                      "use gnulib module mbsnrtowcs for portability"), \
-     mbsnrtowcs (d, s, n, l, p))
+# if HAVE_RAW_DECL_MBSNRTOWCS
+_GL_WARN_ON_USE (mbsnrtowcs, "mbsnrtowcs is unportable - "
+                 "use gnulib module mbsnrtowcs for portability");
+# endif
 #endif
 
 
@@ -237,10 +244,10 @@ extern size_t wcrtomb (char *s, wchar_t wc, mbstate_t *ps);
 # endif
 #elif defined GNULIB_POSIXCHECK
 # undef wcrtomb
-# define wcrtomb(s,w,p) \
-    (GL_LINK_WARNING ("wcrtomb is unportable - " \
-                      "use gnulib module wcrtomb for portability"), \
-     wcrtomb (s, w, p))
+# if HAVE_RAW_DECL_WCRTOMB
+_GL_WARN_ON_USE (wcrtomb, "wcrtomb is unportable - "
+                 "use gnulib module wcrtomb for portability");
+# endif
 #endif
 
 
@@ -251,14 +258,15 @@ extern size_t wcrtomb (char *s, wchar_t wc, mbstate_t *ps);
 #  define wcsrtombs rpl_wcsrtombs
 # endif
 # if !@HAVE_WCSRTOMBS@ || @REPLACE_WCSRTOMBS@
-extern size_t wcsrtombs (char *dest, const wchar_t **srcp, size_t len, mbstate_t *ps);
+extern size_t wcsrtombs (char *dest, const wchar_t **srcp, size_t len, mbstate_t *ps)
+     _GL_ARG_NONNULL ((2));
 # endif
 #elif defined GNULIB_POSIXCHECK
 # undef wcsrtombs
-# define wcsrtombs(d,s,l,p) \
-    (GL_LINK_WARNING ("wcsrtombs is unportable - " \
-                      "use gnulib module wcsrtombs for portability"), \
-     wcsrtombs (d, s, l, p))
+# if HAVE_RAW_DECL_WCSRTOMBS
+_GL_WARN_ON_USE (wcsrtombs, "wcsrtombs is unportable - "
+                 "use gnulib module wcsrtombs for portability");
+# endif
 #endif
 
 
@@ -269,14 +277,15 @@ extern size_t wcsrtombs (char *dest, const wchar_t **srcp, size_t len, mbstate_t
 #  define wcsnrtombs rpl_wcsnrtombs
 # endif
 # if !@HAVE_WCSNRTOMBS@ || @REPLACE_WCSNRTOMBS@
-extern size_t wcsnrtombs (char *dest, const wchar_t **srcp, size_t srclen, size_t len, mbstate_t *ps);
+extern size_t wcsnrtombs (char *dest, const wchar_t **srcp, size_t srclen, size_t len, mbstate_t *ps)
+     _GL_ARG_NONNULL ((2));
 # endif
 #elif defined GNULIB_POSIXCHECK
 # undef wcsnrtombs
-# define wcsnrtombs(d,s,n,l,p) \
-    (GL_LINK_WARNING ("wcsnrtombs is unportable - " \
-                      "use gnulib module wcsnrtombs for portability"), \
-     wcsnrtombs (d, s, n, l, p))
+# if HAVE_RAW_DECL_WCSNRTOMBS
+_GL_WARN_ON_USE (wcsnrtombs, "wcsnrtombs is unportable - "
+                 "use gnulib module wcsnrtombs for portability");
+# endif
 #endif
 
 
@@ -294,10 +303,10 @@ extern int wcwidth (int /* actually wchar_t */);
 # endif
 #elif defined GNULIB_POSIXCHECK
 # undef wcwidth
-# define wcwidth(w) \
-    (GL_LINK_WARNING ("wcwidth is unportable - " \
-                      "use gnulib module wcwidth for portability"), \
-     wcwidth (w))
+# if HAVE_RAW_DECL_WCWIDTH
+_GL_WARN_ON_USE (wcwidth, "wcwidth is unportable - "
+                 "use gnulib module wcwidth for portability");
+# endif
 #endif
 
 

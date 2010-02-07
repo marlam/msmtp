@@ -1,6 +1,6 @@
 /* setsockopt.c --- wrappers for Windows setsockopt function
 
-   Copyright (C) 2008-2009 Free Software Foundation, Inc.
+   Copyright (C) 2008-2010 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -41,7 +41,8 @@ rpl_setsockopt (int fd, int level, int optname, const void *optval, socklen_t op
     {
       const struct timeval *tv = optval;
       int milliseconds = tv->tv_sec * 1000 + tv->tv_usec / 1000;
-      r = setsockopt (sock, level, optname, &milliseconds, sizeof (int));
+      optval = &milliseconds;
+      r = setsockopt (sock, level, optname, optval, sizeof (int));
     }
   else
     {

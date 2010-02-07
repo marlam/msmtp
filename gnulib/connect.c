@@ -1,6 +1,6 @@
 /* connect.c --- wrappers for Windows connect function
 
-   Copyright (C) 2008 Free Software Foundation, Inc.
+   Copyright (C) 2008, 2009, 2010 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -36,9 +36,9 @@ rpl_connect (int fd, struct sockaddr *sockaddr, int len)
   if (r < 0)
     {
       /* EINPROGRESS is not returned by WinSock 2.0; for backwards
-	 compatibility, connect(2) uses EWOULDBLOCK.  */
+         compatibility, connect(2) uses EWOULDBLOCK.  */
       if (WSAGetLastError () == WSAEWOULDBLOCK)
-	WSASetLastError (WSAEINPROGRESS);
+        WSASetLastError (WSAEINPROGRESS);
 
       set_winsock_errno ();
     }

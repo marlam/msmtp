@@ -1,6 +1,6 @@
 /* Provide a sys/socket header file for systems lacking it (read: MinGW)
    and for systems where it is incomplete.
-   Copyright (C) 2005-2009 Free Software Foundation, Inc.
+   Copyright (C) 2005-2010 Free Software Foundation, Inc.
    Written by Simon Josefsson.
 
    This program is free software; you can redistribute it and/or modify
@@ -43,6 +43,8 @@
 #ifndef _GL_SYS_SOCKET_H
 #define _GL_SYS_SOCKET_H
 
+/* The definition of _GL_ARG_NONNULL is copied here.  */
+
 #if !@HAVE_SA_FAMILY_T@
 typedef unsigned short  sa_family_t;
 #endif
@@ -54,10 +56,10 @@ typedef unsigned short  sa_family_t;
 # define __ss_aligntype unsigned long int
 # define _SS_SIZE 256
 # define _SS_PADSIZE \
-    (_SS_SIZE - ((sizeof (sa_family_t) >= alignof (__ss_aligntype)	\
-		  ? sizeof (sa_family_t)				\
-		  : alignof (__ss_aligntype))				\
-		 + sizeof (__ss_aligntype)))
+    (_SS_SIZE - ((sizeof (sa_family_t) >= alignof (__ss_aligntype)      \
+                  ? sizeof (sa_family_t)                                \
+                  : alignof (__ss_aligntype))                           \
+                 + sizeof (__ss_aligntype)))
 
 struct sockaddr_storage
 {
@@ -124,7 +126,7 @@ struct sockaddr_storage
 #  define SHUT_RDWR SD_BOTH
 # endif
 
-/* The definition of GL_LINK_WARNING is copied here.  */
+/* The definition of _GL_WARN_ON_USE is copied here.  */
 
 # if @HAVE_WINSOCK2_H@
 /* Include headers needed by the emulation code.  */
@@ -177,7 +179,7 @@ rpl_fd_isset (SOCKET fd, fd_set * set)
 # if @GNULIB_SOCKET@
 #  if @HAVE_WINSOCK2_H@
 #   undef socket
-#   define socket		rpl_socket
+#   define socket               rpl_socket
 extern int rpl_socket (int, int, int protocol);
 #  endif
 # elif @HAVE_WINSOCK2_H@
@@ -185,33 +187,33 @@ extern int rpl_socket (int, int, int protocol);
 #  define socket socket_used_without_requesting_gnulib_module_socket
 # elif defined GNULIB_POSIXCHECK
 #  undef socket
-#  define socket(d,t,p) \
-     (GL_LINK_WARNING ("socket is not always POSIX compliant - " \
-                       "use gnulib module socket for portability"), \
-      socket (d, t, p))
+#  if HAVE_RAW_DECL_SOCKET
+_GL_WARN_ON_USE (socket, "socket is not always POSIX compliant - "
+                 "use gnulib module socket for portability");
+#  endif
 # endif
 
 # if @GNULIB_CONNECT@
 #  if @HAVE_WINSOCK2_H@
 #   undef connect
-#   define connect		rpl_connect
-extern int rpl_connect (int, struct sockaddr *, int);
+#   define connect              rpl_connect
+extern int rpl_connect (int, struct sockaddr *, int) _GL_ARG_NONNULL ((2));
 #  endif
 # elif @HAVE_WINSOCK2_H@
 #  undef connect
 #  define connect socket_used_without_requesting_gnulib_module_connect
 # elif defined GNULIB_POSIXCHECK
 #  undef connect
-#  define connect(s,a,l) \
-     (GL_LINK_WARNING ("connect is not always POSIX compliant - " \
-                       "use gnulib module connect for portability"), \
-      connect (s, a, l))
+#  if HAVE_RAW_DECL_CONNECT
+_GL_WARN_ON_USE (connect, "connect is not always POSIX compliant - "
+                 "use gnulib module connect for portability");
+#  endif
 # endif
 
 # if @GNULIB_ACCEPT@
 #  if @HAVE_WINSOCK2_H@
 #   undef accept
-#   define accept		rpl_accept
+#   define accept               rpl_accept
 extern int rpl_accept (int, struct sockaddr *, int *);
 #  endif
 # elif @HAVE_WINSOCK2_H@
@@ -219,84 +221,87 @@ extern int rpl_accept (int, struct sockaddr *, int *);
 #  define accept accept_used_without_requesting_gnulib_module_accept
 # elif defined GNULIB_POSIXCHECK
 #  undef accept
-#  define accept(s,a,l) \
-     (GL_LINK_WARNING ("accept is not always POSIX compliant - " \
-                       "use gnulib module accept for portability"), \
-      accept (s, a, l))
+# if HAVE_RAW_DECL_ACCEPT
+_GL_WARN_ON_USE (accept, "accept is not always POSIX compliant - "
+                 "use gnulib module accept for portability");
+#  endif
 # endif
 
 # if @GNULIB_BIND@
 #  if @HAVE_WINSOCK2_H@
 #   undef bind
-#   define bind			rpl_bind
-extern int rpl_bind (int, struct sockaddr *, int);
+#   define bind                 rpl_bind
+extern int rpl_bind (int, struct sockaddr *, int) _GL_ARG_NONNULL ((2));
 #  endif
 # elif @HAVE_WINSOCK2_H@
 #  undef bind
 #  define bind bind_used_without_requesting_gnulib_module_bind
 # elif defined GNULIB_POSIXCHECK
 #  undef bind
-#  define bind(s,a,l) \
-     (GL_LINK_WARNING ("bind is not always POSIX compliant - " \
-                       "use gnulib module bind for portability"), \
-      bind (s, a, l))
+#  if HAVE_RAW_DECL_BIND
+_GL_WARN_ON_USE (bind, "bind is not always POSIX compliant - "
+                 "use gnulib module bind for portability");
+#  endif
 # endif
 
 # if @GNULIB_GETPEERNAME@
 #  if @HAVE_WINSOCK2_H@
 #   undef getpeername
-#   define getpeername		rpl_getpeername
-extern int rpl_getpeername (int, struct sockaddr *, int *);
+#   define getpeername          rpl_getpeername
+extern int rpl_getpeername (int, struct sockaddr *, int *)
+     _GL_ARG_NONNULL ((2, 3));
 #  endif
 # elif @HAVE_WINSOCK2_H@
 #  undef getpeername
 #  define getpeername getpeername_used_without_requesting_gnulib_module_getpeername
 # elif defined GNULIB_POSIXCHECK
 #  undef getpeername
-#  define getpeername(s,a,l) \
-     (GL_LINK_WARNING ("getpeername is not always POSIX compliant - " \
-                       "use gnulib module getpeername for portability"), \
-      getpeername (s, a, l))
+#  if HAVE_RAW_DECL_GETPEERNAME
+_GL_WARN_ON_USE (getpeername, "getpeername is not always POSIX compliant - "
+                 "use gnulib module getpeername for portability");
+#  endif
 # endif
 
 # if @GNULIB_GETSOCKNAME@
 #  if @HAVE_WINSOCK2_H@
 #   undef getsockname
-#   define getsockname		rpl_getsockname
-extern int rpl_getsockname (int, struct sockaddr *, int *);
+#   define getsockname          rpl_getsockname
+extern int rpl_getsockname (int, struct sockaddr *, int *)
+     _GL_ARG_NONNULL ((2, 3));
 #  endif
 # elif @HAVE_WINSOCK2_H@
 #  undef getsockname
 #  define getsockname getsockname_used_without_requesting_gnulib_module_getsockname
 # elif defined GNULIB_POSIXCHECK
 #  undef getsockname
-#  define getsockname(s,a,l) \
-     (GL_LINK_WARNING ("getsockname is not always POSIX compliant - " \
-                       "use gnulib module getsockname for portability"), \
-      getsockname (s, a, l))
+#  if HAVE_RAW_DECL_GETSOCKNAME
+_GL_WARN_ON_USE (getsockname, "getsockname is not always POSIX compliant - "
+                 "use gnulib module getsockname for portability");
+#  endif
 # endif
 
 # if @GNULIB_GETSOCKOPT@
 #  if @HAVE_WINSOCK2_H@
 #   undef getsockopt
-#   define getsockopt		rpl_getsockopt
-extern int rpl_getsockopt (int, int, int, void *, socklen_t *);
+#   define getsockopt           rpl_getsockopt
+extern int rpl_getsockopt (int, int, int, void *, socklen_t *)
+     _GL_ARG_NONNULL ((4, 5));
 #  endif
 # elif @HAVE_WINSOCK2_H@
 #  undef getsockopt
 #  define getsockopt getsockopt_used_without_requesting_gnulib_module_getsockopt
 # elif defined GNULIB_POSIXCHECK
 #  undef getsockopt
-#  define getsockopt(s,lvl,o,v,l) \
-     (GL_LINK_WARNING ("getsockopt is not always POSIX compliant - " \
-                       "use gnulib module getsockopt for portability"), \
-      getsockopt (s, lvl, o, v, l))
+#  if HAVE_RAW_DECL_GETSOCKOPT
+_GL_WARN_ON_USE (getsockopt, "getsockopt is not always POSIX compliant - "
+                 "use gnulib module getsockopt for portability");
+#  endif
 # endif
 
 # if @GNULIB_LISTEN@
 #  if @HAVE_WINSOCK2_H@
 #   undef listen
-#   define listen		rpl_listen
+#   define listen               rpl_listen
 extern int rpl_listen (int, int);
 #  endif
 # elif @HAVE_WINSOCK2_H@
@@ -304,101 +309,104 @@ extern int rpl_listen (int, int);
 #  define listen listen_used_without_requesting_gnulib_module_listen
 # elif defined GNULIB_POSIXCHECK
 #  undef listen
-#  define listen(s,b) \
-     (GL_LINK_WARNING ("listen is not always POSIX compliant - " \
-                       "use gnulib module listen for portability"), \
-      listen (s, b))
+#  if HAVE_RAW_DECL_LISTEN
+_GL_WARN_ON_USE (listen, "listen is not always POSIX compliant - "
+                 "use gnulib module listen for portability");
+#  endif
 # endif
 
 # if @GNULIB_RECV@
 #  if @HAVE_WINSOCK2_H@
 #   undef recv
-#   define recv			rpl_recv
-extern int rpl_recv (int, void *, int, int);
+#   define recv                 rpl_recv
+extern int rpl_recv (int, void *, int, int) _GL_ARG_NONNULL ((2));
 #  endif
 # elif @HAVE_WINSOCK2_H@
 #  undef recv
 #  define recv recv_used_without_requesting_gnulib_module_recv
 # elif defined GNULIB_POSIXCHECK
 #  undef recv
-#  define recv(s,b,n,f) \
-     (GL_LINK_WARNING ("recv is not always POSIX compliant - " \
-                       "use gnulib module recv for portability"), \
-      recv (s, b, n, f))
+#  if HAVE_RAW_DECL_RECV
+_GL_WARN_ON_USE (recv, "recv is not always POSIX compliant - "
+                 "use gnulib module recv for portability");
+#  endif
 # endif
 
 # if @GNULIB_SEND@
 #  if @HAVE_WINSOCK2_H@
 #   undef send
-#   define send			rpl_send
-extern int rpl_send (int, const void *, int, int);
+#   define send                 rpl_send
+extern int rpl_send (int, const void *, int, int) _GL_ARG_NONNULL ((2));
 #  endif
 # elif @HAVE_WINSOCK2_H@
 #  undef send
 #  define send send_used_without_requesting_gnulib_module_send
 # elif defined GNULIB_POSIXCHECK
 #  undef send
-#  define send(s,b,n,f) \
-     (GL_LINK_WARNING ("send is not always POSIX compliant - " \
-                       "use gnulib module send for portability"), \
-      send (s, b, n, f))
+#  if HAVE_RAW_DECL_SEND
+_GL_WARN_ON_USE (send, "send is not always POSIX compliant - "
+                 "use gnulib module send for portability");
+#  endif
 # endif
 
 # if @GNULIB_RECVFROM@
 #  if @HAVE_WINSOCK2_H@
 #   undef recvfrom
-#   define recvfrom		rpl_recvfrom
-extern int rpl_recvfrom (int, void *, int, int, struct sockaddr *, int *);
+#   define recvfrom             rpl_recvfrom
+extern int rpl_recvfrom (int, void *, int, int, struct sockaddr *, int *)
+     _GL_ARG_NONNULL ((2));
 #  endif
 # elif @HAVE_WINSOCK2_H@
 #  undef recvfrom
 #  define recvfrom recvfrom_used_without_requesting_gnulib_module_recvfrom
 # elif defined GNULIB_POSIXCHECK
 #  undef recvfrom
-#  define recvfrom(s,b,n,f,a,l) \
-     (GL_LINK_WARNING ("recvfrom is not always POSIX compliant - " \
-                       "use gnulib module recvfrom for portability"), \
-      recvfrom (s, b, n, f, a, l))
+#  if HAVE_RAW_DECL_RECVFROM
+_GL_WARN_ON_USE (recvfrom, "recvfrom is not always POSIX compliant - "
+                 "use gnulib module recvfrom for portability");
+#  endif
 # endif
 
 # if @GNULIB_SENDTO@
 #  if @HAVE_WINSOCK2_H@
 #   undef sendto
-#   define sendto		rpl_sendto
-extern int rpl_sendto (int, const void *, int, int, struct sockaddr *, int);
+#   define sendto               rpl_sendto
+extern int rpl_sendto (int, const void *, int, int, struct sockaddr *, int)
+     _GL_ARG_NONNULL ((2));
 #  endif
 # elif @HAVE_WINSOCK2_H@
 #  undef sendto
 #  define sendto sendto_used_without_requesting_gnulib_module_sendto
 # elif defined GNULIB_POSIXCHECK
 #  undef sendto
-#  define sendto(s,b,n,f,a,l) \
-     (GL_LINK_WARNING ("sendto is not always POSIX compliant - " \
-                       "use gnulib module sendto for portability"), \
-      sendto (s, b, n, f, a, l))
+#  if HAVE_RAW_DECL_SENDTO
+_GL_WARN_ON_USE (sendto, "sendto is not always POSIX compliant - "
+                 "use gnulib module sendto for portability");
+#  endif
 # endif
 
 # if @GNULIB_SETSOCKOPT@
 #  if @HAVE_WINSOCK2_H@
 #   undef setsockopt
-#   define setsockopt		rpl_setsockopt
-extern int rpl_setsockopt (int, int, int, const void *, socklen_t);
+#   define setsockopt           rpl_setsockopt
+extern int rpl_setsockopt (int, int, int, const void *, socklen_t)
+     _GL_ARG_NONNULL ((4));
 #  endif
 # elif @HAVE_WINSOCK2_H@
 #  undef setsockopt
 #  define setsockopt setsockopt_used_without_requesting_gnulib_module_setsockopt
 # elif defined GNULIB_POSIXCHECK
 #  undef setsockopt
-#  define setsockopt(s,lvl,o,v,l) \
-     (GL_LINK_WARNING ("setsockopt is not always POSIX compliant - " \
-                       "use gnulib module setsockopt for portability"), \
-      setsockopt (s, lvl, o, v, l))
+#  if HAVE_RAW_DECL_SETSOCKOPT
+_GL_WARN_ON_USE (setsockopt, "setsockopt is not always POSIX compliant - "
+                 "use gnulib module setsockopt for portability");
+#  endif
 # endif
 
 # if @GNULIB_SHUTDOWN@
 #  if @HAVE_WINSOCK2_H@
 #   undef shutdown
-#   define shutdown		rpl_shutdown
+#   define shutdown             rpl_shutdown
 extern int rpl_shutdown (int, int);
 #  endif
 # elif @HAVE_WINSOCK2_H@
@@ -406,15 +414,15 @@ extern int rpl_shutdown (int, int);
 #  define shutdown shutdown_used_without_requesting_gnulib_module_shutdown
 # elif defined GNULIB_POSIXCHECK
 #  undef shutdown
-#  define shutdown(s,h) \
-     (GL_LINK_WARNING ("shutdown is not always POSIX compliant - " \
-                       "use gnulib module shutdown for portability"), \
-      shutdown (s, h))
+#  if HAVE_RAW_DECL_SHUTDOWN
+_GL_WARN_ON_USE (shutdown, "shutdown is not always POSIX compliant - "
+                 "use gnulib module shutdown for portability");
+#  endif
 # endif
 
 # if @HAVE_WINSOCK2_H@
 #  undef select
-#  define select		select_used_without_including_sys_select_h
+#  define select                select_used_without_including_sys_select_h
 # endif
 
 # ifdef __cplusplus
@@ -437,13 +445,13 @@ extern "C" {
 #  define accept4 rpl_accept4
 # endif
 extern int accept4 (int sockfd, struct sockaddr *addr, socklen_t *addrlen,
-		    int flags);
+                    int flags);
 #elif defined GNULIB_POSIXCHECK
 # undef accept4
-# define accept4(s,a,l,f) \
-    (GL_LINK_WARNING ("accept4 is unportable - " \
-                      "use gnulib module accept4 for portability"), \
-     accept4 (s, a, l, f))
+# if HAVE_RAW_DECL_ACCEPT4
+_GL_WARN_ON_USE (accept4, "accept4 is unportable - "
+                 "use gnulib module accept4 for portability");
+# endif
 #endif
 
 #ifdef __cplusplus

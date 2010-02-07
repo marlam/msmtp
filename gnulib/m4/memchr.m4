@@ -1,5 +1,5 @@
 # memchr.m4 serial 7
-dnl Copyright (C) 2002, 2003, 2004, 2009 Free Software Foundation, Inc.
+dnl Copyright (C) 2002-2004, 2009-2010 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -53,11 +53,11 @@ AC_DEFUN_ONCE([gl_FUNC_MEMCHR],
     {
       int pagesize = getpagesize ();
       char *two_pages =
-	(char *) mmap (NULL, 2 * pagesize, PROT_READ | PROT_WRITE,
-		       flags, fd, 0);
+        (char *) mmap (NULL, 2 * pagesize, PROT_READ | PROT_WRITE,
+                       flags, fd, 0);
       if (two_pages != (char *)(-1)
-	  && mprotect (two_pages + pagesize, pagesize, PROT_NONE) == 0)
-	fence = two_pages + pagesize;
+          && mprotect (two_pages + pagesize, pagesize, PROT_NONE) == 0)
+        fence = two_pages + pagesize;
     }
 #endif
   if (fence)

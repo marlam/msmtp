@@ -1,6 +1,6 @@
 # Configure a more-standard replacement for <time.h>.
 
-# Copyright (C) 2000-2001, 2003-2007, 2009 Free Software Foundation, Inc.
+# Copyright (C) 2000-2001, 2003-2007, 2009-2010 Free Software Foundation, Inc.
 
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -45,9 +45,9 @@ AC_DEFUN([gl_CHECK_TYPE_STRUCT_TIMESPEC],
     [gl_cv_sys_struct_timespec_in_time_h],
     [AC_COMPILE_IFELSE(
        [AC_LANG_PROGRAM(
-	  [[#include <time.h>
-	  ]],
-	  [[static struct timespec x; x.tv_sec = x.tv_nsec;]])],
+          [[#include <time.h>
+          ]],
+          [[static struct timespec x; x.tv_sec = x.tv_nsec;]])],
        [gl_cv_sys_struct_timespec_in_time_h=yes],
        [gl_cv_sys_struct_timespec_in_time_h=no])])
 
@@ -59,12 +59,12 @@ AC_DEFUN([gl_CHECK_TYPE_STRUCT_TIMESPEC],
     AC_CACHE_CHECK([for struct timespec in <sys/time.h>],
       [gl_cv_sys_struct_timespec_in_sys_time_h],
       [AC_COMPILE_IFELSE(
-	 [AC_LANG_PROGRAM(
-	    [[#include <sys/time.h>
-	    ]],
-	    [[static struct timespec x; x.tv_sec = x.tv_nsec;]])],
-	 [gl_cv_sys_struct_timespec_in_sys_time_h=yes],
-	 [gl_cv_sys_struct_timespec_in_sys_time_h=no])])
+         [AC_LANG_PROGRAM(
+            [[#include <sys/time.h>
+            ]],
+            [[static struct timespec x; x.tv_sec = x.tv_nsec;]])],
+         [gl_cv_sys_struct_timespec_in_sys_time_h=yes],
+         [gl_cv_sys_struct_timespec_in_sys_time_h=no])])
     if test $gl_cv_sys_struct_timespec_in_sys_time_h = yes; then
       SYS_TIME_H_DEFINES_STRUCT_TIMESPEC=1
     fi

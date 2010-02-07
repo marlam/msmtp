@@ -1,5 +1,5 @@
-# sys_select_h.m4 serial 8
-dnl Copyright (C) 2006-2009 Free Software Foundation, Inc.
+# sys_select_h.m4 serial 11
+dnl Copyright (C) 2006-2010 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -17,7 +17,7 @@ AC_DEFUN([gl_HEADER_SYS_SELECT],
       dnl 2. On OSF/1 4.0, <sys/select.h> provides only a forward declaration
       dnl    of 'struct timeval', and no definition of this type.
       AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <sys/select.h>]],
-					 [[struct timeval b;]])],
+                                         [[struct timeval b;]])],
         [gl_cv_header_sys_select_h_selfcontained=yes],
         [gl_cv_header_sys_select_h_selfcontained=no])
       dnl Test against another bug:
@@ -45,20 +45,28 @@ AC_DEFUN([gl_HEADER_SYS_SELECT],
           ])
       fi
     ])
-  if test $gl_cv_header_sys_select_h_selfcontained = yes; then
-    SYS_SELECT_H=''
+  AC_CHECK_HEADERS_ONCE([sys/select.h])
+  gl_CHECK_NEXT_HEADERS([sys/select.h])
+  if test $ac_cv_header_sys_select_h = yes; then
+    HAVE_SYS_SELECT_H=1
   else
-    SYS_SELECT_H='sys/select.h'
-    gl_CHECK_NEXT_HEADERS([sys/select.h])
-    if test $ac_cv_header_sys_select_h = yes; then
-      HAVE_SYS_SELECT_H=1
-    else
-      HAVE_SYS_SELECT_H=0
-    fi
-    AC_SUBST([HAVE_SYS_SELECT_H])
+    HAVE_SYS_SELECT_H=0
+  fi
+  AC_SUBST([HAVE_SYS_SELECT_H])
+  if test $gl_cv_header_sys_select_h_selfcontained != yes; then
     gl_PREREQ_SYS_H_WINSOCK2
   fi
-  AC_SUBST([SYS_SELECT_H])
+
+  dnl Check for declarations of anything we want to poison if the
+  dnl corresponding gnulib module is not in use.
+  gl_WARN_ON_USE_PREPARE([[
+/* Some systems require prerequisite headers.  */
+#include <sys/types.h>
+#if !defined __GLIBC__ && HAVE_SYS_TIME_H
+# include <sys/time.h>
+#endif
+#include <sys/select.h>
+    ]], [select])
 ])
 
 AC_DEFUN([gl_SYS_SELECT_MODULE_INDICATOR],

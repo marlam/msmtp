@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: msmtp 1.4.15\n"
 "Report-Msgid-Bugs-To: marlam@marlam.de\n"
-"POT-Creation-Date: 2010-02-07 13:19+0100\n"
+"POT-Creation-Date: 2010-03-20 12:24+0100\n"
 "PO-Revision-Date: 2009-11-01 17:59-0200\n"
 "Last-Translator: Ruda Moura <ruda.moura@gmail.com>\n"
 "Language-Team: Portuguese\n"
@@ -16,54 +16,54 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: gnulib/getopt.c:529 gnulib/getopt.c:545
+#: gnulib/getopt.c:525 gnulib/getopt.c:541
 #, c-format
 msgid "%s: option '%s' is ambiguous\n"
 msgstr "%s: a opção '%s' é ambígua\n"
 
-#: gnulib/getopt.c:578 gnulib/getopt.c:582
+#: gnulib/getopt.c:574 gnulib/getopt.c:578
 #, c-format
 msgid "%s: option '--%s' doesn't allow an argument\n"
 msgstr "%s: a opção '--%s' não permite um argumento\n"
 
-#: gnulib/getopt.c:591 gnulib/getopt.c:596
+#: gnulib/getopt.c:587 gnulib/getopt.c:592
 #, c-format
 msgid "%s: option '%c%s' doesn't allow an argument\n"
 msgstr "%s: a opção '%c%s' não permite um argumento\n"
 
-#: gnulib/getopt.c:639 gnulib/getopt.c:658 gnulib/getopt.c:961
-#: gnulib/getopt.c:980
+#: gnulib/getopt.c:635 gnulib/getopt.c:654 gnulib/getopt.c:957
+#: gnulib/getopt.c:976
 #, c-format
 msgid "%s: option '%s' requires an argument\n"
 msgstr "%s: a opção '%s' requer um argumento\n"
 
-#: gnulib/getopt.c:696 gnulib/getopt.c:699
+#: gnulib/getopt.c:692 gnulib/getopt.c:695
 #, c-format
 msgid "%s: unrecognized option '--%s'\n"
 msgstr "%s: a opção '--%s' não é reconhecida\n"
 
-#: gnulib/getopt.c:707 gnulib/getopt.c:710
+#: gnulib/getopt.c:703 gnulib/getopt.c:706
 #, c-format
 msgid "%s: unrecognized option '%c%s'\n"
 msgstr "%s: a opção '%c%s' não é reconhecida\n"
 
-#: gnulib/getopt.c:759 gnulib/getopt.c:762
+#: gnulib/getopt.c:755 gnulib/getopt.c:758
 #, c-format
 msgid "%s: invalid option -- '%c'\n"
 msgstr "%s: opção inválida -- '%c'\n"
 
-#: gnulib/getopt.c:812 gnulib/getopt.c:829 gnulib/getopt.c:1032
-#: gnulib/getopt.c:1050
+#: gnulib/getopt.c:808 gnulib/getopt.c:825 gnulib/getopt.c:1028
+#: gnulib/getopt.c:1046
 #, c-format
 msgid "%s: option requires an argument -- '%c'\n"
 msgstr "%s: a opção requer um argumento -- '%c'\n"
 
-#: gnulib/getopt.c:882 gnulib/getopt.c:898
+#: gnulib/getopt.c:878 gnulib/getopt.c:894
 #, c-format
 msgid "%s: option '-W %s' is ambiguous\n"
 msgstr "%s: a opção '-W %s' é ambígua\n"
 
-#: gnulib/getopt.c:922 gnulib/getopt.c:940
+#: gnulib/getopt.c:918 gnulib/getopt.c:936
 #, c-format
 msgid "%s: option '-W %s' doesn't allow an argument\n"
 msgstr "%s: a opção '-W %s' não permite um argumento\n"

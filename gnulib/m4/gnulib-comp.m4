@@ -25,12 +25,86 @@ AC_DEFUN([gl_EARLY],
   m4_pattern_allow([^gl_LIBOBJS$])dnl a variable
   m4_pattern_allow([^gl_LTLIBOBJS$])dnl a variable
   AC_REQUIRE([AC_PROG_RANLIB])
+  # Code from module alignof:
+  # Code from module alloca:
+  # Code from module alloca-opt:
+  # Code from module arg-nonnull:
+  # Code from module arpa_inet:
+  # Code from module base64:
+  # Code from module c++defs:
+  # Code from module c-ctype:
+  # Code from module close:
+  # Code from module close-hook:
+  # Code from module connect:
+  # Code from module crypto/hmac-md5:
+  # Code from module crypto/md5:
+  # Code from module errno:
+  # Code from module extensions:
   AC_REQUIRE([gl_USE_SYSTEM_EXTENSIONS])
+  # Code from module fclose:
+  # Code from module float:
+  # Code from module getaddrinfo:
+  # Code from module getdelim:
+  # Code from module gethostname:
+  # Code from module getline:
+  # Code from module getopt-gnu:
+  # Code from module getopt-posix:
+  # Code from module getpass-gnu:
+  # Code from module gettext:
+  # Code from module gettext-h:
+  # Code from module havelib:
+  # Code from module hostent:
+  # Code from module include_next:
+  # Code from module inet_ntop:
+  # Code from module inline:
+  # Code from module intprops:
+  # Code from module memchr:
+  # Code from module memxor:
+  # Code from module multiarch:
+  # Code from module nanosleep:
+  # Code from module netdb:
+  # Code from module netinet_in:
+  # Code from module realloc-posix:
+  # Code from module recv:
+  # Code from module select:
+  # Code from module send:
+  # Code from module servent:
+  # Code from module setsockopt:
+  # Code from module sigaction:
+  # Code from module signal:
+  # Code from module sigprocmask:
+  # Code from module size_max:
+  # Code from module snprintf:
+  # Code from module socket:
+  # Code from module sockets:
+  # Code from module socklen:
+  # Code from module stdarg:
   dnl Some compilers (e.g., AIX 5.3 cc) need to be in c99 mode
   dnl for the builtin va_copy to work.  With Autoconf 2.60 or later,
   dnl AC_PROG_CC_STDC arranges for this.  With older Autoconf AC_PROG_CC_STDC
   dnl shouldn't hurt, though installers are on their own to set c99 mode.
   AC_REQUIRE([AC_PROG_CC_STDC])
+  # Code from module stdbool:
+  # Code from module stddef:
+  # Code from module stdint:
+  # Code from module stdio:
+  # Code from module stdlib:
+  # Code from module strerror:
+  # Code from module string:
+  # Code from module sys_select:
+  # Code from module sys_socket:
+  # Code from module sys_time:
+  # Code from module sysexits:
+  # Code from module time:
+  # Code from module unistd:
+  # Code from module vasnprintf:
+  # Code from module vasprintf:
+  # Code from module verify:
+  # Code from module warn-on-use:
+  # Code from module wchar:
+  # Code from module xalloc:
+  # Code from module xsize:
+  # Code from module xvasprintf:
 ])
 
 # This macro should be invoked from ./configure.ac, in the section
@@ -48,79 +122,130 @@ AC_DEFUN([gl_INIT],
   m4_pushdef([gl_LIBSOURCES_DIR], [])
   gl_COMMON
   gl_source_base='gnulib'
+  # Code from module alignof:
+  # Code from module alloca:
+  # Code from module alloca-opt:
   gl_FUNC_ALLOCA
+  # Code from module arg-nonnull:
+  # Code from module arpa_inet:
   gl_HEADER_ARPA_INET
   AC_PROG_MKDIR_P
+  # Code from module base64:
   gl_FUNC_BASE64
+  # Code from module c++defs:
+  # Code from module c-ctype:
+  # Code from module close:
   gl_FUNC_CLOSE
   gl_UNISTD_MODULE_INDICATOR([close])
+  # Code from module close-hook:
+  # Code from module connect:
   AC_REQUIRE([gl_HEADER_SYS_SOCKET])
   if test "$ac_cv_header_winsock2_h" = yes; then
     AC_LIBOBJ([connect])
   fi
   gl_SYS_SOCKET_MODULE_INDICATOR([connect])
+  # Code from module crypto/hmac-md5:
   gl_HMAC_MD5
+  # Code from module crypto/md5:
   gl_MD5
+  # Code from module errno:
   gl_HEADER_ERRNO_H
+  # Code from module extensions:
+  # Code from module fclose:
   gl_FUNC_FCLOSE
   gl_STDIO_MODULE_INDICATOR([fclose])
+  # Code from module float:
   gl_FLOAT_H
+  # Code from module getaddrinfo:
   gl_GETADDRINFO
   gl_NETDB_MODULE_INDICATOR([getaddrinfo])
+  # Code from module getdelim:
   gl_FUNC_GETDELIM
   gl_STDIO_MODULE_INDICATOR([getdelim])
+  # Code from module gethostname:
   gl_FUNC_GETHOSTNAME
   gl_UNISTD_MODULE_INDICATOR([gethostname])
+  # Code from module getline:
   gl_FUNC_GETLINE
   gl_STDIO_MODULE_INDICATOR([getline])
+  # Code from module getopt-gnu:
   gl_FUNC_GETOPT_GNU
   gl_MODULE_INDICATOR([getopt-gnu])
+  # Code from module getopt-posix:
   gl_FUNC_GETOPT_POSIX
+  # Code from module getpass-gnu:
   gl_FUNC_GETPASS_GNU
+  # Code from module gettext:
   dnl you must add AM_GNU_GETTEXT([external]) or similar to configure.ac.
   AM_GNU_GETTEXT_VERSION([0.17])
+  # Code from module gettext-h:
   AC_SUBST([LIBINTL])
   AC_SUBST([LTLIBINTL])
+  # Code from module havelib:
+  # Code from module hostent:
   gl_HOSTENT
+  # Code from module include_next:
+  # Code from module inet_ntop:
   gl_INET_NTOP
   gl_ARPA_INET_MODULE_INDICATOR([inet_ntop])
+  # Code from module inline:
   gl_INLINE
+  # Code from module intprops:
+  # Code from module memchr:
   gl_FUNC_MEMCHR
   gl_STRING_MODULE_INDICATOR([memchr])
+  # Code from module memxor:
   gl_MEMXOR
+  # Code from module multiarch:
   gl_MULTIARCH
+  # Code from module nanosleep:
   gl_FUNC_NANOSLEEP
+  gl_TIME_MODULE_INDICATOR([nanosleep])
+  # Code from module netdb:
   gl_HEADER_NETDB
+  # Code from module netinet_in:
   gl_HEADER_NETINET_IN
   AC_PROG_MKDIR_P
+  # Code from module realloc-posix:
   gl_FUNC_REALLOC_POSIX
   gl_STDLIB_MODULE_INDICATOR([realloc-posix])
+  # Code from module recv:
   AC_REQUIRE([gl_HEADER_SYS_SOCKET])
   if test "$ac_cv_header_winsock2_h" = yes; then
     AC_LIBOBJ([recv])
   fi
   gl_SYS_SOCKET_MODULE_INDICATOR([recv])
+  # Code from module select:
   gl_FUNC_SELECT
   gl_SYS_SELECT_MODULE_INDICATOR([select])
+  # Code from module send:
   AC_REQUIRE([gl_HEADER_SYS_SOCKET])
   if test "$ac_cv_header_winsock2_h" = yes; then
     AC_LIBOBJ([send])
   fi
   gl_SYS_SOCKET_MODULE_INDICATOR([send])
+  # Code from module servent:
   gl_SERVENT
+  # Code from module setsockopt:
   AC_REQUIRE([gl_HEADER_SYS_SOCKET])
   if test "$ac_cv_header_winsock2_h" = yes; then
     AC_LIBOBJ([setsockopt])
   fi
   gl_SYS_SOCKET_MODULE_INDICATOR([setsockopt])
+  # Code from module sigaction:
   gl_SIGACTION
   gl_SIGNAL_MODULE_INDICATOR([sigaction])
+  # Code from module signal:
   gl_SIGNAL_H
+  # Code from module sigprocmask:
   gl_SIGNALBLOCKING
   gl_SIGNAL_MODULE_INDICATOR([sigprocmask])
+  # Code from module size_max:
   gl_SIZE_MAX
+  # Code from module snprintf:
   gl_FUNC_SNPRINTF
   gl_STDIO_MODULE_INDICATOR([snprintf])
+  # Code from module socket:
   AC_REQUIRE([gl_HEADER_SYS_SOCKET])
   if test "$ac_cv_header_winsock2_h" = yes; then
     AC_LIBOBJ([socket])
@@ -135,38 +260,63 @@ AC_DEFUN([gl_INIT],
     SYS_IOCTL_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS=1
   fi
   gl_SYS_SOCKET_MODULE_INDICATOR([socket])
+  # Code from module sockets:
   gl_SOCKETS
+  # Code from module socklen:
   gl_TYPE_SOCKLEN_T
+  # Code from module stdarg:
   gl_STDARG_H
+  # Code from module stdbool:
   AM_STDBOOL_H
+  # Code from module stddef:
   gl_STDDEF_H
+  # Code from module stdint:
   gl_STDINT_H
+  # Code from module stdio:
   gl_STDIO_H
+  # Code from module stdlib:
   gl_STDLIB_H
+  # Code from module strerror:
   gl_FUNC_STRERROR
   gl_STRING_MODULE_INDICATOR([strerror])
+  # Code from module string:
   gl_HEADER_STRING_H
+  # Code from module sys_select:
   gl_HEADER_SYS_SELECT
   AC_PROG_MKDIR_P
+  # Code from module sys_socket:
   gl_HEADER_SYS_SOCKET
   AC_PROG_MKDIR_P
+  # Code from module sys_time:
   gl_HEADER_SYS_TIME_H
   AC_PROG_MKDIR_P
+  # Code from module sysexits:
   gl_SYSEXITS
+  # Code from module time:
   gl_HEADER_TIME_H
+  # Code from module unistd:
   gl_UNISTD_H
+  # Code from module vasnprintf:
   gl_FUNC_VASNPRINTF
+  # Code from module vasprintf:
   gl_FUNC_VASPRINTF
   gl_STDIO_MODULE_INDICATOR([vasprintf])
   m4_ifdef([AM_XGETTEXT_OPTION],
     [AM_][XGETTEXT_OPTION([--flag=asprintf:2:c-format])
      AM_][XGETTEXT_OPTION([--flag=vasprintf:2:c-format])])
+  # Code from module verify:
+  # Code from module warn-on-use:
+  # Code from module wchar:
   gl_WCHAR_H
+  # Code from module xalloc:
   gl_XALLOC
+  # Code from module xsize:
   gl_XSIZE
+  # Code from module xvasprintf:
   gl_XVASPRINTF
   m4_ifdef([AM_XGETTEXT_OPTION],
     [AM_][XGETTEXT_OPTION([--flag=xasprintf:1:c-format])])
+  # End of code from modules
   m4_ifval(gl_LIBSOURCES_LIST, [
     m4_syscmd([test ! -d ]m4_defn([gl_LIBSOURCES_DIR])[ ||
       for gl_file in ]gl_LIBSOURCES_LIST[ ; do
@@ -300,6 +450,7 @@ AC_DEFUN([gltests_LIBSOURCES], [
 # gnulib-tool and may be removed by future gnulib-tool invocations.
 AC_DEFUN([gl_FILE_LIST], [
   build-aux/arg-nonnull.h
+  build-aux/c++defs.h
   build-aux/config.rpath
   build-aux/warn-on-use.h
   lib/alignof.h
@@ -477,7 +628,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/vasprintf.m4
   m4/visibility.m4
   m4/warn-on-use.m4
-  m4/wchar.m4
+  m4/wchar_h.m4
   m4/wchar_t.m4
   m4/wint_t.m4
   m4/xalloc.m4

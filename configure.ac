@@ -3,7 +3,7 @@ dnl Process this file with autoconf to produce a configure script.
 #
 # This file is part of msmtp, an SMTP client.
 #
-# Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008, 2009
+# Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010
 # Christophe Nowicki
 # Martin Lambers <marlam@marlam.de>
 # Jay Soffian <jaysoffian@gmail.com> (Mac OS X keychain support)
@@ -22,7 +22,7 @@ dnl Process this file with autoconf to produce a configure script.
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-AC_INIT([msmtp], [1.4.19], [marlam@marlam.de])
+AC_INIT([msmtp], [1.4.20], [marlam@marlam.de])
 AC_CONFIG_SRCDIR([src/msmtp.c])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([build-aux])

@@ -1,63 +1,171 @@
-I've modified the scripts comprising Martin Lambers' msmtpqueue package
-in an attempt to package all queue functions into two routines called
-msmptq and msmtpQ. msmtpq is the queue management script while msmtpQ is
-the 'sendmail mode' function to either send a mail immediately out or to
-queue it. This is useful for a mail client, e.g. mutt's "set
-sendmail = ...". Mutt users, further, should enter
-  set sendmail_wait = -1
-into their .muttrc . msmtpQ takes care of waiting for msmtp (or the
-queuing function) to finish.
 
-As usual, credit goes to Martin Lambers for the idea ; any bugs, design
-errors, oversights, etc. belong to me.
+msmtpq is a modification of the scripts comprising Martin Lambers'
+msmtpqueue package ; it attempts be useful to msmtp by holding mail sent
+by an MUA when a machine, e.g. a laptop, is not connected to the net ;
+queued mails are held as files in a user defined queue directory ; when
+the machine is connected all mail can be sent directly out ; the msmtpq
+package does queue handling for msmtp according to the way the queue is
+used ; that is, as a script with two distinct 'entry points'
 
+  msmtpq - has all routines for queue management and maintenance, that
+           is, for queue display, queue run (flush), mail purge from the
+           queue, etc.
 
-Therefore, for sending/enqueuing mail :
+  msmtpQ - is a symbolic link pointing to msmtpq, accepts mail input
+           from an MUA (e.g. mutt) and sends it directly out via msmtp
+           if possible - or queues it if not
 
--- msmtpQ    -- (the 'send' op) ; (synonym : msmtpQ) -- sending a mail
-   (from, e.g., mutt) will cause the passed mail to be sent directly out
-   to the remote server if the host is connected ; if the host is not
-   connected or if msmtp returns an error the mail is queued
+msmtpq is interactive at the command line while msmtpQ has no
+interactive user input whatever - it simply takes its input from the MUA
+and outputs directly to msmtp (or to the queue)
 
-For queue management :
-
--- msmtpq -r -- runs (flushes) the contents of the queue
-
--- msmtpq -R -- allows selection of and sending individual mails
-
--- msmtpq -d -- displays the contents of the queue
-
--- msmtpq -p -- allows the specific purging of one or more mails
-
--- msmtpq -a -- purges all mail in the queue
-
--- msmtpq -h -- a helpful blurt
-
-Please note that :
-
--- only one op, one of the above, can be executed ; if more than one op
-   is entered only the first is executed ; only the above combined ops
-   are accepted
+credit goes to Martin Lambers for the idea of the queue ; any bugs,
+design errors, oversights, etc. belong to me ; all feedback is welcome ;
+I can be reached via the msmtp mailing list
 
 
 Installation :
+------------
 
-Copy msmtpq and msmtpQ to wherever is best for you (I use /usr/local/bin)
+copy msmtpq to wherever location is best for you (I use /usr/local/bin)
+; the directory chosen should be on the path ; then create an 'msmtpQ'
+symlink in the same directory :
 
-Replace the msmtp invocation in your mail client with msmtpQ ; e.g. for
-mutt : set sendmail = /path/to/msmtpQ ; also for mutt
-set sendmail_wait = -1
+( ln -s /path/to/msmtpq /same/path/to/msmtpQ ).
+
+replace the msmtp invocation in your mail client with msmtpQ ; e.g. for
+mutt : 'set sendmail = /path/to/msmtpQ'
+
+msmtpQ will then take care of the management and routing of outgoing
+mail ; normally sending a mail is nearly instantaneous, but a very long
+mail (or one with large attachments) can take some time to make its way
+through ; therefore it's wise to have the MUA background the process if
+possible
+
+In the case of mutt, in addition to the above setting,
+
+'set sendmail = /path/to/msmtpQ'
+
+set, also
+
+'set sendmail_wait = -1'
+
+mutt then backgrounds the send and watches for a return code & message
+from msmtpQ
+
+
+Configuration :
+-------------
+
+all config is done within the msmtpq script
+
+  set the MSMTP var to point to the location of the msmtp executable
+    (only if it's not on the path)
+  set the Q var to point to the location of the queue directory
+  set the LOG var to point to the location of the queue log
+
+the MSMTP variable can have the location of the msmtp executable entered
+into it if it is not on the path ; this might be useful in unusual
+circumstances, such as embedded systems, etc. ; otherwise, if you are
+running a normal Linux distribution you can leave it as is ; msmtp will
+by default be on the execution path
+
+the Q variable should have the location of the queue directory
+
+the LOG variable should have the desired name & location of the queue log
+
+the locations are clearly marked near the beginnings of the script ;
+modify all to the locations you prefer (the defaults work for me ; you
+may or may not be happy with them) ... please note that it's preferable
+to create the queue directory (with 0700 permissions) before using the
+routines
+
+note that the default msmtpq set up creates a separate log for queue
+operations ; all operations which modify the queue in any way are logged
+to the queue log ; this is distinct from the msmtp log set by the
+'logfile' setting in .msmtprc ; I've been persuaded that it's better to
+have separate logs (for the distinct functions) ; if this doesn't sit
+well with you it's possible to define the queue log to be the same log
+file as the one defined in .msmtprc ; it's also possible to turn off
+queue logging entirely (by commenting out the 'LOG=' var - to be
+'#LOG=') but this seems hardly advisable, particularly before you are
+confident that all is working
+
+mutt users please take note of the additional setup instructions in the
+msmtp docs & man page.
+
+in summary :
+  copy the msmtpq script to the directory where it will live
+    be certain that it is executable
+      ( chmod +x msmtpq )
+    create the 'msmtpQ' link
+      ( ln -s msmtpq msmtpQ )
+    enter or confirm the values of the three config vars in msmtpq
+  create the queue dir (0700) if necessary
+    ( mkdir -p /path/to/queue/dir )
+    ( chmod 0700 /path/to/queue/dir )
+  for mutt users -
+    set sendmail="/path/to/msmtpQ"
+    set sendmail_wait = -1
+    set use_from=yes
+    set realname="Your Name"
+    set from=you@example.com
+    set envelope_from=yes
+    (and perhaps more on the msmtp man page & docs ...)
+  for other MUAs -
+    set the mta to '/path/to/msmtpQ'
+    background its execution, if possible
+
+log(s) rotation :
+
+On a Debian or Debian-based system (e.g. Ubuntu) a file can be created
+in /etc/logrotate.d (named, e.g. 'msmtp') that configures logrotate to
+compress and rotate both the msmtp logs and msmtpq/Q queue logs.
+
+Suggested contents :
+#--------------------------------------------------
+/home/xyz/log/msmtp.log /home/xyz/log/msmtp.queue.log {
+  rotate 9999
+  weekly
+  compress
+  notifempty
+  missingok
+}
+#--------------------------------------------------
+
+adjust it to your log location(s) and see the logrotate man page for
+further config information ; it should be trivial to adapt to other
+systems
 
 That's it.
 
 
-msmtpq issues & considerations :
+Use :
+---
 
--- for testing whether a net connection is present / alive I use a ping to
-   (the ip address of) www.google.com ; is there a better, faster,
-   easier way ? Is it better to use a host within one's ISP's local net
-   as a target to test a connection ; e.g., a local dns server ? ; in
-   that case, substitute its IP address for 'www.google.com' (/bin/ping
-   can show which is faster) ; perhaps it's not such a big deal ...
+msmtpQ is entirely self contained ; beyond keeping an eye on the queue
+and queue logs it should require no admin or user attention.
 
-Chris Gianniotis <namtok@zonnet.nl>
+msmtpq offers the following options :
+
+  msmtpq -r -- runs (flushes) all the contents of the queue
+
+  msmtpq -R -- sends selected individual mail(s) in the queue
+
+  msmtpq
+  msmtpq -d -- displays the contents of the queue  (<-- default)
+
+  msmtpq -p -- allows the specific purging of one or more mails
+
+  msmtpq -a -- purges all mail in the queue
+
+  msmtpq -h -- offers a helpful blurt
+
+( msmtpq does not log the 'chatter' of user interaction but logs, to the
+  queue log, any event that changes the queue in any way )
+
+
+With hopes that it's useful,
+
+Chris Gianniotis
+namtok@zonnet.nl

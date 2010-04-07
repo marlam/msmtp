@@ -1,3 +1,6 @@
+Version 1.4.21:
+- Fixed building without TLS/SSL support. Reported by Tan Ker Vin.
+
 Version 1.4.20:
 - Update gnulib to 2010-03-20.
 - Support authentication mechanism SCRAM-SHA-1 via GNU SASL.

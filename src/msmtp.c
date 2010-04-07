@@ -429,6 +429,7 @@ void msmtp_time_to_string(time_t *t, char *buf, size_t bufsize)
     }
 #endif
 }
+#endif
 
 void msmtp_fingerprint_string(char *s, unsigned char *fingerprint, size_t len)
 {
@@ -443,6 +444,7 @@ void msmtp_fingerprint_string(char *s, unsigned char *fingerprint, size_t len)
     }
 }
 
+#ifdef HAVE_TLS
 void msmtp_print_tls_cert_info(tls_cert_info_t *tci)
 {
     const char *info_fieldname[6] = { N_("Common Name"), N_("Organization"),

@@ -1,4 +1,5 @@
 Version 1.4.21:
+- Fix building with newer OpenSSL versions. Reported and tested by Peter Baur.
 - Updated find_alias_for_msmtp.sh script (Ovidiu Constantin).
 - Fixed building without TLS/SSL support. Reported by Tan Ker Vin.
 

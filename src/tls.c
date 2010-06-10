@@ -888,7 +888,7 @@ int tls_check_cert(tls_t *tls, const char *hostname, char **errstr)
     char *buf;
     int length;
     /* needed to get the DNS subjectAltNames: */
-    STACK *subj_alt_names;
+    void *subj_alt_names;
     int subj_alt_names_count;
     GENERAL_NAME *subj_alt_name;
     /* did we find a name matching hostname? */

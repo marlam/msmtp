@@ -755,28 +755,19 @@ your configuration file. On Debian-based systems, for example, the adequate
 command would be @samp{tls_trust_file /etc/ssl/certs/ca-certificates.crt}.
 
 But you can also find out manually which CA certificate you need to
-trust. The following example works as of 2007-04-18.
-
-For the Gmail SMTP server, you first issue the following command:
+trust. First, issue the following command:
 @example
-$ msmtp --serverinfo --host=smtp.gmail.com --tls=on --port=587 \
-  --tls-certcheck=off
+$ msmtp --serverinfo --host=smtp.example.com --tls=on --tls-certcheck=off
 @end example
-The option @samp{--port=587} is specific to Gmail and should not be used with
-other servers. The option @samp{--tls-certcheck=off} allows msmtp to accept any
-certificate, so that it can print some information about it.
-
-According to the output of this command, the common name of the server
-certificate issuer is "Thawte Premium Server CA". This means that you have to
-trust the Thawte CA to use full TLS security. You can download the Thawte CA 
-certificate bundle from @url{http://thawte.com/roots}. You get a ZIP file with
-different certificates. The one you need for the @samp{tls_trust_file} command 
-is @file{Thawte Server Roots/ThawtePremiumServerCA_b64.txt}.
-
-The following command should now succeed:
+The option @samp{--tls-certcheck=off} allows msmtp to accept any certificate,
+so that it can print some information about it. The output of this command
+tells you the common name of the server certificate issuer. You have to trust
+this issuer to use full TLS security. Usually you can find the CA certificate
+on the issuer's homepage. With this CA certificate, the following should
+succeed:
 @example
-$ msmtp --serverinfo --host=smtp.gmail.com --tls=on --port=587 \
-  --tls-trust-file="Thawte Server Roots/ThawtePremiumServerCA_b64.txt"
+$ msmtp --serverinfo --host=smtp.example.com --tls=on \
+  --tls-trust-file=ca_cert.txt
 @end example
 
 If the server requests it, the client can send a certificate, too. This allows

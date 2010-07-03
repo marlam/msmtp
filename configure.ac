@@ -38,6 +38,7 @@ AC_PROG_INSTALL
 AC_SYS_LARGEFILE
 
 dnl System
+AC_DEFINE_UNQUOTED([PLATFORM], ["${target}"], [Platform triplet])
 case "${target}" in *-*-mingw32*) windows=yes ;; *) windows=no ;; esac
 
 dnl gnulib 

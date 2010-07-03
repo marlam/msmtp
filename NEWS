@@ -1,3 +1,6 @@
+Version 1.4.21:
+- No significant changes.
+
 Version 1.4.20:
 - Added support for authentication mechanism SCRAM-SHA-1 via GNU SASL.
 - The new command tls_fingerprint allows one to trust one particular TLS

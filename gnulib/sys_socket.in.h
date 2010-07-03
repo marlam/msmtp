@@ -23,6 +23,10 @@
    It is intended to provide definitions and prototypes needed by an
    application.  */
 
+#if __GNUC__ >= 3
+@PRAGMA_SYSTEM_HEADER@
+#endif
+
 #if defined _GL_ALREADY_INCLUDING_SYS_SOCKET_H
 /* Special invocation convention:
    - On Cygwin 1.5.x we have a sequence of nested includes
@@ -40,10 +44,6 @@
 #if @HAVE_SYS_SOCKET_H@
 
 # define _GL_ALREADY_INCLUDING_SYS_SOCKET_H
-
-# if __GNUC__ >= 3
-@PRAGMA_SYSTEM_HEADER@
-# endif
 
 /* On many platforms, <sys/socket.h> assumes prior inclusion of
    <sys/types.h>.  */
@@ -183,13 +183,23 @@ rpl_fd_isset (SOCKET fd, fd_set * set)
 /* Wrap everything else to use libc file descriptors for sockets.  */
 
 #if @HAVE_WINSOCK2_H@ && !defined _GL_UNISTD_H
-# undef close
-# define close close_used_without_including_unistd_h
+# if !(defined __cplusplus && defined GNULIB_NAMESPACE)
+#  undef close
+#  define close close_used_without_including_unistd_h
+# else
+   _GL_WARN_ON_USE (close,
+                    "close() used without including <unistd.h>");
+# endif
 #endif
 
 #if @HAVE_WINSOCK2_H@ && !defined _GL_UNISTD_H
-# undef gethostname
-# define gethostname gethostname_used_without_including_unistd_h
+# if !(defined __cplusplus && defined GNULIB_NAMESPACE)
+#  undef gethostname
+#  define gethostname gethostname_used_without_including_unistd_h
+# else
+   _GL_WARN_ON_USE (gethostname,
+                    "gethostname() used without including <unistd.h>");
+# endif
 #endif
 
 #if @GNULIB_SOCKET@
@@ -571,8 +581,13 @@ _GL_WARN_ON_USE (shutdown, "shutdown is not always POSIX compliant - "
 #endif
 
 #if @HAVE_WINSOCK2_H@
-# undef select
-# define select                select_used_without_including_sys_select_h
+# if !(defined __cplusplus && defined GNULIB_NAMESPACE)
+#  undef select
+#  define select select_used_without_including_sys_select_h
+# else
+   _GL_WARN_ON_USE (select,
+                    "select() used without including <sys/select.h>");
+# endif
 #endif
 
 #if @GNULIB_ACCEPT4@

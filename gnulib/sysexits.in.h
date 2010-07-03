@@ -18,11 +18,11 @@
 
 #ifndef _GL_SYSEXITS_H
 
-#if @HAVE_SYSEXITS_H@
-
-# if __GNUC__ >= 3
+#if __GNUC__ >= 3
 @PRAGMA_SYSTEM_HEADER@
-# endif
+#endif
+
+#if @HAVE_SYSEXITS_H@
 
 /* IRIX 6.5 has an <unistd.h> that defines a macro EX_OK with a nonzero
    value.  Override it.  See

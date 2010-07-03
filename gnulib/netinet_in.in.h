@@ -17,11 +17,11 @@
 
 #ifndef _GL_NETINET_IN_H
 
-#if @HAVE_NETINET_IN_H@
-
-# if __GNUC__ >= 3
+#if __GNUC__ >= 3
 @PRAGMA_SYSTEM_HEADER@
-# endif
+#endif
+
+#if @HAVE_NETINET_IN_H@
 
 /* On many platforms, <netinet/in.h> assumes prior inclusion of
    <sys/types.h>.  */

@@ -67,10 +67,10 @@ struct random_data
 };
 #endif
 
-#if (@GNULIB_MKSTEMP@ || @GNULIB_GETSUBOPT@ || defined GNULIB_POSIXCHECK) && ! defined __GLIBC__
+#if (@GNULIB_MKSTEMP@ || @GNULIB_GETSUBOPT@ || defined GNULIB_POSIXCHECK) && ! defined __GLIBC__ && !((defined _WIN32 || defined __WIN32__) && ! defined __CYGWIN__)
 /* On MacOS X 10.3, only <unistd.h> declares mkstemp.  */
 /* On Cygwin 1.7.1, only <unistd.h> declares getsubopt.  */
-/* But avoid namespace pollution on glibc systems.  */
+/* But avoid namespace pollution on glibc systems and native Windows.  */
 # include <unistd.h>
 #endif
 
@@ -112,7 +112,7 @@ _GL_WARN_ON_USE (atoll, "atoll is unportable - "
 #endif
 
 #if @GNULIB_CALLOC_POSIX@
-# if !@HAVE_CALLOC_POSIX@
+# if @REPLACE_CALLOC@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
 #   undef calloc
 #   define calloc rpl_calloc
@@ -201,8 +201,24 @@ _GL_WARN_ON_USE (getsubopt, "getsubopt is unportable - "
 # endif
 #endif
 
+#if @GNULIB_GRANTPT@
+/* Change the ownership and access permission of the slave side of the
+   pseudo-terminal whose master side is specified by FD.  */
+# if !@HAVE_GRANTPT@
+_GL_FUNCDECL_SYS (grantpt, int, (int fd));
+# endif
+_GL_CXXALIAS_SYS (grantpt, int, (int fd));
+_GL_CXXALIASWARN (grantpt);
+#elif defined GNULIB_POSIXCHECK
+# undef grantpt
+# if HAVE_RAW_DECL_GRANTPT
+_GL_WARN_ON_USE (ptsname, "grantpt is not portable - "
+                 "use gnulib module grantpt for portability");
+# endif
+#endif
+
 #if @GNULIB_MALLOC_POSIX@
-# if !@HAVE_MALLOC_POSIX@
+# if @REPLACE_MALLOC@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
 #   undef malloc
 #   define malloc rpl_malloc
@@ -313,6 +329,9 @@ _GL_WARN_ON_USE (mkostemps, "mkostemps is unportable - "
 _GL_FUNCDECL_RPL (mkstemp, int, (char * /*template*/) _GL_ARG_NONNULL ((1)));
 _GL_CXXALIAS_RPL (mkstemp, int, (char * /*template*/));
 # else
+#  if ! @HAVE_MKSTEMP@
+_GL_FUNCDECL_SYS (mkstemp, int, (char * /*template*/) _GL_ARG_NONNULL ((1)));
+#  endif
 _GL_CXXALIAS_SYS (mkstemp, int, (char * /*template*/));
 # endif
 _GL_CXXALIASWARN (mkstemp);
@@ -346,6 +365,22 @@ _GL_CXXALIASWARN (mkstemps);
 # if HAVE_RAW_DECL_MKSTEMPS
 _GL_WARN_ON_USE (mkstemps, "mkstemps is unportable - "
                  "use gnulib module mkstemps for portability");
+# endif
+#endif
+
+#if @GNULIB_PTSNAME@
+/* Return the pathname of the pseudo-terminal slave associated with
+   the master FD is open on, or NULL on errors.  */
+# if !@HAVE_PTSNAME@
+_GL_FUNCDECL_SYS (ptsname, char *, (int fd));
+# endif
+_GL_CXXALIAS_SYS (ptsname, char *, (int fd));
+_GL_CXXALIASWARN (ptsname);
+#elif defined GNULIB_POSIXCHECK
+# undef ptsname
+# if HAVE_RAW_DECL_PTSNAME
+_GL_WARN_ON_USE (ptsname, "ptsname is not portable - "
+                 "use gnulib module ptsname for portability");
 # endif
 #endif
 
@@ -442,7 +477,7 @@ _GL_WARN_ON_USE (setstate_r, "setstate_r is unportable - "
 
 
 #if @GNULIB_REALLOC_POSIX@
-# if !@HAVE_REALLOC_POSIX@
+# if @REPLACE_REALLOC@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
 #   undef realloc
 #   define realloc rpl_realloc
@@ -603,6 +638,22 @@ _GL_CXXALIASWARN (strtoull);
 # if HAVE_RAW_DECL_STRTOULL
 _GL_WARN_ON_USE (strtoull, "strtoull is unportable - "
                  "use gnulib module strtoull for portability");
+# endif
+#endif
+
+#if @GNULIB_UNLOCKPT@
+/* Unlock the slave side of the pseudo-terminal whose master side is specified
+   by FD, so that it can be opened.  */
+# if !@HAVE_UNLOCKPT@
+_GL_FUNCDECL_SYS (unlockpt, int, (int fd));
+# endif
+_GL_CXXALIAS_SYS (unlockpt, int, (int fd));
+_GL_CXXALIASWARN (unlockpt);
+#elif defined GNULIB_POSIXCHECK
+# undef unlockpt
+# if HAVE_RAW_DECL_UNLOCKPT
+_GL_WARN_ON_USE (ptsname, "unlockpt is not portable - "
+                 "use gnulib module unlockpt for portability");
 # endif
 #endif
 

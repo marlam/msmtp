@@ -18,6 +18,10 @@
 
 #ifndef _GL_ARPA_INET_H
 
+#if __GNUC__ >= 3
+@PRAGMA_SYSTEM_HEADER@
+#endif
+
 /* Gnulib's sys/socket.h is responsible for pulling in winsock2.h etc
    under MinGW.
    But avoid namespace pollution on glibc systems.  */
@@ -26,10 +30,6 @@
 #endif
 
 #if @HAVE_ARPA_INET_H@
-
-# if __GNUC__ >= 3
-@PRAGMA_SYSTEM_HEADER@
-# endif
 
 /* The include_next requires a split double-inclusion guard.  */
 # @INCLUDE_NEXT@ @NEXT_ARPA_INET_H@

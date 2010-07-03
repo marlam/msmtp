@@ -41,10 +41,12 @@
 # if __GNUC__ < 2 || (__GNUC__ == 2 && __GNUC_MINOR__ < 5)
 #  define __attribute__(Spec) /* empty */
 # endif
+#endif
 /* The attribute __pure__ was added in gcc 2.96.  */
-# if __GNUC__ < 2 || (__GNUC__ == 2 && __GNUC_MINOR__ < 96)
-#  define __pure__ /* empty */
-# endif
+#if __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ >= 96)
+# define _GL_ATTRIBUTE_PURE __attribute__ ((__pure__))
+#else
+# define _GL_ATTRIBUTE_PURE /* empty */
 #endif
 
 
@@ -62,10 +64,15 @@
 #   define memchr rpl_memchr
 #  endif
 _GL_FUNCDECL_RPL (memchr, void *, (void const *__s, int __c, size_t __n)
-                                  __attribute__ ((__pure__))
+                                  _GL_ATTRIBUTE_PURE
                                   _GL_ARG_NONNULL ((1)));
 _GL_CXXALIAS_RPL (memchr, void *, (void const *__s, int __c, size_t __n));
 # else
+#  if ! @HAVE_MEMCHR@
+_GL_FUNCDECL_SYS (memchr, void *, (void const *__s, int __c, size_t __n)
+                                  _GL_ATTRIBUTE_PURE
+                                  _GL_ARG_NONNULL ((1)));
+#  endif
   /* On some systems, this function is defined as an overloaded function:
        extern "C" { const void * std::memchr (const void *, int, size_t); }
        extern "C++" { void * std::memchr (void *, int, size_t); }  */
@@ -97,7 +104,8 @@ _GL_WARN_ON_USE (memchr, "memchr has platform-specific bugs - "
 _GL_FUNCDECL_RPL (memmem, void *,
                   (void const *__haystack, size_t __haystack_len,
                    void const *__needle, size_t __needle_len)
-                  __attribute__ ((__pure__)) _GL_ARG_NONNULL ((1, 3)));
+                  _GL_ATTRIBUTE_PURE
+                  _GL_ARG_NONNULL ((1, 3)));
 _GL_CXXALIAS_RPL (memmem, void *,
                   (void const *__haystack, size_t __haystack_len,
                    void const *__needle, size_t __needle_len));
@@ -106,7 +114,8 @@ _GL_CXXALIAS_RPL (memmem, void *,
 _GL_FUNCDECL_SYS (memmem, void *,
                   (void const *__haystack, size_t __haystack_len,
                    void const *__needle, size_t __needle_len)
-                  __attribute__ ((__pure__)) _GL_ARG_NONNULL ((1, 3)));
+                  _GL_ATTRIBUTE_PURE
+                  _GL_ARG_NONNULL ((1, 3)));
 #  endif
 _GL_CXXALIAS_SYS (memmem, void *,
                   (void const *__haystack, size_t __haystack_len,
@@ -147,7 +156,7 @@ _GL_WARN_ON_USE (mempcpy, "mempcpy is unportable - "
 #if @GNULIB_MEMRCHR@
 # if ! @HAVE_DECL_MEMRCHR@
 _GL_FUNCDECL_SYS (memrchr, void *, (void const *, int, size_t)
-                                   __attribute__ ((__pure__))
+                                   _GL_ATTRIBUTE_PURE
                                    _GL_ARG_NONNULL ((1)));
 # endif
   /* On some systems, this function is defined as an overloaded function:
@@ -177,7 +186,7 @@ _GL_WARN_ON_USE (memrchr, "memrchr is unportable - "
 #if @GNULIB_RAWMEMCHR@
 # if ! @HAVE_RAWMEMCHR@
 _GL_FUNCDECL_SYS (rawmemchr, void *, (void const *__s, int __c_in)
-                                     __attribute__ ((__pure__))
+                                     _GL_ATTRIBUTE_PURE
                                      _GL_ARG_NONNULL ((1)));
 # endif
   /* On some systems, this function is defined as an overloaded function:
@@ -222,7 +231,7 @@ _GL_WARN_ON_USE (stpcpy, "stpcpy is unportable - "
 /* Copy no more than N bytes of SRC to DST, returning a pointer past the
    last non-NUL byte written into DST.  */
 #if @GNULIB_STPNCPY@
-# if ! @HAVE_STPNCPY@
+# if @REPLACE_STPNCPY@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
 #   define stpncpy rpl_stpncpy
 #  endif
@@ -234,6 +243,12 @@ _GL_CXXALIAS_RPL (stpncpy, char *,
                   (char *restrict __dst, char const *restrict __src,
                    size_t __n));
 # else
+#  if ! @HAVE_STPNCPY@
+_GL_FUNCDECL_SYS (stpncpy, char *,
+                  (char *restrict __dst, char const *restrict __src,
+                   size_t __n)
+                  _GL_ARG_NONNULL ((1, 2)));
+#  endif
 _GL_CXXALIAS_SYS (stpncpy, char *,
                   (char *restrict __dst, char const *restrict __src,
                    size_t __n));
@@ -261,7 +276,7 @@ _GL_WARN_ON_USE (strchr, "strchr cannot work correctly on character strings "
 #if @GNULIB_STRCHRNUL@
 # if ! @HAVE_STRCHRNUL@
 _GL_FUNCDECL_SYS (strchrnul, char *, (char const *__s, int __c_in)
-                                     __attribute__ ((__pure__))
+                                     _GL_ATTRIBUTE_PURE
                                      _GL_ARG_NONNULL ((1)));
 # endif
   /* On some systems, this function is defined as an overloaded function:
@@ -309,6 +324,28 @@ _GL_WARN_ON_USE (strdup, "strdup is unportable - "
 # endif
 #endif
 
+/* Append no more than N characters from SRC onto DEST.  */
+#if @GNULIB_STRNCAT@
+# if @REPLACE_STRNCAT@
+#  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
+#   undef strncat
+#   define strncat rpl_strncat
+#  endif
+_GL_FUNCDECL_RPL (strncat, char *, (char *dest, const char *src, size_t n)
+                                   _GL_ARG_NONNULL ((1, 2)));
+_GL_CXXALIAS_RPL (strncat, char *, (char *dest, const char *src, size_t n));
+# else
+_GL_CXXALIAS_SYS (strncat, char *, (char *dest, const char *src, size_t n));
+# endif
+_GL_CXXALIASWARN (strncat);
+#elif defined GNULIB_POSIXCHECK
+# undef strncat
+# if HAVE_RAW_DECL_STRNCAT
+_GL_WARN_ON_USE (strncat, "strncat is unportable - "
+                 "use gnulib module strncat for portability");
+# endif
+#endif
+
 /* Return a newly allocated copy of at most N bytes of STRING.  */
 #if @GNULIB_STRNDUP@
 # if @REPLACE_STRNDUP@
@@ -339,12 +376,23 @@ _GL_WARN_ON_USE (strndup, "strndup is unportable - "
    MAXLEN bytes.  If no '\0' terminator is found in that many bytes,
    return MAXLEN.  */
 #if @GNULIB_STRNLEN@
-# if ! @HAVE_DECL_STRNLEN@
-_GL_FUNCDECL_SYS (strnlen, size_t, (char const *__string, size_t __maxlen)
-                                   __attribute__ ((__pure__))
+# if @REPLACE_STRNLEN@
+#  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
+#   undef strnlen
+#   define strnlen rpl_strnlen
+#  endif
+_GL_FUNCDECL_RPL (strnlen, size_t, (char const *__string, size_t __maxlen)
+                                   _GL_ATTRIBUTE_PURE
                                    _GL_ARG_NONNULL ((1)));
-# endif
+_GL_CXXALIAS_RPL (strnlen, size_t, (char const *__string, size_t __maxlen));
+# else
+#  if ! @HAVE_DECL_STRNLEN@
+_GL_FUNCDECL_SYS (strnlen, size_t, (char const *__string, size_t __maxlen)
+                                   _GL_ATTRIBUTE_PURE
+                                   _GL_ARG_NONNULL ((1)));
+#  endif
 _GL_CXXALIAS_SYS (strnlen, size_t, (char const *__string, size_t __maxlen));
+# endif
 _GL_CXXALIASWARN (strnlen);
 #elif defined GNULIB_POSIXCHECK
 # undef strnlen
@@ -370,7 +418,7 @@ _GL_WARN_ON_USE (strcspn, "strcspn cannot work correctly on character strings "
 #if @GNULIB_STRPBRK@
 # if ! @HAVE_STRPBRK@
 _GL_FUNCDECL_SYS (strpbrk, char *, (char const *__s, char const *__accept)
-                                   __attribute__ ((__pure__))
+                                   _GL_ATTRIBUTE_PURE
                                    _GL_ARG_NONNULL ((1, 2)));
 # endif
   /* On some systems, this function is defined as an overloaded function:
@@ -470,7 +518,7 @@ _GL_WARN_ON_USE (strsep, "strsep is unportable - "
 #   define strstr rpl_strstr
 #  endif
 _GL_FUNCDECL_RPL (strstr, char *, (const char *haystack, const char *needle)
-                                  __attribute__ ((__pure__))
+                                  _GL_ATTRIBUTE_PURE
                                   _GL_ARG_NONNULL ((1, 2)));
 _GL_CXXALIAS_RPL (strstr, char *, (const char *haystack, const char *needle));
 # else
@@ -512,14 +560,16 @@ _GL_WARN_ON_USE (strstr, "strstr is quadratic on many systems, and cannot "
 #  endif
 _GL_FUNCDECL_RPL (strcasestr, char *,
                   (const char *haystack, const char *needle)
-                  __attribute__ ((__pure__)) _GL_ARG_NONNULL ((1, 2)));
+                  _GL_ATTRIBUTE_PURE
+                  _GL_ARG_NONNULL ((1, 2)));
 _GL_CXXALIAS_RPL (strcasestr, char *,
                   (const char *haystack, const char *needle));
 # else
 #  if ! @HAVE_STRCASESTR@
 _GL_FUNCDECL_SYS (strcasestr, char *,
                   (const char *haystack, const char *needle)
-                  __attribute__ ((__pure__)) _GL_ARG_NONNULL ((1, 2)));
+                  _GL_ATTRIBUTE_PURE
+                  _GL_ARG_NONNULL ((1, 2)));
 #  endif
   /* On some systems, this function is defined as an overloaded function:
        extern "C++" { const char * strcasestr (const char *, const char *); }

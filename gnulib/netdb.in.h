@@ -22,11 +22,11 @@
 
 #ifndef _GL_NETDB_H
 
-#if @HAVE_NETDB_H@
-
-# if __GNUC__ >= 3
+#if __GNUC__ >= 3
 @PRAGMA_SYSTEM_HEADER@
-# endif
+#endif
+
+#if @HAVE_NETDB_H@
 
 /* The include_next requires a split double-inclusion guard.  */
 # @INCLUDE_NEXT@ @NEXT_NETDB_H@
@@ -40,6 +40,8 @@
 #include <sys/socket.h>
 
 /* The definition of _GL_ARG_NONNULL is copied here.  */
+
+/* The definition of _GL_WARN_ON_USE is copied here.  */
 
 /* Declarations for a platform that lacks <netdb.h>, or where it is
    incomplete.  */
@@ -171,10 +173,10 @@ extern const char *gai_strerror (int ecode);
 /* Convert socket address to printable node and service names.
    For more details, see the POSIX:2001 specification
    <http://www.opengroup.org/susv3xsh/getnameinfo.html>.  */
-extern int getnameinfo(const struct sockaddr *restrict sa, socklen_t salen,
-                       char *restrict node, socklen_t nodelen,
-                       char *restrict service, socklen_t servicelen,
-                       int flags)
+extern int getnameinfo (const struct sockaddr *restrict sa, socklen_t salen,
+                        char *restrict node, socklen_t nodelen,
+                        char *restrict service, socklen_t servicelen,
+                        int flags)
      _GL_ARG_NONNULL ((1));
 # endif
 
@@ -186,7 +188,33 @@ extern int getnameinfo(const struct sockaddr *restrict sa, socklen_t salen,
 #  define NI_NUMERICSERV 2
 # endif
 
-#endif /* @GNULIB_GETADDRINFO@ */
+#elif defined GNULIB_POSIXCHECK
+
+# undef getaddrinfo
+# if HAVE_RAW_DECL_GETADDRINFO
+_GL_WARN_ON_USE (getaddrinfo, "getaddrinfo is unportable - "
+                 "use gnulib module getaddrinfo for portability");
+# endif
+
+# undef freeaddrinfo
+# if HAVE_RAW_DECL_FREEADDRINFO
+_GL_WARN_ON_USE (freeaddrinfo, "freeaddrinfo is unportable - "
+                 "use gnulib module getaddrinfo for portability");
+# endif
+
+# undef gai_strerror
+# if HAVE_RAW_DECL_GAI_STRERROR
+_GL_WARN_ON_USE (gai_strerror, "gai_strerror is unportable - "
+                 "use gnulib module getaddrinfo for portability");
+# endif
+
+# undef getnameinfo
+# if HAVE_RAW_DECL_GETNAMEINFO
+_GL_WARN_ON_USE (getnameinfo, "getnameinfo is unportable - "
+                 "use gnulib module getaddrinfo for portability");
+# endif
+
+#endif
 
 #endif /* _GL_NETDB_H */
 #endif /* _GL_NETDB_H */

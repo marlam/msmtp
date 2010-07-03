@@ -1,4 +1,4 @@
-# gnulib-common.m4 serial 13
+# gnulib-common.m4 serial 20
 dnl Copyright (C) 2007-2010 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
@@ -35,14 +35,71 @@ AC_DEFUN([gl_COMMON_BODY], [
    is a misnomer outside of parameter lists.  */
 #define _UNUSED_PARAMETER_ _GL_UNUSED
 ])
+  dnl Preparation for running test programs:
+  dnl Tell glibc to write diagnostics from -D_FORTIFY_SOURCE=2 to stderr, not
+  dnl to /dev/tty, so they can be redirected to log files.  Such diagnostics
+  dnl arise e.g., in the macros gl_PRINTF_DIRECTIVE_N, gl_SNPRINTF_DIRECTIVE_N.
+  LIBC_FATAL_STDERR_=1
+  export LIBC_FATAL_STDERR_
+])
+
+# gl_MODULE_INDICATOR_CONDITION
+# expands to a C preprocessor expression that evaluates to 1 or 0, depending
+# whether a gnulib module that has been requested shall be considered present
+# or not.
+AC_DEFUN([gl_MODULE_INDICATOR_CONDITION], [1])
+
+# gl_MODULE_INDICATOR_SET_VARIABLE([modulename])
+# sets the shell variable that indicates the presence of the given module to
+# a C preprocessor expression that will evaluate to 1.
+AC_DEFUN([gl_MODULE_INDICATOR_SET_VARIABLE],
+[
+  GNULIB_[]m4_translit([[$1]],
+    [abcdefghijklmnopqrstuvwxyz./-],
+    [ABCDEFGHIJKLMNOPQRSTUVWXYZ___])=gl_MODULE_INDICATOR_CONDITION
 ])
 
 # gl_MODULE_INDICATOR([modulename])
-# defines a C macro indicating the presence of the given module.
+# defines a C macro indicating the presence of the given module
+# in a location where it can be used.
+#                                             |  Value  |   Value   |
+#                                             | in lib/ | in tests/ |
+# --------------------------------------------+---------+-----------+
+# Module present among main modules:          |    1    |     1     |
+# --------------------------------------------+---------+-----------+
+# Module present among tests-related modules: |    0    |     1     |
+# --------------------------------------------+---------+-----------+
+# Module not present at all:                  |    0    |     0     |
+# --------------------------------------------+---------+-----------+
 AC_DEFUN([gl_MODULE_INDICATOR],
 [
-  AC_DEFINE([GNULIB_]translit([$1],[abcdefghijklmnopqrstuvwxyz./-],[ABCDEFGHIJKLMNOPQRSTUVWXYZ___]), [1],
-    [Define to 1 when using the gnulib module ]$1[.])
+  AC_DEFINE_UNQUOTED([GNULIB_]m4_translit([[$1]],
+      [abcdefghijklmnopqrstuvwxyz./-],
+      [ABCDEFGHIJKLMNOPQRSTUVWXYZ___]),
+    [gl_MODULE_INDICATOR_CONDITION],
+    [Define to a C preprocessor expression that evaluates to 1 or 0,
+     depending whether the gnulib module $1 shall be considered present.])
+])
+
+# gl_MODULE_INDICATOR_FOR_TESTS([modulename])
+# defines a C macro indicating the presence of the given module
+# in lib or tests. This is useful to determine whether the module
+# should be tested.
+#                                             |  Value  |   Value   |
+#                                             | in lib/ | in tests/ |
+# --------------------------------------------+---------+-----------+
+# Module present among main modules:          |    1    |     1     |
+# --------------------------------------------+---------+-----------+
+# Module present among tests-related modules: |    1    |     1     |
+# --------------------------------------------+---------+-----------+
+# Module not present at all:                  |    0    |     0     |
+# --------------------------------------------+---------+-----------+
+AC_DEFUN([gl_MODULE_INDICATOR_FOR_TESTS],
+[
+  AC_DEFINE([GNULIB_TEST_]m4_translit([[$1]],
+      [abcdefghijklmnopqrstuvwxyz./-],
+      [ABCDEFGHIJKLMNOPQRSTUVWXYZ___]), [1],
+    [Define to 1 when the gnulib module $1 should be tested.])
 ])
 
 # m4_foreach_w
@@ -81,6 +138,7 @@ m4_ifdef([AC_PROG_MKDIR_P], [
 # so that mixed use of GNU C and GNU C++ and mixed use of Sun C and Sun C++
 # works.
 # This definition can be removed once autoconf >= 2.62 can be assumed.
+m4_if(m4_version_compare(m4_defn([m4_PACKAGE_VERSION]),[2.62]),[-1],[
 AC_DEFUN([AC_C_RESTRICT],
 [AC_CACHE_CHECK([for C/C++ restrict keyword], [ac_cv_c_restrict],
   [ac_cv_c_restrict=no
@@ -117,6 +175,7 @@ AC_DEFUN([AC_C_RESTRICT],
    no) AC_DEFINE([restrict], []) ;;
    *)  AC_DEFINE_UNQUOTED([restrict], [$ac_cv_c_restrict]) ;;
  esac
+])
 ])
 
 # gl_BIGENDIAN

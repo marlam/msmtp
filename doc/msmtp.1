@@ -589,9 +589,11 @@ option:
 .br
 .B set sendmail="/path/to/msmtp \-a my\-account"
 .br
-Or set everything from the command line:
+Or set everything from the command line (but note that you cannot set a password
+this way):
 .br
-.B set sendmail="/path/to/msmtp \-\-host=mailhub \-f me@example.com \-\-tls"
+.B set sendmail="/path/to/msmtp \-\-host=mailhub \-f me@example.com \-\-tls
+.B \-\-tls\-trust\-file=trust.crt"
 .PP
 If you have multiple mail accounts in your msmtp configuration file
 and let Mutt use the

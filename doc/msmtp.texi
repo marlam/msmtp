@@ -777,7 +777,7 @@ the @samp{--tls-key-file}/@samp{--tls-cert-file} options can be used to set a
 client certificate. See @ref{tls_key_file}/@ref{--tls-key-file},
 @ref{tls_cert_file}/@ref{--tls-cert-file}.
 Note that GnuTLS will only send a client certificate if it matches one of the
-CAs advertised by the server. If you set a client certificate but it is not send
+CAs advertised by the server. If you set a client certificate but it is not sent
 to the server, it probably was not issued by any CA that the server trusts.
 
 If you need to fine tune TLS parameters or have problems connecting to your

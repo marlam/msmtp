@@ -13,5 +13,6 @@ Thanks go to:
 - Jay Soffian for Mac OS X keychain support
 - Satoru SATOH for GNOME Keyring support
 - Gaizka Villate and Emmanuel Bouthenot for msmtp-gnome-tool.py
+- Martin Stenberg for passwordeval support
 
 - all senders of bug reports and problem descriptions

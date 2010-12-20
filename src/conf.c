@@ -5,6 +5,7 @@
  *
  * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2010
  * Martin Lambers <marlam@marlam.de>
+ * Martin Stenberg <martin@gnutiken.se> (passwordeval support)
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -24,6 +25,7 @@
 # include "config.h"
 #endif
 
+#include <unistd.h>
 #include <stdlib.h>
 #include <limits.h>
 #include <stdio.h>
@@ -714,6 +716,63 @@ int check_account(account_t *acc, int sendmail_mode, char **errstr)
 
 
 /*
+ * get_password_eval()
+ *
+ * see conf.h
+ */
+
+int get_password_eval(const char *arg, char **buf, char **errstr)
+{
+    FILE *eval;
+    size_t l;
+
+    *buf = NULL;
+    *errstr = NULL;
+    errno = 0;
+
+    if (!(eval = popen(arg, "r")))
+    {
+        if (errno == 0)
+        {
+            errno = ENOMEM;
+        }
+        *errstr = xasprintf("cannot evaluate '%s': %s", arg, strerror(errno));
+        return CONF_EIO;
+    }
+
+    *buf = xmalloc(LINEBUFSIZE);
+    if (!fgets(*buf, LINEBUFSIZE, eval))
+    {
+        *errstr = xasprintf("cannot read output of '%s'", arg);
+        pclose(eval);
+        free(*buf);
+        *buf = NULL;
+        return CONF_EIO;
+    }
+    pclose(eval);
+
+    l = strlen(*buf);
+    if (l > 0)
+    {
+        if ((*buf)[l - 1] != '\n')
+        {
+            *errstr = xasprintf("output of '%s' is longer than %d characters, "
+                    "or is not terminated by newline", arg, LINEBUFSIZE - 1);
+            free(*buf);
+            *buf = NULL;
+            return CONF_EIO;
+        }
+        else
+        {
+            (*buf)[l - 1] = '\0';
+        }
+    }
+
+    return CONF_EOK;
+}
+
+
+/*
  * some small helper functions
  */
 
@@ -1220,6 +1279,24 @@ int read_conffile(const char *conffile, FILE *f, list_t **acc_list,
             acc->mask |= ACC_PASSWORD;
             free(acc->password);
             acc->password = (*arg == '\0') ? NULL : xstrdup(arg);
+        }
+        else if (strcmp(cmd, "passwordeval") == 0)
+        {
+            acc->mask |= ACC_PASSWORD;
+            free(acc->password);
+            if ((e = get_password_eval(arg, &t, errstr)) == CONF_EOK)
+            {
+                acc->password = (*t == '\0') ? NULL : xstrdup(t);
+                free(t);
+            }
+            else
+            {
+                acc->password = NULL;
+                t = xasprintf(_("line %d: %s"), line, *errstr);
+                free(*errstr);
+                *errstr = t;
+                break;
+            }
         }
         else if (strcmp(cmd, "ntlmdomain") == 0)
         {

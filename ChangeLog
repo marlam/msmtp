@@ -1,4 +1,6 @@
 Version 1.4.22:
+- Add a new passwordeval command and --passwordeval option, to set the password
+  from the output of a command. Written by Martin Stenberg.
 - A few documentation improvements, suggested by Andries E. Brouwer.
 
 Version 1.4.21:

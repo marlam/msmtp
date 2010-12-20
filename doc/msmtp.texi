@@ -223,7 +223,11 @@ find it in @code{~/.netrc}. If that fails, it will try to find it in
 is on your platform). If that fails, it will try to get it from a system 
 specific keyring (if available). If that fails but a controlling terminal is
 available, msmtp will prompt you for it.
-@xref{Authentication}.
+@anchor{passwordeval}
+@item passwordeval [@var{eval}]
+@cmindex passwordeval
+Set your password for SMTP authentication to the output (stdout) of the
+execution of @var{eval}.
 @anchor{ntlmdomain}
 @item ntlmdomain [@var{ntlmdomain}]
 @cmindex ntlmdomain
@@ -523,6 +527,10 @@ Enable or disable authentication and optionally choose the method. @xref{auth}.
 @itemx --user=[@var{username}]
 @opindex --user
 Set or unset the user name for authentication. @xref{user}.
+@anchor{--passwordeval}
+@itemx --passwordeval=[@var{eval}]
+@opindex --passwordeval
+Evaluate password for authentication. @xref{passwordeval}.
 @itemx --tls[=(on|off)]
 @opindex --tls
 Enable or disable TLS/SSL. @xref{tls}.
@@ -1119,7 +1127,7 @@ host mail.provider.example
 from smithjoe@@provider.example
 auth on
 user 123
-password pwd
+passwordeval gpg -d ~/.msmtp.password.gpg
 
 # Set a default account
 account default : provider

@@ -7,6 +7,7 @@
  * Martin Lambers <marlam@marlam.de>
  * Jay Soffian <jaysoffian@gmail.com> (Mac OS X keychain support)
  * Satoru SATOH <satoru.satoh@gmail.com> (GNOME keyring support)
+ * Martin Stenberg <martin@gnutiken.se> (passwordeval support)
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -2365,6 +2366,8 @@ void msmtp_print_help(void)
             "                               choose the method.\n"
             "  --user=[username]            Set/unset user name for "
                 "authentication.\n"
+            "  --passwordeval=[eval]        Evaluate password for "
+                "authentication.\n"
             "  --tls[=(on|off)]             Enable/disable TLS encryption.\n"
             "  --tls-starttls[=(on|off)]    Enable/disable STARTTLS for TLS.\n"
             "  --tls-trust-file=[file]      Set/unset trust file for TLS.\n"
@@ -2447,25 +2450,26 @@ typedef struct
 #define LONGONLYOPT_TIMEOUT                     4
 #define LONGONLYOPT_AUTH                        5
 #define LONGONLYOPT_USER                        6
-#define LONGONLYOPT_TLS                         7
-#define LONGONLYOPT_TLS_STARTTLS                8
-#define LONGONLYOPT_TLS_TRUST_FILE              9
-#define LONGONLYOPT_TLS_CRL_FILE                10
-#define LONGONLYOPT_TLS_FINGERPRINT             11
-#define LONGONLYOPT_TLS_KEY_FILE                12
-#define LONGONLYOPT_TLS_CERT_FILE               13
-#define LONGONLYOPT_TLS_CERTCHECK               14
-#define LONGONLYOPT_TLS_FORCE_SSLV3             15
-#define LONGONLYOPT_TLS_MIN_DH_PRIME_BITS       16
-#define LONGONLYOPT_TLS_PRIORITIES              17
-#define LONGONLYOPT_PROTOCOL                    18
-#define LONGONLYOPT_DOMAIN                      19
-#define LONGONLYOPT_KEEPBCC                     20
-#define LONGONLYOPT_RMQS                        21
-#define LONGONLYOPT_SYSLOG                      22
-#define LONGONLYOPT_MAILDOMAIN                  23
-#define LONGONLYOPT_AUTO_FROM                   24
-#define LONGONLYOPT_READ_ENVELOPE_FROM          25
+#define LONGONLYOPT_PASSWORDEVAL                7
+#define LONGONLYOPT_TLS                         8
+#define LONGONLYOPT_TLS_STARTTLS                9
+#define LONGONLYOPT_TLS_TRUST_FILE              10
+#define LONGONLYOPT_TLS_CRL_FILE                11
+#define LONGONLYOPT_TLS_FINGERPRINT             12
+#define LONGONLYOPT_TLS_KEY_FILE                13
+#define LONGONLYOPT_TLS_CERT_FILE               14
+#define LONGONLYOPT_TLS_CERTCHECK               15
+#define LONGONLYOPT_TLS_FORCE_SSLV3             16
+#define LONGONLYOPT_TLS_MIN_DH_PRIME_BITS       17
+#define LONGONLYOPT_TLS_PRIORITIES              18
+#define LONGONLYOPT_PROTOCOL                    19
+#define LONGONLYOPT_DOMAIN                      20
+#define LONGONLYOPT_KEEPBCC                     21
+#define LONGONLYOPT_RMQS                        22
+#define LONGONLYOPT_SYSLOG                      23
+#define LONGONLYOPT_MAILDOMAIN                  24
+#define LONGONLYOPT_AUTO_FROM                   25
+#define LONGONLYOPT_READ_ENVELOPE_FROM          26
 
 int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
 {
@@ -2492,6 +2496,7 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
             LONGONLYOPT_MAILDOMAIN },
         { "auth",                  optional_argument, 0, LONGONLYOPT_AUTH },
         { "user",                  required_argument, 0, LONGONLYOPT_USER },
+        { "passwordeval",          optional_argument, 0, LONGONLYOPT_PASSWORDEVAL },
         { "tls",                   optional_argument, 0, LONGONLYOPT_TLS },
         { "tls-starttls",          optional_argument, 0,
             LONGONLYOPT_TLS_STARTTLS },
@@ -2530,6 +2535,8 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
     int error_code;
     int c;
     int i;
+    char *pw;
+    char *errstr;
     list_t *lp;
 
     /* the program name */
@@ -2756,6 +2763,23 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
                 conf->cmdline_account->username =
                     (*optarg == '\0') ? NULL : xstrdup(optarg);
                 conf->cmdline_account->mask |= ACC_USERNAME;
+                break;
+
+            case LONGONLYOPT_PASSWORDEVAL:
+                free(conf->cmdline_account->password);
+                if (get_password_eval(optarg, &pw, &errstr) == CONF_EOK)
+                {
+                    conf->cmdline_account->password =
+                        (*pw == '\0') ? NULL : xstrdup(pw);
+                    free(pw);
+                }
+                else
+                {
+                    conf->cmdline_account->password = NULL;
+                    print_error("%s", errstr);
+                    error_code = 1;
+                }
+                conf->cmdline_account->mask |= ACC_PASSWORD;
                 break;
 
             case LONGONLYOPT_TLS:

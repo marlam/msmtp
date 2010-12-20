@@ -92,6 +92,9 @@ the \fBauth\fP command below.
 .IP "\-\-user=\fI[username]\fP"
 Set or unset the user name for authentication. See the \fBuser\fP command
 below.
+.IP "\-\-passwordeval=\fI[eval]\fP"
+Set your password for SMTP authentication to the output (stdout) of the
+execution of \fIeval\fP.
 .IP "\-\-tls[=(\fIon\fP|\fIoff\fP)]"
 Enable or disable TLS/SSL encryption. See the \fBtls\fP command below.
 .IP "\-\-tls\-starttls[=(\fIon\fP|\fIoff\fP)]"
@@ -341,6 +344,9 @@ find it in ~/.netrc. If that fails, it will try to find it in SYSCONFDIR/netrc
 fails, it will try to get it from a system specific keychain (if available). If
 that fails but a controlling terminal is available, msmtp will prompt you for
 it.
+.IP "passwordeval [\fIeval\fP]"
+Set your password for SMTP authentication to the output (stdout) of the
+execution of \fIeval\fP.
 .IP "ntlmdomain [\fIdomain\fP]"
 Set a domain for the \fIntlm\fP authentication method. The default is to use no
 domain (equivalent to an empty argument), but some servers seem to require one,
@@ -527,7 +533,7 @@ auth on
 .br
 user 123456789
 .br
-password my_password
+passwordeval gpg -d ~/.msmtp.password.gpg
 .br
 
 .br

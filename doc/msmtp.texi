@@ -218,7 +218,7 @@ name.  Authentication must be activated with the @samp{auth} command.
 Set your password for SMTP authentication. An empty argument unsets the
 password.  Authentication must be activated with the @samp{auth} command.
 If no password is set but one is needed during authentication, msmtp will try to
-fint it. First, if @samp{passwordeval} is set, it will evaluate that command. If
+find it. First, if @samp{passwordeval} is set, it will evaluate that command. If
 @samp{passwordeval} is not set, msmtp will try to find the password in
 @code{~/.netrc}. If that fails, it will try to find it in
 @code{SYSCONFDIR/netrc} (use @code{--version} to find out what @code{SYSCONFDIR}
@@ -861,7 +861,7 @@ which methods are supported by your version of msmtp.
 Authentication data can be set with the @samp{user} and @samp{password} commands
 or with the @samp{--user} option. See @ref{user}, @ref{password}, @ref{--user}.
 If no password is set but one is needed during authentication, msmtp will try to
-fint it. First, if @samp{passwordeval} is set, it will evaluate that command. If
+find it. First, if @samp{passwordeval} is set, it will evaluate that command. If
 @samp{passwordeval} is not set, msmtp will try to find the password in
 @code{~/.netrc}. If that fails, it will try to find it in
 @code{SYSCONFDIR/netrc} (use @code{--version} to find out what @code{SYSCONFDIR}

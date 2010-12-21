@@ -19,7 +19,7 @@ syn match msmtpComment /#.*$/ contains=@Spell
 " General commands.
 syntax match msmtpOption /\<\(defaults\|account\|host\|port\|timeout\|protocol\|domain\)\>/
 " Authentication commands.
-syntax match msmtpOption /\<\(auth\|user\|password\|ntlmdomain\)\>/
+syntax match msmtpOption /\<\(auth\|user\|password\|passwordeval\|ntlmdomain\)\>/
 " TLS commands.
 syntax match msmtpOption /\<\(tls\|tls_trust_file\|tls_crl_file\|tls_fingerprint\|tls_key_file\|tls_cert_file\|tls_certcheck\|tls_starttls\|tls_force_sslv3\|tls_min_dh_prime_bits\|tls_priorities\)\>/
 " Sendmail mode specific commands.

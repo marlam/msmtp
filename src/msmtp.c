@@ -3531,8 +3531,7 @@ int main(int argc, char *argv[])
         goto exit;
     }
     /* Read recipients and/or the envelope from address from the mail. */
-    if (conf.sendmail && !conf.pretend
-            && (conf.read_recipients || conf.read_envelope_from))
+    if (conf.sendmail && (conf.read_recipients || conf.read_envelope_from))
     {
         if (!(tmpfile = tempfile(PACKAGE_NAME)))
         {
@@ -3550,6 +3549,11 @@ int main(int argc, char *argv[])
         {
             print_error("%s", msmtp_sanitize_string(errstr));
             goto exit;
+        }
+        if (conf.read_envelope_from && (conf.pretend || conf.debug))
+        {
+            printf(_("envelope from address extracted from mail: %s"),
+                    conf.cmdline_account->from);
         }
         if (fseeko(tmpfile, 0, SEEK_SET) != 0)
         {
@@ -3588,6 +3592,15 @@ int main(int argc, char *argv[])
                  */
                 account = account_copy(find_account_by_envelope_from(
                             account_list, conf.cmdline_account->from));
+                if (account)
+                {
+                    if (conf.pretend || conf.debug)
+                    {
+                        printf(_("account chosen by "
+                                    "envelope from address %s: %s"),
+                                conf.cmdline_account->from, account->id);
+                    }
+                }
             }
             if (!account)
             {
@@ -3595,6 +3608,10 @@ int main(int argc, char *argv[])
                  * Use default if available, but allow fallback to environment
                  * variables. */
                 conf.account_id = "default";
+                if (conf.pretend || conf.debug)
+                {
+                    printf(_("falling back to default account"));
+                }
                 allow_fallback_to_env = 1;
             }
         }
@@ -3614,6 +3631,11 @@ int main(int argc, char *argv[])
                 }
                 conf.cmdline_account->host = xstrdup(env_smtpserver);
                 account = account_copy(conf.cmdline_account);
+                if (conf.pretend || conf.debug)
+                {
+                    printf(_("using environment variables "
+                                "EMAIL and SMTPSERVER"));
+                }
             }
             else
             {
@@ -3648,6 +3670,10 @@ int main(int argc, char *argv[])
     else
     {
         account = account_copy(conf.cmdline_account);
+        if (conf.pretend || conf.debug)
+        {
+            printf(_("using account specified on command line"));
+        }
     }
 
     /* OK, we're using the settings in 'account'. Complete them and check

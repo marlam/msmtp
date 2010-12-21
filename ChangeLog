@@ -1,4 +1,7 @@
 Version 1.4.22:
+- Avoid different account selection behaviour in --pretend mode, and print more
+  informational messages about account selection in --pretend and --debug mode.
+  Suggested by Adam Spiers.
 - Add a new passwordeval command and --passwordeval option, to set the password
   from the output of a command. Written by Martin Stenberg.
 - A few documentation improvements, suggested by Andries E. Brouwer.

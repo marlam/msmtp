@@ -225,6 +225,7 @@ find it. First, if @samp{passwordeval} is set, it will evaluate that command. If
 is on your platform). If that fails, it will try to get it from a system 
 specific keyring (if available). If that fails but a controlling terminal is
 available, msmtp will prompt you for it.
+@xref{Authentication}.
 @anchor{passwordeval}
 @item passwordeval [@var{eval}]
 @cmindex passwordeval

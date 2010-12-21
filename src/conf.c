@@ -75,6 +75,7 @@ account_t *account_new(const char *conffile, const char *id)
     a->auth_mech = NULL;
     a->username = NULL;
     a->password = NULL;
+    a->passwordeval = NULL;
     a->ntlmdomain = NULL;
     a->tls = 0;
     a->tls_nostarttls = 0;
@@ -124,6 +125,7 @@ account_t *account_copy(account_t *acc)
         a->auth_mech = acc->auth_mech ? xstrdup(acc->auth_mech) : NULL;
         a->username = acc->username ? xstrdup(acc->username) : NULL;
         a->password = acc->password ? xstrdup(acc->password) : NULL;
+        a->passwordeval = acc->passwordeval ? xstrdup(acc->passwordeval) : NULL;
         a->ntlmdomain = acc->ntlmdomain ? xstrdup(acc->ntlmdomain) : NULL;
         a->tls = acc->tls;
         a->tls_nostarttls = acc->tls_nostarttls;
@@ -184,6 +186,7 @@ void account_free(void *a)
         free(p->auth_mech);
         free(p->username);
         free(p->password);
+        free(p->passwordeval);
         free(p->ntlmdomain);
         free(p->tls_key_file);
         free(p->tls_cert_file);
@@ -537,6 +540,12 @@ void override_account(account_t *acc1, account_t *acc2)
     {
         free(acc1->password);
         acc1->password = acc2->password ? xstrdup(acc2->password) : NULL;
+    }
+    if (acc2->mask & ACC_PASSWORDEVAL)
+    {
+        free(acc1->passwordeval);
+        acc1->passwordeval =
+            acc2->passwordeval ? xstrdup(acc2->passwordeval) : NULL;
     }
     if (acc2->mask & ACC_NTLMDOMAIN)
     {
@@ -1282,21 +1291,9 @@ int read_conffile(const char *conffile, FILE *f, list_t **acc_list,
         }
         else if (strcmp(cmd, "passwordeval") == 0)
         {
-            acc->mask |= ACC_PASSWORD;
-            free(acc->password);
-            if ((e = get_password_eval(arg, &t, errstr)) == CONF_EOK)
-            {
-                acc->password = (*t == '\0') ? NULL : xstrdup(t);
-                free(t);
-            }
-            else
-            {
-                acc->password = NULL;
-                t = xasprintf(_("line %d: %s"), line, *errstr);
-                free(*errstr);
-                *errstr = t;
-                break;
-            }
+            acc->mask |= ACC_PASSWORDEVAL;
+            free(acc->passwordeval);
+            acc->passwordeval = (*arg == '\0') ? NULL : xstrdup(arg);
         }
         else if (strcmp(cmd, "ntlmdomain") == 0)
         {

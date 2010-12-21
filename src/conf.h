@@ -57,20 +57,21 @@
 #define ACC_AUTH_MECH                   (1 << 11)
 #define ACC_USERNAME                    (1 << 12)
 #define ACC_PASSWORD                    (1 << 13)
-#define ACC_NTLMDOMAIN                  (1 << 14)
-#define ACC_TLS                         (1 << 15)
-#define ACC_TLS_NOSTARTTLS              (1 << 16)
-#define ACC_TLS_KEY_FILE                (1 << 17)
-#define ACC_TLS_CERT_FILE               (1 << 18)
-#define ACC_TLS_TRUST_FILE              (1 << 19)
-#define ACC_TLS_CRL_FILE                (1 << 20)
-#define ACC_TLS_FINGERPRINT             (1 << 21)
-#define ACC_TLS_NOCERTCHECK             (1 << 22)
-#define ACC_TLS_FORCE_SSLV3             (1 << 23)
-#define ACC_TLS_MIN_DH_PRIME_BITS       (1 << 24)
-#define ACC_TLS_PRIORITIES              (1 << 25)
-#define ACC_LOGFILE                     (1 << 26)
-#define ACC_SYSLOG                      (1 << 27)
+#define ACC_PASSWORDEVAL                (1 << 14)
+#define ACC_NTLMDOMAIN                  (1 << 15)
+#define ACC_TLS                         (1 << 16)
+#define ACC_TLS_NOSTARTTLS              (1 << 17)
+#define ACC_TLS_KEY_FILE                (1 << 18)
+#define ACC_TLS_CERT_FILE               (1 << 19)
+#define ACC_TLS_TRUST_FILE              (1 << 20)
+#define ACC_TLS_CRL_FILE                (1 << 21)
+#define ACC_TLS_FINGERPRINT             (1 << 22)
+#define ACC_TLS_NOCERTCHECK             (1 << 23)
+#define ACC_TLS_FORCE_SSLV3             (1 << 24)
+#define ACC_TLS_MIN_DH_PRIME_BITS       (1 << 25)
+#define ACC_TLS_PRIORITIES              (1 << 26)
+#define ACC_LOGFILE                     (1 << 27)
+#define ACC_SYSLOG                      (1 << 28)
 
 typedef struct
 {
@@ -98,6 +99,7 @@ typedef struct
     char *auth_mech;            /* authentication mechanism */
     char *username;             /* username for authentication */
     char *password;             /* password for authentication */
+    char *passwordeval;         /* command for password evaluation */
     char *ntlmdomain;           /* domain for NTLM authentication */
     /* TLS / SSL */
     int tls;                    /* flag: use TLS? */

@@ -339,11 +339,12 @@ name. Authentication must be activated with the \fBauth\fP command.
 Set your password for SMTP authentication. An empty argument unsets the
 password. Authentication must be activated with the \fBauth\fP command.
 If no password is set but one is needed during authentication, msmtp will try to
-find it in ~/.netrc. If that fails, it will try to find it in SYSCONFDIR/netrc
-(use \fB\-\-version\fP to find out what SYSCONFDIR is on your platform). If that
-fails, it will try to get it from a system specific keychain (if available). If
-that fails but a controlling terminal is available, msmtp will prompt you for
-it.
+fint it. First, if \fBpasswordeval\fP is set, it will evaluate that command. If
+\fBpasswordeval\fP is not set, msmtp will try to find the password in ~/.netrc.
+If that fails, it will try to find it in SYSCONFDIR/netrc (use \fB\-\-version\fP
+to find out what SYSCONFDIR is on your platform). If that fails, it will try to
+get it from a system specific keychain (if available). If that fails but a
+controlling terminal is available, msmtp will prompt you for it.
 .IP "passwordeval [\fIeval\fP]"
 Set your password for SMTP authentication to the output (stdout) of the
 execution of \fIeval\fP.

@@ -2535,8 +2535,6 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
     int error_code;
     int c;
     int i;
-    char *pw;
-    char *errstr;
     list_t *lp;
 
     /* the program name */
@@ -2766,20 +2764,10 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
                 break;
 
             case LONGONLYOPT_PASSWORDEVAL:
-                free(conf->cmdline_account->password);
-                if (get_password_eval(optarg, &pw, &errstr) == CONF_EOK)
-                {
-                    conf->cmdline_account->password =
-                        (*pw == '\0') ? NULL : xstrdup(pw);
-                    free(pw);
-                }
-                else
-                {
-                    conf->cmdline_account->password = NULL;
-                    print_error("%s", errstr);
-                    error_code = 1;
-                }
-                conf->cmdline_account->mask |= ACC_PASSWORD;
+                free(conf->cmdline_account->passwordeval);
+                conf->cmdline_account->passwordeval =
+                    (*optarg == '\0') ? NULL : xstrdup(optarg);
+                conf->cmdline_account->mask |= ACC_PASSWORDEVAL;
                 break;
 
             case LONGONLYOPT_TLS:
@@ -3383,6 +3371,7 @@ void msmtp_print_conf(msmtp_cmdline_conf_t conf, account_t *account)
     }
     printf("user                  = %s\n"
             "password              = %s\n"
+            "passwordeval          = %s\n"
             "ntlmdomain            = %s\n"
             "tls                   = %s\n"
             "tls_starttls          = %s\n"
@@ -3395,6 +3384,7 @@ void msmtp_print_conf(msmtp_cmdline_conf_t conf, account_t *account)
             "tls_force_sslv3       = %s\n",
             account->username ? account->username : _("(not set)"),
             account->password ? "*" : _("(not set)"),
+            account->passwordeval ? account->passwordeval : _("(not set)"),
             account->ntlmdomain ? account->ntlmdomain : _("(not set)"),
             account->tls ? _("on") : _("off"),
             account->tls_nostarttls ? _("off") : _("on"),
@@ -3662,6 +3652,16 @@ int main(int argc, char *argv[])
 
     /* OK, we're using the settings in 'account'. Complete them and check
      * them. */
+    if (account->auth_mech && !account->password && account->passwordeval)
+    {
+        if (get_password_eval(account->passwordeval,
+                    &account->password, &errstr) != CONF_EOK)
+        {
+            print_error("%s", msmtp_sanitize_string(errstr));
+            error_code = EX_CONFIG;
+            goto exit;
+        }
+    }
     if (account->port == 0)
     {
         if (account->protocol == SMTP_PROTO_SMTP)

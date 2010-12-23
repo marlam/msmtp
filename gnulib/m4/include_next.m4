@@ -1,4 +1,4 @@
-# include_next.m4 serial 14
+# include_next.m4 serial 16
 dnl Copyright (C) 2006-2010 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
@@ -24,6 +24,13 @@ dnl does not warn about some things, and on some systems (Solaris and Interix)
 dnl __STDC__ evaluates to 0 instead of to 1. The latter is an undesired side
 dnl effect; we are therefore careful to use 'defined __STDC__' or '1' instead
 dnl of plain '__STDC__'.
+dnl
+dnl PRAGMA_COLUMNS can be used in files that override system header files, so
+dnl as to avoid compilation errors on HP NonStop systems when the gnulib file
+dnl is included by a system header file that does a "#pragma COLUMNS 80" (which
+dnl has the effect of truncating the lines of that file and all files that it
+dnl includes to 80 columns) and the gnulib file has lines longer than 80
+dnl columns.
 
 AC_DEFUN([gl_INCLUDE_NEXT],
 [
@@ -68,10 +75,11 @@ EOF
 EOF
      gl_save_CPPFLAGS="$CPPFLAGS"
      CPPFLAGS="$gl_save_CPPFLAGS -Iconftestd1b -Iconftestd2"
-     AC_COMPILE_IFELSE([#include <conftest.h>],
+dnl We intentionally avoid using AC_LANG_SOURCE here.
+     AC_COMPILE_IFELSE([AC_LANG_DEFINES_PROVIDED[#include <conftest.h>]],
        [gl_cv_have_include_next=yes],
        [CPPFLAGS="$gl_save_CPPFLAGS -Iconftestd1a -Iconftestd2"
-        AC_COMPILE_IFELSE([#include <conftest.h>],
+        AC_COMPILE_IFELSE([AC_LANG_DEFINES_PROVIDED[#include <conftest.h>]],
           [gl_cv_have_include_next=buggy],
           [gl_cv_have_include_next=no])
        ])
@@ -97,6 +105,24 @@ EOF
   AC_SUBST([INCLUDE_NEXT])
   AC_SUBST([INCLUDE_NEXT_AS_FIRST_DIRECTIVE])
   AC_SUBST([PRAGMA_SYSTEM_HEADER])
+  AC_CACHE_CHECK([whether system header files limit the line length],
+    [gl_cv_pragma_columns],
+    [dnl HP NonStop systems, which define __TANDEM, have this misfeature.
+     AC_EGREP_CPP([choke me],
+       [
+#ifdef __TANDEM
+choke me
+#endif
+       ],
+       [gl_cv_pragma_columns=yes],
+       [gl_cv_pragma_columns=no])
+    ])
+  if test $gl_cv_pragma_columns = yes; then
+    PRAGMA_COLUMNS="#pragma COLUMNS 10000"
+  else
+    PRAGMA_COLUMNS=
+  fi
+  AC_SUBST([PRAGMA_COLUMNS])
 ])
 
 # gl_CHECK_NEXT_HEADERS(HEADER1 HEADER2 ...)
@@ -185,3 +211,7 @@ AC_DEFUN([gl_CHECK_NEXT_HEADERS],
        [$gl_next_as_first_directive])
      AS_VAR_POPDEF([gl_next_header])])
 ])
+
+# Autoconf 2.68 added warnings for our use of AC_COMPILE_IFELSE;
+# this fallback is safe for all earlier autoconf versions.
+m4_define_default([AC_LANG_DEFINES_PROVIDED])

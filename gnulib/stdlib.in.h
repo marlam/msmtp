@@ -18,6 +18,7 @@
 #if __GNUC__ >= 3
 @PRAGMA_SYSTEM_HEADER@
 #endif
+@PRAGMA_COLUMNS@
 
 #if defined __need_malloc_and_calloc
 /* Special invocation convention inside glibc header files.  */
@@ -38,6 +39,11 @@
 /* NetBSD 5.0 mis-defines NULL.  */
 #include <stddef.h>
 
+/* MirBSD 10 defines WEXITSTATUS in <sys/wait.h>, not in <stdlib.h>.  */
+#if @GNULIB_SYSTEM_POSIX@ && !defined WEXITSTATUS
+# include <sys/wait.h>
+#endif
+
 /* Solaris declares getloadavg() in <sys/loadavg.h>.  */
 #if (@GNULIB_GETLOADAVG@ || defined GNULIB_POSIXCHECK) && @HAVE_SYS_LOADAVG_H@
 # include <sys/loadavg.h>
@@ -55,6 +61,9 @@
 #endif
 
 #if !@HAVE_STRUCT_RANDOM_DATA@
+/* Define 'struct random_data'.
+   But allow multiple gnulib generated <stdlib.h> replacements to coexist.  */
+# if !GNULIB_defined_struct_random_data
 struct random_data
 {
   int32_t *fptr;                /* Front pointer.  */
@@ -65,6 +74,8 @@ struct random_data
   int rand_sep;                 /* Distance between front and rear.  */
   int32_t *end_ptr;             /* Pointer behind state table.  */
 };
+#  define GNULIB_defined_struct_random_data 1
+# endif
 #endif
 
 #if (@GNULIB_MKSTEMP@ || @GNULIB_GETSUBOPT@ || defined GNULIB_POSIXCHECK) && ! defined __GLIBC__ && !((defined _WIN32 || defined __WIN32__) && ! defined __CYGWIN__)
@@ -72,6 +83,12 @@ struct random_data
 /* On Cygwin 1.7.1, only <unistd.h> declares getsubopt.  */
 /* But avoid namespace pollution on glibc systems and native Windows.  */
 # include <unistd.h>
+#endif
+
+#ifndef __attribute__
+# if __GNUC__ < 2 || (__GNUC__ == 2 && __GNUC_MINOR__ < 8)
+#  define __attribute__(Spec)   /* empty */
+# endif
 #endif
 
 /* The definitions of _GL_FUNCDECL_RPL etc. are copied here.  */
@@ -92,6 +109,23 @@ struct random_data
 #elif EXIT_FAILURE != 1
 # undef EXIT_FAILURE
 # define EXIT_FAILURE 1
+#endif
+
+
+#if @GNULIB__EXIT@
+/* Terminate the current process with the given return code, without running
+   the 'atexit' handlers.  */
+# if !@HAVE__EXIT@
+_GL_FUNCDECL_SYS (_Exit, void, (int status) __attribute__ ((__noreturn__)));
+# endif
+_GL_CXXALIAS_SYS (_Exit, void, (int status));
+_GL_CXXALIASWARN (_Exit);
+#elif defined GNULIB_POSIXCHECK
+# undef _Exit
+# if HAVE_RAW_DECL__EXIT
+_GL_WARN_ON_USE (_Exit, "_Exit is unportable - "
+                 "use gnulib module _Exit for portability");
+# endif
 #endif
 
 
@@ -149,7 +183,8 @@ _GL_CXXALIASWARN (canonicalize_file_name);
 #elif defined GNULIB_POSIXCHECK
 # undef canonicalize_file_name
 # if HAVE_RAW_DECL_CANONICALIZE_FILE_NAME
-_GL_WARN_ON_USE (canonicalize_file_name, "canonicalize_file_name is unportable - "
+_GL_WARN_ON_USE (canonicalize_file_name,
+                 "canonicalize_file_name is unportable - "
                  "use gnulib module canonicalize-lgpl for portability");
 # endif
 #endif
@@ -549,7 +584,7 @@ _GL_FUNCDECL_RPL (setenv, int,
 _GL_CXXALIAS_RPL (setenv, int,
                   (const char *name, const char *value, int replace));
 # else
-#  if !@HAVE_SETENV@
+#  if !@HAVE_DECL_SETENV@
 _GL_FUNCDECL_SYS (setenv, int,
                   (const char *name, const char *value, int replace)
                   _GL_ARG_NONNULL ((1)));
@@ -557,7 +592,9 @@ _GL_FUNCDECL_SYS (setenv, int,
 _GL_CXXALIAS_SYS (setenv, int,
                   (const char *name, const char *value, int replace));
 # endif
+# if !(@REPLACE_SETENV@ && !@HAVE_DECL_SETENV@)
 _GL_CXXALIASWARN (setenv);
+# endif
 #elif defined GNULIB_POSIXCHECK
 # undef setenv
 # if HAVE_RAW_DECL_SETENV
@@ -652,7 +689,7 @@ _GL_CXXALIASWARN (unlockpt);
 #elif defined GNULIB_POSIXCHECK
 # undef unlockpt
 # if HAVE_RAW_DECL_UNLOCKPT
-_GL_WARN_ON_USE (ptsname, "unlockpt is not portable - "
+_GL_WARN_ON_USE (unlockpt, "unlockpt is not portable - "
                  "use gnulib module unlockpt for portability");
 # endif
 #endif
@@ -667,12 +704,14 @@ _GL_WARN_ON_USE (ptsname, "unlockpt is not portable - "
 _GL_FUNCDECL_RPL (unsetenv, int, (const char *name) _GL_ARG_NONNULL ((1)));
 _GL_CXXALIAS_RPL (unsetenv, int, (const char *name));
 # else
-#  if !@HAVE_UNSETENV@
+#  if !@HAVE_DECL_UNSETENV@
 _GL_FUNCDECL_SYS (unsetenv, int, (const char *name) _GL_ARG_NONNULL ((1)));
 #  endif
 _GL_CXXALIAS_SYS (unsetenv, int, (const char *name));
 # endif
+# if !(@REPLACE_UNSETENV@ && !@HAVE_DECL_UNSETENV@)
 _GL_CXXALIASWARN (unsetenv);
+# endif
 #elif defined GNULIB_POSIXCHECK
 # undef unsetenv
 # if HAVE_RAW_DECL_UNSETENV

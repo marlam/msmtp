@@ -21,6 +21,11 @@
 #if __GNUC__ >= 3
 @PRAGMA_SYSTEM_HEADER@
 #endif
+@PRAGMA_COLUMNS@
+
+#if @HAVE_FEATURES_H@
+# include <features.h> /* for __GLIBC__ */
+#endif
 
 /* Gnulib's sys/socket.h is responsible for pulling in winsock2.h etc
    under MinGW.

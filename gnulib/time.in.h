@@ -19,6 +19,7 @@
 #if __GNUC__ >= 3
 @PRAGMA_SYSTEM_HEADER@
 #endif
+@PRAGMA_COLUMNS@
 
 /* Don't get in the way of glibc when it includes time.h merely to
    declare a few standard symbols, rather than to declare all the
@@ -82,6 +83,15 @@ struct timespec
 
 #  endif
 # endif
+
+/* Per http://austingroupbugs.net/view.php?id=327, POSIX requires
+   time_t to be an integer type, even though C99 permits floating
+   point.  We don't know of any implementation that uses floating
+   point, and it is much easier to write code that doesn't have to
+   worry about that corner case, so we force the issue.  */
+struct __time_t_must_be_integral {
+  unsigned int __floating_time_t_unsupported : (time_t) 1;
+};
 
 /* Sleep for at least RQTP seconds unless interrupted,  If interrupted,
    return -1 and store the remaining time into RMTP.  See

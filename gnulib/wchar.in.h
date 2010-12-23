@@ -29,6 +29,7 @@
 #if __GNUC__ >= 3
 @PRAGMA_SYSTEM_HEADER@
 #endif
+@PRAGMA_COLUMNS@
 
 #if defined __need_mbstate_t || defined __need_wint_t || (defined __hpux && ((defined _INTTYPES_INCLUDED && !defined strtoimax) || defined _GL_JUST_INCLUDE_SYSTEM_WCHAR_H)) || defined _GL_ALREADY_INCLUDING_WCHAR_H
 /* Special invocation convention:
@@ -51,6 +52,10 @@
 #ifndef _GL_WCHAR_H
 
 #define _GL_ALREADY_INCLUDING_WCHAR_H
+
+#if @HAVE_FEATURES_H@
+# include <features.h> /* for __GLIBC__ */
+#endif
 
 /* Tru64 with Desktop Toolkit C has a bug: <stdio.h> must be included before
    <wchar.h>.

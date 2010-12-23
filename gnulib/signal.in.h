@@ -18,6 +18,7 @@
 #if __GNUC__ >= 3
 @PRAGMA_SYSTEM_HEADER@
 #endif
+@PRAGMA_COLUMNS@
 
 #if defined __need_sig_atomic_t || defined __need_sigset_t
 /* Special invocation convention inside glibc header files.  */
@@ -80,7 +81,7 @@ typedef unsigned int sigset_t;
 #  endif
 
 /* This code supports only 32 signals.  */
-typedef int verify_NSIG_constraint[2 * (NSIG <= 32) - 1];
+typedef int verify_NSIG_constraint[NSIG <= 32 ? 1 : -1];
 
 # endif
 

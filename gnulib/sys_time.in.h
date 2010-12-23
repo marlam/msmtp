@@ -21,6 +21,7 @@
 #if __GNUC__ >= 3
 @PRAGMA_SYSTEM_HEADER@
 #endif
+@PRAGMA_COLUMNS@
 
 #if defined _GL_SYS_TIME_H
 
@@ -88,7 +89,7 @@ _GL_CXXALIASWARN (gettimeofday);
 #  undef gettimeofday
 #  if HAVE_RAW_DECL_GETTIMEOFDAY
 _GL_WARN_ON_USE (gettimeofday, "gettimeofday is unportable - "
-		 "use gnulib module gettimeofday for portability");
+                 "use gnulib module gettimeofday for portability");
 #  endif
 # endif
 

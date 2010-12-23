@@ -19,9 +19,16 @@
 #if __GNUC__ >= 3
 @PRAGMA_SYSTEM_HEADER@
 #endif
+@PRAGMA_COLUMNS@
 
-#if defined __need_FILE || defined __need___FILE
-/* Special invocation convention inside glibc header files.  */
+#if defined __need_FILE || defined __need___FILE || defined _GL_ALREADY_INCLUDING_STDIO_H
+/* Special invocation convention:
+   - Inside glibc header files.
+   - On OSF/1 5.1 we have a sequence of nested includes
+     <stdio.h> -> <getopt.h> -> <ctype.h> -> <sys/localedef.h> ->
+     <sys/lc_core.h> -> <nl_types.h> -> <mesg.h> -> <stdio.h>.
+     In this situation, the functions are not yet declared, therefore we cannot
+     provide the C++ aliases.  */
 
 #@INCLUDE_NEXT@ @NEXT_STDIO_H@
 
@@ -30,8 +37,12 @@
 
 #ifndef _GL_STDIO_H
 
+#define _GL_ALREADY_INCLUDING_STDIO_H
+
 /* The include_next requires a split double-inclusion guard.  */
 #@INCLUDE_NEXT@ @NEXT_STDIO_H@
+
+#undef _GL_ALREADY_INCLUDING_STDIO_H
 
 #ifndef _GL_STDIO_H
 #define _GL_STDIO_H
@@ -54,6 +65,13 @@
 # if __GNUC__ < 2 || (__GNUC__ == 2 && __GNUC_MINOR__ < 7)
 #  define __attribute__(Spec)   /* empty */
 # endif
+#endif
+
+/* Solaris 10 declares renameat in <unistd.h>, not in <stdio.h>.  */
+/* But in any case avoid namespace pollution on glibc systems.  */
+#if (@GNULIB_RENAMEAT@ || defined GNULIB_POSIXCHECK) && defined __sun \
+    && ! defined __GLIBC__
+# include <unistd.h>
 #endif
 
 
@@ -265,7 +283,8 @@ _GL_CXXALIASWARN (freopen);
 #elif defined GNULIB_POSIXCHECK
 # undef freopen
 /* Assume freopen is always declared.  */
-_GL_WARN_ON_USE (freopen, "freopen on Win32 platforms is not POSIX compatible - "
+_GL_WARN_ON_USE (freopen,
+                 "freopen on Win32 platforms is not POSIX compatible - "
                  "use gnulib module freopen for portability");
 #endif
 
@@ -336,7 +355,7 @@ _GL_FUNCDECL_RPL (fseeko, int, (FILE *fp, off_t offset, int whence)
                                _GL_ARG_NONNULL ((1)));
 _GL_CXXALIAS_RPL (fseeko, int, (FILE *fp, off_t offset, int whence));
 # else
-#  if ! @HAVE_FSEEKO@
+#  if ! @HAVE_DECL_FSEEKO@
 _GL_FUNCDECL_SYS (fseeko, int, (FILE *fp, off_t offset, int whence)
                                _GL_ARG_NONNULL ((1)));
 #  endif
@@ -412,7 +431,7 @@ _GL_CXXALIASWARN (ftell);
 _GL_FUNCDECL_RPL (ftello, off_t, (FILE *fp) _GL_ARG_NONNULL ((1)));
 _GL_CXXALIAS_RPL (ftello, off_t, (FILE *fp));
 # else
-#  if ! @HAVE_FTELLO@
+#  if ! @HAVE_DECL_FTELLO@
 _GL_FUNCDECL_SYS (ftello, off_t, (FILE *fp) _GL_ARG_NONNULL ((1)));
 #  endif
 _GL_CXXALIAS_SYS (ftello, off_t, (FILE *fp));

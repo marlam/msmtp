@@ -1,4 +1,4 @@
-# threadlib.m4 serial 5 (gettext-0.18)
+# threadlib.m4 serial 8 (gettext-0.18.2)
 dnl Copyright (C) 2005-2010 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
@@ -9,6 +9,11 @@ dnl From Bruno Haible.
 dnl gl_THREADLIB
 dnl ------------
 dnl Tests for a multithreading library to be used.
+dnl If the configure.ac contains a definition of the gl_THREADLIB_DEFAULT_NO
+dnl (it must be placed before the invocation of gl_THREADLIB_EARLY!), then the
+dnl default is 'no', otherwise it is system dependent. In both cases, the user
+dnl can change the choice through the options --enable-threads=choice or
+dnl --disable-threads.
 dnl Defines at most one of the macros USE_POSIX_THREADS, USE_SOLARIS_THREADS,
 dnl USE_PTH_THREADS, USE_WIN32_THREADS
 dnl Sets the variables LIBTHREAD and LTLIBTHREAD to the linker options for use
@@ -44,10 +49,12 @@ AC_DEFUN([gl_THREADLIB_EARLY_BODY],
     [AC_REQUIRE([AC_USE_SYSTEM_EXTENSIONS])],
     [AC_REQUIRE([AC_GNU_SOURCE])])
   dnl Check for multithreading.
-  m4_divert_text([DEFAULTS], [gl_use_threads_default=])
+  m4_ifdef([gl_THREADLIB_DEFAULT_NO],
+    [m4_divert_text([DEFAULTS], [gl_use_threads_default=no])],
+    [m4_divert_text([DEFAULTS], [gl_use_threads_default=])])
   AC_ARG_ENABLE([threads],
-AC_HELP_STRING([--enable-threads={posix|solaris|pth|win32}], [specify multithreading API])
-AC_HELP_STRING([--disable-threads], [build without multithread safety]),
+AC_HELP_STRING([--enable-threads={posix|solaris|pth|win32}], [specify multithreading API])m4_ifdef([gl_THREADLIB_DEFAULT_NO], [], [
+AC_HELP_STRING([--disable-threads], [build without multithread safety])]),
     [gl_use_threads=$enableval],
     [if test -n "$gl_use_threads_default"; then
        gl_use_threads="$gl_use_threads_default"
@@ -80,7 +87,7 @@ changequote([,])dnl
         # groks <pthread.h>. cc also understands the flag -pthread, but
         # we don't use it because 1. gcc-2.95 doesn't understand -pthread,
         # 2. putting a flag into CPPFLAGS that has an effect on the linker
-        # causes the AC_TRY_LINK test below to succeed unexpectedly,
+        # causes the AC_LINK_IFELSE test below to succeed unexpectedly,
         # leading to wrong values of LIBTHREAD and LTLIBTHREAD.
         CPPFLAGS="$CPPFLAGS -D_REENTRANT"
         ;;
@@ -111,18 +118,25 @@ AC_DEFUN([gl_THREADLIB_BODY],
       [gl_cv_have_weak],
       [gl_cv_have_weak=no
        dnl First, test whether the compiler accepts it syntactically.
-       AC_TRY_LINK([extern void xyzzy ();
-#pragma weak xyzzy], [xyzzy();], [gl_cv_have_weak=maybe])
+       AC_LINK_IFELSE(
+         [AC_LANG_PROGRAM(
+            [[extern void xyzzy ();
+#pragma weak xyzzy]],
+            [[xyzzy();]])],
+         [gl_cv_have_weak=maybe])
        if test $gl_cv_have_weak = maybe; then
          dnl Second, test whether it actually works. On Cygwin 1.7.2, with
          dnl gcc 4.3, symbols declared weak always evaluate to the address 0.
-         AC_TRY_RUN([
+         AC_RUN_IFELSE(
+           [AC_LANG_SOURCE([[
 #include <stdio.h>
 #pragma weak fputs
 int main ()
 {
   return (fputs == NULL);
-}], [gl_cv_have_weak=yes], [gl_cv_have_weak=no],
+}]])],
+           [gl_cv_have_weak=yes],
+           [gl_cv_have_weak=no],
            [dnl When cross-compiling, assume that only ELF platforms support
             dnl weak symbols.
             AC_EGREP_CPP([Extensible Linking Format],
@@ -148,9 +162,11 @@ int main ()
         # Test whether both pthread_mutex_lock and pthread_mutexattr_init exist
         # in libc. IRIX 6.5 has the first one in both libc and libpthread, but
         # the second one only in libpthread, and lock.c needs it.
-        AC_TRY_LINK([#include <pthread.h>],
-          [pthread_mutex_lock((pthread_mutex_t*)0);
-           pthread_mutexattr_init((pthread_mutexattr_t*)0);],
+        AC_LINK_IFELSE(
+          [AC_LANG_PROGRAM(
+             [[#include <pthread.h>]],
+             [[pthread_mutex_lock((pthread_mutex_t*)0);
+               pthread_mutexattr_init((pthread_mutexattr_t*)0);]])],
           [gl_have_pthread=yes])
         # Test for libpthread by looking for pthread_kill. (Not pthread_self,
         # since it is defined as a macro on OSF/1.)
@@ -203,9 +219,13 @@ int main ()
         gl_have_solaristhread=
         gl_save_LIBS="$LIBS"
         LIBS="$LIBS -lthread"
-        AC_TRY_LINK([#include <thread.h>
-#include <synch.h>],
-          [thr_self();],
+        AC_LINK_IFELSE(
+          [AC_LANG_PROGRAM(
+             [[
+#include <thread.h>
+#include <synch.h>
+             ]],
+             [[thr_self();]])],
           [gl_have_solaristhread=yes])
         LIBS="$gl_save_LIBS"
         if test -n "$gl_have_solaristhread"; then
@@ -230,8 +250,10 @@ int main ()
       AC_LIB_LINKFLAGS([pth])
       gl_have_pth=
       gl_save_LIBS="$LIBS"
-      LIBS="$LIBS -lpth"
-      AC_TRY_LINK([#include <pth.h>], [pth_self();], [gl_have_pth=yes])
+      LIBS="$LIBS $LIBPTH"
+      AC_LINK_IFELSE(
+        [AC_LANG_PROGRAM([[#include <pth.h>]], [[pth_self();]])],
+        [gl_have_pth=yes])
       LIBS="$gl_save_LIBS"
       if test -n "$gl_have_pth"; then
         gl_threads_api=pth

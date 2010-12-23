@@ -26,6 +26,7 @@
 #if __GNUC__ >= 3
 @PRAGMA_SYSTEM_HEADER@
 #endif
+@PRAGMA_COLUMNS@
 
 #if defined _GL_ALREADY_INCLUDING_SYS_SOCKET_H
 /* Special invocation convention:
@@ -69,7 +70,14 @@
 typedef unsigned short  sa_family_t;
 #endif
 
-#if !@HAVE_STRUCT_SOCKADDR_STORAGE@
+#if @HAVE_STRUCT_SOCKADDR_STORAGE@
+/* Make the 'struct sockaddr_storage' field 'ss_family' visible on AIX 7.1.  */
+# if !@HAVE_STRUCT_SOCKADDR_STORAGE_SS_FAMILY@
+#  ifndef ss_family
+#   define ss_family __ss_family
+#  endif
+# endif
+#else
 # include <alignof.h>
 /* Code taken from glibc sysdeps/unix/sysv/linux/bits/socket.h on
    2009-05-08, licensed under LGPLv2.1+, plus portability fixes. */
@@ -122,8 +130,8 @@ struct sockaddr_storage
    adding AC_DEFINE(WINVER, 0x0501) to configure.ac.  Note that your
    code may not run on older Windows releases then.  My Windows 2000
    box was not able to run the code, for example.  The situation is
-   slightly confusing because:
-   http://msdn.microsoft.com/library/default.asp?url=/library/en-us/winsock/winsock/getaddrinfo_2.asp
+   slightly confusing because
+   <http://msdn.microsoft.com/en-us/library/ms738520>
    suggests that getaddrinfo should be available on all Windows
    releases. */
 

@@ -1,3 +1,7 @@
+Version 1.4.23:
+- Fix SCRAM-SHA-1 authentication via libgsasl. Reported and analyzed by
+  Steffen Lehmann for mpop.
+
 Version 1.4.22:
 - Update gnulib to 2010-12-23.
 - Avoid different account selection behaviour in --pretend mode, and print more

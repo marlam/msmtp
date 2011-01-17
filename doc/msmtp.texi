@@ -1,7 +1,7 @@
 \input texinfo   @c -*-texinfo-*-
 @setfilename msmtp.info
-@set UPDATED December 23, 2010
-@set VERSION 1.4.22
+@set UPDATED January 17, 2011
+@set VERSION 1.4.23
 @settitle msmtp @value{VERSION}
 
 @c Define new indices: for options (op) and commands (cm)
@@ -13,7 +13,7 @@
 This manual was last updated @value{UPDATED} for version
 @value{VERSION} of msmtp.
 
-Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Martin Lambers
+Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Martin Lambers
 
 @quotation
 Permission is granted to copy, distribute and/or modify this document

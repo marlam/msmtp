@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: msmtp 1.4.15\n"
 "Report-Msgid-Bugs-To: marlam@marlam.de\n"
-"POT-Creation-Date: 2010-12-23 11:30+0100\n"
+"POT-Creation-Date: 2011-01-17 21:29+0100\n"
 "PO-Revision-Date: 2009-11-01 17:59-0200\n"
 "Last-Translator: Ruda Moura <ruda.moura@gmail.com>\n"
 "Language-Team: Portuguese\n"
@@ -957,13 +957,13 @@ msgid "SMTP server does not accept EHLO or HELO commands"
 msgstr "O servidor SMTP não aceita os comandos EHLO ou HELO"
 
 #: src/smtp.c:436 src/smtp.c:578 src/smtp.c:583 src/smtp.c:656 src/smtp.c:704
-#: src/smtp.c:794 src/smtp.c:885 src/smtp.c:1866
+#: src/smtp.c:794 src/smtp.c:885 src/smtp.c:1849
 #, c-format
 msgid "command %s failed"
 msgstr "o comando %s falhou"
 
 #: src/smtp.c:661 src/smtp.c:725 src/smtp.c:746 src/smtp.c:843 src/smtp.c:906
-#: src/smtp.c:1215 src/smtp.c:1254 src/smtp.c:1291
+#: src/smtp.c:1215 src/smtp.c:1258
 #, c-format
 msgid "authentication failed (method %s)"
 msgstr "a autenticação falhou (método %s)"
@@ -973,7 +973,7 @@ msgstr "a autenticação falhou (método %s)"
 msgid "authentication method CRAM-MD5: server sent invalid challenge"
 msgstr "método de autenticação CRAM-MD5: servidor enviou um desafio inválido"
 
-#: src/smtp.c:1013 src/smtp.c:1310
+#: src/smtp.c:1013 src/smtp.c:1293
 #, c-format
 msgid "the server does not support authentication method %s"
 msgstr "o servidor não suporta o método de autenticação %s"
@@ -988,67 +988,67 @@ msgstr "GNU SASL: %s"
 msgid "GNU SASL: authentication method %s not supported"
 msgstr "GNU SASL: o método de autenticação %s não é suportado"
 
-#: src/smtp.c:1082 src/smtp.c:1341
+#: src/smtp.c:1082 src/smtp.c:1324
 #, c-format
 msgid "cannot use a secure authentication method"
 msgstr "não pude usar um método seguro de autenticação"
 
-#: src/smtp.c:1088 src/smtp.c:1347
+#: src/smtp.c:1088 src/smtp.c:1330
 #, c-format
 msgid "cannot find a usable authentication method"
 msgstr "não pude encontrar um método usável de autenticação"
 
-#: src/smtp.c:1102 src/smtp.c:1358
+#: src/smtp.c:1102 src/smtp.c:1341
 #, c-format
 msgid "authentication method %s needs a user name"
 msgstr "o método de autenticação %s necessita de um nome de usuário"
 
-#: src/smtp.c:1115 src/smtp.c:1368
+#: src/smtp.c:1115 src/smtp.c:1351
 #, c-format
 msgid "authentication method %s needs a password"
 msgstr "o método de autenticação %s necessita de uma senha"
 
-#: src/smtp.c:1270
+#: src/smtp.c:1274
 #, c-format
 msgid "authentication failed: %s (method %s)"
 msgstr "a autenticação falhou: %s (método %s)"
 
-#: src/smtp.c:1394
+#: src/smtp.c:1377
 #, c-format
 msgid "authentication method %s not supported"
 msgstr "o método de autenticação %s não é suportado"
 
-#: src/smtp.c:1508
+#: src/smtp.c:1491
 #, c-format
 msgid "envelope from address %s not accepted by the server"
 msgstr "o envelope do endereço %s não foi aceito pelo servidor"
 
-#: src/smtp.c:1527
+#: src/smtp.c:1510
 #, c-format
 msgid "recipient address %s not accepted by the server"
 msgstr "o endereço do recipiente %s não foi aceito pelo servidor"
 
-#: src/smtp.c:1546
+#: src/smtp.c:1529
 #, c-format
 msgid "the server does not accept mail data"
 msgstr "o servidor não aceitou os dados da mensagem"
 
-#: src/smtp.c:1724
+#: src/smtp.c:1707
 #, c-format
 msgid "the server did not accept the mail"
 msgstr "o servidor não aceitou a mensagem"
 
-#: src/smtp.c:1788
+#: src/smtp.c:1771
 #, c-format
 msgid "the server refuses to send the mail to %s"
 msgstr "o servidor contesta o envio de mensagem para %s"
 
-#: src/smtp.c:1852
+#: src/smtp.c:1835
 #, c-format
 msgid "the server is unable to fulfill the request"
 msgstr "o servidor está impedido de completar o pedido"
 
-#: src/smtp.c:1860
+#: src/smtp.c:1843
 #, c-format
 msgid "invalid argument for Remote Message Queue Starting"
 msgstr "argumento inválido para Remote Message Queue Starting"

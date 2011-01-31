@@ -247,10 +247,12 @@ run_queue() {                        # run queue
 ## display queue contents
 display_queue() {
   local M LST="$('ls' $Q/*.mail 2>/dev/null)"        # list of mails in queue
+  message_index=0
 
   if [ -n "$LST" ] ; then            # list has contents (any mails in queue)
     for M in $LST ; do               # cycle through each
-      dsp '' "mail id = [ $(basename $M .mail) ]"            # show mail id
+      message_index=$(expr $message_index + 1)
+      dsp '' "${message_index}. mail id = [ $(basename $M .mail) ]"            # show mail id
       'egrep' -s --colour -h '(^From:|^To:|^Subject:)' "$M"  # show mail info
     done
     echo
@@ -387,7 +389,7 @@ case "$(basename $0)" in             # get name script called as
     case "$OP" in                    # sort ops ; run according to spec
       r)    lock_queue ; run_queue           ;;    # run (flush) the queue
       R)    lock_queue ; select_mail -send   ;;    # send individual mail(s) in queue
-      d|'')              display_queue       ;;    # display (list) all mail in queue (defaykt)
+      d|'')              display_queue       ;;    # display (list) all mail in queue (default)
       p)    lock_queue ; select_mail -purge  ;;    # purge individual mail(s) from queue
       a)    lock_queue ; purge_queue         ;;    # purge all mail in queue
       h)                 usage               ;;    # show help

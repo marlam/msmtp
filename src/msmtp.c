@@ -2720,7 +2720,16 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
                 else
                 {
                     free(conf->cmdline_account->from);
-                    conf->cmdline_account->from = xstrdup(optarg);
+                    /* Accept '<>' to mean an empty from address, to fix Debian
+                     * bug 612679. */
+                    if (strcmp(optarg, "<>") == 0)
+                    {
+                        conf->cmdline_account->from = xstrdup("");
+                    }
+                    else
+                    {
+                        conf->cmdline_account->from = xstrdup(optarg);
+                    }
                     conf->cmdline_account->mask |= ACC_FROM;
                 }
                 break;

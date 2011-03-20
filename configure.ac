@@ -159,7 +159,7 @@ if test "$gnome_keyring" != "no"; then
     PKG_CHECK_MODULES([libgnome_keyring], [gnome-keyring-1], [HAVE_GNOME_KEYRING=1], [HAVE_GNOME_KEYRING=0])
     if test "$HAVE_GNOME_KEYRING" != "1"; then
 	AC_MSG_WARN([library libgnome-keyring not found:])
-	AC_MSG_WARN([libgnome_keyring_PKG_ERRORS])
+	AC_MSG_WARN([$libgnome_keyring_PKG_ERRORS])
 	AC_MSG_WARN([libgnome-keyring is provided by Gnome; Debian package: libgnome-keyring-dev])
 	gnome_keyring="no"
     else

@@ -28,8 +28,9 @@
 #include <stdio.h>
 
 #include "gettext.h"
-#include "xvasprintf.h"
+#define _(string) gettext(string)
 
+#include "xalloc.h"
 #include "stream.h"
 
 

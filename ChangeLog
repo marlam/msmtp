@@ -1,3 +1,7 @@
+Version 1.4.24:
+- Remove gnulib, for simplicity and maintainability.
+- Update GNU autotools files, in particular configure.ac.
+
 Version 1.4.23:
 - Fix SCRAM-SHA-1 authentication via libgsasl. Reported and analyzed by
   Steffen Lehmann for mpop.

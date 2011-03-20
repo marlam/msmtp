@@ -34,14 +34,13 @@
 #include <ctype.h>
 #include <errno.h>
 
-#include "c-ctype.h"
 #include "gettext.h"
-#include "xalloc.h"
-#include "xvasprintf.h"
+#define _(string) gettext(string)
 
 #include "list.h"
 #include "smtp.h"
 #include "tools.h"
+#include "xalloc.h"
 #include "conf.h"
 
 /* buffer size for configuration file lines */
@@ -322,7 +321,7 @@ unsigned char *get_fingerprint(const char *s, size_t len)
     {
         for (j = 0; j < 2; j++)
         {
-            c = c_toupper((unsigned char)s[3 * i + j]);
+            c = toupper((unsigned char)s[3 * i + j]);
             if (c >= '0' && c <= '9')
             {
                 hex[j] = c - '0';
@@ -374,7 +373,7 @@ int check_auth_arg(char *arg)
         l = strlen(arg);
         for (i = 0; i < l; i++)
         {
-            arg[i] = c_toupper((unsigned char)arg[i]);
+            arg[i] = toupper((unsigned char)arg[i]);
         }
         return 0;
     }
@@ -428,7 +427,7 @@ int check_dsn_notify_arg(char *arg)
     l = strlen(arg);
     for (i = 0; i < l; i++)
     {
-        arg[i] = c_toupper((unsigned char)arg[i]);
+        arg[i] = toupper((unsigned char)arg[i]);
     }
     return 0;
 }

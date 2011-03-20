@@ -38,14 +38,13 @@
 # include <gsasl.h>
 #else
 # include "base64.h"
-# include "hmac.h"
+# include "hmac-md5.h"
 #endif
 
-#include "c-ctype.h"
 #include "gettext.h"
-#include "xalloc.h"
-#include "xvasprintf.h"
+#define _(string) gettext(string)
 
+#include "xalloc.h"
 #include "list.h"
 #include "readbuf.h"
 #include "net.h"
@@ -448,7 +447,7 @@ int smtp_init(smtp_server_t *srv, const char *ehlo_domain, list_t **errmsg,
         /* make line uppercase */
         for (i = 4; (size_t)i < len; i++)
         {
-            s[i] = c_toupper((unsigned char)s[i]);
+            s[i] = toupper((unsigned char)s[i]);
         }
         /* search capabilities */
         if (strncmp(s + 4, "STARTTLS", 8) == 0)
@@ -982,11 +981,7 @@ int smtp_auth(smtp_server_t *srv,
         const char *hostname,
         const char *user,
         const char *password,
-#ifdef HAVE_LIBGSASL
         const char *ntlmdomain,
-#else
-        const char *ntlmdomain UNUSED,
-#endif
         const char *auth_mech,
         char *(*password_callback)(const char *hostname, const char *user),
         list_t **error_msg,
@@ -1280,6 +1275,8 @@ int smtp_auth(smtp_server_t *srv,
     return SMTP_EOK;
 
 #else /* not HAVE_LIBGSASL */
+
+    (void)ntlmdomain;
 
     char *callback_password = NULL;
     int e;

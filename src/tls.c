@@ -37,14 +37,14 @@
 # include <gnutls/gnutls.h>
 # include <gnutls/x509.h>
 #endif /* HAVE_LIBGNUTLS */
-#ifdef HAVE_OPENSSL
+#ifdef HAVE_LIBSSL
 # include <openssl/ssl.h>
 # include <openssl/x509.h>
 # include <openssl/x509v3.h>
 # include <openssl/err.h>
 # include <openssl/rand.h>
 # include <openssl/evp.h>
-#endif /* HAVE_OPENSSL */
+#endif /* HAVE_LIBSSL */
 
 #ifdef HAVE_LIBIDN
 # include <idna.h>
@@ -56,9 +56,9 @@
 #endif
 
 #include "gettext.h"
-#include "xalloc.h"
-#include "xvasprintf.h"
+#define _(string) gettext(string)
 
+#include "xalloc.h"
 #include "readbuf.h"
 #include "tls.h"
 
@@ -85,7 +85,7 @@ void tls_clear(tls_t *tls)
  * Used error codes: TLS_ESEED
  */
 
-#ifdef HAVE_OPENSSL
+#ifdef HAVE_LIBSSL
 int seed_prng(char **errstr)
 {
     char randfile[512];
@@ -144,7 +144,7 @@ int seed_prng(char **errstr)
     }
     return TLS_EOK;
 }
-#endif /* HAVE_OPENSSL */
+#endif /* HAVE_LIBSSL */
 
 
 /*
@@ -167,7 +167,7 @@ int tls_lib_init(char **errstr)
     return TLS_EOK;
 #endif /* HAVE_LIBGNUTLS */
 
-#ifdef HAVE_OPENSSL
+#ifdef HAVE_LIBSSL
     int e;
 
     SSL_load_error_strings();
@@ -178,7 +178,7 @@ int tls_lib_init(char **errstr)
     }
 
     return TLS_EOK;
-#endif /* HAVE_OPENSSL */
+#endif /* HAVE_LIBSSL */
 }
 
 
@@ -249,7 +249,7 @@ void tls_cert_info_free(tls_cert_info_t *tci)
  * public domain.
  */
 
-#ifdef HAVE_OPENSSL
+#ifdef HAVE_LIBSSL
 int is_leap(int year)
 {
     return (((year) % 4) == 0 && (((year) % 100) != 0 || ((year) % 400) == 0));
@@ -348,7 +348,7 @@ int asn1time_to_time_t(const char *asn1time, int is_utc, time_t *t)
 error_exit:
     return 1;
 }
-#endif /* HAVE_OPENSSL */
+#endif /* HAVE_LIBSSL */
 
 
 /*
@@ -472,7 +472,7 @@ int tls_cert_info_get(tls_t *tls, tls_cert_info_t *tci, char **errstr)
     return TLS_EOK;
 #endif /* HAVE_LIBGNUTLS */
 
-#ifdef HAVE_OPENSSL
+#ifdef HAVE_LIBSSL
     X509 *x509cert;
     X509_NAME *x509_subject;
     X509_NAME *x509_issuer;
@@ -576,7 +576,7 @@ int tls_cert_info_get(tls_t *tls, tls_cert_info_t *tci, char **errstr)
 
     X509_free(x509cert);
     return TLS_EOK;
-#endif /* HAVE_OPENSSL */
+#endif /* HAVE_LIBSSL */
 }
 
 
@@ -601,7 +601,7 @@ int tls_cert_info_get(tls_t *tls, tls_cert_info_t *tci, char **errstr)
  * to'.
  */
 
-#ifdef HAVE_OPENSSL
+#ifdef HAVE_LIBSSL
 int hostname_match(const char *hostname, const char *certname)
 {
     const char *cmp1, *cmp2;
@@ -637,7 +637,7 @@ int hostname_match(const char *hostname, const char *certname)
 
     return 1;
 }
-#endif /* HAVE_OPENSSL */
+#endif /* HAVE_LIBSSL */
 
 
 /*
@@ -876,7 +876,7 @@ int tls_check_cert(tls_t *tls, const char *hostname, char **errstr)
     return TLS_EOK;
 #endif /* HAVE_LIBGNUTLS */
 
-#ifdef HAVE_OPENSSL
+#ifdef HAVE_LIBSSL
     X509 *x509cert;
     long status;
     const char *error_msg;
@@ -1057,7 +1057,7 @@ int tls_check_cert(tls_t *tls, const char *hostname, char **errstr)
     }
 
     return TLS_EOK;
-#endif /* HAVE_OPENSSL */
+#endif /* HAVE_LIBSSL */
 }
 
 
@@ -1088,7 +1088,6 @@ int tls_init(tls_t *tls,
     }
     if (priorities)
     {
-# if HAVE_GNUTLS_PRIORITY_SET_DIRECT
         error_pos = NULL;
         if ((error_code = gnutls_priority_set_direct(tls->session,
                         priorities, &error_pos)) != 0)
@@ -1114,12 +1113,6 @@ int tls_init(tls_t *tls,
                 return TLS_ELIBFAILED;
             }
         }
-# else
-        *errstr = xasprintf(_("cannot set priorities for TLS session: %s"),
-                _("the TLS library does not support this feature"));
-        gnutls_deinit(tls->session);
-        return TLS_ELIBFAILED;
-# endif
     }
     else
     {
@@ -1218,7 +1211,7 @@ int tls_init(tls_t *tls,
 
 #endif /* HAVE_LIBGNUTLS */
 
-#ifdef HAVE_OPENSSL
+#ifdef HAVE_LIBSSL
 
     SSL_METHOD *ssl_method = NULL;
 
@@ -1313,7 +1306,7 @@ int tls_init(tls_t *tls,
     }
     return TLS_EOK;
 
-#endif /* HAVE_OPENSSL */
+#endif /* HAVE_LIBSSL */
 }
 
 
@@ -1332,7 +1325,7 @@ int tls_init(tls_t *tls,
  * ERR_error_string(3).
  */
 
-#ifdef HAVE_OPENSSL
+#ifdef HAVE_LIBSSL
 char *openssl_io_error(int error_code, int error_code2,
         const char *error_string)
 {
@@ -1384,7 +1377,7 @@ char *openssl_io_error(int error_code, int error_code2,
     }
     return xasprintf("%s: %s", error_string, error_reason);
 }
-#endif /* HAVE_OPENSSL */
+#endif /* HAVE_LIBSSL */
 
 
 /*
@@ -1447,7 +1440,7 @@ int tls_start(tls_t *tls, int fd, const char *hostname, int no_certcheck,
     return TLS_EOK;
 #endif /* HAVE_LIBGNUTLS */
 
-#ifdef HAVE_OPENSSL
+#ifdef HAVE_LIBSSL
     int error_code;
 
 #if W32_NATIVE
@@ -1500,7 +1493,7 @@ int tls_start(tls_t *tls, int fd, const char *hostname, int no_certcheck,
     }
     tls->is_active = 1;
     return TLS_EOK;
-#endif /* HAVE_OPENSSL */
+#endif /* HAVE_LIBSSL */
 }
 
 
@@ -1554,7 +1547,7 @@ int tls_readbuf_read(tls_t *tls, readbuf_t *readbuf, char *ptr,
 
 #endif /* HAVE_LIBGNUTLS */
 
-#ifdef HAVE_OPENSSL
+#ifdef HAVE_LIBSSL
 
     int ret;
     int error_code;
@@ -1592,7 +1585,7 @@ int tls_readbuf_read(tls_t *tls, readbuf_t *readbuf, char *ptr,
     *ptr = *((readbuf->ptr)++);
     return 1;
 
-#endif /* HAVE_OPENSSL */
+#endif /* HAVE_LIBSSL */
 }
 
 
@@ -1686,7 +1679,7 @@ int tls_puts(tls_t *tls, const char *s, size_t len, char **errstr)
 
 #endif /* HAVE_LIBGNUTLS */
 
-#ifdef HAVE_OPENSSL
+#ifdef HAVE_LIBSSL
 
     int error_code;
 
@@ -1716,7 +1709,7 @@ int tls_puts(tls_t *tls, const char *s, size_t len, char **errstr)
 
     return TLS_EOK;
 
-#endif /* HAVE_OPENSSL */
+#endif /* HAVE_LIBSSL */
 }
 
 
@@ -1735,11 +1728,11 @@ void tls_close(tls_t *tls)
         gnutls_deinit(tls->session);
         gnutls_certificate_free_credentials(tls->cred);
 #endif /* HAVE_LIBGNUTLS */
-#ifdef HAVE_OPENSSL
+#ifdef HAVE_LIBSSL
         SSL_shutdown(tls->ssl);
         SSL_free(tls->ssl);
         SSL_CTX_free(tls->ssl_ctx);
-#endif /* HAVE_OPENSSL */
+#endif /* HAVE_LIBSSL */
     }
     tls_clear(tls);
 }

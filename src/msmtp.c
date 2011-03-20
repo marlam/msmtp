@@ -48,18 +48,17 @@ extern int optind;
 #ifdef HAVE_SYSLOG
 # include <syslog.h>
 #endif
-#ifdef HAVE_GNOMEKEYRING
+#ifdef HAVE_GNOME_KEYRING
 # include <gnome-keyring.h>
 #endif
 #ifdef HAVE_MACOSXKEYRING
 # include <Security/Security.h>
 #endif
 
-#include "getpass.h"
 #include "gettext.h"
-#include "xalloc.h"
-#include "xvasprintf.h"
+#define _(string) gettext(string)
 
+#include "xalloc.h"
 #include "conf.h"
 #include "list.h"
 #include "net.h"
@@ -283,7 +282,7 @@ char *msmtp_password_callback(const char *hostname, const char *user)
     char *netrc_filename;
     netrc_entry *netrc_hostlist;
     netrc_entry *netrc_host;
-#ifdef HAVE_GNOMEKEYRING
+#ifdef HAVE_GNOME_KEYRING
     const char *protocol = "smtp";
     GList *found_list = NULL;
     GnomeKeyringNetworkPasswordData *found;
@@ -328,7 +327,7 @@ char *msmtp_password_callback(const char *hostname, const char *user)
         free(netrc_filename);
     }
 
-#ifdef HAVE_GNOMEKEYRING
+#ifdef HAVE_GNOME_KEYRING
     if (!password)
     {
         g_set_application_name(PACKAGE);
@@ -348,7 +347,7 @@ char *msmtp_password_callback(const char *hostname, const char *user)
         }
         gnome_keyring_network_password_list_free(found_list);
     }
-#endif /* HAVE_GNOMEKEYRING */
+#endif /* HAVE_GNOME_KEYRING */
 
 #ifdef HAVE_MACOSXKEYRING
     if (!password)
@@ -448,9 +447,9 @@ void msmtp_fingerprint_string(char *s, unsigned char *fingerprint, size_t len)
 #ifdef HAVE_TLS
 void msmtp_print_tls_cert_info(tls_cert_info_t *tci)
 {
-    const char *info_fieldname[6] = { N_("Common Name"), N_("Organization"),
-        N_("Organizational unit"), N_("Locality"), N_("State or Province"),
-        N_("Country") };
+    const char *info_fieldname[6] = { _("Common Name"), _("Organization"),
+        _("Organizational unit"), _("Locality"), _("State or Province"),
+        _("Country") };
     char sha1_fingerprint_string[60];
     char md5_fingerprint_string[48];
     char timebuf[128];          /* should be long enough for every locale */
@@ -2215,7 +2214,7 @@ void msmtp_print_version(void)
     printf(_("TLS/SSL library: %s\n"),
 #ifdef HAVE_LIBGNUTLS
             "GnuTLS"
-#elif defined (HAVE_OPENSSL)
+#elif defined (HAVE_LIBSSL)
             "OpenSSL"
 #else
             _("none")
@@ -2281,10 +2280,10 @@ void msmtp_print_version(void)
 #endif
     printf("\n");
     printf(_("Keyring support: "));
-#if !defined HAVE_GNOMEKEYRING && !defined HAVE_MACOSXKEYRING
+#if !defined HAVE_GNOME_KEYRING && !defined HAVE_MACOSXKEYRING
     printf(_("none"));
 #else
-# ifdef HAVE_GNOMEKEYRING
+# ifdef HAVE_GNOME_KEYRING
     printf(_("Gnome "));
 # endif
 # ifdef HAVE_MACOSXKEYRING

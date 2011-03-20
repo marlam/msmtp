@@ -9,24 +9,22 @@ msmtp_SOURCES = \
 	readbuf.c readbuf.h \
 	smtp.c smtp.h \
 	stream.c stream.h \
-	tools.c tools.h
+	tools.c tools.h \
+	xalloc.c xalloc.h \
+	gettext.h
 
-msmtp_LDADD = @tls_obj@	\
-	$(top_builddir)/gnulib/libgnu.a \
-	$(GETHOSTNAME_LIB)		\
-	$(GETADDRINFO_LIB) 		\
-	$(HOSTENT_LIB)			\
-	$(SERVENT_LIB)			\
-	$(INET_NTOP_LIB)		\
-	$(LIBSOCKET)			\
-	$(LIB_NANOSLEEP)		\
-	$(LIBINTL)
+if HAVE_TLS
+msmtp_SOURCES += tls.c tls.h
+endif
 
-msmtp_DEPENDENCIES = @tls_obj@
+if HAVE_LIBGSASL
+else
+msmtp_SOURCES += base64.c base64.h md5.c md5.h hmac-md5.c hmac-md5.h
+endif
 
-EXTRA_msmtp_SOURCES = tls.c tls.h
+AM_CPPFLAGS = $(tls_CFLAGS) $(libgsasl_CFLAGS) $(libidn_CFLAGS) $(libgnome_keyring_CFLAGS)
 
-AM_CPPFLAGS = -I$(top_builddir)/gnulib -I$(top_srcdir)/gnulib
+msmtp_LDADD =  $(tls_LIBS) $(libgsasl_LIBS) $(libidn_LIBS) $(libgnome_keyring_LIBS)
 
 DEFS += -DSYSCONFDIR=\"$(sysconfdir)\"
 

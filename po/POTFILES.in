@@ -1,8 +1,5 @@
 # List of source files containing translatable strings.
-# Copyright (C) 2005 Martin Lambers <marlam@marlam.de>
-
-# Common library files
-gnulib/getopt.c
+# Copyright (C) 2005, 2011 Martin Lambers <marlam@marlam.de>
 
 # Package source files
 src/conf.c

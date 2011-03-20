@@ -26,9 +26,9 @@
 #ifdef HAVE_LIBGNUTLS
 # include <gnutls/gnutls.h>
 #endif /* HAVE_LIBGNUTLS */
-#ifdef HAVE_OPENSSL
+#ifdef HAVE_LIBSSL
 # include <openssl/ssl.h>
-#endif /* HAVE_OPENSSL */
+#endif /* HAVE_LIBSSL */
 
 #include "readbuf.h"
 
@@ -63,10 +63,10 @@ typedef struct
     gnutls_session_t session;
     gnutls_certificate_credentials_t cred;
 #endif /* HAVE_LIBGNUTLS */
-#ifdef HAVE_OPENSSL
+#ifdef HAVE_LIBSSL
     SSL_CTX *ssl_ctx;
     SSL *ssl;
-#endif /* HAVE_OPENSSL */
+#endif /* HAVE_LIBSSL */
 } tls_t;
 
 /*

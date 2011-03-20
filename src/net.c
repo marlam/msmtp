@@ -41,12 +41,10 @@
 # include <idna.h>
 #endif
 
-#include "sockets.h"
-
 #include "gettext.h"
-#include "xalloc.h"
-#include "xvasprintf.h"
+#define _(string) gettext(string)
 
+#include "xalloc.h"
 #include "readbuf.h"
 #include "net.h"
 
@@ -59,11 +57,7 @@
 
 int net_lib_init(char **errstr)
 {
-    if (gl_sockets_startup(SOCKETS_2_2) != 0)
-    {
-        *errstr = xasprintf("cannot initialize networking");
-        return NET_ELIBFAILED;
-    }
+    (void)errstr;
     return NET_EOK;
 }
 
@@ -491,5 +485,4 @@ char *net_get_canonical_hostname(void)
 
 void net_lib_deinit(void)
 {
-    (void)gl_sockets_cleanup();
 }

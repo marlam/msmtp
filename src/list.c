@@ -27,7 +27,6 @@
 #include <stdlib.h>
 
 #include "xalloc.h"
-
 #include "list.h"
 
 

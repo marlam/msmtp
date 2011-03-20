@@ -43,9 +43,7 @@
 # include <pwd.h>
 #endif
 
-#include "gettext.h"
 #include "xalloc.h"
-
 #include "tools.h"
 
 

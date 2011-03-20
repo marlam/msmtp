@@ -30,7 +30,6 @@
 #include <string.h>
 
 #include "xalloc.h"
-
 #include "netrc.h"
 
 #define POPBUFSIZE 512

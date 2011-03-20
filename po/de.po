@@ -1,11 +1,10 @@
 # German translations for msmtp package.
-# Copyright (C) 2005, 2006, 2007, 2008 Martin Lambers <marlam@marlam.de>
+# Copyright (C) 2005, 2006, 2007, 2008, 2010, 2011 Martin Lambers <marlam@marlam.de>
 # This file is distributed under the same license as the msmtp package.
-# Martin Lambers <marlam@marlam.de>, 2005, 2006, 2007, 2008, 2010.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: msmtp 1.4.19\n"
+"Project-Id-Version: msmtp 1.4.24\n"
 "Report-Msgid-Bugs-To: marlam@marlam.de\n"
 "POT-Creation-Date: 2011-03-20 19:43+0100\n"
 "PO-Revision-Date: 2010-02-06 18:32+0200\n"

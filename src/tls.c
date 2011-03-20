@@ -50,11 +50,6 @@
 # include <idna.h>
 #endif
 
-#if W32_NATIVE
-# include <sys/socket.h>
-# include "w32sock.h"
-#endif
-
 #include "gettext.h"
 #define _(string) gettext(string)
 
@@ -1392,9 +1387,6 @@ int tls_start(tls_t *tls, int fd, const char *hostname, int no_certcheck,
 #ifdef HAVE_LIBGNUTLS
     int error_code;
 
-#if W32_NATIVE
-    fd = FD_TO_SOCKET(fd);
-#endif
     gnutls_transport_set_ptr(tls->session, (gnutls_transport_ptr_t)fd);
     if ((error_code = gnutls_handshake(tls->session)) < 0)
     {
@@ -1443,9 +1435,6 @@ int tls_start(tls_t *tls, int fd, const char *hostname, int no_certcheck,
 #ifdef HAVE_LIBSSL
     int error_code;
 
-#if W32_NATIVE
-    fd = FD_TO_SOCKET(fd);
-#endif
     if (!SSL_set_fd(tls->ssl, fd))
     {
         *errstr = xasprintf(_("cannot set the file descriptor for TLS: %s"),

@@ -1890,5 +1890,5 @@ void smtp_close(smtp_server_t *srv)
         tls_close(&srv->tls);
     }
 #endif /* HAVE_TLS */
-    close(srv->fd);
+    net_close_socket(srv->fd);
 }

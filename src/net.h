@@ -95,6 +95,13 @@ int net_gets(int fd, readbuf_t *readbuf,
 int net_puts(int fd, const char *s, size_t len, char **errstr);
 
 /*
+ * net_close_socket()
+ *
+ * Closes a socket.
+ */
+void net_close_socket(int fd);
+
+/*
  * net_get_canonical_hostname()
  *
  * Get a canonical name of this host. This means that the name is meaningful to

@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2004, 2005, 2006, 2007, 2009
+ * Copyright (C) 2004, 2005, 2006, 2007, 2009, 2011
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -36,6 +36,7 @@
 #ifdef W32_NATIVE
 # include <windows.h>
 # include <io.h>
+# include <conio.h>
 # include <lmcons.h>
 # include <sys/locking.h>
 # include <limits.h>
@@ -45,6 +46,62 @@
 
 #include "xalloc.h"
 #include "tools.h"
+
+
+/*
+ * getpass()
+ *
+ * A getpass replacement, currently only for W32.
+ * Taken from gnulib on 2011-03-20.
+ * Original copyright:
+ * Windows implementation by Martin Lambers <marlam@marlam.de>,
+ * improved by Simon Josefsson.
+ */
+#ifndef HAVE_GETPASS
+# if W32_NATIVE
+char *getpass(const char *prompt)
+{
+    const size_t pass_max = 512;
+    char getpassbuf[pass_max + 1];
+    size_t i = 0;
+    int c;
+
+    if (prompt)
+    {
+        fputs(prompt, stderr);
+        fflush(stderr);
+    }
+
+    for (;;)
+    {
+        c = _getch ();
+        if (c == '\r')
+        {
+            getpassbuf[i] = '\0';
+            break;
+        }
+        else if (i < pass_max)
+        {
+            getpassbuf[i++] = c;
+        }
+
+        if (i >= pass_max)
+        {
+            getpassbuf[i] = '\0';
+            break;
+        }
+    }
+
+    if (prompt)
+    {
+        fputs ("\r\n", stderr);
+        fflush (stderr);
+    }
+
+    return strdup(getpassbuf);
+}
+# endif
+#endif
 
 
 /*
@@ -565,12 +622,24 @@ error_exit:
  * see tools.h
  */
 
+/* Helper function that sleeps for the tenth of a second */
+static void sleep_tenth_second(void)
+{
+#ifdef W32_NATIVE
+    Sleep(100);
+#elif defined DJGPP
+    usleep(100000);
+#else /* POSIX */
+    struct timespec tenth_second = { 0, 100000000 };
+    nanosleep(&tenth_second, NULL);
+#endif
+}
+
 int lock_file(FILE *f, int lock_type, int timeout)
 {
     int fd;
     int lock_success;
     int tenth_seconds;
-    struct timespec tenth_second = { 0, 100000000 };
 #ifndef W32_NATIVE
     struct flock lock;
 #endif /* not W32_NATIVE */
@@ -598,7 +667,7 @@ int lock_file(FILE *f, int lock_type, int timeout)
         }
         else
         {
-            nanosleep(&tenth_second, NULL);
+            sleep_tenth_second();
             tenth_seconds++;
         }
     }

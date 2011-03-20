@@ -38,10 +38,13 @@
 extern char *optarg;
 extern int optind;
 #include <unistd.h>
-#include <sysexits.h>
-#include <netdb.h>
-#include <arpa/inet.h>
 #include <fcntl.h>
+#ifdef HAVE_ARPA_INET_H
+# include <arpa/inet.h>
+#endif
+#ifdef HAVE_NETDB_H
+# include <netdb.h>
+#endif
 #ifdef ENABLE_NLS
 # include <locale.h>
 #endif
@@ -53,6 +56,29 @@ extern int optind;
 #endif
 #ifdef HAVE_MACOSXKEYRING
 # include <Security/Security.h>
+#endif
+#ifdef HAVE_SYSEXITS_H
+# include <sysexits.h>
+#else
+/* exit() exit codes for some BSD system programs.
+   Copyright (C) 2003, 2006-2011 Free Software Foundation, Inc.
+   Written by Simon Josefsson based on sysexits(3) man page */
+# define EX_OK 0 /* same value as EXIT_SUCCESS */
+# define EX_USAGE 64
+# define EX_DATAERR 65
+# define EX_NOINPUT 66
+# define EX_NOUSER 67
+# define EX_NOHOST 68
+# define EX_UNAVAILABLE 69
+# define EX_SOFTWARE 70
+# define EX_OSERR 71
+# define EX_OSFILE 72
+# define EX_CANTCREAT 73
+# define EX_IOERR 74
+# define EX_TEMPFAIL 75
+# define EX_PROTOCOL 76
+# define EX_NOPERM 77
+# define EX_CONFIG 78
 #endif
 
 #include "gettext.h"
@@ -68,6 +94,14 @@ extern int optind;
 #ifdef HAVE_TLS
 # include "tls.h"
 #endif /* HAVE_TLS */
+
+#ifndef HAVE_FSEEKO
+# ifdef HAVE_FSEEKO64
+#  define fseeko(s,o,w) fseeko64(s,o,w)
+# else
+#  define fseeko(s,o,w) fseek(s,o,w)
+# endif
+#endif
 
 /* Default file names. */
 #ifdef W32_NATIVE
@@ -3490,7 +3524,9 @@ int main(int argc, char *argv[])
     /* log information */
     char *log_info;
     /* needed to get the default port */
+#if HAVE_GETSERVBYNAME
     struct servent *se;
+#endif
     /* needed to extract addresses from headers */
     FILE *tmpfile = NULL;
 
@@ -3702,22 +3738,32 @@ int main(int argc, char *argv[])
         {
             if (account->tls && account->tls_nostarttls)
             {
+#ifdef HAVE_GETSERVBYNAME
                 se = getservbyname("ssmtp", NULL);
                 account->port = se ? ntohs(se->s_port) : 465;
+#else
+                account->port = 465;
+#endif
             }
             else
             {
+#ifdef HAVE_GETSERVBYNAME
                 se = getservbyname("smtp", NULL);
                 account->port = se ? ntohs(se->s_port) : 25;
+#else
+                account->port = 25;
+#endif
             }
         }
         else /* LMTP. Has no default port as of 2006-06-17. */
         {
+#ifdef HAVE_GETSERVBYNAME
             se = getservbyname("lmtp", NULL);
             if (se)
             {
                 account->port = ntohs(se->s_port);
             }
+#endif
         }
     }
     if (conf.sendmail && account->auto_from)

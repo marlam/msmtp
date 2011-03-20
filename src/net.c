@@ -33,9 +33,21 @@
 #include <errno.h>
 #include <sys/time.h>
 #include <sys/types.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <netdb.h>
+#ifdef HAVE_SYS_SOCKET_H
+# include <sys/socket.h>
+#endif
+#ifdef HAVE_ARPA_INET_H
+# include <arpa/inet.h>
+#endif
+#ifdef HAVE_NETDB_H
+# include <netdb.h>
+#endif
+#ifdef W32_NATIVE
+# define WIN32_LEAN_AND_MEAN    /* do not include more than necessary */
+# define _WIN32_WINNT 0x0502    /* Windows XP SP2 or later */
+# include <winsock2.h>
+# include <ws2tcpip.h>
+#endif
 
 #ifdef HAVE_LIBIDN
 # include <idna.h>
@@ -50,6 +62,112 @@
 
 
 /*
+ * [Windows only] wsa_strerror()
+ *
+ * This function translates WSA error codes to strings.
+ * It should translate all codes that could be caused by the Windows socket
+ * functions used in this file:
+ * WSAStartup, getaddrinfo() or gethostbyname(), socket(), connect(),
+ * recv(), send()
+ */
+
+#ifdef W32_NATIVE
+const char *wsa_strerror(int error_code)
+{
+    switch (error_code)
+    {
+        case WSA_NOT_ENOUGH_MEMORY:
+            return _("not enough memory");
+
+        case WSAEINTR:
+            return _("operation aborted");
+
+        case WSAEINVAL:
+            return _("invalid argument");
+
+        case WSATYPE_NOT_FOUND:
+            return _("class type not found");
+
+        case WSAENETDOWN:
+            return _("the network subsystem has failed");
+
+        case WSAHOST_NOT_FOUND:
+            return _("host not found (authoritative)");
+
+        case WSATRY_AGAIN:
+            return _("host not found (nonauthoritative) or server failure");
+
+        case WSANO_RECOVERY:
+            return _("nonrecoverable error");
+
+        case WSANO_DATA:
+            return _("valid name, but no data record of requested type");
+
+        case WSAEAFNOSUPPORT:
+            return _("address family not supported");
+
+        case WSAEMFILE:
+            return _("no socket descriptors available");
+
+        case WSAENOBUFS:
+            return _("no buffer space available");
+
+        case WSAEPROTONOSUPPORT:
+            return _("protocol not supported");
+
+        case WSAEPROTOTYPE:
+            return _("wrong protocol type for this socket");
+
+        case WSAESOCKTNOSUPPORT:
+            return _("socket type is not supported in this address family");
+
+        case WSAEADDRNOTAVAIL:
+            return _("remote address is not valid");
+
+        case WSAECONNREFUSED:
+            return _("connection refused");
+
+        case WSAENETUNREACH:
+            return _("network unreachable");
+
+        case WSAETIMEDOUT:
+            return _("timeout");
+
+        case WSAENOTCONN:
+            return _("socket not connected");
+
+        case WSAESHUTDOWN:
+            return _("the socket was shut down");
+
+        case WSAEHOSTUNREACH:
+            return _("host unreachable");
+
+        case WSAECONNRESET:
+            return _("connection reset by peer");
+
+        case WSASYSNOTREADY:
+            return _("the underlying network subsystem is not ready");
+
+        case WSAVERNOTSUPPORTED:
+            return _("the requested version is not available");
+
+        case WSAEINPROGRESS:
+            return _("a blocking operation is in progress");
+
+        case WSAEPROCLIM:
+            return _("limit on the number of tasks has been reached");
+
+        case WSAEFAULT:
+            return _("invalid request");
+
+        default:
+            return _("unknown error");
+    }
+}
+#endif /* W32_NATIVE */
+
+
+/*
  * net_lib_init()
  *
  * see net.h
@@ -57,8 +175,43 @@
 
 int net_lib_init(char **errstr)
 {
+#ifdef W32_NATIVE
+    WORD wVersionRequested;
+    WSADATA wsaData;
+    int error_code;
+
+    wVersionRequested = MAKEWORD(2, 0);
+    if ((error_code = WSAStartup(wVersionRequested, &wsaData)) != 0)
+    {
+        *errstr = xasprintf("%s", wsa_strerror(error_code));
+        return NET_ELIBFAILED;
+    }
+    else
+    {
+        return NET_EOK;
+    }
+#else /* noone else needs this... */
     (void)errstr;
     return NET_EOK;
+#endif
+}
+
+
+/*
+ * net_close_socket()
+ *
+ * This function is needed because Windows cannot just close() a socket.
+ *
+ * see net.h
+ */
+
+void net_close_socket(int fd)
+{
+#ifdef W32_NATIVE
+    (void)closesocket(fd);
+#else
+    (void)close(fd);
+#endif
 }
 
 
@@ -159,6 +312,16 @@ int net_connect(int fd, const struct sockaddr *serv_addr, socklen_t addrlen,
 
 void net_set_io_timeout(int socket, int seconds)
 {
+#ifdef W32_NATIVE
+    DWORD milliseconds;
+
+    if (seconds > 0)
+    {
+        milliseconds = seconds * 1000;
+        (void)setsockopt(socket, SOL_SOCKET, SO_RCVTIMEO, &milliseconds, sizeof(int));
+        (void)setsockopt(socket, SOL_SOCKET, SO_SNDTIMEO, &milliseconds, sizeof(int));
+    }
+#else /* UNIX or DJGPP */
     struct timeval tv;
 
     if (seconds > 0)
@@ -168,6 +331,7 @@ void net_set_io_timeout(int socket, int seconds)
         (void)setsockopt(socket, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
         (void)setsockopt(socket, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(tv));
     }
+#endif
 }
 
 
@@ -215,6 +379,10 @@ int net_open_socket(const char *hostname, int port, int timeout, int *ret_fd,
     free(port_string);
     if (error_code)
     {
+#ifdef W32_NATIVE
+        *errstr = xasprintf(_("cannot locate host %s: %s"),
+                hostname, wsa_strerror(WSAGetLastError()));
+#else
         if (error_code == EAI_SYSTEM && errno == EINTR)
         {
             *errstr = xasprintf(_("operation aborted"));
@@ -225,6 +393,7 @@ int net_open_socket(const char *hostname, int port, int timeout, int *ret_fd,
                     error_code == EAI_SYSTEM ? strerror(errno)
                     : gai_strerror(error_code));
         }
+#endif
         return NET_EHOSTNOTFOUND;
     }
 
@@ -284,11 +453,21 @@ int net_open_socket(const char *hostname, int port, int timeout, int *ret_fd,
     {
         if (cause == 1)
         {
-            *errstr = xasprintf(_("cannot create socket: %s"), strerror(errno));
+            *errstr = xasprintf(_("cannot create socket: %s"),
+#ifdef W32_NATIVE
+                    wsa_strerror(WSAGetLastError())
+#else
+                    strerror(errno)
+#endif
+                    );
             return NET_ESOCKET;
         }
         else /* cause == 2 */
         {
+#ifdef W32_NATIVE
+            *errstr = xasprintf(_("cannot connect to %s, port %d: %s"),
+                    hostname, port, wsa_strerror(WSAGetLastError()));
+#else
             if (errno == EINTR)
             {
                 *errstr = xasprintf(_("operation aborted"));
@@ -298,6 +477,7 @@ int net_open_socket(const char *hostname, int port, int timeout, int *ret_fd,
                 *errstr = xasprintf(_("cannot connect to %s, port %d: %s"),
                         hostname, port, strerror(errno));
             }
+#endif
             return NET_ECONNECT;
         }
     }
@@ -317,6 +497,40 @@ int net_open_socket(const char *hostname, int port, int timeout, int *ret_fd,
 int net_readbuf_read(int fd, readbuf_t *readbuf, char *ptr,
         char **errstr)
 {
+#ifdef W32_NATIVE
+
+    int e;
+
+    if (readbuf->count <= 0)
+    {
+        readbuf->count = recv(fd, readbuf->buf, sizeof(readbuf->buf), 0);
+        if (readbuf->count < 0)
+        {
+            e = WSAGetLastError();
+            if (e == WSAEWOULDBLOCK)
+            {
+                *errstr = xasprintf(_("network read error: %s"),
+                        _("the operation timed out"));
+            }
+            else
+            {
+                *errstr = xasprintf(_("network read error: %s"),
+                        wsa_strerror(e));
+            }
+            return -1;
+        }
+        else if (readbuf->count == 0)
+        {
+            return 0;
+        }
+        readbuf->ptr = readbuf->buf;
+    }
+    readbuf->count--;
+    *ptr = *((readbuf->ptr)++);
+    return 1;
+
+#else /* !W32_NATIVE */
+
     if (readbuf->count <= 0)
     {
         readbuf->count = (int)recv(fd, readbuf->buf, sizeof(readbuf->buf), 0);
@@ -347,6 +561,8 @@ int net_readbuf_read(int fd, readbuf_t *readbuf, char *ptr,
     readbuf->count--;
     *ptr = *((readbuf->ptr)++);
     return 1;
+
+#endif
 }
 
 
@@ -397,6 +613,41 @@ int net_gets(int fd, readbuf_t *readbuf,
 
 int net_puts(int fd, const char *s, size_t len, char **errstr)
 {
+#ifdef W32_NATIVE
+
+    int e, ret;
+
+    if (len < 1)
+    {
+        return NET_EOK;
+    }
+    if ((ret = send(fd, s, len, 0)) < 0)
+    {
+        e = WSAGetLastError();
+        if (e == WSAEWOULDBLOCK)
+        {
+            *errstr = xasprintf(_("network write error: %s"),
+                    _("the operation timed out"));
+        }
+        else
+        {
+            *errstr = xasprintf(_("network write error: %s"),
+                    wsa_strerror(e));
+        }
+        return NET_EIO;
+    }
+    else if ((size_t)ret == len)
+    {
+        return NET_EOK;
+    }
+    else /* 0 <= error_code < len */
+    {
+        *errstr = xasprintf(_("network write error"));
+        return NET_EIO;
+    }
+
+#else /* !W32_NATIVE */
+
     ssize_t ret;
 
     if (len < 1)
@@ -430,6 +681,8 @@ int net_puts(int fd, const char *s, size_t len, char **errstr)
         *errstr = xasprintf(_("network write error"));
         return NET_EIO;
     }
+
+#endif
 }
 
 
@@ -485,4 +738,7 @@ char *net_get_canonical_hostname(void)
 
 void net_lib_deinit(void)
 {
+#ifdef W32_NATIVE
+    (void)WSACleanup();
+#endif
 }

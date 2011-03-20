@@ -32,7 +32,7 @@ AC_CONFIG_HEADERS([config.h])
 AC_CANONICAL_TARGET
 AC_USE_SYSTEM_EXTENSIONS
 AC_SYS_LARGEFILE
-AM_INIT_AUTOMAKE([1.11.1 color-tests silent-rules tar-pax no-texinfo.tex -Wall -Wno-portability])
+AM_INIT_AUTOMAKE([1.11.1 silent-rules no-texinfo.tex -Wall])
 AM_SILENT_RULES([yes])
 AC_PROG_CC
 AC_PROG_INSTALL
@@ -40,13 +40,16 @@ AC_LANG([C])
 
 dnl System
 AC_DEFINE_UNQUOTED([PLATFORM], ["${target}"], [Platform triplet])
-case "${target}" in *-*-mingw*) windows=yes ;; *) windows=no ;; esac
+case "${target}" in *-*-mingw*) LIBS="$LIBS -lws2_32" ;; esac
 
 dnl Gettext
 AM_GNU_GETTEXT([external])
 
-dnl Functions
-AC_CHECK_FUNCS([syslog vasprintf])
+dnl Headers and functions
+AC_CHECK_HEADERS([sysexits.h netdb.h arpa/inet.h sys/socket.h])
+AC_CHECK_FUNCS([fseeko fseeko64 getpass getservbyname syslog vasprintf])
+AC_SEARCH_LIBS([nanosleep], [rt posix4])
+AC_SEARCH_LIBS([socket], [socket])
 
 dnl pkg-config (required to detect libraries)
 PKG_PROG_PKG_CONFIG([])

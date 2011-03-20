@@ -33,6 +33,13 @@
 
 
 /*
+ * getpass() - only for systems that lack it
+ */
+#ifndef HAVE_GETPASS
+char *getpass(const char *prompt);
+#endif
+
+/*
  * get_prgname()
  *
  * Get the program name from an argv[0]-like string.

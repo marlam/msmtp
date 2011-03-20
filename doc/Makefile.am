@@ -10,5 +10,4 @@ EXTRA_DIST = \
 	msmtprc-system.example \
 	msmtprc-user.example \
 	msmtp.html \
-	msmtp.pdf \
 	$(man_MANS)

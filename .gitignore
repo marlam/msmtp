@@ -6,6 +6,8 @@ config.log
 configure
 *.swp
 *~
-*.info
 *.pot
 *.gmo
+doc/*.info
+doc/version.texi
+doc/stamp-vti

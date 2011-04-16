@@ -1,5 +1,5 @@
 /*
- * hmac_md5.h
+ * md5-apps.h
  *
  * This file is part of msmtp, an SMTP client.
  *
@@ -21,17 +21,25 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef HMAC_MD5_H
-#define HMAC_MD5_H
+#ifndef MD5_APPS_H
+#define MD5_APPS_H
 
 /*
- * hmac_md5() -- RFC 2104
+ * md5_hmac() -- RFC 2104
  *
  * Writes MD5 digest of 'secret', 'challenge' to 'digest', which must be
  * 16 unsigned chars long. 'secret' and 'challenge' must not be NULL!
  */
-void hmac_md5(const char *secret, size_t secret_len,
+void md5_hmac(const char *secret, size_t secret_len,
         char *challenge, size_t challenge_len,
         unsigned char *digest);
+
+/* 
+ * md5_digest()
+ * 
+ * Writes the MD5 Digest of the data 'src' with the length 'srclen' in ascii 
+ * (hex) to 'dst', which must be 33 characters long.
+ */
+void md5_digest(unsigned char *src, size_t srclen, char *dst);
 
 #endif

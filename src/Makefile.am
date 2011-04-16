@@ -19,7 +19,7 @@ endif
 
 if HAVE_LIBGSASL
 else
-msmtp_SOURCES += base64.c base64.h md5.c md5.h hmac-md5.c hmac-md5.h
+msmtp_SOURCES += base64.c base64.h md5.c md5.h md5-apps.c md5-apps.h
 endif
 
 AM_CPPFLAGS = $(tls_CFLAGS) $(libgsasl_CFLAGS) $(libidn_CFLAGS) $(libgnome_keyring_CFLAGS)

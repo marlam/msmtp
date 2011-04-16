@@ -57,29 +57,6 @@ extern int optind;
 #ifdef HAVE_MACOSXKEYRING
 # include <Security/Security.h>
 #endif
-#ifdef HAVE_SYSEXITS_H
-# include <sysexits.h>
-#else
-/* exit() exit codes for some BSD system programs.
-   Copyright (C) 2003, 2006-2011 Free Software Foundation, Inc.
-   Written by Simon Josefsson based on sysexits(3) man page */
-# define EX_OK 0 /* same value as EXIT_SUCCESS */
-# define EX_USAGE 64
-# define EX_DATAERR 65
-# define EX_NOINPUT 66
-# define EX_NOUSER 67
-# define EX_NOHOST 68
-# define EX_UNAVAILABLE 69
-# define EX_SOFTWARE 70
-# define EX_OSERR 71
-# define EX_OSFILE 72
-# define EX_CANTCREAT 73
-# define EX_IOERR 74
-# define EX_TEMPFAIL 75
-# define EX_PROTOCOL 76
-# define EX_NOPERM 77
-# define EX_CONFIG 78
-#endif
 
 #include "gettext.h"
 #define _(string) gettext(string)
@@ -94,14 +71,6 @@ extern int optind;
 #ifdef HAVE_TLS
 # include "tls.h"
 #endif /* HAVE_TLS */
-
-#ifndef HAVE_FSEEKO
-# ifdef HAVE_FSEEKO64
-#  define fseeko(s,o,w) fseeko64(s,o,w)
-# else
-#  define fseeko(s,o,w) fseek(s,o,w)
-# endif
-#endif
 
 /* Default file names. */
 #ifdef W32_NATIVE

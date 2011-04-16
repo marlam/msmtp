@@ -1,5 +1,5 @@
 /*
- * hmac_md5.c
+ * md5-apps.c
  *
  * This file is part of msmtp, an SMTP client.
  *
@@ -28,10 +28,10 @@
 #include <string.h>
 
 #include "md5.h"
-#include "hmac-md5.h"
+#include "md5-apps.h"
 
 
-void hmac_md5(const char *secret, size_t secret_len,
+void md5_hmac(const char *secret, size_t secret_len,
         char *challenge, size_t challenge_len,
         unsigned char *digest)
 {
@@ -72,4 +72,23 @@ void hmac_md5(const char *secret, size_t secret_len,
     MD5_Update(&context, opad, (size_t)64);
     MD5_Update(&context, digest, (size_t)16);
     MD5_Final(digest, &context);
+}
+
+void md5_digest(unsigned char *src, size_t srclen, char *dst)
+{
+    MD5_CTX context;
+    unsigned char digest[16];
+    char hex[] = "0123456789abcdef";
+    int i;
+
+    MD5_Init(&context);
+    MD5_Update(&context, src, srclen);
+    MD5_Final(digest, &context);
+
+    for (i = 0; i < 16; i++)
+    {
+	dst[2 * i] = hex[(digest[i] & 0xf0) >> 4];
+	dst[2 * i + 1] = hex[digest[i] & 0x0f];
+    }
+    dst[32] = '\0';
 }

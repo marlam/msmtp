@@ -50,7 +50,6 @@ void *xmalloc(size_t size)
     return ptr;
 }
 
-
 /* 
  * xcalloc()
  */
@@ -65,7 +64,6 @@ void *xcalloc(size_t n, size_t size)
     }
     return ptr;
 }
-
     
 /* 
  * xrealloc()
@@ -80,7 +78,6 @@ void *xrealloc(void *ptr, size_t newsize)
     return ptr;
 }
 
-
 /*
  * xstrdup()
  */
@@ -94,6 +91,35 @@ char *xstrdup(const char *s)
         xalloc_die();
     }
     return p;
+}
+
+/*
+ * xstrndup()
+ */
+
+char *xstrndup(const char *s, size_t n)
+{
+#ifdef HAVE_STRNDUP
+    char *p;
+
+    if (!(p = strndup(s, n)))
+    {
+        xalloc_die();
+    }
+    return p;
+#else
+    size_t l = 0;
+    char *p;
+
+    while (s[l] != '\0' && l < n)
+    {
+        l++;
+    }
+    p = malloc(l + 1);
+    memcpy(p, s, l);
+    p[l] = '\0';
+    return p;
+#endif
 }
 
 /*

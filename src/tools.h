@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2004, 2005, 2006, 2007
+ * Copyright (C) 2004, 2005, 2006, 2007, 2011
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -23,6 +23,37 @@
 #ifndef TOOLS_H
 #define TOOLS_H
 
+#ifdef HAVE_SYSEXITS_H
+# include <sysexits.h>
+#else
+/* exit() exit codes for some BSD system programs.
+   Copyright (C) 2003, 2006-2011 Free Software Foundation, Inc.
+   Written by Simon Josefsson based on sysexits(3) man page */
+# define EX_OK 0 /* same value as EXIT_SUCCESS */
+# define EX_USAGE 64
+# define EX_DATAERR 65
+# define EX_NOINPUT 66
+# define EX_NOUSER 67
+# define EX_NOHOST 68
+# define EX_UNAVAILABLE 69
+# define EX_SOFTWARE 70
+# define EX_OSERR 71
+# define EX_OSFILE 72
+# define EX_CANTCREAT 73
+# define EX_IOERR 74
+# define EX_TEMPFAIL 75
+# define EX_PROTOCOL 76
+# define EX_NOPERM 77
+# define EX_CONFIG 78
+#endif
+
+#ifndef HAVE_FSEEKO
+# ifdef HAVE_FSEEKO64
+#  define fseeko(s,o,w) fseeko64(s,o,w)
+# else
+#  define fseeko(s,o,w) fseek(s,o,w)
+# endif
+#endif
 
 /* The path separator character */
 #ifdef W32_NATIVE
@@ -33,10 +64,24 @@
 
 
 /*
+ * link() - only for systems that lack it
+ */
+#ifndef HAVE_LINK
+int link(const char *path1, const char *path2);
+#endif
+
+/*
  * getpass() - only for systems that lack it
  */
 #ifndef HAVE_GETPASS
 char *getpass(const char *prompt);
+#endif
+
+/*
+ * mkstemp() - only for systems that lack it
+ */
+#ifndef HAVE_MKSTEMP
+int mkstemp(char *template);
 #endif
 
 /*

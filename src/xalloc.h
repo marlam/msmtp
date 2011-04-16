@@ -35,6 +35,7 @@ void *xmalloc(size_t size);
 void *xcalloc(size_t n, size_t size);
 void *xrealloc(void *ptr, size_t newsize);
 char *xstrdup(const char *s);
+char *xstrndup(const char *s, size_t n);
 
 char *xasprintf(const char *format, ...)
 #ifdef __GNUC__

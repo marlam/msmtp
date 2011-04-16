@@ -26,7 +26,4 @@ AM_CPPFLAGS = $(tls_CFLAGS) $(libgsasl_CFLAGS) $(libidn_CFLAGS) $(libgnome_keyri
 
 msmtp_LDADD =  $(tls_LIBS) $(libgsasl_LIBS) $(libidn_LIBS) $(libgnome_keyring_LIBS)
 
-DEFS += -DSYSCONFDIR=\"$(sysconfdir)\"
-
-localedir = $(datadir)/locale
-DEFS += -DLOCALEDIR=\"$(localedir)\"
+DEFS += -DSYSCONFDIR=\"$(sysconfdir)\" -DLOCALEDIR=\"$(localedir)\"

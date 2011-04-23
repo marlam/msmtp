@@ -1,4 +1,21 @@
-msmtp has native language support (NLS) since version 1.4.2.
+If you would like to translate msmtp into your language, please contact
+<msmtp-users@lists.sourceforge.net> for details and coordination. Please keep in
+mind that a translation will have to be updated regularly as msmtp changes, and
+unmaintained translations will have to be removed.
 
-If you would like to add support for your language, please contact
-<marlam@marlam.de> for details.
+Msmtp uses the gettext system for translations. To add a translation, e.g. for
+pt (portuguese), add a line "pt" to po/LINGUAS. Then update the translation
+template msmtp.pot:
+    $ cd po
+    $ make msmtp.pot
+and copy it to your new translation file:
+    $ cp msmtp.pot pt.po
+Then translate the strings in pt.po. See the existing *.po files for examples.
+Activate your translation with this command:
+    $ make update-po
+With the correct locale setting, your translation should be available after
+'make install'.
+
+There are special translation editors such as poedit <http://www.poedit.net/>
+that can help, and there are several guides available online, e.g.
+<http://freeciv.wikia.com/wiki/Gettext_Guide>.

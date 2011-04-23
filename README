@@ -7,38 +7,23 @@ file with your mail account(s) and tell your MUA to call msmtp instead of
 /usr/sbin/sendmail.
 
 Features include:
-- Sendmail compatible interface (command line options and exit codes)
-- Many authentication methods
-- TLS encrypted connections (including server certificate verification and the
-  possibility to send a client certificate)
-- Support for Internationalized Domain Names (IDN)
-- DSN (Delivery Status Notification) support
-- RMQS (Remote Message Queue Starting) support (ETRN keyword)
-- PIPELINING support for increased transmission speed
-- IPv6 support
-- LMTP support
-- support for multiple accounts
+- Sendmail compatible interface (command line options and exit codes).
+- PIPELINING support for increased transmission speed.
+- DSN (Delivery Status Notification) support.
+- RMQS (Remote Message Queue Starting) support (ETRN keyword).
+- IPv6 support.
+- LMTP support.
+- Authentication methods PLAIN, LOGIN, and CRAM-MD5.
+- Support for multiple accounts.
 
-msmtp runs on UNIX-like systems, Windows, and DOS.
-In particular, supported platforms include:
-GNU/Linux (glibc, uclibc or dietlibc), FreeBSD, NetBSD, OpenBSD, Solaris, AIX,
-HP-UX, MacOS X, OpenDarwin, Cygwin on Win32, Windows 9x/ME/NT/2000/XP/2003.
+Optional features, depending on external libraries:
+- TLS/SSL support, including client certificates (requires GnuTLS or OpenSSL).
+- Additional authentication methods EXTERNAL, GSSAPI, SCRAM-SHA-1, DIGEST-MD5,
+  NTLM (requires GNU Libgsasl).
+- Support for Internationalized Domain Names (IDN) (requires GNU Libidn).
+- Native language support (NLS) (may require GNU libintl).
 
-Optional features, depending on external libraries (see the file INSTALL for
-usage instructions):
-- TLS/SSL support
-  You need either GnuTLS >= 1.2.0 or OpenSSL >= 0.9.6 for TLS/SSL support.
-  It is also possible to disable TLS/SSL support entirely.
-- Additional authentication methods
-  The built-in authentication code supports the PLAIN, LOGIN, CRAM-MD5, and
-  EXTERNAL mechanisms. When GNU SASL support is enabled, some or all of the 
-  mechanisms EXTERNAL, GSSAPI, SCRAM-SHA-1, DIGEST-MD5, CRAM-MD5, PLAIN, LOGIN,
-  and NTLM are available, depending on the compile-time options used for
-  libgsasl. GNU SASL >= 0.2.4 is required.
-- Native language support (NLS)
-  On systems other than GNU/Linux, you need GNU gettext if you want NLS.
-
-The homepage of this program is http://msmtp.sourceforge.net/
+The homepage of this program is <http://msmtp.sourceforge.net/>.
 
 This program is free software; you can redistribute it and/or modify it under 
 the terms of the GNU General Public License (see the file COPYING) as published

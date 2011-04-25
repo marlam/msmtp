@@ -1071,7 +1071,7 @@ int tls_init(tls_t *tls,
         char **errstr)
 {
 #ifdef HAVE_LIBGNUTLS
-#if GNUTLS_VERSION_MAJOR >= 2 && GNUTLS_VERSION_MINOR >= 12
+#if GNUTLS_VERSION_MAJOR > 2 || GNUTLS_VERSION_MINOR >= 12
     const char *force_sslv3_str = ":-VERS-TLS-ALL:+VERS-SSL3.0";
 #else
     const char *force_sslv3_str =

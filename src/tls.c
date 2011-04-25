@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010
+ * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -1071,7 +1071,14 @@ int tls_init(tls_t *tls,
         char **errstr)
 {
 #ifdef HAVE_LIBGNUTLS
+#if GNUTLS_VERSION_MAJOR >= 2 && GNUTLS_VERSION_MINOR >= 12
+    const char *force_sslv3_str = ":-VERS-TLS-ALL:+VERS-SSL3.0";
+#else
+    const char *force_sslv3_str =
+        ":-VERS-TLS1.2:-VERS-TLS1.1:-VERS-TLS1.0:+VERS-SSL3.0";
+#endif
     int error_code;
+    char *my_priorities;
     const char *error_pos;
     char *error_pos_str;
 
@@ -1081,59 +1088,41 @@ int tls_init(tls_t *tls,
                 gnutls_strerror(error_code));
         return TLS_ELIBFAILED;
     }
-    if (priorities)
+    my_priorities = xstrdup(priorities ? priorities : "NORMAL");
+    if (force_sslv3)
     {
-        error_pos = NULL;
-        if ((error_code = gnutls_priority_set_direct(tls->session,
-                        priorities, &error_pos)) != 0)
-        {
-            if (error_pos)
-            {
-                error_pos_str = xasprintf(
-                        _("error in priority string at position %d"),
-                        (int)(error_pos - priorities + 1));
-                *errstr = xasprintf(
-                        _("cannot set priorities for TLS session: %s"),
-                        error_pos_str);
-                free(error_pos_str);
-                gnutls_deinit(tls->session);
-                return TLS_ELIBFAILED;
-            }
-            else
-            {
-                *errstr = xasprintf(
-                        _("cannot set priorities for TLS session: %s"),
-                        gnutls_strerror(error_code));
-                gnutls_deinit(tls->session);
-                return TLS_ELIBFAILED;
-            }
-        }
+        my_priorities = xrealloc(my_priorities,
+                strlen(my_priorities) + strlen(force_sslv3_str) + 1);
+        strcat(my_priorities, force_sslv3_str);
     }
-    else
+    error_pos = NULL;
+    if ((error_code = gnutls_priority_set_direct(tls->session,
+                    my_priorities, &error_pos)) != 0)
     {
-        if ((error_code = gnutls_set_default_priority(tls->session)) != 0)
+        if (error_pos)
         {
-            *errstr = xasprintf(_("cannot set priorities for TLS session: %s"),
+            error_pos_str = xasprintf(
+                    _("error in priority string at position %d"),
+                    (int)(error_pos - my_priorities + 1));
+            *errstr = xasprintf(
+                    _("cannot set priorities for TLS session: %s"),
+                    error_pos_str);
+            free(error_pos_str);
+        }
+        else
+        {
+            *errstr = xasprintf(
+                    _("cannot set priorities for TLS session: %s"),
                     gnutls_strerror(error_code));
-            gnutls_deinit(tls->session);
-            return TLS_ELIBFAILED;
         }
+        free(my_priorities);
+        gnutls_deinit(tls->session);
+        return TLS_ELIBFAILED;
     }
+    free(my_priorities);
     if (min_dh_prime_bits >= 0)
     {
         gnutls_dh_set_prime_bits(tls->session, min_dh_prime_bits);
-    }
-    if (force_sslv3)
-    {
-        const int force_sslv3_proto_prio[2] = { GNUTLS_SSL3, 0 };
-        if ((error_code = gnutls_protocol_set_priority(tls->session,
-                        force_sslv3_proto_prio)) != 0)
-        {
-            *errstr = xasprintf(_("cannot force SSLv3: %s"),
-                    gnutls_strerror(error_code));
-            gnutls_deinit(tls->session);
-            return TLS_ELIBFAILED;
-        }
     }
     if ((error_code = gnutls_certificate_allocate_credentials(&tls->cred)) < 0)
     {

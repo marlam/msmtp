@@ -1,4 +1,6 @@
 Version 1.4.24:
+- Replace a call to gnutls_protocol_set_priority(), which is deprecated in
+  GnuTLS >= 2.12.0. Fixes Debian bug #624048 (reported for mpop).
 - Remove gnulib, for simplicity and maintainability.
 - Update GNU autotools files, in particular configure.ac.
 

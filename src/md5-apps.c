@@ -87,8 +87,8 @@ void md5_digest(unsigned char *src, size_t srclen, char *dst)
 
     for (i = 0; i < 16; i++)
     {
-	dst[2 * i] = hex[(digest[i] & 0xf0) >> 4];
-	dst[2 * i + 1] = hex[digest[i] & 0x0f];
+        dst[2 * i] = hex[(digest[i] & 0xf0) >> 4];
+        dst[2 * i + 1] = hex[digest[i] & 0x0f];
     }
     dst[32] = '\0';
 }

@@ -43,14 +43,14 @@ void *xmalloc(size_t size)
 {
     void *ptr;
 
-    if (!(ptr = malloc(size))) 
+    if (!(ptr = malloc(size)))
     {
         xalloc_die();
     }
     return ptr;
 }
 
-/* 
+/*
  * xcalloc()
  */
 
@@ -64,8 +64,8 @@ void *xcalloc(size_t n, size_t size)
     }
     return ptr;
 }
-    
-/* 
+
+/*
  * xrealloc()
  */
 
@@ -149,7 +149,7 @@ char *xasprintf(const char *format, ...)
     char *strp;
     int count;
     va_list args;
-    
+
     va_start(args, format);
     count = vasprintf(&strp, format, args);
     if (count < 0)
@@ -157,6 +157,6 @@ char *xasprintf(const char *format, ...)
         xalloc_die();
     }
     va_end(args);
-    
+
     return strp;
 }

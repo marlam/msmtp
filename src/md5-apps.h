@@ -34,10 +34,10 @@ void md5_hmac(const char *secret, size_t secret_len,
         char *challenge, size_t challenge_len,
         unsigned char *digest);
 
-/* 
+/*
  * md5_digest()
- * 
- * Writes the MD5 Digest of the data 'src' with the length 'srclen' in ascii 
+ *
+ * Writes the MD5 Digest of the data 'src' with the length 'srclen' in ascii
  * (hex) to 'dst', which must be 33 characters long.
  */
 void md5_digest(unsigned char *src, size_t srclen, char *dst);

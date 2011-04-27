@@ -1,3 +1,12 @@
+Version 1.4.24:
+- The build system was updated, and as a consequence some options to the
+  configure script have changed. See './configure --help'.
+- The license of the manual was changed from the GNU FDL to a very simple
+  permissive license.
+
+Version 1.4.23:
+- No significant changes.
+
 Version 1.4.22:
 - A new command 'passwordeval' with a corresponding '--passwordeval' option
   allows to set the password to the output of a command.

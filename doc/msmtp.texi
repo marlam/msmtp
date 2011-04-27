@@ -57,7 +57,6 @@ notice are preserved. These files are offered as-is, without any warranty.
 					an SMTP server.
 * Remote Message Queue Starting mode::	How to send RMQS requests.
 * Examples::				Usage examples.
-* Development::				About the development process.
 @end menu
 
 
@@ -1203,20 +1202,6 @@ set sendmail="/path/to/msmtp"
 
 You need to define a default account, because mail does not allow extra options
 to the msmtp command line.
-
-
-@node Development
-@chapter Development
-
-The homepage of msmtp is @url{http://msmtp.sourceforge.net/};
-the SourceForge project page is @url{http://sourceforge.net/projects/msmtp/}.
-
-The mailing list @code{msmtp-users} can be accessed from the project page.
-
-Please send any questions, suggestions, and bug reports either to the mailing
-list or to Martin Lambers (@email{marlam@@marlam.de}, OpenPGP key: 
-@url{http://www.marlam.de/key.txt}).
-If you send a bug report, please include the output of @code{msmtp --version}.
 
 
 @bye

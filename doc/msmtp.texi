@@ -17,12 +17,9 @@ This manual was last updated @value{UPDATED} for version
 Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Martin Lambers
 
 @quotation
-Permission is granted to copy, distribute and/or modify this document
-under the terms of the GNU Free Documentation License, Version 1.2 or
-any later version published by the Free Software Foundation; with no
-Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
-copy of the license is included in the section entitled ``GNU Free
-Documentation License''.
+Copying and distribution of this file, with or without modification, are
+permitted in any medium without royalty provided the copyright notice and this
+notice are preserved. These files are offered as-is, without any warranty.
 @end quotation
 @end copying
 
@@ -61,7 +58,6 @@ Documentation License''.
 * Remote Message Queue Starting mode::	How to send RMQS requests.
 * Examples::				Usage examples.
 * Development::				About the development process.
-* Copying Information::			How you can copy and share mpop.
 @end menu
 
 
@@ -1221,22 +1217,6 @@ Please send any questions, suggestions, and bug reports either to the mailing
 list or to Martin Lambers (@email{marlam@@marlam.de}, OpenPGP key: 
 @url{http://www.marlam.de/key.txt}).
 If you send a bug report, please include the output of @code{msmtp --version}.
-
-
-@node Copying Information
-@appendix Copying Information
-
-@menu
-* GNU Free Documentation License::   License for copying this manual.
-* GNU GPL::                          License for copying the program.
-@end menu
-
-@node GNU Free Documentation License
-@unnumberedsec GNU Free Documentation License
-@include fdl.texi
-@node GNU GPL
-@unnumberedsec GNU GPL
-@include gpl.texi
 
 
 @bye

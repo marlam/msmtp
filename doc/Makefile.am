@@ -1,7 +1,7 @@
 man_MANS = msmtp.1
 
 info_TEXINFOS = msmtp.texi
-msmtp_TEXINFOS = msmtp.texi gpl.texi fdl.texi
+msmtp_TEXINFOS = msmtp.texi
 
 AM_MAKEINFOHTMLFLAGS = --no-split
 

@@ -9,5 +9,4 @@ EXTRA_DIST = \
 	Mutt+msmtp.txt \
 	msmtprc-system.example \
 	msmtprc-user.example \
-	msmtp.html \
 	$(man_MANS)

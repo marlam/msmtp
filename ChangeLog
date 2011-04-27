@@ -1,4 +1,5 @@
 Version 1.4.24:
+- Remove the unmaintained pt_BR translation.
 - Simplify manual license: use a simple permissive license instead of GNU FDL.
 - Replace a call to gnutls_protocol_set_priority(), which is deprecated in
   GnuTLS >= 2.12.0. Fixes Debian bug #624048 (reported for mpop).

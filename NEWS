@@ -3,6 +3,7 @@ Version 1.4.24:
   configure script have changed. See './configure --help'.
 - The license of the manual was changed from the GNU FDL to a very simple
   permissive license.
+- The unmaintained pt_BR translation was removed.
 
 Version 1.4.23:
 - No significant changes.

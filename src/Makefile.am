@@ -24,6 +24,6 @@ endif
 
 AM_CPPFLAGS = $(tls_CFLAGS) $(libgsasl_CFLAGS) $(libidn_CFLAGS) $(libgnome_keyring_CFLAGS)
 
-msmtp_LDADD =  $(tls_LIBS) $(libgsasl_LIBS) $(libidn_LIBS) $(libgnome_keyring_LIBS)
+msmtp_LDADD =  $(tls_LIBS) $(libgsasl_LIBS) $(libidn_LIBS) $(libgnome_keyring_LIBS) $(LIBINTL)
 
 DEFS += -DSYSCONFDIR=\"$(sysconfdir)\" -DLOCALEDIR=\"$(localedir)\"

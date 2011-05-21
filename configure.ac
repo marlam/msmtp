@@ -65,7 +65,7 @@ want_gnutls="yes"
 want_openssl="yes"
 tls_CFLAGS=""
 tls_LIBS=""
-AC_ARG_WITH([ssl], [AC_HELP_STRING([--with-ssl=[gnutls|openssl|no]],
+AC_ARG_WITH([ssl], [AS_HELP_STRING([--with-ssl=[gnutls|openssl|no]],
     [TLS/SSL support: GnuTLS (default), OpenSSL, or none.])],
     if test "$withval" = "gnutls"; then
 	want_tls=yes
@@ -120,7 +120,7 @@ AC_SUBST([tls_CFLAGS])
 AC_SUBST([tls_LIBS])
 
 dnl GNU SASL
-AC_ARG_WITH([libgsasl], [AC_HELP_STRING([--with-libgsasl],
+AC_ARG_WITH([libgsasl], [AS_HELP_STRING([--with-libgsasl],
 	[Use GNU SASL authentication library.])],
     [libgsasl=$withval], [libgsasl=yes])
 if test "$libgsasl" != "no"; then
@@ -138,7 +138,7 @@ fi
 AM_CONDITIONAL([HAVE_LIBGSASL], [test "$libgsasl" = "yes"])
 
 dnl GNU Libidn
-AC_ARG_WITH([libidn], [AC_HELP_STRING([--with-libidn],
+AC_ARG_WITH([libidn], [AS_HELP_STRING([--with-libidn],
 	[Support IDN (needs GNU Libidn)])],
     [libidn=$withval], [libidn=yes])
 if test "$libidn" != "no"; then
@@ -155,7 +155,7 @@ if test "$libidn" != "no"; then
 fi
 
 dnl gnome-keyring support (requires pkg-config).
-AC_ARG_WITH([gnome-keyring], [AC_HELP_STRING([--with-gnome-keyring],
+AC_ARG_WITH([gnome-keyring], [AS_HELP_STRING([--with-gnome-keyring],
 	[Support GNOME Keyring])],
     [gnome_keyring=$withval],[gnome_keyring=yes])
 if test "$gnome_keyring" != "no"; then
@@ -172,7 +172,7 @@ if test "$gnome_keyring" != "no"; then
 fi
 
 dnl MacOS X Keychain Services (Security Framework)
-AC_ARG_WITH([macosx-keyring], [AC_HELP_STRING([--with-macosx-keyring],
+AC_ARG_WITH([macosx-keyring], [AS_HELP_STRING([--with-macosx-keyring],
 	[Support Mac OS X Keyring])],
     [macosx_keyring=$withval],[macosx_keyring=yes])
 if test "$macosx_keyring" != "no"; then

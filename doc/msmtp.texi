@@ -639,8 +639,8 @@ mail in addition to the recipients given on the command line.@*
 If any Resent- headers are present, then the addresses from any Resent-To,
 Resent-Cc, and Resent-Bcc headers in the first block of Resent- headers are
 used instead.
-@itemx --read-recipients
-@opindex --read-recipients
+@itemx --read-envelope-from
+@opindex --read-envelope-from
 Read the envelope from address from the From header of the mail.
 @itemx --
 This marks the end of options. All following arguments will be treated as

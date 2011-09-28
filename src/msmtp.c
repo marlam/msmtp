@@ -3566,7 +3566,7 @@ int main(int argc, char *argv[])
         }
         if (conf.read_envelope_from && (conf.pretend || conf.debug))
         {
-            printf(_("envelope from address extracted from mail: %s"),
+            printf(_("envelope from address extracted from mail: %s\n"),
                     conf.cmdline_account->from);
         }
         if (fseeko(tmpfile, 0, SEEK_SET) != 0)
@@ -3611,7 +3611,7 @@ int main(int argc, char *argv[])
                     if (conf.pretend || conf.debug)
                     {
                         printf(_("account chosen by "
-                                    "envelope from address %s: %s"),
+                                    "envelope from address %s: %s\n"),
                                 conf.cmdline_account->from, account->id);
                     }
                 }
@@ -3624,7 +3624,7 @@ int main(int argc, char *argv[])
                 conf.account_id = "default";
                 if (conf.pretend || conf.debug)
                 {
-                    printf(_("falling back to default account"));
+                    printf(_("falling back to default account\n"));
                 }
                 allow_fallback_to_env = 1;
             }
@@ -3648,7 +3648,7 @@ int main(int argc, char *argv[])
                 if (conf.pretend || conf.debug)
                 {
                     printf(_("using environment variables "
-                                "EMAIL and SMTPSERVER"));
+                                "EMAIL and SMTPSERVER\n"));
                 }
             }
             else
@@ -3686,7 +3686,7 @@ int main(int argc, char *argv[])
         account = account_copy(conf.cmdline_account);
         if (conf.pretend || conf.debug)
         {
-            printf(_("using account specified on command line"));
+            printf(_("using account specified on command line\n"));
         }
     }
 

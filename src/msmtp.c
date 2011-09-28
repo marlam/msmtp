@@ -3532,7 +3532,9 @@ int main(int argc, char *argv[])
         msmtp_print_help();
     }
 
-    if (!conf.sendmail && !conf.serverinfo && !conf.rmqs && !conf.print_conf)
+    if (conf.print_help || conf.print_version
+            || (!conf.sendmail && !conf.serverinfo && !conf.rmqs
+                && !conf.print_conf))
     {
         error_code = EX_OK;
         goto exit;

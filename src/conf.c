@@ -3,9 +3,10 @@
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2010
+ * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2010, 2011
  * Martin Lambers <marlam@marlam.de>
  * Martin Stenberg <martin@gnutiken.se> (passwordeval support)
+ * Scott Shumate <sshumate@austin.rr.com> (aliases support)
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -90,6 +91,7 @@ account_t *account_new(const char *conffile, const char *id)
     a->tls_priorities = NULL;
     a->logfile = NULL;
     a->syslog = NULL;
+    a->aliases = NULL;
     return a;
 }
 
@@ -160,6 +162,7 @@ account_t *account_copy(account_t *acc)
             acc->tls_priorities ? xstrdup(acc->tls_priorities) : NULL;
         a->logfile = acc->logfile ? xstrdup(acc->logfile) : NULL;
         a->syslog = acc->syslog ? xstrdup(acc->syslog) : NULL;
+        a->aliases = acc->aliases ? xstrdup(acc->aliases) : NULL;
     }
     return a;
 }
@@ -198,6 +201,7 @@ void account_free(void *a)
         free(p->dsn_notify);
         free(p->logfile);
         free(p->syslog);
+        free(p->aliases);
         free(p);
     }
 }
@@ -647,6 +651,11 @@ void override_account(account_t *acc1, account_t *acc2)
     {
         free(acc1->syslog);
         acc1->syslog = acc2->syslog ? xstrdup(acc2->syslog) : NULL;
+    }
+    if (acc2->mask & ACC_ALIASES)
+    {
+        free(acc1->aliases);
+        acc1->aliases = acc2->aliases ? xstrdup(acc2->aliases) : NULL;
     }
     acc1->mask |= acc2->mask;
 }
@@ -1614,6 +1623,19 @@ int read_conffile(const char *conffile, FILE *f, list_t **acc_list,
                     break;
                 }
                 acc->syslog = xstrdup(arg);
+            }
+        }
+        else if (strcmp(cmd, "aliases") == 0)
+        {
+            acc->mask |= ACC_ALIASES;
+            free(acc->aliases);
+            if (*arg == '\0')
+            {
+                acc->aliases = NULL;
+            }
+            else
+            {
+                acc->aliases = xstrdup(arg);
             }
         }
         else if (strcmp(cmd, "tls_nocertcheck") == 0)

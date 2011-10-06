@@ -11,7 +11,8 @@ msmtp_SOURCES = \
 	stream.c stream.h \
 	tools.c tools.h \
 	xalloc.c xalloc.h \
-	gettext.h
+	gettext.h \
+	aliases.c aliases.h
 
 if HAVE_TLS
 msmtp_SOURCES += tls.c tls.h

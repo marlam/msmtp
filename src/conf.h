@@ -3,9 +3,10 @@
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2010
+ * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2010, 2011
  * Martin Lambers <marlam@marlam.de>
  * Martin Stenberg <martin@gnutiken.se> (passwordeval support)
+ * Scott Shumate <sshumate@austin.rr.com> (aliases support)
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -72,6 +73,7 @@
 #define ACC_TLS_PRIORITIES              (1 << 26)
 #define ACC_LOGFILE                     (1 << 27)
 #define ACC_SYSLOG                      (1 << 28)
+#define ACC_ALIASES                     (1 << 29)
 
 typedef struct
 {
@@ -118,6 +120,7 @@ typedef struct
     /* logging */
     char *logfile;              /* NULL or logfile */
     char *syslog;               /* NULL or syslog facility */
+    char *aliases;              /* NULL or aliases file */
 } account_t;
 
 

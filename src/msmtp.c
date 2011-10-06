@@ -8,6 +8,7 @@
  * Jay Soffian <jaysoffian@gmail.com> (Mac OS X keychain support)
  * Satoru SATOH <satoru.satoh@gmail.com> (GNOME keyring support)
  * Martin Stenberg <martin@gnutiken.se> (passwordeval support)
+ * Scott Shumate <sshumate@austin.rr.com> (aliases support)
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -69,6 +70,7 @@ extern int optind;
 #include "netrc.h"
 #include "smtp.h"
 #include "tools.h"
+#include "aliases.h"
 #ifdef HAVE_TLS
 # include "tls.h"
 #endif /* HAVE_TLS */
@@ -2408,6 +2410,7 @@ void msmtp_print_help(void)
                 "the mail.\n"
             "  --read-envelope-from         Read envelope from address from "
                 "the mail.\n"
+            "  --aliases=[file]             Set/unset aliases file.\n"
             "  --                           End of options.\n"
             "Accepted but ignored: -A, -B, -bm, -F, -G, -h, -i, -L, -m, -n, "
                 "-O, -o, -v\n"
@@ -2473,6 +2476,7 @@ typedef struct
 #define LONGONLYOPT_MAILDOMAIN                  24
 #define LONGONLYOPT_AUTO_FROM                   25
 #define LONGONLYOPT_READ_ENVELOPE_FROM          26
+#define LONGONLYOPT_ALIASES                     27
 
 int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
 {
@@ -2528,6 +2532,7 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
         { "keepbcc",               optional_argument, 0, LONGONLYOPT_KEEPBCC },
         { "logfile",               required_argument, 0, 'X' },
         { "syslog",                optional_argument, 0, LONGONLYOPT_SYSLOG },
+        { "aliases",               required_argument, 0, LONGONLYOPT_ALIASES },
         { "read-recipients",       no_argument,       0, 't' },
         { "read-envelope-from",    no_argument,       0,
             LONGONLYOPT_READ_ENVELOPE_FROM },
@@ -3094,6 +3099,19 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
                 conf->cmdline_account->mask |= ACC_SYSLOG;
                 break;
 
+            case LONGONLYOPT_ALIASES:
+                free(conf->cmdline_account->aliases);
+                if (*optarg)
+                {
+                    conf->cmdline_account->aliases = expand_tilde(optarg);
+                }
+                else
+                {
+                    conf->cmdline_account->aliases = NULL;
+                }
+                conf->cmdline_account->mask |= ACC_ALIASES;
+                break;
+
             case 't':
                 conf->read_recipients = 1;
                 break;
@@ -3428,7 +3446,8 @@ void msmtp_print_conf(msmtp_cmdline_conf_t conf, account_t *account)
                 "dsn_return            = %s\n"
                 "keepbcc               = %s\n"
                 "logfile               = %s\n"
-                "syslog                = %s\n",
+                "syslog                = %s\n"
+                "aliases               = %s\n",
                 account->auto_from ? _("on") : _("off"),
                 account->maildomain ? account->maildomain : _("(not set)"),
                 account->from ? account->from : conf.read_envelope_from
@@ -3437,7 +3456,8 @@ void msmtp_print_conf(msmtp_cmdline_conf_t conf, account_t *account)
                 account->dsn_return ? account->dsn_return : _("(not set)"),
                 account->keepbcc ? _("on") : _("off"),
                 account->logfile ? account->logfile : _("(not set)"),
-                account->syslog ? account->syslog : _("(not set)"));
+                account->syslog ? account->syslog : _("(not set)"),
+                account->aliases ? account->aliases : _("(not set)"));
         if (conf.read_recipients)
         {
             printf(_("reading recipients from the command line "
@@ -3763,6 +3783,19 @@ int main(int argc, char *argv[])
     if (conf.print_conf)
     {
         msmtp_print_conf(conf, account);
+    }
+
+    /* replace aliases */
+    if (conf.sendmail && account->aliases)
+    {
+        if ((e = aliases_replace(account->aliases, conf.recipients,
+                         &errstr)) != ALIASES_EOK)
+        {
+            print_error("%s: %s", account->aliases,
+                    msmtp_sanitize_string(errstr));
+            error_code = EX_CONFIG;
+            goto exit;
+        }
     }
 
     /* stop if there's nothing to do */

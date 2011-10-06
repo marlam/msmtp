@@ -3,6 +3,7 @@
 .\" msmtp version 1.4.24
 .\"
 .\" Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011  Martin Lambers
+.\" Copyright (C) 2011  Scott Shumate
 .\"
 .\" Permission is granted to copy, distribute and/or modify this document
 .\" under the terms of the GNU Free Documentation License, Version 1.2 or
@@ -167,6 +168,8 @@ Resent-Cc, and Resent-Bcc headers in the first block of Resent- headers are
 used instead.
 .IP "\-\-read\-envelope\-from"
 Read the envelope from address from the From header of the mail.
+.IP "\-\-aliases=[\fIfile\fP]"
+Set or unset an aliases file. See the \fBaliases\fP command below.
 .IP "\-\-"
 This marks the end of options. All following arguments will be treated as
 recipient addresses, even if they start with a `\-'.
@@ -482,6 +485,26 @@ recipient addresses, size of the mail as transferred to the server (only if the
 delivery succeeded), SMTP status code and SMTP error message (only in case of
 failure and only if available), error message (only in case of failure and only
 if available), exit code (from sysexits.h; EX_OK indicates success).
+.br
+.IP "aliases [\fIfile\fP]"
+Replace local recipients with addresses in the aliases file.  The aliases file
+is a plain text file containing mappings between a local address and a list of
+domain addresses.  A local address is defined as one without an `@' character
+and a domain address is one with an `@' character.  The mappings are of the
+form:
+.br
+    local: someone@example.com, person@domain.example
+.br
+Multiple domain addresses are separated with commas.  Comments start with `#'
+and continue to the end of the line.
+.br
+The local address \fIdefault\fP has special significance and is matched if the
+local address is not found in the aliases file.  If no \fIdefault\fP alias is
+found, then the local address is left as is.
+.br
+An empty argument to the aliases command disables the replacement of local
+addresses.  This is the default.
+.br
 .SH EXAMPLES
 .br
 .B Configuration file
@@ -594,6 +617,24 @@ the following Mutt configuration lines:
 Define a default account, and put the following in your ~/.mailrc:
 .br
 .B set sendmail="/path/to/msmtp"
+
+.PP
+.B Aliases file
+.PP
+# Example aliases file
+
+# Send root to Joe and Jane
+.br
+root: joe_smith@example.com, jane_chang@example.com
+
+# Send cron to Mark
+.br
+cron: mark_jones@example.com
+
+# Send everything else to admin
+.br
+default: admin@domain.example
+
 .SH FILES
 .IP "SYSCONFDIR/msmtprc"
 System configuration file. Use

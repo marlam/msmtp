@@ -14,7 +14,8 @@
 This manual was last updated @value{UPDATED} for version
 @value{VERSION} of msmtp.
 
-Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Martin Lambers
+Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Martin Lambers@*
+Copyright (C) 2011 Scott Shumate
 
 @quotation
 Copying and distribution of this file, with or without modification, are
@@ -411,6 +412,24 @@ This command enables or disables syslog logging. The facility can be one of
 @samp{LOG_USER}, @samp{LOG_MAIL}, @samp{LOG_LOCAL0}, @dots{}, @samp{LOG_LOCAL7}.
 The default facility is @samp{LOG_USER}. Syslog logging is disabled by default.
 @xref{Logging}.
+@anchor{aliases}
+@item aliases [@var{file}]
+@cmindex aliases
+Replace local recipients with addresses in the aliases file.  The aliases file
+is a plain text file containing mappings between a local address and a list of
+domain addresses.  A local address is defined as one without an '@@' character
+and a domain address is one with an '@@' character.  The mappings are of the
+form:
+@example
+local: someone@@example.com, person@@domain.example
+@end example
+Multiple domain addresses are separated with commas.  Comments start with '#'
+and continue to the end of the line.@*
+The local address @samp{default} has special significance and is matched if the
+local address is not found in the aliases file.  If no @samp{default} alias is
+found, then the local address is left as is.@*
+An empty argument to the aliases command disables the replacement of local
+addresses.  This is the default.
 @end table
 
 
@@ -642,6 +661,9 @@ used instead.
 @itemx --read-envelope-from
 @opindex --read-envelope-from
 Read the envelope from address from the From header of the mail.
+@itemx --aliases=[@var{file}]
+@opindex --aliases
+Set or unset an aliases file. @xref{aliases}.
 @itemx --
 This marks the end of options. All following arguments will be treated as
 recipient addresses, even if they start with a '-'.
@@ -1074,6 +1096,7 @@ Request the delivery of the messages in the given queue.
 * A user configuration file::
 * Using msmtp with Mutt::
 * Using msmtp with mail::
+* Aliases file::
 @end menu
 
 @node A system wide configuration file
@@ -1203,5 +1226,20 @@ set sendmail="/path/to/msmtp"
 You need to define a default account, because mail does not allow extra options
 to the msmtp command line.
 
+@node Aliases file
+@section Aliases file
+
+@example
+# Example aliases file
+
+# Send root to Joe and Jane
+root: joe_smith@@example.com, jane_chang@@example.com
+
+# Send cron to Mark
+cron: mark_jones@@example.com
+
+# Send everything else to admin
+default: admin@@domain.example
+@end example
 
 @bye

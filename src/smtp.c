@@ -1222,11 +1222,10 @@ int smtp_auth(smtp_server_t *srv,
             }
         }
         /* Some methods (at least CRAM-MD5) must not send an empty outbuf,
-         * while others (DIGEST-MD5, SCRAM-SHA-1, GSSAPI) must. Confirmed
+         * while others (SCRAM-SHA-1, GSSAPI) must. Confirmed
          * with mpop on 2011-01-17 with one POP3 server and the methods CRAM-MD5
          * and SCRAM-SHA-1. */
         if (outbuf[0]
-                || strcmp(auth_mech, "DIGEST-MD5") == 0
                 || strcmp(auth_mech, "SCRAM-SHA-1") == 0
                 || strcmp(auth_mech, "GSSAPI") == 0)
         {
@@ -1272,6 +1271,27 @@ int smtp_auth(smtp_server_t *srv,
     }
     gsasl_finish(sctx);
     gsasl_done(ctx);
+    /* For DIGEST-MD5, we need to send an empty answer to the last 334
+     * response before we get 235. */
+    if (strcmp(auth_mech, "DIGEST-MD5") == 0 && strncmp(inbuf, "235 ", 4) != 0)
+    {
+        if ((e = smtp_send_cmd(srv, errstr, "")) != SMTP_EOK)
+        {
+            return e;
+        }
+        if ((e = smtp_get_msg(srv, &msg, errstr)) != SMTP_EOK)
+        {
+            return e;
+        }
+        if (smtp_msg_status(msg) != 235)
+        {
+            *error_msg = msg;
+            *errstr = xasprintf(_("authentication failed (method %s)"),
+                    auth_mech);
+            return SMTP_EAUTHFAIL;
+        }
+        list_xfree(msg, free);
+    }
     return SMTP_EOK;
 
 #else /* not HAVE_LIBGSASL */

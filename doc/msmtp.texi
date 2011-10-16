@@ -200,8 +200,8 @@ choices are the domain part of your mail address (@code{provider.example} for
 This command enables or disables SMTP authentication and optionally chooses an
 authentication method to use. It should not be necessary to choose a method;
 with the argument @samp{on}, msmtp will choose the best one available.
-Accepted methods are @samp{plain}, @samp{cram-md5}, @samp{digest-md5},
-@samp{scram-sha-1}, @samp{gssapi}, @samp{external}, @samp{login}, and
+Accepted methods are @samp{plain}, @samp{scram-sha-1}, @samp{cram-md5},
+@samp{gssapi}, @samp{external}, @samp{digest-md5}, @samp{login}, and
 @samp{ntlm}.
 @xref{Authentication}.@*
 @anchor{user}
@@ -833,15 +833,11 @@ msmtp supports the following authentication methods:
 @item @samp{PLAIN}@*
 This authentication method needs a user name and a password. 
 Both are send in BASE64 encoding, which can be easily decoded to plain text.
-@item @samp{CRAM-MD5}@*
-This authentication method needs a user name and a password. 
-The authentication data is not sent in plain text, which means this method can 
-safely be used without TLS.
-@item @samp{DIGEST-MD5}@*
-This authentication method needs a user name and a password. 
-The authentication data is not sent in plain text, which means this method can 
-safely be used without TLS.
 @item @samp{SCRAM-SHA-1}@*
+This authentication method needs a user name and a password.
+The authentication data is not sent in plain text, which means this method can
+safely be used without TLS.
+@item @samp{CRAM-MD5}@*
 This authentication method needs a user name and a password.
 The authentication data is not sent in plain text, which means this method can
 safely be used without TLS.
@@ -862,6 +858,10 @@ manually.@*
 Note: Sendmail 8.12.11 advertises the EXTERNAL mechanism only after a TLS
 client certificate has been send. It seems to ignore the optional user name.
 Does anyone know more about this?
+@item @samp{DIGEST-MD5}@*
+This is an obsolete authentication method needs a user name and a password.
+The authentication data is not sent in plain text, but the encryption based on
+MD5 is not considered secure anymore.
 @item @samp{LOGIN}@*
 This is a non-standard authentication method similar to (but worse than) PLAIN.
 It needs a user name and a password, both of which are send in BASE64 encoding, 
@@ -902,9 +902,8 @@ argument to let msmtp choose the method itself. See @ref{auth}, @ref{--auth}.
 If msmtp chooses the method itself, it will never choose an insecure method.
 If TLS is active, all methods are considered secure in this context, because the
 connection to the server is protected by TLS. If TLS is not active, only the
-CRAM-MD5, DIGEST-MD5, SCRAM-SHA-1, and GSSAPI methods are considered secure in
-this context, because all the others methods put the authentication data at
-risk.
+SCRAM-SHA-1, CRAM-MD5, and GSSAPI methods are considered secure in this
+context, because all the others methods put the authentication data at risk.
 
 If you really want to risk your authentication data, you have to force msmtp to
 do that by manually setting the authentication method while TLS is off.

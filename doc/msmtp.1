@@ -312,9 +312,9 @@ Access GUI application. The \fIaccount name\fP is same as the msmtp \fBuser\fP
 argument. The \fIkeychain item name\fP is \fBsmtp://<hostname>\fP where
 \fB<hostname>\fP matches the msmtp \fBhost\fP argument.
 .br
-Available authentication methods are \fIplain\fP, \fIcram\-md5\fP,
-\fIdigest\-md5\fP, \fIscram\-sha\-1\fP, \fIgssapi\fP, \fIexternal\fP,
-\fIlogin\fP, and \fIntlm\fP.
+Available authentication methods are \fIplain\fP, \fIscram\-sha\-1\fP,
+\fIcram\-md5\fP, \fIgssapi\fP, \fIexternal\fP, \fIdigest\-md5\fP, \fIlogin\fP,
+and \fIntlm\fP.
 Note that one or more of these methods may be unavailable due to lack of support
 in the underlying authentication library. Use the \fB\-\-version\fP option to
 find out which methods are supported.
@@ -325,9 +325,10 @@ These methods should therefore only be used together with the \fBtls\fP command.
 .br
 If you don't choose the method yourself, msmtp chooses the best secure method
 that the SMTP server supports. Secure means that your authentication data will
-not be sent in cleartext over the net. For TLS encrypted connections, every
-authentication method is secure in this sense. If TLS is not active, only
-gssapi, scram\-sha\-1, digest\-md5, and cram\-md5 are secure in this sense.
+not be sent in cleartext (or in an easily decryptable form) over the net. For
+TLS encrypted connections, every authentication method is secure in this sense.
+If TLS is not active, only gssapi, scram\-sha\-1, and cram\-md5 are secure in
+this sense.
 .br
 The \fIexternal\fP is special: the actual authentication happens outside of the
 SMTP protocol, typically by sending a TLS client certificate (see the

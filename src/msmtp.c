@@ -917,17 +917,13 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
             {
                 printf("PLAIN ");
             }
-            if (srv.cap.flags & SMTP_CAP_AUTH_CRAM_MD5)
-            {
-                printf("CRAM-MD5 ");
-            }
-            if (srv.cap.flags & SMTP_CAP_AUTH_DIGEST_MD5)
-            {
-                printf("DIGEST-MD5 ");
-            }
             if (srv.cap.flags & SMTP_CAP_AUTH_SCRAM_SHA_1)
             {
                 printf("SCRAM-SHA-1 ");
+            }
+            if (srv.cap.flags & SMTP_CAP_AUTH_CRAM_MD5)
+            {
+                printf("CRAM-MD5 ");
             }
             if (srv.cap.flags & SMTP_CAP_AUTH_GSSAPI)
             {
@@ -936,6 +932,10 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
             if (srv.cap.flags & SMTP_CAP_AUTH_EXTERNAL)
             {
                 printf("EXTERNAL ");
+            }
+            if (srv.cap.flags & SMTP_CAP_AUTH_DIGEST_MD5)
+            {
+                printf("DIGEST-MD5 ");
             }
             if (srv.cap.flags & SMTP_CAP_AUTH_LOGIN)
             {
@@ -2239,17 +2239,13 @@ void msmtp_print_version(void)
     {
         printf("plain ");
     }
-    if (smtp_client_supports_authmech("CRAM-MD5"))
-    {
-        printf("cram-md5 ");
-    }
-    if (smtp_client_supports_authmech("DIGEST-MD5"))
-    {
-        printf("digest-md5 ");
-    }
     if (smtp_client_supports_authmech("SCRAM-SHA-1"))
     {
         printf("scram-sha-1 ");
+    }
+    if (smtp_client_supports_authmech("CRAM-MD5"))
+    {
+        printf("cram-md5 ");
     }
     if (smtp_client_supports_authmech("GSSAPI"))
     {
@@ -2258,6 +2254,10 @@ void msmtp_print_version(void)
     if (smtp_client_supports_authmech("EXTERNAL"))
     {
         printf("external ");
+    }
+    if (smtp_client_supports_authmech("DIGEST-MD5"))
+    {
+        printf("digest-md5 ");
     }
     if (smtp_client_supports_authmech("LOGIN"))
     {

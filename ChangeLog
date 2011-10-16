@@ -1,3 +1,9 @@
+Version 1.4.25:
+- Fix DIGEST-MD5 authentication, accidentally broken in 1.4.23.
+- Deprecate DIGEST-MD5 authentication as per RFC 6331.
+- Add support for alias expansion via the aliases command and --aliases option.
+- Fix various typos in error messages and the documentation.
+
 Version 1.4.24:
 - Remove the unmaintained pt_BR translation.
 - Simplify manual license: use a simple permissive license instead of GNU FDL.

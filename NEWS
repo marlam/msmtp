@@ -1,3 +1,8 @@
+Version 1.4.25:
+- DIGEST-MD5 authentication is not considered secure any longer. See RFC 6331.
+- Support for alias expansion was added. See the aliases command and --aliases
+  option.
+
 Version 1.4.24:
 - The build system was updated, and as a consequence some options to the
   configure script have changed. See './configure --help'.

@@ -1036,11 +1036,6 @@ int smtp_auth(smtp_server_t *srv,
         {
             auth_mech = "SCRAM-SHA-1";
         }
-        else if (gsasl_client_support_p(ctx, "DIGEST-MD5")
-                && (srv->cap.flags & SMTP_CAP_AUTH_DIGEST_MD5))
-        {
-            auth_mech = "DIGEST-MD5";
-        }
         else if (gsasl_client_support_p(ctx, "CRAM-MD5")
                 && (srv->cap.flags & SMTP_CAP_AUTH_CRAM_MD5))
         {
@@ -1053,6 +1048,11 @@ int smtp_auth(smtp_server_t *srv,
                     && (srv->cap.flags & SMTP_CAP_AUTH_PLAIN))
             {
                 auth_mech = "PLAIN";
+            }
+            else if (gsasl_client_support_p(ctx, "DIGEST-MD5")
+                    && (srv->cap.flags & SMTP_CAP_AUTH_DIGEST_MD5))
+            {
+                auth_mech = "DIGEST-MD5";
             }
             else if (gsasl_client_support_p(ctx, "LOGIN")
                     && (srv->cap.flags & SMTP_CAP_AUTH_LOGIN))

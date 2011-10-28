@@ -133,11 +133,11 @@ lock_queue() {        # <-- '-u' to remove lockfile
   local -i MAX=240 SEC=0             # max seconds to gain a lock ; seconds waiting
 
   if [ -z "$1" ] ; then              # lock queue
-    mkdir $LOK 2>/dev/null &&  LKD='t'
+    mkdir "$LOK" 2>/dev/null &&  LKD='t'
     while [ -z "$LKD" ] && (( SEC < MAX )) ; do      # lock file present
 	    sleep 1                                        # wait a second
 	    (( ++SEC ))                                    # accumulate seconds
-	    mkdir $LOK 2>/dev/null &&  LKD='t'
+	    mkdir "$LOK" 2>/dev/null &&  LKD='t'
     done                                             # try again while locked for MAX secs
     [ -z "$LKD" ] && \
 	    err '' "cannot use queue $Q : waited $MAX seconds for"\

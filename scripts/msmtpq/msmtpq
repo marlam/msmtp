@@ -331,9 +331,9 @@ make_id() {
 
   ID="$(date +%Y-%m-%d-%H.%M.%S)"    # make filename id for queue
   FQP="${Q}/$ID"                     # make fully qualified pathname
-  if [ -f "${FQP}.*" ] ; then        # ensure fqp name is unique
+  if [ -f "${FQP}.mail" -o -f "${FQP}.msmtp" ] ; then        # ensure fqp name is unique
     INC=1                            # initial increment
-	  while [ -f "${FQP}-${INC}.*" ] ; do  # fqp name w/incr exists
+	  while [ -f "${FQP}-${INC}.mail" -o -f "${FQP}-${INC}.msmtp" ] ; do  # fqp name w/incr exists
       (( ++INC ))                    # bump increment
 	  done
 	  ID="${ID}-${INC}"                # unique ; set id

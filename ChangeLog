@@ -1,3 +1,8 @@
+Version 1.4.26:
+- Add a buffer_mail command and --buffer-mail option. This fixes Debian bug
+  #645286.
+- Fix serious bugs in the msmtpq script.
+
 Version 1.4.25:
 - Fix DIGEST-MD5 authentication, accidentally broken in 1.4.23.
 - Deprecate DIGEST-MD5 authentication as per RFC 6331.

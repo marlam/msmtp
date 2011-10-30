@@ -170,6 +170,9 @@ used instead.
 Read the envelope from address from the From header of the mail.
 .IP "\-\-aliases=[\fIfile\fP]"
 Set or unset an aliases file. See the \fBaliases\fP command below.
+.IP "\-\-buffer\-mail[=(\fIon\fP|\fIoff\fP)]"
+Enable or disable buffering of the mail before sending it. See the
+\fBbuffer_mail\fP command below.
 .IP "\-\-"
 This marks the end of options. All following arguments will be treated as
 recipient addresses, even if they start with a `\-'.
@@ -486,7 +489,6 @@ recipient addresses, size of the mail as transferred to the server (only if the
 delivery succeeded), SMTP status code and SMTP error message (only in case of
 failure and only if available), error message (only in case of failure and only
 if available), exit code (from sysexits.h; EX_OK indicates success).
-.br
 .IP "aliases [\fIfile\fP]"
 Replace local recipients with addresses in the aliases file.  The aliases file
 is a plain text file containing mappings between a local address and a list of
@@ -505,6 +507,12 @@ found, then the local address is left as is.
 .br
 An empty argument to the aliases command disables the replacement of local
 addresses.  This is the default.
+.IP "buffer_mail [(\fIon\fP|\fIoff\fP)]"
+This command controls whether the mail is first completely buffered into a
+temporary file before sending it. The default is to keep buffering to a
+minimum. Enabling complete buffering can be useful when mailing the output
+of long running processes, e.g. cron jobs, which may trigger SMTP server
+timeouts.
 .br
 .SH EXAMPLES
 .br
@@ -662,8 +670,11 @@ A temporary file is only created when the
 .BR \-t/\-\-read\-recipients
 or
 .BR \-\-read\-envelope\-from
-option is used. The file is then used to buffer the headers of the mail (but not
-the body, so the file won't get very large).
+option is used (in which case only the headers of the mail are buffered in this
+file), or if
+.BR buffer_mail
+is set for the active account (in which case the complete mail is buffered in
+this file).
 .IP "EMAIL, SMTPSERVER"
 These environment variables are used only if neither \fB\-\-host\fP nor
 \fB\-\-account\fP is used and there is no default account defined in the

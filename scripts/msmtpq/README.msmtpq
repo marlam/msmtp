@@ -2,41 +2,39 @@
 msmtpq is a modification of the scripts comprising Martin Lambers'
 msmtpqueue package ; it attempts be useful to msmtp by holding mail sent
 by an MUA when a machine, e.g. a laptop, is not connected to the net ;
-queued mails are held as files in a user defined queue directory ; when
-the machine is connected all mail can be sent directly out ; the msmtpq
-package does queue handling for msmtp according to the way the queue is
-used ; that is, as a script with two distinct 'entry points'
+queued mails are held as files in a user defined and created queue
+directory ; when the machine is connected all mail can be sent directly
+out ; the msmtpq package does queue handling for msmtp according to the
+way the queue is used
 
-  msmtpq - has all routines for queue management and maintenance, that
-           is, for queue display, queue run (flush), mail purge from the
-           queue, etc.
+  msmtpq        accepts mail input from an MUA (e.g. mutt) and sends it
+                directly out via msmtp if possible - or queues it if not
 
-  msmtpQ - is a symbolic link pointing to msmtpq, accepts mail input
-           from an MUA (e.g. mutt) and sends it directly out via msmtp
-           if possible - or queues it if not
+  msmtp-queue   is a wrapper script which simply calls msmtpq with the
+                --q-mgmt argument ; it exposes routines for queue
+                management and maintenance, that is, for queue display,
+                queue run (flush), mail purge from the queue, etc.
 
-msmtpq is interactive at the command line while msmtpQ has no
-interactive user input whatever - it simply takes its input from the MUA
-and outputs directly to msmtp (or to the queue)
+msmtp-queue is interactive at the command line while msmtpq, called
+directly, has no interactive user input whatever - it simply takes its
+input from the MUA and outputs directly to msmtp (or to the queue)
 
 credit goes to Martin Lambers for the idea of the queue ; any bugs,
-design errors, oversights, etc. belong to me ; all feedback is welcome ;
-I can be reached via the msmtp mailing list
+design errors, oversights, suggestions for improvement, etc. belong to
+me ; all feedback is welcome ; I can be reached via the msmtp mailing
+list
 
 
 Installation :
 ------------
 
-copy msmtpq to wherever location is best for you (I use /usr/local/bin)
-; the directory chosen should be on the path ; then create an 'msmtpQ'
-symlink in the same directory :
+copy msmtpq and msmtp-queue to wherever location is best for you
+(I use /usr/local/bin) ; the directory chosen should be on the path
 
-( ln -s /path/to/msmtpq /same/path/to/msmtpQ ).
+replace the msmtp invocation in your mail client with msmtpq ; e.g. for
+mutt : 'set sendmail = /path/to/msmtpq'
 
-replace the msmtp invocation in your mail client with msmtpQ ; e.g. for
-mutt : 'set sendmail = /path/to/msmtpQ'
-
-msmtpQ will then take care of the management and routing of outgoing
+msmtpq will then take care of the management and routing of outgoing
 mail ; normally sending a mail is nearly instantaneous, but a very long
 mail (or one with large attachments) can take some time to make its way
 through ; therefore it's wise to have the MUA background the process if
@@ -44,23 +42,28 @@ possible
 
 In the case of mutt, in addition to the above setting,
 
-'set sendmail = /path/to/msmtpQ'
+'set sendmail = /path/to/msmtpq'
 
 set, also
 
 'set sendmail_wait = -1'
 
 mutt then backgrounds the send and watches for a return code & message
-from msmtpQ
+from msmtpq
 
 
 Configuration :
 -------------
 
+[ note that the msmtp-queue script simply invokes msmtpq ; for most
+  installations this works 'out of the box' (it is on the path) but for
+  special cases (embedded, etc.) it may be necessary to modify the msmtpq
+  invocation in msmtp-queue to specify the location of the msmtpq script ]
+
 all config is done within the msmtpq script
 
   set the MSMTP var to point to the location of the msmtp executable
-    (only if it's not on the path)
+    (only necessary if it's not on the path)
   set the Q var to point to the location of the queue directory
   set the LOG var to point to the location of the queue log
 
@@ -77,7 +80,7 @@ the LOG variable should have the desired name & location of the queue log
 the locations are clearly marked near the beginnings of the script ;
 modify all to the locations you prefer (the defaults work for me ; you
 may or may not be happy with them) ... please note that it's preferable
-to create the queue directory (with 0700 permissions) before using the
+to create the queue directory (with 0700 permissions) before using these
 routines
 
 note that the default msmtpq set up creates a separate log for queue
@@ -94,18 +97,17 @@ confident that all is working
 mutt users please take note of the additional setup instructions in the
 msmtp docs & man page.
 
+
 in summary :
-  copy the msmtpq script to the directory where it will live
-    be certain that it is executable
-      ( chmod +x msmtpq )
-    create the 'msmtpQ' link
-      ( ln -s msmtpq msmtpQ )
-    enter or confirm the values of the three config vars in msmtpq
+  copy the msmtpq and msmtp-queue scripts to the directory where they will live
+    be certain that they are executable
+      ( chmod +x msmtpq msmtp-queue )
   create the queue dir (0700) if necessary
     ( mkdir -p /path/to/queue/dir )
     ( chmod 0700 /path/to/queue/dir )
+  enter or confirm the values of the three config vars in msmtpq
   for mutt users -
-    set sendmail="/path/to/msmtpQ"
+    set sendmail="/path/to/msmtpq"
     set sendmail_wait = -1
     set use_from=yes
     set realname="Your Name"
@@ -113,14 +115,15 @@ in summary :
     set envelope_from=yes
     (and perhaps more on the msmtp man page & docs ...)
   for other MUAs -
-    set the mta to '/path/to/msmtpQ'
+    set the mta to '/path/to/msmtpq'
     background its execution, if possible
 
 log(s) rotation :
 
-On a Debian or Debian-based system (e.g. Ubuntu) a file can be created
-in /etc/logrotate.d (named, e.g. 'msmtp') that configures logrotate to
-compress and rotate both the msmtp logs and msmtpq/Q queue logs.
+On a Debian or Debian-based system (e.g. Ubuntu or Mint) a file can be
+created in /etc/logrotate.d (named, e.g. 'msmtp') that configures
+logrotate to compress and rotate both the msmtp logs and msmtpq queue
+logs.
 
 Suggested contents :
 #--------------------------------------------------
@@ -143,29 +146,34 @@ That's it.
 Use :
 ---
 
-msmtpQ is entirely self contained ; beyond keeping an eye on the queue
+msmtpq is entirely self contained ; beyond keeping an eye on the queue
 and queue logs it should require no admin or user attention.
 
-msmtpq offers the following options :
+msmtp-queue offers the following options :
 
-  msmtpq -r -- runs (flushes) all the contents of the queue
+  msmtp-queue -r -- runs (flushes) all the contents of the queue
 
-  msmtpq -R -- sends selected individual mail(s) in the queue
+  msmtp-queue -R -- sends selected individual mail(s) in the queue
 
-  msmtpq
-  msmtpq -d -- displays the contents of the queue  (<-- default)
+  msmtp-queue
+  msmtp-queue -d -- displays the contents of the queue   (<-- default)
 
-  msmtpq -p -- allows the specific purging of one or more mails
+  msmtp-queue -p -- allows the specific purging of one or more mails
 
-  msmtpq -a -- purges all mail in the queue
+  msmtp-queue -a -- purges all mail in the queue
 
-  msmtpq -h -- offers a helpful blurt
+  msmtp-queue -h -- offers a helpful blurt
 
-( msmtpq does not log the 'chatter' of user interaction but logs, to the
-  queue log, any event that changes the queue in any way )
+( msmtp-queue does not log the 'chatter' of user interaction but logs,
+  to the queue log, any event that changes the queue in any way )
+
+
+I find it useful to have a display of the number of mails currently
+in the queue in conky ; it uses one shell line (in the .conkyrc script) :
+
+mail queue : ${exec /bin/ls -1 ${HOME}/.msmtp.queue/*.mail 2>/dev/null | /usr/bin/wc -l}
 
 
 With hopes that it's useful,
 
 Chris Gianniotis
-namtok@zonnet.nl

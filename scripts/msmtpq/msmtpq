@@ -4,7 +4,7 @@
 #
 #  msmtpq : queue funtions to both use & manage the msmtp queue,
 #             as it was defined by Martin Lambers
-#  Copyright (C) 2008, 2009, 2010 Chris Gianniotis
+#  Copyright (C) 2008, 2009, 2010, 2011 Chris Gianniotis
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -15,23 +15,25 @@
 
 # msmtpq is meant to be used both by an email client -
 #   in 'sendmail' mode
-#   for this purpose, it is evoked by the symlink 'msmtpQ'
-#   ( created as   ln -s msmtpq msmtpQ )
+#   for this purpose, it is evoked directly as 'msmtpq'
 # it is also meant to be used to maintain the msmtp queue
-#   as 'msmtpq'
+#   evoked by the wrapper script 'msmtp-queue'
+#   (which calls this script as msmtpq --q-mgnt)
 
 # there is a queue log file, distinct from the msmtp log,
 #   for all events & operations on the msmtp queue
 #   that is defined below
 
-# (mutt users, using msmtpQ in 'sendmail' mode,
+# (mutt users, using msmtpq in 'sendmail' mode,
 #  should make at least the following two settings in their .muttrc
-#    set sendmail = /path/to/msmtpQ
+#    set sendmail = /path/to/msmtpq
 #    set sendmail_wait = -1
 #
 #  please see the msmtp man page and docs for further mutt settings
 # )
 
+## two essential patches by Philipp Hartwig
+## 19 Oct 2011 & 27 Oct 2011
 
 #--------------------------------------------------------------
 # the msmtp queue contains unique filenames of the following form :
@@ -51,7 +53,7 @@ err() { dsp '' "$@" '' ; exit 1 ; }
 
 ## ======================================================================================
 ##      !!!          please define or confirm the following three vars           !!!
-##      !!!               before using the msmtpq/msmtpQ routine                 !!!
+##      !!!           before using the msmtpq or msmtp-queue scripts             !!!
 ## ======================================================================================
 ##
 ## only if necessary (in unusual circumstances - e.g. embedded systems),
@@ -88,6 +90,7 @@ LOG=~/log/msmtp.queue.log
 umask 077                            # set secure permissions on created directories and files
 
 declare -i CNT                       # a count of mail(s) currently in the queue
+declare -a Q_LST                     # queue list array ; used selecting a mail (to send or remove)
 
 trap on_exit EXIT                    # run 'on_exit' on exit
 on_exit() {
@@ -133,17 +136,18 @@ lock_queue() {        # <-- '-u' to remove lockfile
   local -i MAX=240 SEC=0             # max seconds to gain a lock ; seconds waiting
 
   if [ -z "$1" ] ; then              # lock queue
-    mkdir "$LOK" 2>/dev/null &&  LKD='t'
+    ## Philipp Hartwig patch #2
+    'mkdir' "$LOK" 2>/dev/null && LKD='t'
     while [ -z "$LKD" ] && (( SEC < MAX )) ; do      # lock file present
-	    sleep 1                                        # wait a second
+  	  sleep 1                                        # wait a second
 	    (( ++SEC ))                                    # accumulate seconds
-	    mkdir "$LOK" 2>/dev/null &&  LKD='t'
+      'mkdir' "$LOK" 2>/dev/null && LKD='t'          # make lockdir ; lock queue
     done                                             # try again while locked for MAX secs
     [ -z "$LKD" ] && \
 	    err '' "cannot use queue $Q : waited $MAX seconds for"\
-	           "  lockfile [ $LOK ] to vanish ; giving up"\
+	           "  lockdir [ $LOK ] to vanish ; giving up"\
 	           'if you are certain that no other instance of this script'\
-	           '  is running, then delete the lock file manually' '' # lock file still there, give up
+	           "  is running, then 'rmdir' the lock dir manually" '' # lock file still there, give up
 
   elif [ "$1" = '-u' ] ; then        # unlock queue
     'rmdir' "$LOK"                   # remove the lock
@@ -152,14 +156,14 @@ lock_queue() {        # <-- '-u' to remove lockfile
 
 #
 ## ----------------------------------- functions for queue management
-## ----------------------------------- queue maintenance mode - (msmtpq)
+## ----------------------------------- queue maintenance mode - (msmtp-queue)
 #
 
 ## show queue maintenance functions
 usage() {        # <-- error msg
   dsp ''\
-      'usage : msmtpq functions' ''\
-      '        msmtpq <op>'\
+      'usage : msmtp-queue functions' ''\
+      '        msmtp-queue < op >'\
       '        ops : -r   run (flush) mail queue - all mail in queue'\
       '              -R   send selected individual mail(s) in queue'\
       '              -d   display (list) queue contents   (<-- default)'\
@@ -179,7 +183,8 @@ ok() {
 
   dsp "$@"
   while true ; do
-    echo -n "  ok [${YN}] ..: " ; read R
+    echo -n "  ok [${YN}] ..: "
+    read R
     case $R in
       y|Y) return 0 ;;
       n|N) return 1 ;;
@@ -189,18 +194,6 @@ ok() {
   done
 }
 
-## is anything in the queue ?
-## sets CNT global var  or
-## exits w/passed msg
-cnt_queue() {         # <-- op label { 'purge' | 'send' }
-  CNT=$('ls' -1 ${Q}/*.mail 2>/dev/null | 'wc' -l)   # take num mails in queue
-
-  if (( CNT == 0 )) ; then           # no mail in Q
-    dsp '' "mail queue is empty (nothing to $1)" ''  # inform user
-    exit 0                           # depart
-  fi
-}
-
 ## send a queued mail out via msmtp
 send_queued_mail() {   # <-- mail id
   local FQP="${Q}/${1}"              # fully qualified path name
@@ -208,22 +201,23 @@ send_queued_mail() {   # <-- mail id
 
   if [ -f "${FQP}.msmtp" ] ; then    # corresponding .msmtp file found
     # verify net connection - ping ip address of debian.org
-    if ping -qnc1 -w2 debian.org > /dev/null 2>&1 ; then       # connected
+    # would ping -qnc2 -w4 be better ?
+    if ping -qnc1 -w4 debian.org > /dev/null 2>&1 ; then       # connected
       if $MSMTP $(< "${FQP}.msmtp") < "${FQP}.mail" ; then     # this mail goes out the door
+        log "mail [ $2 ] [ $1 ] from queue ; send was successful ; purged from queue"  # good news to user
         'rm' -f ${FQP}.*                                       # nuke both queue mail files
-        log "mail [ $1 ] from queue ; send was successful ; purged from queue"  # good news to user
         ALT='t'                      # set queue changed flag
       else                           # send was unsuccessful
         RC=$?                        # take msmtp exit code
-        log "mail [ $1 ] from queue ; send failed ; msmtp rc = $RC"             # bad news ...
+        log "mail [ $2 ] [ $1 ] from queue ; send failed ; msmtp rc = $RC"             # bad news ...
       fi
       return $RC                     # func returns exit code
     else                             # not connected
-      dsp "mail [ $1 ] from queue ; couldn't be sent - host not connected"
+      dsp "mail [ $2 ] [ $1 ] from queue ; couldn't be sent - host not connected"
       return 1
     fi
   else                               # corresponding MSF file not found
-    log "preparing to send .mail file [ ${FQP}.mail ] but"\
+    log "preparing to send .mail file [ $1 ] [ ${FQP}.mail ] but"\
         "  corresponding .msmtp file [ ${FQP}.msmtp ] was not found in queue"\
         '  skipping this mail ; this is worth looking into'    # give user the bad news
   fi                                                           # (but allow continuation)
@@ -232,10 +226,12 @@ send_queued_mail() {   # <-- mail id
 ## run (flush) queue
 run_queue() {                        # run queue
   local M LST="$('ls' $Q/*.mail 2>/dev/null)"            # list of mails in queue
+  local -i NDX=0
 
   if [ -n "$LST" ] ; then            # something in queue
     for M in $LST ; do               # process all mails
-      send_queued_mail "$(basename $M .mail)"            # send mail - pass {id} only
+      ((NDX++))
+      send_queued_mail "$(basename $M .mail)" "$NDX"     # send mail - pass {id} only
     done
   else                               # queue is empty
     dsp '' 'mail queue is empty (nothing to send)' ''    # inform user
@@ -243,19 +239,24 @@ run_queue() {                        # run queue
 }
 
 ## display queue contents
-display_queue() {
-  local M LST="$('ls' $Q/*.mail 2>/dev/null)"        # list of mails in queue
-  message_index=0
+display_queue() {      # <-- { 'purge' | 'send' } (op label) ; { 'rec' } (record array of mail ids)
+  local M ID LST="$('ls' ${Q}/*.mail 2>/dev/null)"   # list of mail ids in queue
 
+  CNT=0
   if [ -n "$LST" ] ; then            # list has contents (any mails in queue)
     for M in $LST ; do               # cycle through each
-      message_index=$(expr $message_index + 1)
-      dsp '' "${message_index}. mail id = [ $(basename $M .mail) ]"            # show mail id
+      ID="$(basename $M .mail)"      # take mail id from filename
+      ((CNT++))
+      dsp '' "mail  num=[ $CNT ]  id=[ $ID ]"                # show mail id ## patch in
       'egrep' -s --colour -h '(^From:|^To:|^Subject:)' "$M"  # show mail info
+      [ -n "$2" ] && Q_LST[$CNT]="$ID" # bang mail id into array (note 1-based array indexing)
     done
     echo
   else                               # no mails ; no contents
-    dsp '' 'no mail in queue' ''     # inform user
+    [ -z "$1" ] && \
+      dsp '' 'no mail in queue' '' || \
+      dsp '' "mail queue is empty (nothing to $1)" ''    # inform user
+    exit 0
   fi
 }
 
@@ -263,8 +264,7 @@ display_queue() {
 purge_queue() {
   local YN                           # confirmation response
 
-  cnt_queue 'purge'
-  display_queue                      # show queue contents
+  display_queue 'purge'              # show queue contents
   if ok -n 'remove (purge) all mail from the queue' ; then
     'rm' -f "$Q"/*.*
     log 'msmtp queue purged (all mail)'
@@ -274,38 +274,70 @@ purge_queue() {
 }
 
 ## select a single mail from queue ; delete it or send it
-select_mail() {  # <-- '-purge' or '-send'
-  local ONE ID                       # mail id
+## select by mail index (position in queue) or mail id
+select_mail() {  # <-- < 'purge' | 'send' >
+  local OK ID                                        # mail id
+  local -i I NDX                                     # mail index (position in queue)
 
   while true ; do                                    # purge an individual mail from queue
-    cnt_queue "${1:1}"                               # count queue entries
-    display_queue                                    # show queue contents
+    display_queue "$1" 'rec'                         # show queue contents ; make mail ids array
 
-    if (( CNT == 1 )) ; then                         # only one mail in queue ; take its id
-      ID="$(basename $('ls' $Q/*.mail 2>/dev/null) .mail)"
-      ONE='t'                                        # mark single mail
+    ## allow selection also by mail index
+    if [ $CNT -eq 1 ] ; then                         # only one mail in queue ; take its id
+      NDX=1
+      ID="${Q_LST[1]}"
     else                                             # more than one mail ; select its id
       while true ; do                                # get mail id
-        dsp '' "enter mail id to ${1:1}"             # <-- file name (only, no suff)
-        echo -n '    ( <cr> alone to exit ) ..: ' ; read ID
+        OK='t'                                       # optimistic to a fault
+        dsp "enter mail number or id to $1"       # <-- num or file name (only, no suff)
+        echo -n '    ( <cr> alone to exit ) ..: '
+        read ID
         [ -n "$ID" ] || return                       # entry made - or say good bye
-        'ls' "$Q"/"$ID".* >/dev/null 2>&1 && \
-          break || \
-          dsp '' "mail [ $ID ] not found ; bad id"   # id valid or complain & ask again
-      done
+
+        if [ "${ID:4:1}" != '-' ] ; then             # mail id *not* entered ; test index num
+          for (( I=0 ; I<${#ID} ; I++ )) ; do        # test index number
+            if [[ "${ID:${I}:1}" < '0' || \
+                  "${ID:${I}:1}" > '9' ]] ; then
+              dsp '' "[ $ID ] is neither a valid mail id"\
+                     'nor a valid mail number' ''
+              unset OK
+            fi
+          done
+          [ -z "$OK" ] && continue                   # format not ok (not all nums)
+
+          NDX=$ID
+          if [ $NDX -lt 1 ] || [ $NDX -gt $CNT ] ; then  # test number range (1 - $CNT)
+            dsp '' "[ $NDX ] is out of range as a mail number"\
+                   "validity is from 1 to $CNT"
+            continue                                 # try again
+          fi
+
+          ID="${Q_LST[$NDX]}"                        # format & range were ok ; use it
+          break                                      # valid mail selection
+        else                                         # mail id entered
+          for (( NDX=1 ; NDX<=${#Q_LST[*]} ; NDX++ )) ; do # find entered id in queue list
+            [ "$ID" = "${Q_LST[$NDX]}" ] && break
+          done
+          [ $NDX -le ${#Q_LST[*]} ] && \
+            break || \
+            dsp '' "mail [ $ID ] not found ; invalid id" # mail selection valid (found) or
+        fi                                               # fell through (not found) complain
+      done                                               # and ask again
     fi
 
-    if ok "${1:1} mail - id = [ $ID ]" ; then        # confirm mail op
-      if [ "$1" = '-purge' ] ; then                  # purging
+    if ok '' "$1 :"\
+          "  mail num=[ $NDX ]"\
+          "        id=[ $ID ]" '' ; then             # confirm mail op
+      if [ "$1" = 'purge' ] ; then                   # purging
         'rm' -f "$Q"/"$ID".*                         # msmtp - nukes single mail (both files) in queue
         log "mail [ $ID ] purged from queue"         # log op
         ALT='t'                                      # mark that a queue alteration has taken place
       else                                           # sending
-        send_queued_mail "$ID"                       # send out the mail
+        send_queued_mail "$ID" "$NDX"                # send out the mail
       fi
     else                                             # user opts out
       dsp '' 'nothing done to this queued email'     # soothe user
-      [ -n "$ONE" ] && break                         # single mail ; user opted out
+      [ $CNT -eq 1 ] && break                        # single mail ; user opted out
     fi
     dsp '' "--------------------------------------------------"
   done
@@ -319,7 +351,7 @@ select_mail() {  # <-- '-purge' or '-send'
 
 #
 ## ----------------------------------- functions for directly sending mail
-## ----------------------------------- 'sendmail' mode - (msmtpQ)
+## ----------------------------------- 'sendmail' mode - (msmtpq)
 #
 
 ## ('sendmail' mode only)
@@ -329,9 +361,10 @@ make_id() {
 
   ID="$(date +%Y-%m-%d-%H.%M.%S)"    # make filename id for queue
   FQP="${Q}/$ID"                     # make fully qualified pathname
-  if [ -f "${FQP}.mail" -o -f "${FQP}.msmtp" ] ; then        # ensure fqp name is unique
+  ## Philipp Hartwig patch #1
+  if [ -f "${FQP}.mail" -o -f "${FQP}.msmtp" ] ; then                  # ensure fqp name is unique
     INC=1                            # initial increment
-	  while [ -f "${FQP}-${INC}.mail" -o -f "${FQP}-${INC}.msmtp" ] ; do  # fqp name w/incr exists
+	  while [ -f "${FQP}-${INC}.mail" -o -f "${FQP}-${INC}.msmtp" ] ; do # fqp name w/incr exists
       (( ++INC ))                    # bump increment
 	  done
 	  ID="${ID}-${INC}"                # unique ; set id
@@ -374,30 +407,24 @@ send_mail() {    # <-- all mail args ; mail text via TMP
 ## -- entry point
 #
 
-case "$(basename $0)" in             # get name script called as
-  msmtpQ)                            # called as 'msmtpQ' - sendmail mode
-    lock_queue                       # lock here
-    make_id                          # make base queue filename id for this mail
-    cat > "${FQP}.mail" || \
-      log -e "$?" "creating mail body file [ ${FQP}.mail ] : failed" # test for error
-    send_mail "$@"                   # send the mail if possible, queue it if not
-    ;;
-  msmtpq)                            # called as 'msmtpq' - queue management mode
-    OP=${1:1}                        # trim off first char of OP
-    case "$OP" in                    # sort ops ; run according to spec
-      r)    lock_queue ; run_queue           ;;    # run (flush) the queue
-      R)    lock_queue ; select_mail -send   ;;    # send individual mail(s) in queue
-      d|'')              display_queue       ;;    # display (list) all mail in queue (default)
-      p)    lock_queue ; select_mail -purge  ;;    # purge individual mail(s) from queue
-      a)    lock_queue ; purge_queue         ;;    # purge all mail in queue
-      h)                 usage               ;;    # show help
-      *)                 usage "[ $OP ] is an unknown msmtpq option" ;;
-    esac
-    ;;
-  *)                                 # invalid name
-    err "msmtpq can only be called as 'msmtpq' or 'msmtpQ'"\
-        "{ $(basename $0) } doesn't work"
-    ;;
-esac
+if [ ! "$1" = '--q-mgmt' ] ; then    # msmtpq - sendmail mode
+  lock_queue                         # lock here
+  make_id                            # make base queue filename id for this mail
+  cat > "${FQP}.mail" || \
+    log -e "$?" "creating mail body file [ ${FQP}.mail ] : failed" # test for error
+  send_mail "$@"                     # send the mail if possible, queue it if not
+else                                 # msmtp-queue - queue management mode
+  shift                              # trim off first (--q-mgmt) arg
+  OP=${1:1}                          # trim off first char of OP arg
+  case "$OP" in                      # sort ops ; run according to spec
+    r)    lock_queue ; run_queue           ;;    # run (flush) the queue
+    R)    lock_queue ; select_mail send    ;;    # send individual mail(s) in queue
+    d|'')              display_queue       ;;    # display (list) all mail in queue (default)
+    p)    lock_queue ; select_mail purge   ;;    # purge individual mail(s) from queue
+    a)    lock_queue ; purge_queue         ;;    # purge all mail in queue
+    h)                 usage               ;;    # show help
+    *)                 usage "[ -$OP ] is an unknown msmtp-queue option" ;;
+  esac
+fi
 
 exit 0

@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+##--------------------------------------------------------------
+##
+## msmtp-queue : wrapper script for msmtpq
+##               to expose the management functions
+##               for the msmtp queue
+##  Copyright (C) 2011 Chris Gianniotis
+##
+##  This program is free software: you can redistribute it and/or modify
+##  it under the terms of the GNU General Public License as published by
+##  the Free Software Foundation, either version 3 of the License, or, at
+##  your option, any later version.
+##
+##--------------------------------------------------------------
+
+## msmtp-queue
+## is only a wrapper
+## it invokes the queue management functions of msmtpq
+## by calling it as msmtpq --q-mgmt
+##
+## all configuration and documentation is in the msmtpq script
+
+## note that for 'special circumstances'
+## e.g. embedded systems, etc.
+## where the msmtpq script itself is not on the path
+## change the below line to be
+##   exec /path/to/msmtpq --q-mgmt
+
+exec msmtpq --q-mgmt

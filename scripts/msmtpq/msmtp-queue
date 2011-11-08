@@ -27,4 +27,4 @@
 ## change the below line to be
 ##   exec /path/to/msmtpq --q-mgmt
 
-exec msmtpq --q-mgmt
+exec msmtpq --q-mgmt "$1"

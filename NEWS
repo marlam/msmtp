@@ -1,6 +1,7 @@
 Version 1.4.26:
-- A new command 'buffer_mail' with a corresponding '--buffer-mail' option allows
-  to first buffer the complete mail into a temporary file before sending it.
+- A new version of the msmtpq script fixes serious bugs. To update to the new
+  version of the script, you need to remove the old msmtpQ symlink, change
+  msmtpQ to msmtpq in your MUA config, and use msmtp-queue for queue management.
 
 Version 1.4.25:
 - DIGEST-MD5 authentication is not considered secure any longer. See RFC 6331.

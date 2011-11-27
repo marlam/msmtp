@@ -1,7 +1,7 @@
 Version 1.4.26:
-- Add a buffer_mail command and --buffer-mail option. This fixes Debian bug
-  #645286.
-- Fix serious bugs in the msmtpq script.
+- Fix serious bugs in the msmtpq script. To update to the new version of the
+  script, you need to remove the old msmtpQ symlink, change msmtpQ to msmtpq
+  in your MUA config, and use msmtp-queue for queue management.
 
 Version 1.4.25:
 - Fix DIGEST-MD5 authentication, accidentally broken in 1.4.23.

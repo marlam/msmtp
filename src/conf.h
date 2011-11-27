@@ -74,7 +74,6 @@
 #define ACC_LOGFILE                     (1 << 27)
 #define ACC_SYSLOG                      (1 << 28)
 #define ACC_ALIASES                     (1 << 29)
-#define ACC_BUFFER_MAIL                 (1 << 30)
 
 typedef struct
 {
@@ -121,9 +120,7 @@ typedef struct
     /* logging */
     char *logfile;              /* NULL or logfile */
     char *syslog;               /* NULL or syslog facility */
-    /* misc */
     char *aliases;              /* NULL or aliases file */
-    int buffer_mail;            /* flag: buffer mail before sending? */
 } account_t;
 
 

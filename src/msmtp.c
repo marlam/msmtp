@@ -1455,7 +1455,8 @@ int msmtp_read_addresses(FILE *mailf, FILE *tmpfile,
 
         if (c != EOF && fputc(c, tmpfile) == EOF)
         {
-            *errstr = xasprintf(_("cannot buffer mail: %s"), strerror(errno));
+            *errstr = xasprintf(_("cannot write mail headers to temporary "
+                        "file: output error"));
             goto error_exit;
         }
 
@@ -2410,7 +2411,6 @@ void msmtp_print_help(void)
             "  --read-envelope-from         Read envelope from address from "
                 "the mail.\n"
             "  --aliases=[file]             Set/unset aliases file.\n"
-            "  --buffer-mail[=(on|off)]     Enable/disable buffering of mail.\n"
             "  --                           End of options.\n"
             "Accepted but ignored: -A, -B, -bm, -F, -G, -h, -i, -L, -m, -n, "
                 "-O, -o, -v\n"
@@ -2477,7 +2477,6 @@ typedef struct
 #define LONGONLYOPT_AUTO_FROM                   25
 #define LONGONLYOPT_READ_ENVELOPE_FROM          26
 #define LONGONLYOPT_ALIASES                     27
-#define LONGONLYOPT_BUFFER_MAIL                 28
 
 int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
 {
@@ -2534,8 +2533,6 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
         { "logfile",               required_argument, 0, 'X' },
         { "syslog",                optional_argument, 0, LONGONLYOPT_SYSLOG },
         { "aliases",               required_argument, 0, LONGONLYOPT_ALIASES },
-        { "buffer-mail",           optional_argument, 0,
-            LONGONLYOPT_BUFFER_MAIL },
         { "read-recipients",       no_argument,       0, 't' },
         { "read-envelope-from",    no_argument,       0,
             LONGONLYOPT_READ_ENVELOPE_FROM },
@@ -3115,24 +3112,6 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
                 conf->cmdline_account->mask |= ACC_ALIASES;
                 break;
 
-            case LONGONLYOPT_BUFFER_MAIL:
-                if (!optarg || is_on(optarg))
-                {
-                    conf->cmdline_account->buffer_mail = 1;
-                }
-                else if (is_off(optarg))
-                {
-                    conf->cmdline_account->buffer_mail = 0;
-                }
-                else
-                {
-                    print_error(_("invalid argument %s for %s"),
-                            optarg, "--buffer-mail");
-                    error_code = 1;
-                }
-                conf->cmdline_account->mask |= ACC_BUFFER_MAIL;
-                break;
-
             case 't':
                 conf->read_recipients = 1;
                 break;
@@ -3468,8 +3447,7 @@ void msmtp_print_conf(msmtp_cmdline_conf_t conf, account_t *account)
                 "keepbcc               = %s\n"
                 "logfile               = %s\n"
                 "syslog                = %s\n"
-                "aliases               = %s\n"
-                "buffer_mail           = %s\n",
+                "aliases               = %s\n",
                 account->auto_from ? _("on") : _("off"),
                 account->maildomain ? account->maildomain : _("(not set)"),
                 account->from ? account->from : conf.read_envelope_from
@@ -3479,8 +3457,7 @@ void msmtp_print_conf(msmtp_cmdline_conf_t conf, account_t *account)
                 account->keepbcc ? _("on") : _("off"),
                 account->logfile ? account->logfile : _("(not set)"),
                 account->syslog ? account->syslog : _("(not set)"),
-                account->aliases ? account->aliases : _("(not set)"),
-                account->buffer_mail ? _("on") : _("off"));
+                account->aliases ? account->aliases : _("(not set)"));
         if (conf.read_recipients)
         {
             printf(_("reading recipients from the command line "
@@ -3540,9 +3517,8 @@ int main(int argc, char *argv[])
 #if HAVE_GETSERVBYNAME
     struct servent *se;
 #endif
-    /* needed to extract addresses from headers, or to buffer the mail */
+    /* needed to extract addresses from headers */
     FILE *tmpfile = NULL;
-    int c;
 
 
     /* Avoid the side effects of text mode interpretations on DOS systems. */
@@ -3614,6 +3590,13 @@ int main(int argc, char *argv[])
         {
             printf(_("envelope from address extracted from mail: %s\n"),
                     conf.cmdline_account->from);
+        }
+        if (fseeko(tmpfile, 0, SEEK_SET) != 0)
+        {
+            print_error(_("cannot rewind temporary file: %s"),
+                    msmtp_sanitize_string(strerror(errno)));
+            error_code = EX_IOERR;
+            goto exit;
         }
     }
     /* check the list of recipients */
@@ -3870,30 +3853,6 @@ int main(int argc, char *argv[])
     /* do the work */
     if (conf.sendmail)
     {
-        if (account->buffer_mail)
-        {
-            if (!tmpfile && !(tmpfile = tempfile(PACKAGE_NAME)))
-            {
-                print_error(_("cannot create temporary file: %s"),
-                        msmtp_sanitize_string(strerror(errno)));
-                error_code = EX_IOERR;
-                goto exit;
-            }
-            /* copy stdin to tmpfile */
-            while ((c = fgetc(stdin)) != EOF && fputc(c, tmpfile) != EOF)
-            {
-            }
-        }
-        if (tmpfile)
-        {
-            if (ferror(stdin) || fflush(tmpfile) != 0
-                    || fseeko(tmpfile, 0, SEEK_SET) != 0 || ferror(tmpfile))
-            {
-                print_error(_("cannot buffer mail: %s"),
-                        msmtp_sanitize_string(strerror(errno)));
-                error_code = EX_IOERR;
-            }
-        }
         if ((error_code = msmtp_sendmail(account, conf.recipients,
                         stdin, tmpfile, conf.debug, &mailsize,
                         &lmtp_errstrs, &lmtp_error_msgs,

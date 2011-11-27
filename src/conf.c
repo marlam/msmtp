@@ -92,7 +92,6 @@ account_t *account_new(const char *conffile, const char *id)
     a->logfile = NULL;
     a->syslog = NULL;
     a->aliases = NULL;
-    a->buffer_mail = 0;
     return a;
 }
 
@@ -164,7 +163,6 @@ account_t *account_copy(account_t *acc)
         a->logfile = acc->logfile ? xstrdup(acc->logfile) : NULL;
         a->syslog = acc->syslog ? xstrdup(acc->syslog) : NULL;
         a->aliases = acc->aliases ? xstrdup(acc->aliases) : NULL;
-        a->buffer_mail = acc->buffer_mail;
     }
     return a;
 }
@@ -658,10 +656,6 @@ void override_account(account_t *acc1, account_t *acc2)
     {
         free(acc1->aliases);
         acc1->aliases = acc2->aliases ? xstrdup(acc2->aliases) : NULL;
-    }
-    if (acc2->mask & ACC_BUFFER_MAIL)
-    {
-        acc1->buffer_mail = acc2->buffer_mail;
     }
     acc1->mask |= acc2->mask;
 }
@@ -1642,26 +1636,6 @@ int read_conffile(const char *conffile, FILE *f, list_t **acc_list,
             else
             {
                 acc->aliases = xstrdup(arg);
-            }
-        }
-        else if (strcmp(cmd, "buffer_mail") == 0)
-        {
-            acc->mask |= ACC_BUFFER_MAIL;
-            if (*arg == '\0' || is_on(arg))
-            {
-                acc->buffer_mail = 1;
-            }
-            else if (is_off(arg))
-            {
-                acc->buffer_mail = 0;
-            }
-            else
-            {
-                *errstr = xasprintf(
-                        _("line %d: invalid argument %s for command %s"),
-                        line, arg, cmd);
-                e = CONF_ESYNTAX;
-                break;
             }
         }
         else if (strcmp(cmd, "tls_nocertcheck") == 0)

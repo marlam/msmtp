@@ -430,14 +430,6 @@ local address is not found in the aliases file.  If no @samp{default} alias is
 found, then the local address is left as is.@*
 An empty argument to the aliases command disables the replacement of local
 addresses.  This is the default.
-@anchor{buffer_mail}
-@item buffer_mail [(on|off)]
-@cmindex buffer_mail
-This command controls whether the mail is first completely buffered into a
-temporary file before sending it. The default is to keep buffering to a
-minimum. Enabling complete buffering can be useful when mailing the output
-of long running processes, e.g. cron jobs, which may trigger SMTP server
-timeouts.
 @end table
 
 
@@ -672,10 +664,6 @@ Read the envelope from address from the From header of the mail.
 @itemx --aliases=[@var{file}]
 @opindex --aliases
 Set or unset an aliases file. @xref{aliases}.
-@anchor{--buffer-mail}
-@itemx --buffer-mail[=(on|off)]
-@opindex --buffer-mail
-Enable or disable buffering of the mail before sending it. @xref{buffer_mail}.
 @itemx --
 This marks the end of options. All following arguments will be treated as
 recipient addresses, even if they start with a '-'.
@@ -738,9 +726,8 @@ envelope-from address. @code{LOGNAME} is only used if @code{USER} is unset.
 Directory to create temporary files in. If this is unset, a system specific 
 default directory is used.@*
 A temporary file is only created when the @samp{-t}/@samp{--read-recipients} 
-or @samp{--read-envelope-from} option is used (in which case only the headers
-of the mail are buffered in this file) or if @samp{buffer_mail} is set for
-the active account (in which case the complete mail is buffered in this file).
+or @samp{--read-envelope-from} option is used. The file is then used to buffer
+the headers of the mail (but not the body, so the file won't get very large).
 @item @code{EMAIL}, @code{SMTPSERVER}
 These environment variables are used only if neither @samp{--host} nor
 @samp{--account} is used and there is no default account defined in the

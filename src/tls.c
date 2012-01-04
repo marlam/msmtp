@@ -1197,7 +1197,7 @@ int tls_init(tls_t *tls,
 
 #ifdef HAVE_LIBSSL
 
-    SSL_METHOD *ssl_method = NULL;
+    const SSL_METHOD *ssl_method = NULL;
 
     /* FIXME: Implement support for 'min_dh_prime_bits' */
     if (min_dh_prime_bits >= 0)

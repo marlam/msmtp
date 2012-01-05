@@ -35,7 +35,7 @@
  * compile-time configuration.
  */
 
-#ifndef HAVE_LIBSSL
+#ifndef HAVE_OPENSSL
 
 #include <string.h>
 

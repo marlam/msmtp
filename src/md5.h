@@ -23,7 +23,16 @@
  * See md5.c for more information.
  */
 
-#ifdef HAVE_LIBSSL
+/* Local change for msmtp: always use these functions regardless of HAVE_OPENSSL,
+ * and use the prefix 'msmtp_' for all symbols to avoid clashes. */
+#undef HAVE_OPENSSL
+#define MD5_u32plus msmtp_MD5_u32plus
+#define MD5_CTX msmtp_MD5_CTX
+#define MD5_Init msmtp_MD5_Init
+#define MD5_Update msmtp_MD5_Update
+#define MD5_Final msmtp_MD5_Final
+
+#ifdef HAVE_OPENSSL
 #include <openssl/md5.h>
 #elif !defined(_MD5_H)
 #define _MD5_H

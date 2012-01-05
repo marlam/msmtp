@@ -1,4 +1,8 @@
 Version 1.4.27:
+- Always use the internal MD5 functions for the built-in CRAM-MD5
+  implementation; never use the ones from OpenSSL. This fixes problems with
+  configurations that use OpenSSL and do not use GNU SASL. Thanks to Gleydson
+  Soares and Moritz Wilhelmy for providing information and for testing the fix.
 - Fix a compiler warning with current OpenSSL versions.
 
 Version 1.4.26:

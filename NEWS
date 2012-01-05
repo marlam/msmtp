@@ -1,3 +1,6 @@
+Version 1.4.27:
+- No significant changes.
+
 Version 1.4.26:
 - A new version of the msmtpq script fixes serious bugs. To update to the new
   version of the script, you need to remove the old msmtpQ symlink, change

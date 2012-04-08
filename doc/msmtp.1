@@ -449,9 +449,11 @@ The \fIamount\fP must be \fIheaders\fP, to just return the message headers, or
 extension.
 .IP "domain \fIargument\fP"
 Use this command to set the argument of the SMTP EHLO (or LMTP LHLO) command. 
-The default is \fIlocalhost\fP (stupid, but working). Possible choices are the
-domain part of your mail address (provider.example for joe@provider.example) or
-the fully qualified domain name of your host (if available).
+The default is \fIlocalhost\fP, which is stupid but usually works. Try to
+change the default if mails get rejected due to anti-SPAM measures. Possible
+choices are the domain part of your mail address (provider.example for
+joe@provider.example) or the fully qualified domain name of your host (if
+available).
 .IP "keepbcc [(\fIon\fP|\fIoff\fP)]"
 This command controls whether to remove or keep the Bcc header when sending a 
 mail. The default is to remove it.

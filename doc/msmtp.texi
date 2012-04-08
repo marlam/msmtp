@@ -183,8 +183,9 @@ the default. See @ref{port} for default ports.
 @item domain @var{argument}
 @cmindex domain
 This command sets the argument of the SMTP EHLO (or LMTP LHLO) command. The
-default is @samp{localhost}, which is stupid but should always work.  Possible
-choices are the domain part of your mail address (@code{provider.example} for
+default is @samp{localhost}, which is stupid but usually works. Try to change
+the default if mails get rejected due to anti-SPAM measures. Possible choices
+are the domain part of your mail address (@code{provider.example} for
 @code{joe@@provider.example}) or the fully qualified domain name of your host
 (if available).
 @end table

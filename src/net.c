@@ -406,16 +406,27 @@ int net_open_socket(const char *hostname, int port, int timeout, int *ret_fd,
         if (fd < 0)
         {
             cause = 1;
+#ifdef W32_NATIVE
+            failure_errno = WSAGetLastError();
+#else
             failure_errno = errno;
+#endif
             continue;
         }
         if (net_connect(fd, res->ai_addr, res->ai_addrlen, timeout) < 0)
         {
             cause = 2;
+#ifdef W32_NATIVE
+            if (WSAGetLastError() != WSAENETUNREACH)
+            {
+                failure_errno = WSAGetLastError();
+            }
+#else
             if (errno != ENETUNREACH)
             {
                 failure_errno = errno;
             }
+#endif
             close(fd);
             fd = -1;
             continue;
@@ -459,7 +470,7 @@ int net_open_socket(const char *hostname, int port, int timeout, int *ret_fd,
         {
             *errstr = xasprintf(_("cannot create socket: %s"),
 #ifdef W32_NATIVE
-                    wsa_strerror(WSAGetLastError())
+                    wsa_strerror(failure_errno)
 #else
                     strerror(failure_errno)
 #endif
@@ -469,8 +480,12 @@ int net_open_socket(const char *hostname, int port, int timeout, int *ret_fd,
         else /* cause == 2 */
         {
 #ifdef W32_NATIVE
+            if (failure_errno == 0)
+            {
+                failure_errno = WSAENETUNREACH;
+            }
             *errstr = xasprintf(_("cannot connect to %s, port %d: %s"),
-                    hostname, port, wsa_strerror(WSAGetLastError()));
+                    hostname, port, wsa_strerror(failure_errno));
 #else
             if (failure_errno == EINTR)
             {

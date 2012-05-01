@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008
+ * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2012
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -350,7 +350,7 @@ int net_open_socket(const char *hostname, int port, int timeout, int *ret_fd,
     struct addrinfo *res0;
     struct addrinfo *res;
     int error_code;
-    int saved_errno;
+    int failure_errno;
     int cause;
     char nameinfo_buffer[NI_MAXHOST];
 #ifdef HAVE_LIBIDN
@@ -399,20 +399,24 @@ int net_open_socket(const char *hostname, int port, int timeout, int *ret_fd,
 
     fd = -1;
     cause = 0;
+    failure_errno = 0;
     for (res = res0; res; res = res->ai_next)
     {
         fd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
         if (fd < 0)
         {
             cause = 1;
+            failure_errno = errno;
             continue;
         }
         if (net_connect(fd, res->ai_addr, res->ai_addrlen, timeout) < 0)
         {
             cause = 2;
-            saved_errno = errno;
+            if (errno != ENETUNREACH)
+            {
+                failure_errno = errno;
+            }
             close(fd);
-            errno = saved_errno;
             fd = -1;
             continue;
         }
@@ -457,7 +461,7 @@ int net_open_socket(const char *hostname, int port, int timeout, int *ret_fd,
 #ifdef W32_NATIVE
                     wsa_strerror(WSAGetLastError())
 #else
-                    strerror(errno)
+                    strerror(failure_errno)
 #endif
                     );
             return NET_ESOCKET;
@@ -468,14 +472,18 @@ int net_open_socket(const char *hostname, int port, int timeout, int *ret_fd,
             *errstr = xasprintf(_("cannot connect to %s, port %d: %s"),
                     hostname, port, wsa_strerror(WSAGetLastError()));
 #else
-            if (errno == EINTR)
+            if (failure_errno == EINTR)
             {
                 *errstr = xasprintf(_("operation aborted"));
             }
             else
             {
+                if (failure_errno == 0)
+                {
+                    failure_errno = ENETUNREACH;
+                }
                 *errstr = xasprintf(_("cannot connect to %s, port %d: %s"),
-                        hostname, port, strerror(errno));
+                        hostname, port, strerror(failure_errno));
             }
 #endif
             return NET_ECONNECT;

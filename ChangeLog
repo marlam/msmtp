@@ -1,3 +1,9 @@
+Version 1.4.28:
+- Update autotools files.
+- Improve error message on connection failures in some IPv6/IPv4 situations.
+- Improve documentation of EHLO issues.
+- Bug fix: expand tilde for the aliases command.
+
 Version 1.4.27:
 - Always use the internal MD5 functions for the built-in CRAM-MD5
   implementation; never use the ones from OpenSSL. This fixes problems with

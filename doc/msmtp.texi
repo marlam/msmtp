@@ -165,7 +165,7 @@ Every account definition must contain this command.
 The port that the SMTP server listens on. 
 The default port will be acquired from your operating system's service database:
 for SMTP, the service is "smtp" (default port 25), unless TLS 
-without STARTTLS is used, in which case it is "ssmtp" (465). For LMTP, it is 
+without STARTTLS is used, in which case it is "smtps" (465). For LMTP, it is 
 "lmtp".
 @anchor{timeout}
 @item timeout (off|@var{seconds})
@@ -754,7 +754,7 @@ is designed to prevent eavesdropping, tampering, or message forgery."
 SMTP servers can use TLS in one of two modes:
 @itemize
 @item Immediately. This is SMTP tunneled through TLS, aka SSMTP. The default
-port for this mode is 465 (ssmtp).
+port for this mode is 465 (smtps).
 @item Via the STARTTLS SMTP command.  The SMTP session begins normally. The
 client sends the STARTTLS command when it wishes to begin TLS encryption. The
 default port for this mode is the default SMTP port: 25 (smtp).

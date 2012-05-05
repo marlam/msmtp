@@ -570,7 +570,7 @@ int msmtp_rmqs(account_t *acc, int debug, const char *rmqs_argument,
     }
 #endif /* HAVE_TLS */
 
-    /* start tls for ssmtp servers */
+    /* start tls for smtps servers */
 #ifdef HAVE_TLS
     if (acc->tls && acc->tls_nostarttls)
     {
@@ -747,7 +747,7 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
     }
 #endif /* HAVE_TLS */
 
-    /* start tls for ssmtp servers */
+    /* start tls for smtps servers */
 #ifdef HAVE_TLS
     if (acc->tls && acc->tls_nostarttls)
     {
@@ -1631,7 +1631,7 @@ int msmtp_sendmail(account_t *acc, list_t *recipients,
         return e;
     }
 
-    /* start tls for ssmtp servers */
+    /* start tls for smtps servers */
 #ifdef HAVE_TLS
     if (acc->tls && acc->tls_nostarttls)
     {
@@ -3732,7 +3732,7 @@ int main(int argc, char *argv[])
             if (account->tls && account->tls_nostarttls)
             {
 #ifdef HAVE_GETSERVBYNAME
-                se = getservbyname("ssmtp", NULL);
+                se = getservbyname("smtps", NULL);
                 account->port = se ? ntohs(se->s_port) : 465;
 #else
                 account->port = 465;

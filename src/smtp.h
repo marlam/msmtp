@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2008, 2010
+ * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2008, 2010, 2012
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -204,7 +204,7 @@ int smtp_tls_starttls(smtp_server_t *srv, list_t **error_msg, char **errstr);
  *
  * Start TLS with a connected SMTP server.
  * Use this function either after smtp_connect() for SMTP servers
- * that use TLS without the STARTTLS command (service ssmtp; default port 465),
+ * that use TLS without the STARTTLS command (service smtps; default port 465),
  * or after smtp_tls_starttls() for SMTP servers that support the STARTTLS
  * command.
  * See tls_start() for a description of the arguments.

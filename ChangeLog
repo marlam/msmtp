@@ -1,3 +1,11 @@
+Version 1.4.29:
+- Fix bugs in msmtp_read_addresses(), including a crash.
+- Removed autotools files that are automatically copied by 'autoreconf -i'
+  from repository.
+- Properly require an argument to --passwordeval. Fixes a crash when none is
+  given.
+- Replace old service name "ssmtp" with current one: "smtps".
+
 Version 1.4.28:
 - Update autotools files.
 - Improve error message on connection failures in some IPv6/IPv4 situations.

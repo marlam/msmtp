@@ -1474,7 +1474,7 @@ int msmtp_read_addresses(FILE *mailf, FILE *tmpfile,
         {
             /* The current recipient just ended. Add it to the list */
             current_recipient[current_recipient_len] = '\0';
-            if (from_hdr >= 0)
+            if (from_hdr == 0)
             {
                 *from = current_recipient;
                 from_hdr = 1;

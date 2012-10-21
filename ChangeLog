@@ -1,3 +1,7 @@
+Version 1.4.30:
+- Fix a bug in msmtp_read_addresses() that was introduced in version 1.4.29 by
+  fixing a problem in the wrong way.
+
 Version 1.4.29:
 - Fix bugs in msmtp_read_addresses(), including a crash.
 - Removed autotools files that are automatically copied by 'autoreconf -i'

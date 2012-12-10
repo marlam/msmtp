@@ -1,3 +1,4 @@
+Makefile
 Makefile.in
 aclocal.m4
 autom4te.cache/
@@ -9,8 +10,10 @@ build-aux/install-sh
 build-aux/ltmain.sh
 build-aux/mdate-sh
 build-aux/missing
+config.h
 config.h.in
 config.log
+config.status
 configure
 *.swp
 *~
@@ -19,3 +22,12 @@ configure
 doc/*.info
 doc/version.texi
 doc/stamp-vti
+po/POTFILES
+po/remove-potcdate.sed
+po/stamp-po
+src/.deps
+src/*.o
+src/*.obj
+src/msmtp
+src/msmtp.exe
+stamp-h1

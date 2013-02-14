@@ -28,7 +28,7 @@ list
 Installation :
 ------------
 
-copy msmtpq and msmtp-queue to wherever location is best for you
+copy msmtpq and msmtp-queue to whatever location is best for you
 (I use /usr/local/bin) ; the directory chosen should be on the path
 
 replace the msmtp invocation in your mail client with msmtpq ; e.g. for
@@ -36,7 +36,7 @@ mutt : 'set sendmail = /path/to/msmtpq'
 
 msmtpq will then take care of the management and routing of outgoing
 mail ; normally sending a mail is nearly instantaneous, but a very long
-mail (or one with large attachments) can take some time to make its way
+mail (e.g. one with large attachments) can take some time to make its way
 through ; therefore it's wise to have the MUA background the process if
 possible
 
@@ -55,15 +55,10 @@ from msmtpq
 Configuration :
 -------------
 
-[ note that the msmtp-queue script simply invokes msmtpq ; for most
-  installations this works 'out of the box' (it is on the path) but for
-  special cases (embedded, etc.) it may be necessary to modify the msmtpq
-  invocation in msmtp-queue to specify the location of the msmtpq script ]
-
 all config is done within the msmtpq script
 
   set the MSMTP var to point to the location of the msmtp executable
-    (only necessary if it's not on the path)
+    (only if necessary ; if it's not on the path)
   set the Q var to point to the location of the queue directory
   set the LOG var to point to the location of the queue log
 
@@ -98,6 +93,39 @@ mutt users please take note of the additional setup instructions in the
 msmtp docs & man page.
 
 
+to use msmtpq with additional options :
+
+set sendmail = "/path/to/msmtpq"
+                 # normal config for mutt to use the queue
+                 # (by default the ping connection test is enabled)
+set sendmail = "EMAIL_CONN_NOTEST=t /path/to/msmtpq"
+                 # use queue without a net connection test
+
+set sendmail = "EMAIL_CONN_TEST=p /path/to/msmtpq"
+                 # use queue with ping connection test (the default)
+set sendmail = "EMAIL_CONN_TEST=P /path/to/msmtpq"
+                 # use queue with faster ping connection test
+                 # (to an IP address, without a DNS lookup)
+set sendmail = "EMAIL_CONN_TEST=n /path/to/msmtpq"
+                 # use queue with netcat connection test
+                 # (netcat must be installed on user's system)
+set sendmail = "EMAIL_CONN_TEST=s /path/to/msmtpq"
+                 # use queue with sh sockets connection test
+                 # (this does *not* work on Debian systems
+                 #  socket use is not compiled into bash for
+                 #  security on multiuser systems - it may not be
+                 #  a serious consideration, however, on
+                 #  single user workstations - e.g. on laptops -
+                 #  or in embedded systems)
+
+set sendmail = "EMAIL_QUEUE_QUIET=t /path/to/msmtpq"
+                 # use queue ; suppress messages and 'chatter'
+                 # good, apparently, for use w/emacs
+
+multiple environmental vars may be used on the command line,
+space separated, before the msmtpq invocation
+
+
 in summary :
   copy the msmtpq and msmtp-queue scripts to the directory where they will live
     be certain that they are executable
@@ -107,7 +135,7 @@ in summary :
     ( chmod 0700 /path/to/queue/dir )
   enter or confirm the values of the three config vars in msmtpq
   for mutt users -
-    set sendmail="/path/to/msmtpq"
+    set sendmail="/path/to/msmtpq"   ("ANY_ENV_VARS_HERE /path/to/msmtpq")
     set sendmail_wait = -1
     set use_from=yes
     set realname="Your Name"
@@ -115,8 +143,9 @@ in summary :
     set envelope_from=yes
     (and perhaps more on the msmtp man page & docs ...)
   for other MUAs -
-    set the mta to '/path/to/msmtpq'
+    set the mta to '/path/to/msmtpq', as above
     background its execution, if possible
+
 
 log(s) rotation :
 
@@ -136,18 +165,19 @@ Suggested contents :
 }
 #--------------------------------------------------
 
-adjust it to your log location(s) and see the logrotate man page for
-further config information ; it should be trivial to adapt to other
-systems
+adjust it to your queue and log location(s) and name(s) and
+see the logrotate man page for further config information ;
+it should be trivial to adapt to other systems
 
 That's it.
 
 
-Use :
----
+Usage :
+-----
 
 msmtpq is entirely self contained ; beyond keeping an eye on the queue
-and queue logs it should require no admin or user attention.
+and queue logs it should require no admin or user attention once set up
+
 
 msmtp-queue offers the following options :
 

@@ -1,3 +1,7 @@
+Version 1.4.32:
+- A recipient list on the command line is now parsed as if it appeared in a
+  mail header.
+
 Version 1.4.31:
 - Updated the msmtpq script.
 - Fixed building of the documentation with texinfo >= 5.0.

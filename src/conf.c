@@ -3,7 +3,8 @@
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2010, 2011, 2012
+ * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2010, 2011, 2012,
+ * 2014
  * Martin Lambers <marlam@marlam.de>
  * Martin Stenberg <martin@gnutiken.se> (passwordeval support)
  * Scott Shumate <sshumate@austin.rr.com> (aliases support)
@@ -782,6 +783,10 @@ int get_password_eval(const char *arg, char **buf, char **errstr)
         else
         {
             (*buf)[l - 1] = '\0';
+            if (l - 1 > 0 && (*buf)[l - 2] == '\r')
+            {
+                (*buf)[l - 2] = '\0';
+            }
         }
     }
 

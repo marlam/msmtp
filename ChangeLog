@@ -1,3 +1,7 @@
+Version 1.4.33:
+- passwordeval: Remove \r in addition to \n from command output, for Windows
+  systems.
+
 Version 1.4.32:
 - A recipient list on the command line is now parsed as if it appeared in a
   mail header.

@@ -2326,97 +2326,69 @@ void msmtp_print_version(void)
 
 void msmtp_print_help(void)
 {
-    printf(_("USAGE:\n\n"
-            "Sendmail mode (default):\n"
-            "  %s [option...] [--] recipient...\n"
-            "  %s [option...] -t [--] [recipient...]\n"
-            "  Read a mail from standard input and transmit it to an SMTP "
-                "or LMTP server.\n"
-            "Server information mode:\n"
-            "  %s [option...] --serverinfo\n"
-            "  Print information about a server.\n"
-            "Remote Message Queue Starting mode:\n"
-            "  %s [option...] --rmqs=host|@domain|#queue\n"
-            "  Send a Remote Message Queue Starting request to a server.\n"
-            "\nOPTIONS:\n\n"
-            "General options:\n"
-            "  --version                    Print version.\n"
-            "  --help                       Print help.\n"
-            "  -P, --pretend                Print configuration info and "
-                "exit.\n"
-            "  -d, --debug                  Print debugging information.\n"
-            "Changing the mode of operation:\n"
-            "  -S, --serverinfo             Print information about the "
-                "server.\n"
-            "  --rmqs=host|@domain|#queue   Send a Remote Message Queue "
-                "Starting request.\n"
-            "Configuration options:\n"
-            "  -C, --file=filename          Set configuration file.\n"
-            "  -a, --account=id             Use the given account instead of "
-                "the account\n"
-            "                               named \"default\"; its settings "
-                "may be changed\n"
-            "                               with command line options.\n"
-            "  --host=hostname              Set the server, use only command "
-                "line settings;\n"
-            "                               do not use any configuration file "
-                "data.\n"
-            "  --port=number                Set port number.\n"
-            "  --timeout=(off|seconds)      Set/unset network timeout in "
-                "seconds.\n"
-            "  --protocol=(smtp|lmtp)       Use the given sub protocol.\n"
-            "  --domain=string              Set the argument of EHLO or LHLO "
-                "command.\n"
-            "  --auth[=(on|off|method)]     Enable/disable authentication and "
-                "optionally\n"
-            "                               choose the method.\n"
-            "  --user=[username]            Set/unset user name for "
-                "authentication.\n"
-            "  --passwordeval=[eval]        Evaluate password for "
-                "authentication.\n"
-            "  --tls[=(on|off)]             Enable/disable TLS encryption.\n"
-            "  --tls-starttls[=(on|off)]    Enable/disable STARTTLS for TLS.\n"
-            "  --tls-trust-file=[file]      Set/unset trust file for TLS.\n"
-            "  --tls-crl-file=[file]        Set/unset revocation file for "
-                "TLS.\n"
-            "  --tls-fingerprint=[f]        Set/unset trusted certificate "
-                "fingerprint for\n"
-            "                               TLS.\n"
-            "  --tls-key-file=[file]        Set/unset private key file for "
-                "TLS.\n"
-            "  --tls-cert-file=[file]       Set/unset private cert file for "
-                "TLS.\n"
-            "  --tls-certcheck[=(on|off)]   Enable/disable server certificate "
-                "checks for TLS.\n"
-            "  --tls-force-sslv3[=(on|off)] Enable/disable restriction to "
-                "SSLv3.\n"
-            "  --tls-min-dh-prime-bits=[b]  Set/unset minimum bit size of "
-                "DH prime.\n"
-            "  --tls-priorities=[prios]     Set/unset TLS priorities.\n"
-            "Options specific to sendmail mode:\n"
-            "  --auto-from[=(on|off)]       Enable/disable automatic "
-                "envelope-from addresses.\n"
-            "  -f, --from=address           Set envelope from address.\n"
-            "  --maildomain=[domain]        Set the domain for automatic "
-                "envelope from\n"
-            "                               addresses.\n"
-            "  -N, --dsn-notify=(off|cond)  Set/unset DSN conditions.\n"
-            "  -R, --dsn-return=(off|ret)   Set/unset DSN amount.\n"
-            "  --keepbcc[=(on|off)]         Enable/disable preservation of the "
-                "Bcc header.\n"
-            "  -X, --logfile=[file]         Set/unset log file.\n"
-            "  --syslog[=(on|off|facility)] Enable/disable/configure syslog "
-                "logging.\n"
-            "  -t, --read-recipients        Read additional recipients from "
-                "the mail.\n"
-            "  --read-envelope-from         Read envelope from address from "
-                "the mail.\n"
-            "  --aliases=[file]             Set/unset aliases file.\n"
-            "  --                           End of options.\n"
-            "Accepted but ignored: -A, -B, -bm, -F, -G, -h, -i, -L, -m, -n, "
-                "-O, -o, -v\n"
-            "\nReport bugs to <%s>.\n"),
-            prgname, prgname, prgname, prgname, PACKAGE_BUGREPORT);
+    printf(_("Usage:\n\n"));
+    printf(_("Sendmail mode (default):\n"
+             "  %s [option...] [--] recipient...\n"
+             "  %s [option...] -t [--] [recipient...]\n"
+             "  Read a mail from standard input and transmit it to an SMTP "
+                "or LMTP server.\n"), prgname, prgname);
+    printf(_("Server information mode:\n"
+             "  %s [option...] --serverinfo\n"
+             "  Print information about a server.\n"), prgname);
+    printf(_("Remote Message Queue Starting mode:\n"
+             "  %s [option...] --rmqs=host|@domain|#queue\n"
+             "  Send a Remote Message Queue Starting request to a server.\n\n"),
+             prgname);
+    printf(_("General options:\n"));
+    printf(_("  --version                    print version\n"));
+    printf(_("  --help                       print help\n"));
+    printf(_("  -P, --pretend                print configuration info and exit\n"));
+    printf(_("  -d, --debug                  print debugging information\n"));
+    printf(_("Changing the mode of operation:\n"));
+    printf(_("  -S, --serverinfo             print information about the server\n"));
+    printf(_("  --rmqs=host|@domain|#queue   send a Remote Message Queue Starting request\n"));
+    printf(_("Configuration options:\n"));
+    printf(_("  -C, --file=filename          set configuration file\n"));
+    printf(_("  -a, --account=id             use the given account instead of the account\n"
+             "                               named \"default\"; its settings may be changed\n"
+             "                               with command-line options\n"));
+    printf(_("  --host=hostname              set the server, use only command-line settings;\n"
+             "                               do not use any configuration file data\n"));
+    printf(_("  --port=number                set port number\n"));
+    printf(_("  --timeout=(off|seconds)      set/unset network timeout in seconds\n"));
+    printf(_("  --protocol=(smtp|lmtp)       use the given sub protocol\n"));
+    printf(_("  --domain=string              set the argument of EHLO or LHLO command\n"));
+    printf(_("  --auth[=(on|off|method)]     enable/disable authentication and optionally\n"
+             "                               choose the method\n"));
+    printf(_("  --user=[username]            set/unset user name for authentication\n"));
+    printf(_("  --passwordeval=[eval]        evaluate password for authentication\n"));
+    printf(_("  --tls[=(on|off)]             enable/disable TLS encryption\n"));
+    printf(_("  --tls-starttls[=(on|off)]    enable/disable STARTTLS for TLS\n"));
+    printf(_("  --tls-trust-file=[file]      set/unset trust file for TLS\n"));
+    printf(_("  --tls-crl-file=[file]        set/unset revocation file for TLS\n"));
+    printf(_("  --tls-fingerprint=[f]        set/unset trusted certificate fingerprint for TLS\n"));
+    printf(_("  --tls-key-file=[file]        set/unset private key file for TLS\n"));
+    printf(_("  --tls-cert-file=[file]       set/unset private cert file for TLS\n"));
+    printf(_("  --tls-certcheck[=(on|off)]   enable/disable server certificate checks for TLS\n"));
+    printf(_("  --tls-force-sslv3[=(on|off)] enable/disable restriction to SSLv3\n"));
+    printf(_("  --tls-min-dh-prime-bits=[b]  set/unset minimum bit size of DH prime\n"));
+    printf(_("  --tls-priorities=[prios]     set/unset TLS priorities.\n"));
+    printf(_("Options specific to sendmail mode:\n"));
+    printf(_("  --auto-from[=(on|off)]       enable/disable automatic envelope-from addresses\n"));
+    printf(_("  -f, --from=address           set envelope from address\n"));
+    printf(_("  --maildomain=[domain]        set the domain for automatic envelope from\n"
+             "                               addresses\n"));
+    printf(_("  -N, --dsn-notify=(off|cond)  set/unset DSN conditions\n"));
+    printf(_("  -R, --dsn-return=(off|ret)   set/unset DSN amount\n"));
+    printf(_("  --keepbcc[=(on|off)]         enable/disable preservation of the Bcc header\n"));
+    printf(_("  -X, --logfile=[file]         set/unset log file\n"));
+    printf(_("  --syslog[=(on|off|facility)] enable/disable/configure syslog logging\n"));
+    printf(_("  -t, --read-recipients        read additional recipients from the mail\n"));
+    printf(_("  --read-envelope-from         read envelope from address from the mail\n"));
+    printf(_("  --aliases=[file]             set/unset aliases file\n"));
+    printf(_("  --                           end of options\n"));
+    printf(_("Accepted but ignored: -A, -B, -bm, -F, -G, -h, -i, -L, -m, -n, -O, -o, -v\n"));
+    printf(_("\nReport bugs to <%s>.\n"), PACKAGE_BUGREPORT);
 }
 
 

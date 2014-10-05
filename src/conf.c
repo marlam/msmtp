@@ -341,7 +341,7 @@ unsigned char *get_fingerprint(const char *s, size_t len)
                 return NULL;
             }
         }
-        if (i < len - 1 && s[3 * i + 2] != ':')
+        if (i < len - 1 && s[3 * i + 2] != ':' && s[3 * i + 2] != ' ')
         {
             free(fingerprint);
             return NULL;

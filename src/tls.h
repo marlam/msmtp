@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2010
+ * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2010, 2014
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -118,9 +118,6 @@ void tls_clear(tls_t *tls);
  * the peer certificate will be compared to the given fingerprint and the
  * certificate is trusted when they match.
  * All files must be in PEM format.
- * If 'force_sslv3' is set, then only the SSLv3 protocol will be accepted. This
- * option might be needed to talk to some obsolete broken servers. Only use this
- * if you have to.
  * If 'min_dh_prime_bits' is greater than or equal to zero, then only DH primes
  * that have at least the given size will be accepted. For values less than
  * zero, the library default is used.
@@ -133,7 +130,7 @@ int tls_init(tls_t *tls,
         const char *trust_file, const char *crl_file,
         const unsigned char *sha1_fingerprint,
         const unsigned char *md5_fingerprint,
-        int force_sslv3, int min_dh_prime_bits, const char *priorities,
+        int min_dh_prime_bits, const char *priorities,
         char **errstr);
 
 /*

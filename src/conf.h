@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2010, 2011
+ * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2010, 2011, 2014
  * Martin Lambers <marlam@marlam.de>
  * Martin Stenberg <martin@gnutiken.se> (passwordeval support)
  * Scott Shumate <sshumate@austin.rr.com> (aliases support)
@@ -68,7 +68,6 @@
 #define ACC_TLS_CRL_FILE                (1 << 21)
 #define ACC_TLS_FINGERPRINT             (1 << 22)
 #define ACC_TLS_NOCERTCHECK             (1 << 23)
-#define ACC_TLS_FORCE_SSLV3             (1 << 24)
 #define ACC_TLS_MIN_DH_PRIME_BITS       (1 << 25)
 #define ACC_TLS_PRIORITIES              (1 << 26)
 #define ACC_LOGFILE                     (1 << 27)
@@ -114,7 +113,6 @@ typedef struct
     int tls_nostarttls;         /* flag: start TLS immediatly
                                    (without STARTTLS command)? */
     int tls_nocertcheck;        /* flag: do not check certificate? */
-    int tls_force_sslv3;        /* flag: force SSLv3? */
     int tls_min_dh_prime_bits;  /* parameter; -1 for default */
     char *tls_priorities;       /* parameter; NULL for default */
     /* logging */

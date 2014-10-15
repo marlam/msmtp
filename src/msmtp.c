@@ -562,7 +562,7 @@ int msmtp_rmqs(account_t *acc, int debug, const char *rmqs_argument,
         if ((e = smtp_tls_init(&srv, acc->tls_key_file, acc->tls_cert_file,
                         acc->tls_trust_file, acc->tls_crl_file,
                         acc->tls_sha1_fingerprint, acc->tls_md5_fingerprint,
-                        acc->tls_force_sslv3, acc->tls_min_dh_prime_bits,
+                        acc->tls_min_dh_prime_bits,
                         acc->tls_priorities, errstr)) != TLS_EOK)
         {
             return exitcode_tls(e);
@@ -738,7 +738,7 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
         if ((e = smtp_tls_init(&srv, acc->tls_key_file, acc->tls_cert_file,
                         acc->tls_trust_file, acc->tls_crl_file,
                         acc->tls_sha1_fingerprint, acc->tls_md5_fingerprint,
-                        acc->tls_force_sslv3, acc->tls_min_dh_prime_bits,
+                        acc->tls_min_dh_prime_bits,
                         acc->tls_priorities, errstr)) != TLS_EOK)
         {
             e = exitcode_tls(e);
@@ -1614,7 +1614,7 @@ int msmtp_sendmail(account_t *acc, list_t *recipients,
         if ((e = smtp_tls_init(&srv, acc->tls_key_file, acc->tls_cert_file,
                         acc->tls_trust_file, acc->tls_crl_file,
                         acc->tls_sha1_fingerprint, acc->tls_md5_fingerprint,
-                        acc->tls_force_sslv3, acc->tls_min_dh_prime_bits,
+                        acc->tls_min_dh_prime_bits,
                         acc->tls_priorities, errstr)) != TLS_EOK)
         {
             e = exitcode_tls(e);
@@ -2370,7 +2370,6 @@ void msmtp_print_help(void)
     printf(_("  --tls-key-file=[file]        set/unset private key file for TLS\n"));
     printf(_("  --tls-cert-file=[file]       set/unset private cert file for TLS\n"));
     printf(_("  --tls-certcheck[=(on|off)]   enable/disable server certificate checks for TLS\n"));
-    printf(_("  --tls-force-sslv3[=(on|off)] enable/disable restriction to SSLv3\n"));
     printf(_("  --tls-min-dh-prime-bits=[b]  set/unset minimum bit size of DH prime\n"));
     printf(_("  --tls-priorities=[prios]     set/unset TLS priorities.\n"));
     printf(_("Options specific to sendmail mode:\n"));
@@ -2903,21 +2902,7 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
                 break;
 
             case LONGONLYOPT_TLS_FORCE_SSLV3:
-                if (!optarg || is_on(optarg))
-                {
-                    conf->cmdline_account->tls_force_sslv3 = 1;
-                }
-                else if (is_off(optarg))
-                {
-                    conf->cmdline_account->tls_force_sslv3 = 0;
-                }
-                else
-                {
-                    print_error(_("invalid argument %s for %s"),
-                            optarg, "--tls-force-sslv3");
-                    error_code = 1;
-                }
-                conf->cmdline_account->mask |= ACC_TLS_FORCE_SSLV3;
+                /* silently ignored for compatibility with versions <= 1.4.32 */
                 break;
 
             case LONGONLYOPT_TLS_MIN_DH_PRIME_BITS:
@@ -3448,8 +3433,7 @@ void msmtp_print_conf(msmtp_cmdline_conf_t conf, account_t *account)
             "tls_fingerprint       = %s\n"
             "tls_key_file          = %s\n"
             "tls_cert_file         = %s\n"
-            "tls_certcheck         = %s\n"
-            "tls_force_sslv3       = %s\n",
+            "tls_certcheck         = %s\n",
             account->username ? account->username : _("(not set)"),
             account->password ? "*" : _("(not set)"),
             account->passwordeval ? account->passwordeval : _("(not set)"),
@@ -3462,8 +3446,7 @@ void msmtp_print_conf(msmtp_cmdline_conf_t conf, account_t *account)
                 ? fingerprint_string : _("(not set)"),
             account->tls_key_file ? account->tls_key_file : _("(not set)"),
             account->tls_cert_file ? account->tls_cert_file : _("(not set)"),
-            account->tls_nocertcheck ? _("off") : _("on"),
-            account->tls_force_sslv3 ? _("on") : _("off"));
+            account->tls_nocertcheck ? _("off") : _("on"));
     printf("tls_min_dh_prime_bits = ");
     if (account->tls_min_dh_prime_bits >= 0)
     {

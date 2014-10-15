@@ -539,13 +539,13 @@ int smtp_tls_init(smtp_server_t *srv,
         const char *tls_trust_file, const char *tls_crl_file,
         const unsigned char *tls_sha1_fingerprint,
         const unsigned char *tls_md5_fingerprint,
-        int force_sslv3, int min_dh_prime_bits,
+        int min_dh_prime_bits,
         const char *priorities, char **errstr)
 {
     return tls_init(&srv->tls, tls_key_file, tls_cert_file,
             tls_trust_file, tls_crl_file,
             tls_sha1_fingerprint, tls_md5_fingerprint,
-            force_sslv3, min_dh_prime_bits, priorities, errstr);
+            min_dh_prime_bits, priorities, errstr);
 }
 #endif /* HAVE_TLS */
 

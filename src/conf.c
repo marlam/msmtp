@@ -87,7 +87,6 @@ account_t *account_new(const char *conffile, const char *id)
     a->tls_sha1_fingerprint = NULL;
     a->tls_md5_fingerprint = NULL;
     a->tls_nocertcheck = 0;
-    a->tls_force_sslv3 = 0;
     a->tls_min_dh_prime_bits = -1;
     a->tls_priorities = NULL;
     a->logfile = NULL;
@@ -157,7 +156,6 @@ account_t *account_copy(account_t *acc)
             a->tls_md5_fingerprint = NULL;
         }
         a->tls_nocertcheck = acc->tls_nocertcheck;
-        a->tls_force_sslv3 = acc->tls_force_sslv3;
         a->tls_min_dh_prime_bits = acc->tls_min_dh_prime_bits;
         a->tls_priorities =
             acc->tls_priorities ? xstrdup(acc->tls_priorities) : NULL;
@@ -614,10 +612,6 @@ void override_account(account_t *acc1, account_t *acc2)
     if (acc2->mask & ACC_TLS_NOCERTCHECK)
     {
         acc1->tls_nocertcheck = acc2->tls_nocertcheck;
-    }
-    if (acc2->mask & ACC_TLS_FORCE_SSLV3)
-    {
-        acc1->tls_force_sslv3 = acc2->tls_force_sslv3;
     }
     if (acc2->mask & ACC_TLS_MIN_DH_PRIME_BITS)
     {
@@ -1453,26 +1447,6 @@ int read_conffile(const char *conffile, FILE *f, list_t **acc_list,
                 break;
             }
         }
-        else if (strcmp(cmd, "tls_force_sslv3") == 0)
-        {
-            acc->mask |= ACC_TLS_FORCE_SSLV3;
-            if (*arg == '\0' || is_on(arg))
-            {
-                acc->tls_force_sslv3 = 1;
-            }
-            else if (is_off(arg))
-            {
-                acc->tls_force_sslv3 = 0;
-            }
-            else
-            {
-                *errstr = xasprintf(
-                        _("line %d: invalid argument %s for command %s"),
-                        line, arg, cmd);
-                e = CONF_ESYNTAX;
-                break;
-            }
-        }
         else if (strcmp(cmd, "tls_min_dh_prime_bits") == 0)
         {
             acc->mask |= ACC_TLS_MIN_DH_PRIME_BITS;
@@ -1676,6 +1650,10 @@ int read_conffile(const char *conffile, FILE *f, list_t **acc_list,
             {
                 acc->tls_nostarttls = 1;
             }
+        }
+        else if (strcmp(cmd, "tls_force_sslv3") == 0)
+        {
+            /* compatibility with versions <= 1.4.32: silently ignore */
         }
         else
         {

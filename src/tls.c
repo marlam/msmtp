@@ -4,7 +4,7 @@
  * This file is part of msmtp, an SMTP client.
  *
  * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011,
- * 2012
+ * 2012, 2014
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -1068,16 +1068,10 @@ int tls_init(tls_t *tls,
         const char *trust_file, const char *crl_file,
         const unsigned char *sha1_fingerprint,
         const unsigned char *md5_fingerprint,
-        int force_sslv3, int min_dh_prime_bits, const char *priorities,
+        int min_dh_prime_bits, const char *priorities,
         char **errstr)
 {
 #ifdef HAVE_LIBGNUTLS
-#if GNUTLS_VERSION_MAJOR > 2 || GNUTLS_VERSION_MINOR >= 12
-    const char *force_sslv3_str = ":-VERS-TLS-ALL:+VERS-SSL3.0";
-#else
-    const char *force_sslv3_str =
-        ":-VERS-TLS1.2:-VERS-TLS1.1:-VERS-TLS1.0:+VERS-SSL3.0";
-#endif
     int error_code;
     char *my_priorities;
     const char *error_pos;
@@ -1090,12 +1084,6 @@ int tls_init(tls_t *tls,
         return TLS_ELIBFAILED;
     }
     my_priorities = xstrdup(priorities ? priorities : "NORMAL");
-    if (force_sslv3)
-    {
-        my_priorities = xrealloc(my_priorities,
-                strlen(my_priorities) + strlen(force_sslv3_str) + 1);
-        strcat(my_priorities, force_sslv3_str);
-    }
     error_pos = NULL;
     if ((error_code = gnutls_priority_set_direct(tls->session,
                     my_priorities, &error_pos)) != 0)
@@ -1198,7 +1186,7 @@ int tls_init(tls_t *tls,
 
 #ifdef HAVE_LIBSSL
 
-    const SSL_METHOD *ssl_method = NULL;
+    const SSL_METHOD *ssl_method = SSLv23_client_method();
 
     /* FIXME: Implement support for 'min_dh_prime_bits' */
     if (min_dh_prime_bits >= 0)
@@ -1225,7 +1213,6 @@ int tls_init(tls_t *tls,
         return TLS_ELIBFAILED;
     }
 
-    ssl_method = force_sslv3 ? SSLv3_client_method() : SSLv23_client_method();
     if (!ssl_method)
     {
         *errstr = xasprintf(_("cannot set TLS method"));
@@ -1237,8 +1224,8 @@ int tls_init(tls_t *tls,
                 ERR_error_string(ERR_get_error(), NULL));
         return TLS_ELIBFAILED;
     }
-    /* SSLv2 has known flaws. Disable it. */
-    (void)SSL_CTX_set_options(tls->ssl_ctx, SSL_OP_NO_SSLv2);
+    /* SSLv2 and SSLv3 have known flaws. Disable them. */
+    (void)SSL_CTX_set_options(tls->ssl_ctx, SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3);
     if (key_file && cert_file)
     {
         if (SSL_CTX_use_PrivateKey_file(

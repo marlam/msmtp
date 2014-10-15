@@ -121,8 +121,6 @@ command below.
 .IP "\-\-tls\-certcheck[=(\fIon\fP|\fIoff\fP)]"
 Enable or disable server certificate checks for TLS encryption. See the
 \fBtls_certcheck\fP command below.
-.IP "\-\-tls\-force\-sslv3[=(\fIon\fP|\fIoff\fP)]"
-Force TLS/SSL version SSLv3. See the \fBtls_force_sslv3\fP command below.
 .IP "\-\-tls\-min\-dh\-prime\-bits=[\fIbits\fP]"
 Set or unset minimum bit size of the Diffie-Hellman (DH) prime. See the
 \fBtls_min_dh_prime_bits\fP command below.
@@ -418,9 +416,6 @@ to man-in-the-middle attacks!
 .br
 For compatibility with older versions, \fBtls_nocertcheck\fP is accepted as an
 alias for \fBtls_certcheck off\fP.
-.IP "tls_force_sslv3 [(\fIon\fP|\fIoff\fP)]"
-Force TLS/SSL version SSLv3. This might be needed to use SSL with some old and 
-broken servers. Do not use this unless you have to.
 .IP "tls_min_dh_prime_bits [\fIbits\fP]"
 Set or unset the minimum number of Diffie-Hellman (DH) prime bits that msmtp
 will accept for TLS sessions.  The default is set by the TLS library and can be

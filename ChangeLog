@@ -2,8 +2,7 @@ Version 1.4.33:
 - Remove the obsolete tls_force_sslv3 command and --tls-force-sslv3 option from
   the documentation. They are still accepted by msmtp for compatibility, but
   have no effect anymore.
-- Disable SSLv3 in addition to SSLv2 when OpenSSL is used (for GnuTLS, a library
-  update should take care of this).
+- Disable SSLv3 in addition to SSLv2.
 - passwordeval: Remove \r in addition to \n from command output, for Windows
   systems.
 

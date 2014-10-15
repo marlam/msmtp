@@ -1083,7 +1083,7 @@ int tls_init(tls_t *tls,
                 gnutls_strerror(error_code));
         return TLS_ELIBFAILED;
     }
-    my_priorities = xstrdup(priorities ? priorities : "NORMAL");
+    my_priorities = xstrdup(priorities ? priorities : "NORMAL:-VERS-SSL3.0");
     error_pos = NULL;
     if ((error_code = gnutls_priority_set_direct(tls->session,
                     my_priorities, &error_pos)) != 0)

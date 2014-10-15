@@ -1,6 +1,6 @@
 Version 1.4.33:
-- SSLv3 is disabled by default when OpenSSL is used, and the obsolete
-  tls_force_sslv3 command and --tls-force-sslv3 option have no effect anymore.
+- SSLv3 is disabled, and the obsolete tls_force_sslv3 command and
+  --tls-force-sslv3 option have no effect anymore.
 
 Version 1.4.32:
 - A recipient list on the command line is now parsed as if it appeared in a

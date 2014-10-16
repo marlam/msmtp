@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008
+ * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2014
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -38,6 +38,7 @@
 #define NET_ESOCKET             3       /* Cannot create socket */
 #define NET_ECONNECT            4       /* Cannot connect */
 #define NET_EIO                 5       /* Input/output error */
+#define NET_EPROXY              6       /* Proxy failure */
 
 /*
  * net_lib_init()
@@ -52,6 +53,8 @@ int net_lib_init(char **errstr);
  * net_open_socket()
  *
  * Opens a TCP socket to 'hostname':'port'.
+ * 'proxy_hostname' and 'proxy_port' define a SOCKS5 proxy to use, unless they
+ * are NULL/-1, in which case no proxy will be used.
  * 'hostname' may be a host name or a network address.
  * 'timeout' is measured in secondes. If it is <= 0, no timeout will be set,
  * which means that the OS dependent default timeout value will be used.
@@ -66,10 +69,14 @@ int net_lib_init(char **errstr);
  * The strings must be deallocated when not used anymore.
  * The file descriptor is returned in 'fd'. It can be closed with close().
  *
- * Used error codes: NET_EHOSTNOTFOUND, NET_ESOCKET, NET_ECONNECT
+ * Used error codes: NET_EHOSTNOTFOUND, NET_ESOCKET, NET_ECONNECT, NET_EPROXY
  */
-int net_open_socket(const char *hostname, int port, int timeout, int *fd,
-        char **canonical_name, char **address, char **errstr);
+int net_open_socket(
+        const char *proxy_hostname, int proxy_port,
+        const char *hostname, int port,
+        int timeout,
+        int *fd, char **canonical_name, char **address,
+        char **errstr);
 
 /*
  * net_gets()

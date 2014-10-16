@@ -92,6 +92,8 @@ account_t *account_new(const char *conffile, const char *id)
     a->logfile = NULL;
     a->syslog = NULL;
     a->aliases = NULL;
+    a->proxy_host = NULL;
+    a->proxy_port = 0;
     return a;
 }
 
@@ -162,6 +164,8 @@ account_t *account_copy(account_t *acc)
         a->logfile = acc->logfile ? xstrdup(acc->logfile) : NULL;
         a->syslog = acc->syslog ? xstrdup(acc->syslog) : NULL;
         a->aliases = acc->aliases ? xstrdup(acc->aliases) : NULL;
+        a->proxy_host = acc->proxy_host ? xstrdup(acc->proxy_host) : NULL;
+        a->proxy_port = acc->proxy_port;
     }
     return a;
 }
@@ -201,6 +205,7 @@ void account_free(void *a)
         free(p->logfile);
         free(p->syslog);
         free(p->aliases);
+        free(p->proxy_host);
         free(p);
     }
 }
@@ -651,6 +656,15 @@ void override_account(account_t *acc1, account_t *acc2)
     {
         free(acc1->aliases);
         acc1->aliases = acc2->aliases ? xstrdup(acc2->aliases) : NULL;
+    }
+    if (acc2->mask & ACC_PROXY_HOST)
+    {
+        free(acc1->proxy_host);
+        acc1->proxy_host = acc2->proxy_host ? xstrdup(acc2->proxy_host) : NULL;
+    }
+    if (acc2->mask & ACC_PROXY_PORT)
+    {
+        acc1->proxy_port = acc2->proxy_port;
     }
     acc1->mask |= acc2->mask;
 }
@@ -1615,6 +1629,42 @@ int read_conffile(const char *conffile, FILE *f, list_t **acc_list,
             else
             {
                 acc->aliases = expand_tilde(arg);
+            }
+        }
+        else if (strcmp(cmd, "proxy_host") == 0)
+        {
+            acc->mask |= ACC_PROXY_HOST;
+            if (*arg == '\0')
+            {
+                *errstr = xasprintf(_("line %d: command %s needs an argument"),
+                        line, cmd);
+                e = CONF_ESYNTAX;
+                break;
+            }
+            else
+            {
+                free(acc->proxy_host);
+                acc->proxy_host = xstrdup(arg);
+            }
+        }
+        else if (strcmp(cmd, "proxy_port") == 0)
+        {
+            acc->mask |= ACC_PROXY_PORT;
+            if (*arg == '\0')
+            {
+                acc->proxy_port = 0;
+            }
+            else
+            {
+                acc->proxy_port = get_pos_int(arg);
+                if (acc->proxy_port < 1 || acc->proxy_port > 65535)
+                {
+                    *errstr = xasprintf(
+                            _("line %d: invalid argument %s for command %s"),
+                            line, arg, cmd);
+                    e = CONF_ESYNTAX;
+                    break;
+                }
             }
         }
         else if (strcmp(cmd, "tls_nocertcheck") == 0)

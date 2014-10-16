@@ -130,6 +130,9 @@ int exitcode_net(int net_error_code)
         case NET_EIO:
             return EX_IOERR;
 
+        case NET_EPROXY:
+            return EX_UNAVAILABLE;
+
         case NET_ELIBFAILED:
         default:
             return EX_SOFTWARE;
@@ -549,7 +552,8 @@ int msmtp_rmqs(account_t *acc, int debug, const char *rmqs_argument,
     srv = smtp_new(debug ? stdout : NULL, acc->protocol);
 
     /* connect */
-    if ((e = smtp_connect(&srv, acc->host, acc->port, acc->timeout,
+    if ((e = smtp_connect(&srv, acc->proxy_host, acc->proxy_port,
+                    acc->host, acc->port, acc->timeout,
                     NULL, NULL, errstr)) != NET_EOK)
     {
         return exitcode_net(e);
@@ -722,7 +726,8 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
     srv = smtp_new(debug ? stdout : NULL, acc->protocol);
 
     /* connect */
-    if ((e = smtp_connect(&srv, acc->host, acc->port, acc->timeout,
+    if ((e = smtp_connect(&srv, acc->proxy_host, acc->proxy_port,
+                    acc->host, acc->port, acc->timeout,
                     &server_canonical_name, &server_address, errstr))
             != NET_EOK)
     {
@@ -1624,7 +1629,8 @@ int msmtp_sendmail(account_t *acc, list_t *recipients,
 #endif /* HAVE_TLS */
 
     /* connect */
-    if ((e = smtp_connect(&srv, acc->host, acc->port, acc->timeout,
+    if ((e = smtp_connect(&srv, acc->proxy_host, acc->proxy_port,
+                    acc->host, acc->port, acc->timeout,
                     NULL, NULL, errstr)) != NET_EOK)
     {
         e = exitcode_net(e);
@@ -2385,6 +2391,8 @@ void msmtp_print_help(void)
     printf(_("  -t, --read-recipients        read additional recipients from the mail\n"));
     printf(_("  --read-envelope-from         read envelope from address from the mail\n"));
     printf(_("  --aliases=[file]             set/unset aliases file\n"));
+    printf(_("  --proxy-host=[host]          set/unset proxy\n"));
+    printf(_("  --proxy-port=[number]        set/unset proxy port\n"));
     printf(_("  --                           end of options\n"));
     printf(_("Accepted but ignored: -A, -B, -bm, -F, -G, -h, -i, -L, -m, -n, -O, -o, -v\n"));
     printf(_("\nReport bugs to <%s>.\n"), PACKAGE_BUGREPORT);
@@ -2449,6 +2457,8 @@ typedef struct
 #define LONGONLYOPT_AUTO_FROM                   25
 #define LONGONLYOPT_READ_ENVELOPE_FROM          26
 #define LONGONLYOPT_ALIASES                     27
+#define LONGONLYOPT_PROXY_HOST                  28
+#define LONGONLYOPT_PROXY_PORT                  29
 
 int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
 {
@@ -2506,6 +2516,8 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
         { "logfile",               required_argument, 0, 'X' },
         { "syslog",                optional_argument, 0, LONGONLYOPT_SYSLOG },
         { "aliases",               required_argument, 0, LONGONLYOPT_ALIASES },
+        { "proxy-host",            required_argument, 0, LONGONLYOPT_PROXY_HOST },
+        { "proxy-port",            required_argument, 0, LONGONLYOPT_PROXY_PORT },
         { "read-recipients",       no_argument,       0, 't' },
         { "read-envelope-from",    no_argument,       0,
             LONGONLYOPT_READ_ENVELOPE_FROM },
@@ -3076,6 +3088,38 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
                 conf->cmdline_account->mask |= ACC_ALIASES;
                 break;
 
+            case LONGONLYOPT_PROXY_HOST:
+                free(conf->cmdline_account->proxy_host);
+                if (*optarg)
+                {
+                    conf->cmdline_account->proxy_host = xstrdup(optarg);
+                }
+                else
+                {
+                    conf->cmdline_account->proxy_host = NULL;
+                }
+                conf->cmdline_account->mask |= ACC_PROXY_HOST;
+                break;
+
+            case LONGONLYOPT_PROXY_PORT:
+                if (*optarg)
+                {
+                    conf->cmdline_account->proxy_port = get_pos_int(optarg);
+                    if (conf->cmdline_account->proxy_port < 1
+                            || conf->cmdline_account->proxy_port > 65535)
+                    {
+                        print_error(_("invalid argument %s for %s"),
+                                optarg, "--proxy-port");
+                        error_code = 1;
+                    }
+                }
+                else
+                {
+                    conf->cmdline_account->proxy_port = 0;
+                }
+                conf->cmdline_account->mask |= ACC_PROXY_PORT;
+                break;
+
             case 't':
                 conf->read_recipients = 1;
                 break;
@@ -3379,6 +3423,10 @@ void msmtp_print_conf(msmtp_cmdline_conf_t conf, account_t *account)
             "port                  = %d\n",
             account->host,
             account->port);
+    printf("proxy host            = %s\n"
+            "proxy port            = %d\n",
+            account->proxy_host ? account->proxy_host : _("(not set)"),
+            account->proxy_port);
     printf("timeout               = ");
     if (account->timeout <= 0)
     {
@@ -3778,6 +3826,15 @@ int main(int argc, char *argv[])
             }
 #endif
         }
+    }
+    if (account->proxy_host && account->proxy_port == 0)
+    {
+#ifdef HAVE_GETSERVBYNAME
+        se = getservbyname("socks", NULL);
+        account->proxy_port = se ? ntohs(se->s_port) : 1080;
+#else
+        account->proxy_port = 1080;
+#endif
     }
     if (conf.sendmail && account->auto_from)
     {

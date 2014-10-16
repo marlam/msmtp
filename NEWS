@@ -1,4 +1,5 @@
 Version 1.4.33:
+- Support for SOCKS proxies was added.
 - SSLv3 is disabled, and the obsolete tls_force_sslv3 command and
   --tls-force-sslv3 option have no effect anymore.
 

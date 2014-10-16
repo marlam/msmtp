@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2012
+ * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2012, 2014
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -165,6 +165,95 @@ const char *wsa_strerror(int error_code)
     }
 }
 #endif /* W32_NATIVE */
+
+
+/*
+ * Wrapper function for recv() that sets an error string on failure.
+ */
+
+int net_recv(int fd, void *buf, size_t len, char **errstr)
+{
+    int r = recv(fd, buf, len, 0);
+    if (r < 0)
+    {
+#ifdef W32_NATIVE
+        int e = WSAGetLastError();
+        if (e == WSAEWOULDBLOCK)
+        {
+            *errstr = xasprintf(_("network read error: %s"),
+                    _("the operation timed out"));
+        }
+        else
+        {
+            *errstr = xasprintf(_("network read error: %s"),
+                    wsa_strerror(e));
+        }
+#else /* !W32_NATIVE */
+        if (errno == EINTR)
+        {
+            *errstr = xasprintf(_("operation aborted"));
+        }
+        else if (errno == EAGAIN)
+        {
+            *errstr = xasprintf(_("network read error: %s"),
+                    _("the operation timed out"));
+        }
+        else
+        {
+            *errstr = xasprintf(_("network read error: %s"),
+                    strerror(errno));
+        }
+#endif
+        return -1;
+    }
+    return r;
+}
+
+
+/*
+ * Wrapper function for send() that sets an error string on failure.
+ */
+
+int net_send(int fd, const void *buf, size_t len, char **errstr)
+{
+#ifdef W32_NATIVE
+    int ret;
+#else /* !W32_NATIVE */
+    ssize_t ret;
+#endif
+    if ((ret = send(fd, buf, len, 0)) < 0)
+    {
+#ifdef W32_NATIVE
+        int e = WSAGetLastError();
+        if (e == WSAEWOULDBLOCK)
+        {
+            *errstr = xasprintf(_("network write error: %s"),
+                    _("the operation timed out"));
+        }
+        else
+        {
+            *errstr = xasprintf(_("network write error: %s"),
+                    wsa_strerror(e));
+        }
+#else /* !W32_NATIVE */
+        if (errno == EINTR)
+        {
+            *errstr = xasprintf(_("operation aborted"));
+        }
+        else if (errno == EAGAIN)
+        {
+            *errstr = xasprintf(_("network write error: %s"),
+                    _("the operation timed out"));
+        }
+        else
+        {
+            *errstr = xasprintf(_("network write error: %s"),
+                    strerror(errno));
+        }
+#endif
+    }
+    return ret;
+}
 
 
 /*
@@ -341,8 +430,150 @@ void net_set_io_timeout(int socket, int seconds)
  * see net.h
  */
 
-int net_open_socket(const char *hostname, int port, int timeout, int *ret_fd,
-        char **canonical_name, char **address, char **errstr)
+int net_socks5_connect(int fd, const char *hostname, int port, char **errstr)
+{
+    /* maximum size of a SOCKS5 message (send or receive) */
+    const size_t required_buffer_size = 1 + 1 + 1 + 1 + 1 + 255 + 2;
+    unsigned char buffer[required_buffer_size];
+    size_t hostname_len = strlen(hostname);
+    uint16_t nport = htons(port);
+    size_t len;
+    int ret;
+
+    if (hostname_len > 0xff)
+    {
+        /* this hostname cannot be sent in a SOCKS5 message */
+        *errstr = xasprintf(_("proxy failure: %s"), _("host name too long"));
+        return NET_EPROXY;
+    }
+
+    /* Send greeting */
+    buffer[0] = 0x05;   /* SOCKS5 */
+    buffer[1] = 0x01;   /* one auth method supported: */
+    buffer[2] = 0x00;   /* no authentication */
+    if ((ret = net_send(fd, buffer, 3, errstr)) < 0)
+    {
+        return NET_EIO;
+    }
+    else if (ret < 3)
+    {
+        *errstr = xasprintf(_("network write error"));
+        return NET_EIO;
+    }
+    /* Receive greeting */
+    if ((ret = net_recv(fd, buffer, 2, errstr)) < 0)
+    {
+        return NET_EIO;
+    }
+    else if (ret < 2)
+    {
+        *errstr = xasprintf(_("network read error"));
+        return NET_EIO;
+    }
+    if (buffer[0] != 0x05               /* SOCKS5 */
+            || buffer[1] != 0x00)       /* no authentication */
+    {
+        *errstr = xasprintf(_("proxy failure: %s"), _("unexpected reply"));
+        return NET_EPROXY;
+    }
+    /* Send CONNECT request */
+    buffer[0] = 0x05;   /* SOCKS5 */
+    buffer[1] = 0x01;   /* CONNECT */
+    buffer[2] = 0x00;   /* reserved */
+    buffer[3] = 0x03;   /* Domain name follows */
+    buffer[4] = hostname_len;
+    memcpy(buffer + 5, hostname, hostname_len);
+    memcpy(buffer + 5 + hostname_len, &nport, 2);
+    len = 5 + hostname_len + 2;
+    if ((ret = net_send(fd, buffer, len, errstr)) < 0)
+    {
+        return NET_EIO;
+    }
+    else if ((size_t)ret < len)
+    {
+        *errstr = xasprintf(_("network write error"));
+        return NET_EIO;
+    }
+    /* Receive answer */
+    if ((ret = net_recv(fd, buffer, 5, errstr)) < 0)
+    {
+        return NET_EIO;
+    }
+    else if (ret < 5)
+    {
+        *errstr = xasprintf(_("network read error"));
+        return NET_EIO;
+    }
+    if (buffer[0] != 0x05               /* SOCKS5 */
+            || buffer[2] != 0x00        /* reserved */
+            || (buffer[3] != 0x01 && buffer[3] != 0x03 && buffer[3] != 0x04))
+    {
+        *errstr = xasprintf(_("proxy failure: %s"), _("unexpected reply"));
+        return NET_EPROXY;
+    }
+    if (buffer[3] == 0x01)
+    {
+        len = 4 - 1;    /* IPv4 */
+    }
+    else if (buffer[3] == 0x04)
+    {
+        len = 16 - 1;   /* IPv6 */
+    }
+    else /* Domain name */
+    {
+        len = buffer[4];
+    }
+    len += 2;   /* port number */
+    if ((ret = net_recv(fd, buffer, len, errstr)) < 0)
+    {
+        return NET_EIO;
+    }
+    else if ((size_t)ret < len)
+    {
+        *errstr = xasprintf(_("network read error"));
+        return NET_EIO;
+    }
+    /* Interpret SOCKS5 status */
+    switch (buffer[1])
+    {
+    case 0x00:
+        return NET_EOK;
+    case 0x01:
+        *errstr = xasprintf(_("proxy failure: %s"), _("general server failure"));
+        return NET_EPROXY;
+    case 0x02:
+        *errstr = xasprintf(_("proxy failure: %s"), _("connection not allowed"));
+        return NET_EPROXY;
+    case 0x03:
+        *errstr = xasprintf(_("proxy failure: %s"), _("network unreachable"));
+        return NET_EPROXY;
+    case 0x04:
+        *errstr = xasprintf(_("proxy failure: %s"), _("host unreachable"));
+        return NET_EPROXY;
+    case 0x05:
+        *errstr = xasprintf(_("proxy failure: %s"), _("connection refused"));
+        return NET_EPROXY;
+    case 0x06:
+        *errstr = xasprintf(_("proxy failure: %s"), _("time-to-live expired"));
+        return NET_EPROXY;
+    case 0x07:
+        *errstr = xasprintf(_("proxy failure: %s"), _("command not supported"));
+        return NET_EPROXY;
+    case 0x08:
+        *errstr = xasprintf(_("proxy failure: %s"), _("address type not supported"));
+        return NET_EPROXY;
+    default:
+        *errstr = xasprintf(_("proxy failure: %s"), _("unknown error"));
+        return NET_EPROXY;
+    }
+}
+
+int net_open_socket(
+        const char *proxy_hostname, int proxy_port,
+        const char *hostname, int port,
+        int timeout,
+        int *ret_fd, char **canonical_name, char **address,
+        char **errstr)
 {
     int fd;
     char *port_string;
@@ -356,6 +587,31 @@ int net_open_socket(const char *hostname, int port, int timeout, int *ret_fd,
 #ifdef HAVE_LIBIDN
     char *hostname_ascii;
 #endif
+
+    if (proxy_hostname)
+    {
+        error_code = net_open_socket(NULL, -1, proxy_hostname, proxy_port,
+                timeout, &fd, NULL, NULL, errstr);
+        if (error_code != NET_EOK)
+        {
+            return error_code;
+        }
+        error_code = net_socks5_connect(fd, hostname, port, errstr);
+        if (error_code != NET_EOK)
+        {
+            return error_code;
+        }
+        *ret_fd = fd;
+        if (canonical_name)
+        {
+            *canonical_name = NULL;
+        }
+        if (address)
+        {
+            *address = NULL;
+        }
+        return NET_EOK;
+    }
 
     hints.ai_family = PF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
@@ -520,26 +776,11 @@ int net_open_socket(const char *hostname, int port, int timeout, int *ret_fd,
 int net_readbuf_read(int fd, readbuf_t *readbuf, char *ptr,
         char **errstr)
 {
-#ifdef W32_NATIVE
-
-    int e;
-
     if (readbuf->count <= 0)
     {
-        readbuf->count = recv(fd, readbuf->buf, sizeof(readbuf->buf), 0);
+        readbuf->count = net_recv(fd, readbuf->buf, sizeof(readbuf->buf), errstr);
         if (readbuf->count < 0)
         {
-            e = WSAGetLastError();
-            if (e == WSAEWOULDBLOCK)
-            {
-                *errstr = xasprintf(_("network read error: %s"),
-                        _("the operation timed out"));
-            }
-            else
-            {
-                *errstr = xasprintf(_("network read error: %s"),
-                        wsa_strerror(e));
-            }
             return -1;
         }
         else if (readbuf->count == 0)
@@ -551,41 +792,6 @@ int net_readbuf_read(int fd, readbuf_t *readbuf, char *ptr,
     readbuf->count--;
     *ptr = *((readbuf->ptr)++);
     return 1;
-
-#else /* !W32_NATIVE */
-
-    if (readbuf->count <= 0)
-    {
-        readbuf->count = (int)recv(fd, readbuf->buf, sizeof(readbuf->buf), 0);
-        if (readbuf->count < 0)
-        {
-            if (errno == EINTR)
-            {
-                *errstr = xasprintf(_("operation aborted"));
-            }
-            else if (errno == EAGAIN)
-            {
-                *errstr = xasprintf(_("network read error: %s"),
-                        _("the operation timed out"));
-            }
-            else
-            {
-                *errstr = xasprintf(_("network read error: %s"),
-                        strerror(errno));
-            }
-            return -1;
-        }
-        else if (readbuf->count == 0)
-        {
-            return 0;
-        }
-        readbuf->ptr = readbuf->buf;
-    }
-    readbuf->count--;
-    *ptr = *((readbuf->ptr)++);
-    return 1;
-
-#endif
 }
 
 
@@ -636,76 +842,25 @@ int net_gets(int fd, readbuf_t *readbuf,
 
 int net_puts(int fd, const char *s, size_t len, char **errstr)
 {
-#ifdef W32_NATIVE
-
-    int e, ret;
+    int ret;
 
     if (len < 1)
     {
         return NET_EOK;
     }
-    if ((ret = send(fd, s, len, 0)) < 0)
+    if ((ret = net_send(fd, s, len, errstr)) < 0)
     {
-        e = WSAGetLastError();
-        if (e == WSAEWOULDBLOCK)
-        {
-            *errstr = xasprintf(_("network write error: %s"),
-                    _("the operation timed out"));
-        }
-        else
-        {
-            *errstr = xasprintf(_("network write error: %s"),
-                    wsa_strerror(e));
-        }
         return NET_EIO;
     }
     else if ((size_t)ret == len)
     {
         return NET_EOK;
     }
-    else /* 0 <= error_code < len */
+    else /* 0 <= ret < len */
     {
         *errstr = xasprintf(_("network write error"));
         return NET_EIO;
     }
-
-#else /* !W32_NATIVE */
-
-    ssize_t ret;
-
-    if (len < 1)
-    {
-        return NET_EOK;
-    }
-    if ((ret = send(fd, s, len, 0)) < 0)
-    {
-        if (errno == EINTR)
-        {
-            *errstr = xasprintf(_("operation aborted"));
-        }
-        else if (errno == EAGAIN)
-        {
-            *errstr = xasprintf(_("network write error: %s"),
-                    _("the operation timed out"));
-        }
-        else
-        {
-            *errstr = xasprintf(_("network write error: %s"),
-                    strerror(errno));
-        }
-        return NET_EIO;
-    }
-    else if ((size_t)ret == len)
-    {
-        return NET_EOK;
-    }
-    else /* 0 <= error_code < len */
-    {
-        *errstr = xasprintf(_("network write error"));
-        return NET_EIO;
-    }
-
-#endif
 }
 
 

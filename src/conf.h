@@ -68,11 +68,13 @@
 #define ACC_TLS_CRL_FILE                (1 << 21)
 #define ACC_TLS_FINGERPRINT             (1 << 22)
 #define ACC_TLS_NOCERTCHECK             (1 << 23)
-#define ACC_TLS_MIN_DH_PRIME_BITS       (1 << 25)
-#define ACC_TLS_PRIORITIES              (1 << 26)
-#define ACC_LOGFILE                     (1 << 27)
-#define ACC_SYSLOG                      (1 << 28)
-#define ACC_ALIASES                     (1 << 29)
+#define ACC_TLS_MIN_DH_PRIME_BITS       (1 << 24)
+#define ACC_TLS_PRIORITIES              (1 << 25)
+#define ACC_LOGFILE                     (1 << 26)
+#define ACC_SYSLOG                      (1 << 27)
+#define ACC_ALIASES                     (1 << 28)
+#define ACC_PROXY_HOST                  (1 << 29)
+#define ACC_PROXY_PORT                  (1 << 30)
 
 typedef struct
 {
@@ -119,6 +121,9 @@ typedef struct
     char *logfile;              /* NULL or logfile */
     char *syslog;               /* NULL or syslog facility */
     char *aliases;              /* NULL or aliases file */
+    /* proxy */
+    char *proxy_host;           /* NULL or proxy hostname */
+    int proxy_port;             /* port number; 0 for default */
 } account_t;
 
 

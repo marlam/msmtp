@@ -123,10 +123,11 @@ smtp_server_t smtp_new(FILE *debug, int protocol);
  * network address of the server will be stored in '*server_address',
  * or NULL if this information is not available.
  * Both strings are allocated.
- * Used error codes: NET_EHOSTNOTFOUND, NET_ESOCKET, NET_ECONNECT
+ * Used error codes: NET_EHOSTNOTFOUND, NET_ESOCKET, NET_ECONNECT, NET_EPROXY
  * Success: NET_EOK
  */
-int smtp_connect(smtp_server_t *srv, const char *host, int port, int timeout,
+int smtp_connect(smtp_server_t *srv, const char *proxy_host, int proxy_port,
+        const char *host, int port, int timeout,
         char **server_canonical_name, char **server_address,
         char **errstr);
 

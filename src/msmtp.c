@@ -2391,7 +2391,7 @@ void msmtp_print_help(void)
     printf(_("  -t, --read-recipients        read additional recipients from the mail\n"));
     printf(_("  --read-envelope-from         read envelope from address from the mail\n"));
     printf(_("  --aliases=[file]             set/unset aliases file\n"));
-    printf(_("  --proxy-host=[host]          set/unset proxy\n"));
+    printf(_("  --proxy-host=[IP|hostname]   set/unset proxy\n"));
     printf(_("  --proxy-port=[number]        set/unset proxy port\n"));
     printf(_("  --                           end of options\n"));
     printf(_("Accepted but ignored: -A, -B, -bm, -F, -G, -h, -i, -L, -m, -n, -O, -o, -v\n"));

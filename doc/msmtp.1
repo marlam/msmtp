@@ -98,7 +98,7 @@ below.
 .IP "\-\-passwordeval=[\fIeval\fP]"
 Set your password for SMTP authentication to the output (stdout) of the
 execution of \fIeval\fP.
-.IP "\-\-proxy\-host=[\fIhostname\fP]"
+.IP "\-\-proxy\-host=[\fIIP\fP|\fIhostname\fP]"
 Set or unset a SOCKS proxy to use. See the \fBproxy_host\fP command below.
 .IP "\-\-proxy\-port=[\fInumber\fP]"
 Set or unset a port number for the proxy host. See the \fBproxy_port\fP command
@@ -290,7 +290,7 @@ change the default if mails get rejected due to anti-SPAM measures. Possible
 choices are the domain part of your mail address (provider.example for
 joe@provider.example) or the fully qualified domain name of your host (if
 available).
-.IP "proxy_host [\fIhostname\fP]"
+.IP "proxy_host [\fIIP|hostname\fP]"
 Use a SOCKS proxy. All network traffic will go through this proxy host,
 including DNS queries, except for a DNS query that might be necessary to
 resolve the proxy host name itself (this can be avoided by using an IP address

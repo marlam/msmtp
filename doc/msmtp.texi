@@ -197,6 +197,7 @@ Use a SOCKS proxy. All network traffic will go through this proxy host,
 including DNS queries, except for a DNS query that might be necessary to
 resolve the proxy host name itself (this can be avoided by using an IP address
 as proxy host name). An empty @samp{hostname} argument disables proxy usage.
+The support SOCKS protocol version is 5.
 @anchor{proxy_port}
 @item proxy_port [@var{number}]
 @cmindex proxy_port

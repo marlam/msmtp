@@ -552,7 +552,7 @@ Set the argument of the SMTP EHLO (or LMTP LHLO) command. @xref{domain}.
 @item --proxy-host=[@var{IP}|@var{hostname}]
 @opindex --proxy-host
 Set or unset a SOCKS proxy to use. @xref{proxy_host}.
-@item --proxy-port=[@var{number}"
+@item --proxy-port=[@var{number}]
 Set or unset a port number for the proxy host. @xref{proxy_port}.
 @anchor{--auth}
 @item --auth[=(on|off|@var{method})]

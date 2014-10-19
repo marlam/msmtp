@@ -197,7 +197,8 @@ Use a SOCKS proxy. All network traffic will go through this proxy host,
 including DNS queries, except for a DNS query that might be necessary to
 resolve the proxy host name itself (this can be avoided by using an IP address
 as proxy host name). An empty @samp{hostname} argument disables proxy usage.
-The support SOCKS protocol version is 5.
+The supported SOCKS protocol version is 5. If you plan to use this with Tor,
+see also @ref{Using msmtp with Tor}.
 @anchor{proxy_port}
 @item proxy_port [@var{number}]
 @cmindex proxy_port
@@ -1108,6 +1109,7 @@ Request the delivery of the messages in the given queue.
 * A user configuration file::
 * Using msmtp with Mutt::
 * Using msmtp with mail::
+* Using msmtp with Tor::
 * Aliases file::
 @end menu
 
@@ -1237,6 +1239,22 @@ set sendmail="/path/to/msmtp"
 
 You need to define a default account, because mail does not allow extra options
 to the msmtp command line.
+
+@node Using msmtp with Tor
+@section Using msmtp with Tor
+Use the following settings:
+@example
+proxy_host 127.0.0.1
+proxy_port 9050
+tls on
+@end example
+Use an IP address as proxy host name, so that msmtp does not leak a DNS query
+when resolving it.@*
+TLS is required to prevent exit hosts from reading your SMTP session. You also
+need @samp{tls_trust_file} or @samp{tls_fingerprint} to check the server
+identity.@*
+Do not set @samp{domain} to something that you do not want to reveal (do not set
+it at all if possible).
 
 @node Aliases file
 @section Aliases file

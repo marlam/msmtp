@@ -295,7 +295,8 @@ Use a SOCKS proxy. All network traffic will go through this proxy host,
 including DNS queries, except for a DNS query that might be necessary to
 resolve the proxy host name itself (this can be avoided by using an IP address
 as proxy host name). An empty \fIhostname\fP argument disables proxy usage.
-The support SOCKS protocol version is 5.
+The supported SOCKS protocol version is 5. If you want to use this with Tor,
+see also "Using msmtp with Tor" below.
 .IP "proxy_port [\fInumber\fP]"
 Set the port number for the proxy host. An empty \fInumber\fP argument resets
 this to the default port.
@@ -633,6 +634,27 @@ the following Mutt configuration lines:
 Define a default account, and put the following in your ~/.mailrc:
 .br
 .B set sendmail="/path/to/msmtp"
+
+.PP
+.B Using msmtp with Tor
+.PP
+Use the following settings:
+.br
+.B proxy_host 127.0.0.1
+.br
+.B proxy_port 9050
+.br
+.B tls on
+.br
+Use an IP address as proxy host name, so that msmtp does not leak a DNS query
+when resolving it.
+.br
+TLS is required to prevent exit hosts from reading your SMTP session. You also
+need \fBtls_trust_file\fP or \fBtls_fingerprint\fP to check the server
+identity.
+.br
+Do not set \fBdomain\fP to something that you do not want to reveal (do not set
+it at all if possible).
 
 .PP
 .B Aliases file

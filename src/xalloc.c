@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2004, 2005, 2011
+ * Copyright (C) 2004, 2005, 2011, 2014
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -111,7 +111,7 @@ char *xstrndup(const char *s, size_t n)
     size_t l = 0;
     char *p;
 
-    while (s[l] != '\0' && l < n)
+    while (l < n && s[l] != '\0')
     {
         l++;
     }

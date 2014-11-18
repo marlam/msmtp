@@ -409,7 +409,7 @@ The SMTP server must support the DSN extension.
 @item keepbcc [(on|off)]
 @cmindex keepbcc
 This command controls whether to remove or keep the Bcc header when sending a 
-mail. The default is to remove it. @xref{Bcc header}.
+mail. The default is to remove it. @xref{Header handling}.
 @anchor{logfile}
 @item logfile [@var{file}]
 @cmindex logfile
@@ -953,7 +953,7 @@ failure, only the headers of the message are returned.
 @menu
 * Envelope-from address::	Information about envelope-from addresses
 * Logging::			Different logging methods
-* Bcc header::			Bcc header handling
+* Header handling::		Modifications to mail headers
 @end menu
 
 @node Envelope-from address
@@ -1012,13 +1012,18 @@ If syslog logging is enabled with the @samp{syslog} command or @samp{--syslog}
 option, the log line is passed to the syslog service with the specified 
 facility. See @ref{syslog}, @ref{--syslog}.
 
-@node Bcc header
-@section Bcc header
+@node Header handling
+@section Header handling
 
-msmtp transmits mails unaltered to the SMTP server, with one exception: the Bcc
-header(s) will be removed before the transmission. This behavior can be changed
-with the @samp{keepbcc} command and @samp{--keepbcc} option, see
-@ref{keepbcc}/@ref{--keepbcc}.
+Msmtp transmits mails unaltered to the SMTP server, with the following exceptions:
+@itemize
+@item The Bcc header(s) will be removed. This behavior can be changed with the
+@samp{keepbcc} command and @samp{--keepbcc} option, see @ref{keepbcc}/@ref{--keepbcc}.
+@item A Date header will be added if the mail does not have one.
+@item A From header will be added if the mail does not have one. This header
+will use the envelope from address and optionally a full name set with the
+@samp{-F} option.
+@end itemize
 
 
 @node Server information mode

@@ -11,7 +11,7 @@
 .\" under the terms of the GNU Free Documentation License, Version 1.2 or
 .\" any later version published by the Free Software Foundation; with no
 .\" Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
-.TH MSMTP 1 2014-03
+.TH MSMTP 1 2014-11
 .SH NAME
 msmtp \- An SMTP client 
 .SH SYNOPSIS
@@ -171,6 +171,9 @@ addition to the recipients given on the command line.
 If any Resent- headers are present, then the addresses from any Resent-To,
 Resent-Cc, and Resent-Bcc headers in the first block of Resent- headers are
 used instead.
+.IP "\-F\fIname\fP"
+Msmtp adds a From: header to mails that lack it, using the envelope from
+address. This option allows to set a full name to be used in that header.
 .IP "\-\-read\-envelope\-from"
 Read the envelope from address from the From header of the mail.
 Currently this header must be on a single line for this option to work
@@ -184,7 +187,7 @@ recipient addresses, even if they start with a `\-'.
 .PP
 The following options are accepted but ignored for sendmail compatibility:
 .br
-\-B\fItype\fP, \-bm, \-F\fIname\fP, \-G, \-h\fIN\fP, \-i, \-L \fItag\fP, \-m,
+\-B\fItype\fP, \-bm, \-G, \-h\fIN\fP, \-i, \-L \fItag\fP, \-m,
 \-n, \-O \fIoption=value\fP, \-o\fIx\fP \fIvalue\fP
 .SH USAGE
 Normally, a system wide configuration file and/or a user configuration file
@@ -221,6 +224,17 @@ works only when neither \fB\-\-account\fP nor \fB\-\-host\fP is used.
 .PP
 If none of the above options is used (or if no account has a matching
 \fBfrom\fP command), then the account "default" is used.
+.PP
+Msmtp transmits mails unaltered to the SMTP server, with the following exceptions:
+.br
+- The Bcc header(s) will be removed. This behavior can be changed with the
+\fBkeepbcc\fP command and \fB\-\-keepbcc\fP option.
+.br
+- A Date header will be added if the mail does not have one.
+.br
+- A From header will be added if the mail does not have one. This header
+will use the envelope from address and optionally a full name set with the
+\fB\-F\fP option.
 .PP
 Skip to the EXAMPLES section for a quick start.
 .SH CONFIGURATION FILES

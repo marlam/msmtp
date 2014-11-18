@@ -1,4 +1,7 @@
 Version 1.4.33:
+- Add From: and Date: headers if they are not present in the mail, as required
+  for sendmail/postfix/exim/ssmtp/... compatibility. The From: header uses the
+  envelope from address and optionally a full name set by the -F option.
 - Add proxy_host and proxy_port commands and corresponding options to use a
   SOCKS proxy.
 - Remove the obsolete tls_force_sslv3 command and --tls-force-sslv3 option from

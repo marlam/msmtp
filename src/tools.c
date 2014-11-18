@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2004, 2005, 2006, 2007, 2009, 2011
+ * Copyright (C) 2004, 2005, 2006, 2007, 2009, 2011, 2014
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -771,4 +771,57 @@ char *string_replace(char *str, const char *s, const char *r)
         str = new_str;
     }
     return str;
+}
+
+/*
+ * print_time_rfc2822()
+ *
+ * see tools.h
+ */
+
+void print_time_rfc2822(time_t t, char rfc2822_timestamp[32])
+{
+    /* Calculate a RFC 2822 timestamp. strftime() is unreliable for this because
+     * it is locale dependant, and because the timezone offset conversion
+     * specifier %z is not portable. */
+    struct tm gmt, *lt;
+    char tz_offset_sign;
+    int tz_offset_hours;
+    int tz_offset_minutes;
+    const char *weekday[7] = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri",
+        "Sat" };
+    const char *month[12] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+        "Aug", "Sep", "Oct", "Nov", "Dec" };
+
+    /* copy the struct tm, because the subsequent call to localtime() will
+     * overwrite it */
+    gmt = *gmtime(&t);
+    lt = localtime(&t);
+    tz_offset_minutes = (lt->tm_hour - gmt.tm_hour) * 60
+        + lt->tm_min - gmt.tm_min
+        + (lt->tm_year - gmt.tm_year) * 24 * 60
+        + (lt->tm_yday - gmt.tm_yday) * 24 * 60;
+    if (tz_offset_minutes < 0)
+    {
+        tz_offset_sign = '-';
+        tz_offset_minutes = -tz_offset_minutes;
+    }
+    else
+    {
+        tz_offset_sign = '+';
+    }
+    tz_offset_hours = tz_offset_minutes / 60;
+    tz_offset_minutes %= 60;
+    if (tz_offset_hours > 99)
+    {
+        /* Values equal to or larger than 24 are not meaningful, but we just
+         * make sure that the value fits into two digits. If the system time is
+         * broken, we cannot fix it. */
+        tz_offset_hours = 99;
+    }
+    (void)snprintf(rfc2822_timestamp, 32,
+            "%s, %02d %s %04d %02d:%02d:%02d %c%02d%02d",
+            weekday[lt->tm_wday], lt->tm_mday, month[lt->tm_mon],
+            lt->tm_year + 1900, lt->tm_hour, lt->tm_min, lt->tm_sec,
+            tz_offset_sign, tz_offset_hours, tz_offset_minutes);
 }

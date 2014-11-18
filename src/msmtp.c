@@ -981,7 +981,7 @@ error_exit:
 
 
 /*
- * msmtp_read_addresses()
+ * msmtp_read_headers()
  *
  * Copies the headers of the mail from 'mailf' to a temporary file 'tmpfile',
  * including the blank line that separates the header from the body of the mail.
@@ -993,6 +993,9 @@ error_exit:
  *
  * If 'from' is not NULL: extracts the address from the From header and stores
  * it in an allocated string. A pointer to this string is stored in 'from'.
+ *
+ * If 'have_date' is not NULL: set this flag to 1 if a Date header is present
+ * , and to 0 otherwise.
  *
  * See RFC2822, section 3 for the format of these headers.
  *
@@ -1007,30 +1010,37 @@ error_exit:
                                                    recipient header */
 #define STATE_OTHER_HDR                 2       /* a header we don't
                                                    care about */
-#define STATE_FROM1                     3       /* we saw "^F" */
-#define STATE_FROM2                     4       /* we saw "^Fr" */
-#define STATE_FROM3                     5       /* we saw "^Fro" */
-#define STATE_TO                        6       /* we saw "^T" */
-#define STATE_CC                        7       /* we saw "^C" */
-#define STATE_BCC1                      8       /* we saw "^B" */
-#define STATE_BCC2                      9       /* we saw "^Bc" */
-#define STATE_ADDRHDR_ALMOST            10      /* we saw "^To", "^Cc"
+#define STATE_DATE1                     3       /* we saw "^D" */
+#define STATE_DATE2                     4       /* we saw "^Da" */
+#define STATE_DATE3                     5       /* we saw "^Dat" */
+#define STATE_DATE4                     6       /* we saw "^Date" */
+#define STATE_FROM1                     7       /* we saw "^F" */
+#define STATE_FROM2                     8       /* we saw "^Fr" */
+#define STATE_FROM3                     9       /* we saw "^Fro" */
+#define STATE_TO                        10      /* we saw "^T" */
+#define STATE_CC                        11      /* we saw "^C" */
+#define STATE_BCC1                      12      /* we saw "^B" */
+#define STATE_BCC2                      13      /* we saw "^Bc" */
+#define STATE_ADDRHDR_ALMOST            14      /* we saw "^To", "^Cc"
                                                    or "^Bcc" */
-#define STATE_RESENT                    11      /* we saw part of "^Resent-" */
-#define STATE_ADDRHDR_DEFAULT           12      /* in_rcpt_hdr and in_rcpt
+#define STATE_RESENT                    15      /* we saw part of "^Resent-" */
+#define STATE_ADDRHDR_DEFAULT           16      /* in_rcpt_hdr and in_rcpt
                                                    state our position */
-#define STATE_ADDRHDR_DQUOTE            13      /* duoble quotes */
-#define STATE_ADDRHDR_BRACKETS_START    14      /* entering <...> */
-#define STATE_ADDRHDR_IN_BRACKETS       15      /* an address inside <> */
-#define STATE_ADDRHDR_PARENTH_START     16      /* entering (...) */
-#define STATE_ADDRHDR_IN_PARENTH        17      /* a comment inside () */
-#define STATE_ADDRHDR_IN_ADDRESS        18      /* a bare address */
-#define STATE_ADDRHDR_BACKQUOTE         19      /* we saw a '\\' */
-#define STATE_HEADERS_END               20      /* we saw "^$", the blank line
+#define STATE_ADDRHDR_DQUOTE            17      /* duoble quotes */
+#define STATE_ADDRHDR_BRACKETS_START    18      /* entering <...> */
+#define STATE_ADDRHDR_IN_BRACKETS       19      /* an address inside <> */
+#define STATE_ADDRHDR_PARENTH_START     20      /* entering (...) */
+#define STATE_ADDRHDR_IN_PARENTH        21      /* a comment inside () */
+#define STATE_ADDRHDR_IN_ADDRESS        22      /* a bare address */
+#define STATE_ADDRHDR_BACKQUOTE         23      /* we saw a '\\' */
+#define STATE_HEADERS_END               24      /* we saw "^$", the blank line
                                                    between headers and body */
 
-int msmtp_read_addresses(FILE *mailf, FILE *tmpfile,
-        list_t *recipients, char **from, char **errstr)
+int msmtp_read_headers(FILE *mailf, FILE *tmpfile,
+        list_t *recipients,
+        char **from,
+        int *have_date,
+        char **errstr)
 {
     int c;
     int state = STATE_LINESTART_FRESH;
@@ -1068,6 +1078,10 @@ int msmtp_read_addresses(FILE *mailf, FILE *tmpfile,
     {
         *from = NULL;
     }
+    if (have_date)
+    {
+        *have_date = 0;
+    }
     if (recipients)
     {
         normal_recipients_list = list_new();
@@ -1099,7 +1113,9 @@ int msmtp_read_addresses(FILE *mailf, FILE *tmpfile,
                 case STATE_LINESTART_FRESH:
                     parentheses_depth = 0;
                     resent_index = -1;
-                    if (from && from_hdr < 0 && (c == 'f' || c == 'F'))
+                    if (have_date && (c == 'd' || c == 'D'))
+                        state = STATE_DATE1;
+                    else if (from && from_hdr < 0 && (c == 'f' || c == 'F'))
                         state = STATE_FROM1;
                     else if (recipients && (c == 't' || c == 'T'))
                         state = STATE_TO;
@@ -1125,6 +1141,8 @@ int msmtp_read_addresses(FILE *mailf, FILE *tmpfile,
                         finish_current_recipient = 1;
                     if (c == ' ' || c == '\t')
                         state = folded_rcpthdr_savestate;
+                    else if (have_date && (c == 'd' || c == 'D'))
+                        state = STATE_DATE1;
                     else if (from && from_hdr < 0 && (c == 'f' || c == 'F'))
                         state = STATE_FROM1;
                     else if (recipients && (c == 't' || c == 'T'))
@@ -1175,6 +1193,45 @@ int msmtp_read_addresses(FILE *mailf, FILE *tmpfile,
                         state = STATE_CC;
                     else if (resent_index == 6 && (c == 'b' || c == 'B'))
                         state = STATE_BCC1;
+                    else if (c == '\n')
+                        state = STATE_LINESTART_FRESH;
+                    else
+                        state = STATE_OTHER_HDR;
+                    break;
+
+                case STATE_DATE1:
+                    if (c == 'a' || c == 'A')
+                        state = STATE_DATE2;
+                    else if (c == '\n')
+                        state = STATE_LINESTART_FRESH;
+                    else
+                        state = STATE_OTHER_HDR;
+                    break;
+
+                case STATE_DATE2:
+                    if (c == 't' || c == 'T')
+                        state = STATE_DATE3;
+                    else if (c == '\n')
+                        state = STATE_LINESTART_FRESH;
+                    else
+                        state = STATE_OTHER_HDR;
+                    break;
+
+                case STATE_DATE3:
+                    if (c == 'e' || c == 'E')
+                        state = STATE_DATE4;
+                    else if (c == '\n')
+                        state = STATE_LINESTART_FRESH;
+                    else
+                        state = STATE_OTHER_HDR;
+                    break;
+
+                case STATE_DATE4:
+                    if (c == ':')
+                    {
+                        *have_date = 1;
+                        state = STATE_OTHER_HDR;
+                    }
                     else if (c == '\n')
                         state = STATE_LINESTART_FRESH;
                     else
@@ -1594,7 +1651,8 @@ error_exit:
  */
 
 int msmtp_sendmail(account_t *acc, list_t *recipients,
-        FILE *f, FILE *tmpfile, int debug, long *mailsize,
+        FILE *prepend_header_file, FILE *header_file, FILE *f,
+        int debug, long *mailsize,
         list_t **lmtp_errstrs, list_t **lmtp_error_msgs,
         list_t **msg, char **errstr)
 {
@@ -1768,33 +1826,31 @@ int msmtp_sendmail(account_t *acc, list_t *recipients,
     }
     /* send header and body */
     *mailsize = 0;
-    if (tmpfile)
+    if (prepend_header_file)
     {
-        /* first the headers from the temp file */
-        if ((e = smtp_send_mail(&srv, tmpfile, acc->keepbcc, mailsize, errstr))
-                != SMTP_EOK)
-        {
-            msmtp_endsession(&srv, 0);
-            e = exitcode_smtp(e);
-            return e;
-        }
-        /* then the body from the original file */
-        if ((e = smtp_send_mail(&srv, f, 1, mailsize, errstr)) != SMTP_EOK)
+        /* first: prepended headers, if any */
+        if ((e = smtp_send_mail(&srv, prepend_header_file, acc->keepbcc,
+                        mailsize, errstr)) != SMTP_EOK)
         {
             msmtp_endsession(&srv, 0);
             e = exitcode_smtp(e);
             return e;
         }
     }
-    else
+    /* next: original mail headers */
+    if ((e = smtp_send_mail(&srv, header_file, acc->keepbcc,
+                    mailsize, errstr)) != SMTP_EOK)
     {
-        if ((e = smtp_send_mail(&srv, f, acc->keepbcc, mailsize, errstr))
-                != SMTP_EOK)
-        {
-            msmtp_endsession(&srv, 0);
-            e = exitcode_smtp(e);
-            return e;
-        }
+        msmtp_endsession(&srv, 0);
+        e = exitcode_smtp(e);
+        return e;
+    }
+    /* then: the body from the original file */
+    if ((e = smtp_send_mail(&srv, f, 1, mailsize, errstr)) != SMTP_EOK)
+    {
+        msmtp_endsession(&srv, 0);
+        e = exitcode_smtp(e);
+        return e;
     }
     /* end the mail */
     if (acc->protocol == SMTP_PROTO_SMTP)
@@ -2424,6 +2480,8 @@ typedef struct
     account_t *cmdline_account;
     const char *account_id;
     char *user_conffile;
+    /* additional information */
+    char *full_name;
     /* the list of recipients */
     list_t *recipients;
 } msmtp_cmdline_conf_t;
@@ -2554,6 +2612,8 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
     conf->cmdline_account = account_new(NULL, NULL);
     conf->account_id = NULL;
     conf->user_conffile = NULL;
+    /* additional information */
+    conf->full_name = NULL;
     /* the recipients */
     conf->recipients = NULL;
 
@@ -3147,9 +3207,13 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
                 }
                 break;
 
+            case 'F':
+                free(conf->full_name);
+                conf->full_name = xstrdup(optarg);
+                break;
+
             case 'A':
             case 'B':
-            case 'F':
             case 'G':
             case 'h':
             case 'i':
@@ -3176,7 +3240,7 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
     }
 
     /* The list of recipients.
-     * Write these to a temporary mail header so that msmtp_read_addresses() can
+     * Write these to a temporary mail header so that msmtp_read_headers() can
      * parse them. */
     rcptc = argc - optind;
     rcptv = &(argv[optind]);
@@ -3229,8 +3293,8 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
         goto error_exit;
     }
     conf->recipients = list_new();
-    if ((error_code = msmtp_read_addresses(tmpfile, NULL,
-                    list_last(conf->recipients), NULL, &errstr)) != EX_OK)
+    if ((error_code = msmtp_read_headers(tmpfile, NULL,
+                    list_last(conf->recipients), NULL, NULL, &errstr)) != EX_OK)
     {
         print_error("%s", msmtp_sanitize_string(errstr));
         goto error_exit;
@@ -3586,8 +3650,11 @@ int main(int argc, char *argv[])
 #if HAVE_GETSERVBYNAME
     struct servent *se;
 #endif
-    /* needed to extract addresses from headers */
-    FILE *tmpfile = NULL;
+    /* needed to read the headers and extract addresses */
+    FILE *header_tmpfile = NULL;
+    FILE *prepend_header_tmpfile = NULL;
+    int have_from_header = 0;
+    int have_date_header = 0;
 
 
     /* Avoid the side effects of text mode interpretations on DOS systems. */
@@ -3636,31 +3703,35 @@ int main(int argc, char *argv[])
         goto exit;
     }
     /* Read recipients and/or the envelope from address from the mail. */
-    if (conf.sendmail && (conf.read_recipients || conf.read_envelope_from))
+    if (conf.sendmail)
     {
-        if (!(tmpfile = tempfile(PACKAGE_NAME)))
+        char *envelope_from = NULL;
+        if (!(header_tmpfile = tempfile(PACKAGE_NAME)))
         {
             print_error(_("cannot create temporary file: %s"),
                     msmtp_sanitize_string(strerror(errno)));
             error_code = EX_IOERR;
             goto exit;
         }
-        if ((error_code = msmtp_read_addresses(stdin, tmpfile,
+        if ((error_code = msmtp_read_headers(stdin, header_tmpfile,
                         conf.read_recipients
                             ? list_last(conf.recipients) : NULL,
-                        conf.read_envelope_from
-                            ? &(conf.cmdline_account->from) : NULL,
-                        &errstr)) != EX_OK)
+                        &envelope_from, &have_date_header, &errstr)) != EX_OK)
         {
             print_error("%s", msmtp_sanitize_string(errstr));
             goto exit;
         }
-        if (conf.read_envelope_from && (conf.pretend || conf.debug))
+        have_from_header = (envelope_from ? 1 : 0);
+        if (conf.read_envelope_from)
         {
-            printf(_("envelope from address extracted from mail: %s\n"),
-                    conf.cmdline_account->from);
+            conf.cmdline_account->from = envelope_from;
+            if (conf.pretend || conf.debug)
+            {
+                printf(_("envelope from address extracted from mail: %s\n"),
+                        conf.cmdline_account->from);
+            }
         }
-        if (fseeko(tmpfile, 0, SEEK_SET) != 0)
+        if (fseeko(header_tmpfile, 0, SEEK_SET) != 0)
         {
             print_error(_("cannot rewind temporary file: %s"),
                     msmtp_sanitize_string(strerror(errno)));
@@ -3931,8 +4002,52 @@ int main(int argc, char *argv[])
     /* do the work */
     if (conf.sendmail)
     {
+        if (!have_from_header || !have_date_header)
+        {
+            if (!(prepend_header_tmpfile = tempfile(PACKAGE_NAME)))
+            {
+                print_error(_("cannot create temporary file: %s"),
+                        msmtp_sanitize_string(strerror(errno)));
+                error_code = EX_IOERR;
+                goto exit;
+            }
+        }
+        if (!have_from_header)
+        {
+            if (conf.full_name)
+            {
+                fprintf(prepend_header_tmpfile, "From: %s <%s>\n",
+                        conf.full_name, account->from);
+            }
+            else
+            {
+                fprintf(prepend_header_tmpfile, "From: %s\n", account->from);
+            }
+        }
+        if (!have_date_header)
+        {
+            time_t t;
+            char rfc2822_timestamp[32];
+            if ((t = time(NULL)) < 0)
+            {
+                print_error(_("cannot get system time: %s"), strerror(errno));
+                error_code = EX_OSERR;
+                goto exit;
+            }
+            print_time_rfc2822(t, rfc2822_timestamp);
+            fprintf(prepend_header_tmpfile, "Date: %s\n", rfc2822_timestamp);
+        }
+        if (prepend_header_tmpfile
+                && fseeko(prepend_header_tmpfile, 0, SEEK_SET) != 0)
+        {
+            print_error(_("cannot rewind temporary file: %s"),
+                    msmtp_sanitize_string(strerror(errno)));
+            error_code = EX_IOERR;
+            goto exit;
+        }
         if ((error_code = msmtp_sendmail(account, conf.recipients,
-                        stdin, tmpfile, conf.debug, &mailsize,
+                        prepend_header_tmpfile, header_tmpfile, stdin,
+                        conf.debug, &mailsize,
                         &lmtp_errstrs, &lmtp_error_msgs,
                         &errmsg, &errstr)) != EX_OK)
         {
@@ -4072,9 +4187,13 @@ int main(int argc, char *argv[])
 exit:
 
     /* clean up */
-    if (tmpfile)
+    if (header_tmpfile)
     {
-        fclose(tmpfile);
+        fclose(header_tmpfile);
+    }
+    if (prepend_header_tmpfile)
+    {
+        fclose(prepend_header_tmpfile);
     }
     free(loaded_system_conffile);
     free(loaded_user_conffile);

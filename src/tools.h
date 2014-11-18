@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2004, 2005, 2006, 2007, 2011
+ * Copyright (C) 2004, 2005, 2006, 2007, 2011, 2014
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -192,5 +192,12 @@ int lock_file(FILE *f, int lock_type, int timeout);
  * string is returned.
  */
 char *string_replace(char *str, const char *s, const char *r);
+
+/*
+ * print_time_rfc2822()
+ *
+ * Print the given time stamp in RFC2822 format into the given buffer.
+ */
+void print_time_rfc2822(time_t t, char rfc2822_timestamp[32]);
 
 #endif

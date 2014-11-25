@@ -584,9 +584,7 @@ int net_open_socket(
     int failure_errno;
     int cause;
     char nameinfo_buffer[NI_MAXHOST];
-#ifdef HAVE_LIBIDN
-    char *hostname_ascii;
-#endif
+    char *idn_hostname = NULL;
 
     if (proxy_hostname)
     {
@@ -622,16 +620,14 @@ int net_open_socket(
     hints.ai_addr = NULL;
     hints.ai_next = NULL;
     port_string = xasprintf("%d", port);
-#ifdef HAVE_LIBIDN
-    if (idna_to_ascii_lz(hostname, &hostname_ascii, 0) != IDNA_SUCCESS)
-    {
-        hostname_ascii = xstrdup(hostname);
-    }
-    error_code = getaddrinfo(hostname_ascii, port_string, &hints, &res0);
-    free(hostname_ascii);
-#else
-    error_code = getaddrinfo(hostname, port_string, &hints, &res0);
+#ifdef AI_IDN
+    hints.ai_flags |= AI_IDN;
+#elif defined(HAVE_LIBIDN)
+    idna_to_ascii_lz(hostname, &idn_hostname, 0);
 #endif
+    error_code = getaddrinfo(idn_hostname ? idn_hostname : hostname,
+            port_string, &hints, &res0);
+    free(idn_hostname);
     free(port_string);
     if (error_code)
     {

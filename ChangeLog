@@ -1,4 +1,6 @@
 Version 1.4.33:
+- Libidn is not required for IDN support anymore on systems where getaddrinfo()
+  supports the AI_IDN flag and the GnuTLS version is >= 3.4.0.
 - Add From: and Date: headers if they are not present in the mail, as required
   for sendmail/postfix/exim/ssmtp/... compatibility. The From: header uses the
   envelope from address and optionally a full name set by the -F option.

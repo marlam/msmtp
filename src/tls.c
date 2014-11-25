@@ -663,9 +663,7 @@ int tls_check_cert(tls_t *tls, const char *hostname, char **errstr)
     time_t t1, t2;
     size_t size;
     unsigned char fingerprint[20];
-#ifdef HAVE_LIBIDN
-    char *hostname_ascii;
-#endif
+    char *idn_hostname = NULL;
 
     if (tls->have_trust_file || tls->have_sha1_fingerprint
             || tls->have_md5_fingerprint)
@@ -817,21 +815,13 @@ int tls_check_cert(tls_t *tls, const char *hostname, char **errstr)
         /* Check hostname */
         if (i == 0)
         {
-#ifdef HAVE_LIBIDN
-            if (idna_to_ascii_lz(hostname, &hostname_ascii, 0) == IDNA_SUCCESS)
-            {
-                if (!gnutls_x509_crt_check_hostname(cert, hostname_ascii))
-                {
-                    *errstr = xasprintf(_("%s: the certificate owner does not "
-                                "match hostname %s"), error_msg, hostname);
-                    free(hostname_ascii);
-                    return TLS_ECERT;
-                }
-                free(hostname_ascii);
-            }
-            else
+#if GNUTLS_VERSION_NUMBER < 0x030400 && defined(HAVE_LIBIDN)
+            idna_to_ascii_lz(hostname, &idn_hostname, 0);
 #endif
-            if (!gnutls_x509_crt_check_hostname(cert, hostname))
+            error_code = gnutls_x509_crt_check_hostname(cert,
+                    idn_hostname ? idn_hostname : hostname);
+            free(idn_hostname);
+            if (error_code == 0)
             {
                 *errstr = xasprintf(_("%s: the certificate owner does not "
                             "match hostname %s"), error_msg, hostname);
@@ -878,7 +868,7 @@ int tls_check_cert(tls_t *tls, const char *hostname, char **errstr)
     const char *error_msg;
     int i;
     /* hostname in ASCII format: */
-    char *hostname_ascii;
+    char *idn_hostname = NULL;
     /* needed to get the common name: */
     X509_NAME *x509_subject;
     char *buf;
@@ -973,12 +963,7 @@ int tls_check_cert(tls_t *tls, const char *hostname, char **errstr)
      * type DNS or the Common Name (CN). */
 
 #ifdef HAVE_LIBIDN
-    if (idna_to_ascii_lz(hostname, &hostname_ascii, 0) != IDNA_SUCCESS)
-    {
-        hostname_ascii = xstrdup(hostname);
-    }
-#else
-    hostname_ascii = xstrdup(hostname);
+    idna_to_ascii_lz(hostname, &idn_hostname, 0);
 #endif
 
     /* Try the DNS subjectAltNames. */
@@ -998,9 +983,11 @@ int tls_check_cert(tls_t *tls, const char *hostname, char **errstr)
                     *errstr = xasprintf(_("%s: certificate subject "
                                 "alternative name contains NUL"), error_msg);
                     X509_free(x509cert);
+                    free(idn_hostname);
                     return TLS_ECERT;
                 }
-                if ((match_found = hostname_match(hostname_ascii,
+                if ((match_found = hostname_match(
+                                idn_hostname ? idn_hostname : hostname,
                                 (char *)(subj_alt_name->d.ia5->data))))
                 {
                     break;
@@ -1016,6 +1003,7 @@ int tls_check_cert(tls_t *tls, const char *hostname, char **errstr)
             *errstr = xasprintf(_("%s: cannot get certificate subject"),
                     error_msg);
             X509_free(x509cert);
+            free(idn_hostname);
             return TLS_ECERT;
         }
         length = X509_NAME_get_text_by_NID(x509_subject, NID_commonName,
@@ -1027,6 +1015,7 @@ int tls_check_cert(tls_t *tls, const char *hostname, char **errstr)
             *errstr = xasprintf(_("%s: cannot get certificate common name"),
                     error_msg);
             X509_free(x509cert);
+            free(idn_hostname);
             free(buf);
             return TLS_ECERT;
         }
@@ -1035,14 +1024,16 @@ int tls_check_cert(tls_t *tls, const char *hostname, char **errstr)
             *errstr = xasprintf(_("%s: certificate common name contains NUL"),
                     error_msg);
             X509_free(x509cert);
+            free(idn_hostname);
             free(buf);
             return TLS_ECERT;
         }
-        match_found = hostname_match(hostname_ascii, buf);
+        match_found = hostname_match(idn_hostname ? idn_hostname : hostname,
+                buf);
         free(buf);
     }
     X509_free(x509cert);
-    free(hostname_ascii);
+    free(idn_hostname);
 
     if (!match_found)
     {

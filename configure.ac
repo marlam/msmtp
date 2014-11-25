@@ -135,10 +135,42 @@ if test "$libgsasl" != "no"; then
 fi
 AM_CONDITIONAL([HAVE_LIBGSASL], [test "$libgsasl" = "yes"])
 
+dnl Do we need libidn for IDN support? Modern systems don't.
+want_libidn=yes
+AC_CHECK_DECL([AI_IDN], [], [], [#include <netdb.h>])
+if test "$ac_cv_have_decl_AI_IDN" = "yes"; then
+    if test "$have_tls" = "no"; then
+        want_libidn=no
+    elif test "$tls_lib" = "GnuTLS"; then
+        gnutls_has_idn=no
+        AC_MSG_CHECKING([if GnuTLS has builtin IDN support])
+        CFLAGS_BAK="$CFLAGS"
+        CFLAGS="$CFLAGS $tls_CFLAGS"
+        AC_COMPILE_IFELSE(
+            [AC_LANG_PROGRAM([[
+             #include <gnutls/gnutls.h>
+             #if GNUTLS_VERSION_NUMBER < 0x030400
+              error: GnuTLS does not have builtin IDN support
+             #endif]],
+            [[int x = 0;]])],
+            [gnutls_has_idn="yes"], [])
+        CFLAGS="$CFLAGS_BAK"
+        AC_MSG_RESULT([$gnutls_has_idn])
+        if test "$gnutls_has_idn" = "yes"; then
+            want_libidn=no
+        fi
+    fi
+fi
+AC_MSG_CHECKING([if libidn is needed for IDN support])
+AC_MSG_RESULT([$want_libidn])
+
 dnl GNU Libidn
 AC_ARG_WITH([libidn], [AS_HELP_STRING([--with-libidn],
 	[Support IDN (needs GNU Libidn)])],
     [libidn=$withval], [libidn=yes])
+if test "$want_libidn" = "no"; then
+    libidn=no
+fi
 if test "$libidn" != "no"; then
     PKG_CHECK_MODULES([libidn], [libidn >= 0.0], [HAVE_LIBIDN=1], [HAVE_LIBIDN=0])
     if test "$HAVE_LIBIDN" != "1"; then
@@ -208,7 +240,13 @@ echo
 echo "Install prefix ......... : $prefix"
 echo "TLS/SSL support ........ : $have_tls (Library: $tls_lib)"
 echo "GNU SASL support ....... : $libgsasl"
-echo "GNU Libidn support ..... : $libidn"
+if test "$want_libidn" = "no"; then
+    echo "IDN support ............ : yes (no library required)"
+elif test "$libidn" = "yes"; then
+    echo "IDN support ............ : yes (via GNU Libidn)"
+else
+    echo "IDN support ............ : no"
+fi
 echo "NLS support ............ : $USE_NLS"
 echo "GNOME Keyring support .. : $gnome_keyring"
 echo "MacOS X Keychain support : $macosx_keyring"

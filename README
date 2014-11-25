@@ -20,7 +20,7 @@ Optional features, depending on external libraries:
 - TLS/SSL support, including client certificates (requires GnuTLS or OpenSSL).
 - Additional authentication methods EXTERNAL, GSSAPI, SCRAM-SHA-1, DIGEST-MD5,
   NTLM (requires GNU Libgsasl).
-- Support for Internationalized Domain Names (IDN) (requires GNU Libidn).
+- Support for Internationalized Domain Names (IDN) (may require GNU Libidn).
 - Native language support (NLS) (may require GNU libintl).
 
 The homepage of this program is <http://msmtp.sourceforge.net/>.

@@ -184,20 +184,20 @@ if test "$libidn" != "no"; then
     fi
 fi
 
-dnl gnome-keyring support (requires pkg-config).
-AC_ARG_WITH([gnome-keyring], [AS_HELP_STRING([--with-gnome-keyring],
-	[Support GNOME Keyring])],
-    [gnome_keyring=$withval],[gnome_keyring=yes])
-if test "$gnome_keyring" != "no"; then
-    PKG_CHECK_MODULES([libgnome_keyring], [gnome-keyring-1], [HAVE_GNOME_KEYRING=1], [HAVE_GNOME_KEYRING=0])
-    if test "$HAVE_GNOME_KEYRING" != "1"; then
-	AC_MSG_WARN([library libgnome-keyring not found:])
-	AC_MSG_WARN([$libgnome_keyring_PKG_ERRORS])
-	AC_MSG_WARN([libgnome-keyring is provided by Gnome; Debian package: libgnome-keyring-dev])
-	gnome_keyring="no"
+dnl libsecret support (requires pkg-config).
+AC_ARG_WITH([libsecret], [AS_HELP_STRING([--with-libsecret],
+	[Support libsecret (GNOME password management)])],
+    [libsecret=$withval],[libsecret=yes])
+if test "$libsecret" != "no"; then
+    PKG_CHECK_MODULES([libsecret], [libsecret-1], [HAVE_LIBSECRET=1], [HAVE_LIBSECRET=0])
+    if test "$HAVE_LIBSECRET" != "1"; then
+	AC_MSG_WARN([library libsecret not found:])
+	AC_MSG_WARN([$libsecret_PKG_ERRORS])
+	AC_MSG_WARN([libsecret is provided by Gnome; Debian package: libsecret-1-dev])
+	libsecret="no"
     else
-	gnome_keyring="yes"
-	AC_DEFINE([HAVE_GNOME_KEYRING], [1], [Define to 1 if libgnome-keyring is available])
+	libsecret="yes"
+	AC_DEFINE([HAVE_LIBSECRET], [1], [Define to 1 if libsecret is available])
     fi
 fi
 
@@ -248,5 +248,5 @@ else
     echo "IDN support ............ : no"
 fi
 echo "NLS support ............ : $USE_NLS"
-echo "GNOME Keyring support .. : $gnome_keyring"
+echo "Libsecret support (GNOME): $libsecret"
 echo "MacOS X Keychain support : $macosx_keyring"

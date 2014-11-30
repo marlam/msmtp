@@ -23,8 +23,8 @@ else
 msmtp_SOURCES += base64.c base64.h md5.c md5.h md5-apps.c md5-apps.h
 endif
 
-AM_CPPFLAGS = $(tls_CFLAGS) $(libgsasl_CFLAGS) $(libidn_CFLAGS) $(libgnome_keyring_CFLAGS)
+AM_CPPFLAGS = $(tls_CFLAGS) $(libgsasl_CFLAGS) $(libidn_CFLAGS) $(libsecret_CFLAGS)
 
-msmtp_LDADD =  $(tls_LIBS) $(libgsasl_LIBS) $(libidn_LIBS) $(libgnome_keyring_LIBS) $(LIBINTL)
+msmtp_LDADD =  $(tls_LIBS) $(libgsasl_LIBS) $(libidn_LIBS) $(libsecret_LIBS) $(LIBINTL)
 
 DEFS += -DSYSCONFDIR=\"$(sysconfdir)\" -DLOCALEDIR=\"$(localedir)\"

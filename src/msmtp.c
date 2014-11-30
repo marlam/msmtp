@@ -53,8 +53,8 @@ extern int optind;
 #ifdef HAVE_SYSLOG
 # include <syslog.h>
 #endif
-#ifdef HAVE_GNOME_KEYRING
-# include <gnome-keyring.h>
+#ifdef HAVE_LIBSECRET
+# include <libsecret/secret.h>
 #endif
 #ifdef HAVE_MACOSXKEYRING
 # include <Security/Security.h>
@@ -292,11 +292,6 @@ char *msmtp_password_callback(const char *hostname, const char *user)
     char *netrc_filename;
     netrc_entry *netrc_hostlist;
     netrc_entry *netrc_host;
-#ifdef HAVE_GNOME_KEYRING
-    const char *protocol = "smtp";
-    GList *found_list = NULL;
-    GnomeKeyringNetworkPasswordData *found;
-#endif
 #ifdef HAVE_MACOSXKEYRING
     void *password_data;
     UInt32 password_length;
@@ -337,27 +332,26 @@ char *msmtp_password_callback(const char *hostname, const char *user)
         free(netrc_filename);
     }
 
-#ifdef HAVE_GNOME_KEYRING
+#ifdef HAVE_LIBSECRET
     if (!password)
     {
-        g_set_application_name(PACKAGE);
-        if (gnome_keyring_find_network_password_sync(
-                    user,     /* user */
-                    NULL,     /* domain */
-                    hostname, /* server */
-                    NULL,     /* object */
-                    protocol, /* protocol */
-                    NULL,     /* authtype */
-                    0,        /* port */
-                    &found_list) == GNOME_KEYRING_RESULT_OK)
+        gchar* libsecret_pw = secret_password_lookup_sync(
+                SECRET_SCHEMA_COMPAT_NETWORK,
+                NULL, NULL,
+                user,     /* user */
+                NULL,     /* domain */
+                NULL,     /* object */
+                "smtp",   /* protocol */
+                0,        /* port */
+                hostname, /* server */
+                NULL);    /* authtype */
+        if (libsecret_pw)
         {
-            found = (GnomeKeyringNetworkPasswordData *) found_list->data;
-            if (found->password)
-                password = g_strdup(found->password);
+            password = xstrdup(libsecret_pw);
+            secret_password_free(libsecret_pw);
         }
-        gnome_keyring_network_password_list_free(found_list);
     }
-#endif /* HAVE_GNOME_KEYRING */
+#endif /* HAVE_LIBSECRET */
 
 #ifdef HAVE_MACOSXKEYRING
     if (!password)
@@ -2349,10 +2343,10 @@ void msmtp_print_version(void)
 #endif
     printf("\n");
     printf(_("Keyring support: "));
-#if !defined HAVE_GNOME_KEYRING && !defined HAVE_MACOSXKEYRING
+#if !defined HAVE_LIBSECRET && !defined HAVE_MACOSXKEYRING
     printf(_("none"));
 #else
-# ifdef HAVE_GNOME_KEYRING
+# ifdef HAVE_LIBSECRET
     printf(_("Gnome "));
 # endif
 # ifdef HAVE_MACOSXKEYRING

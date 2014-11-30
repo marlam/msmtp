@@ -1,4 +1,5 @@
 Version 1.4.33:
+- GNOME Keyring support now uses libsecret instead of libgnome-keyring.
 - Libidn is not required for IDN support anymore on systems where getaddrinfo()
   supports the AI_IDN flag and the GnuTLS version is >= 3.4.0.
 - Add From: and Date: headers if they are not present in the mail, as required

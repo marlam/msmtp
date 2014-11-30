@@ -1,5 +1,11 @@
 SUBDIRS = src po doc scripts
-EXTRA_DIST = README.w32
+EXTRA_DIST = ChangeLog.old README.w32
+
+# Create the ChangeLog file from the git log
+dist-hook:
+	if test -d "$(srcdir)/../.git" && type git > /dev/null 2>&1; then \
+		(cd "$(srcdir)/.." && git log --date=iso --stat msmtp-1.6.0rc1..HEAD) > "$(distdir)/ChangeLog"; \
+	fi
 
 # This works with GNU tar and gives cleaner package than normal 'make dist'.
 # (Taken from xz-4.999.9beta/Makefile.am)

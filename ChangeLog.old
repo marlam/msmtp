@@ -1,4 +1,4 @@
-Version 1.4.33:
+Version 1.6.0rc1:
 - GSSAPI authentication is not chosen automatically anymore, you have to
   request it manually.
 - Libidn is not required for IDN support anymore on systems where getaddrinfo()

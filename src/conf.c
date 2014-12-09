@@ -1022,11 +1022,13 @@ int read_account_list(int line, list_t *acc_list, char *s, list_t *l,
  * "conffile" field of each account.
  * Unless an error code is returned, 'acc_list' will always be a new list;
  * it may be empty if no accounts were found.
+ * If the file contains secrets (e.g. passwords), then the flag
+ * 'conffile_contains_secrets' will be set to 1, else to 0.
  * Used error codes: CONF_EIO, CONF_EPARSE, CONF_ESYNTAX
  */
 
 int read_conffile(const char *conffile, FILE *f, list_t **acc_list,
-        char **errstr)
+        int *conffile_contains_secrets, char **errstr)
 {
     int e;
     list_t *p;
@@ -1044,6 +1046,7 @@ int read_conffile(const char *conffile, FILE *f, list_t **acc_list,
     list_t *lp;
 
 
+    *conffile_contains_secrets = 0;
     defaults = account_new(NULL, NULL);
     *acc_list = list_new();
     p = *acc_list;
@@ -1322,6 +1325,7 @@ int read_conffile(const char *conffile, FILE *f, list_t **acc_list,
         }
         else if (strcmp(cmd, "password") == 0)
         {
+            *conffile_contains_secrets = 1;
             acc->mask |= ACC_PASSWORD;
             free(acc->password);
             acc->password = (*arg == '\0') ? NULL : xstrdup(arg);
@@ -1815,6 +1819,7 @@ int get_conf(const char *conffile, int securitycheck, list_t **acc_list,
         char **errstr)
 {
     FILE *f;
+    int conffile_contains_secrets;
     int e;
 
     if (!(f = fopen(conffile, "r")))
@@ -1822,17 +1827,27 @@ int get_conf(const char *conffile, int securitycheck, list_t **acc_list,
         *errstr = xasprintf("%s", strerror(errno));
         return CONF_ECANTOPEN;
     }
-    if (securitycheck)
+    if ((e = read_conffile(conffile, f, acc_list, &conffile_contains_secrets,
+                    errstr)) != CONF_EOK)
+    {
+        fclose(f);
+        return e;
+    }
+    fclose(f);
+    e = CONF_EOK;
+    if (securitycheck && conffile_contains_secrets)
     {
         switch (check_secure(conffile))
         {
             case 1:
-                *errstr = xasprintf(_("must be owned by you"));
+                *errstr = xasprintf(_("contains secrets and therefore "
+                            "must be owned by you"));
                 e = CONF_EINSECURE;
                 break;
 
             case 2:
-                *errstr = xasprintf(_("must have no more than user "
+                *errstr = xasprintf(_("contains secrets and therefore "
+                            "must have no more than user "
                             "read/write permissions"));
                 e = CONF_EINSECURE;
                 break;
@@ -1841,23 +1856,8 @@ int get_conf(const char *conffile, int securitycheck, list_t **acc_list,
                 *errstr = xasprintf("%s", strerror(errno));
                 e = CONF_EIO;
                 break;
-
-            default:
-                e = CONF_EOK;
-        }
-        if (e != CONF_EOK)
-        {
-            fclose(f);
-            return e;
         }
     }
-    if ((e = read_conffile(conffile, f, acc_list, errstr))
-            != CONF_EOK)
-    {
-        fclose(f);
-        return e;
-    }
-    fclose(f);
 
-    return CONF_EOK;
+    return e;
 }

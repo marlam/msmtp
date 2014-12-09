@@ -3601,7 +3601,7 @@ void msmtp_print_conf(msmtp_cmdline_conf_t conf, account_t *account)
         printf("add_missing_date_header = %s\n",
                 account->add_missing_date_header ? _("on") : _("off"));
         printf("keepbcc = %s\n", account->keepbcc ? _("on") : _("off"));
-        printf("dsn_notify = %s\n", 
+        printf("dsn_notify = %s\n",
                 account->dsn_notify ? account->dsn_notify : _("(not set)"));
         printf("dsn_return = %s\n",
                 account->dsn_return ? account->dsn_return : _("(not set)"));

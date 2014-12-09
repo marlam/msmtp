@@ -1820,8 +1820,9 @@ int msmtp_sendmail(account_t *acc, list_t *recipients,
     if (prepend_header_file)
     {
         /* first: prepended headers, if any */
-        if ((e = smtp_send_mail(&srv, prepend_header_file, acc->keepbcc,
-                        mailsize, errstr)) != SMTP_EOK)
+        if ((e = smtp_send_mail(&srv, prepend_header_file,
+                        !acc->remove_bcc_headers, mailsize,
+                        errstr)) != SMTP_EOK)
         {
             msmtp_endsession(&srv, 0);
             e = exitcode_smtp(e);
@@ -1829,7 +1830,7 @@ int msmtp_sendmail(account_t *acc, list_t *recipients,
         }
     }
     /* next: original mail headers */
-    if ((e = smtp_send_mail(&srv, header_file, acc->keepbcc,
+    if ((e = smtp_send_mail(&srv, header_file, !acc->remove_bcc_headers,
                     mailsize, errstr)) != SMTP_EOK)
     {
         msmtp_endsession(&srv, 0);
@@ -2432,7 +2433,6 @@ void msmtp_print_help(void)
              "                               addresses\n"));
     printf(_("  -N, --dsn-notify=(off|cond)  set/unset DSN conditions\n"));
     printf(_("  -R, --dsn-return=(off|ret)   set/unset DSN amount\n"));
-    printf(_("  --keepbcc[=(on|off)]         enable/disable preservation of the Bcc header\n"));
     printf(_("  -X, --logfile=[file]         set/unset log file\n"));
     printf(_("  --syslog[=(on|off|facility)] enable/disable/configure syslog logging\n"));
     printf(_("  -t, --read-recipients        read additional recipients from the mail\n"));
@@ -2442,6 +2442,7 @@ void msmtp_print_help(void)
     printf(_("  --proxy-port=[number]        set/unset proxy port\n"));
     printf(_("  --add-missing-from-header[=(on|off)] enable/disable addition of From header\n"));
     printf(_("  --add-missing-date-header[=(on|off)] enable/disable addition of Date header\n"));
+    printf(_("  --remove-bcc-headers[=(on|off)] enable/disable removal of Bcc headers\n"));
     printf(_("  --                           end of options\n"));
     printf(_("Accepted but ignored: -A, -B, -bm, -F, -G, -h, -i, -L, -m, -n, -O, -o, -v\n"));
     printf(_("\nReport bugs to <%s>.\n"), PACKAGE_BUGREPORT);
@@ -2480,38 +2481,39 @@ typedef struct
 } msmtp_cmdline_conf_t;
 
 /* long options without a corresponding short option */
-#define LONGONLYOPT_VERSION                     0
-#define LONGONLYOPT_HELP                        1
-#define LONGONLYOPT_HOST                        2
-#define LONGONLYOPT_PORT                        3
-#define LONGONLYOPT_TIMEOUT                     4
-#define LONGONLYOPT_AUTH                        5
-#define LONGONLYOPT_USER                        6
-#define LONGONLYOPT_PASSWORDEVAL                7
-#define LONGONLYOPT_TLS                         8
-#define LONGONLYOPT_TLS_STARTTLS                9
-#define LONGONLYOPT_TLS_TRUST_FILE              10
-#define LONGONLYOPT_TLS_CRL_FILE                11
-#define LONGONLYOPT_TLS_FINGERPRINT             12
-#define LONGONLYOPT_TLS_KEY_FILE                13
-#define LONGONLYOPT_TLS_CERT_FILE               14
-#define LONGONLYOPT_TLS_CERTCHECK               15
-#define LONGONLYOPT_TLS_FORCE_SSLV3             16
-#define LONGONLYOPT_TLS_MIN_DH_PRIME_BITS       17
-#define LONGONLYOPT_TLS_PRIORITIES              18
-#define LONGONLYOPT_PROTOCOL                    19
-#define LONGONLYOPT_DOMAIN                      20
-#define LONGONLYOPT_KEEPBCC                     21
-#define LONGONLYOPT_RMQS                        22
-#define LONGONLYOPT_SYSLOG                      23
-#define LONGONLYOPT_MAILDOMAIN                  24
-#define LONGONLYOPT_AUTO_FROM                   25
-#define LONGONLYOPT_READ_ENVELOPE_FROM          26
-#define LONGONLYOPT_ALIASES                     27
-#define LONGONLYOPT_PROXY_HOST                  28
-#define LONGONLYOPT_PROXY_PORT                  29
-#define LONGONLYOPT_ADD_MISSING_FROM_HEADER     30
-#define LONGONLYOPT_ADD_MISSING_DATE_HEADER     31
+#define LONGONLYOPT_VERSION                     (256 + 0)
+#define LONGONLYOPT_HELP                        (256 + 1)
+#define LONGONLYOPT_HOST                        (256 + 2)
+#define LONGONLYOPT_PORT                        (256 + 3)
+#define LONGONLYOPT_TIMEOUT                     (256 + 4)
+#define LONGONLYOPT_AUTH                        (256 + 5)
+#define LONGONLYOPT_USER                        (256 + 6)
+#define LONGONLYOPT_PASSWORDEVAL                (256 + 7)
+#define LONGONLYOPT_TLS                         (256 + 8)
+#define LONGONLYOPT_TLS_STARTTLS                (256 + 9)
+#define LONGONLYOPT_TLS_TRUST_FILE              (256 + 10)
+#define LONGONLYOPT_TLS_CRL_FILE                (256 + 11)
+#define LONGONLYOPT_TLS_FINGERPRINT             (256 + 12)
+#define LONGONLYOPT_TLS_KEY_FILE                (256 + 13)
+#define LONGONLYOPT_TLS_CERT_FILE               (256 + 14)
+#define LONGONLYOPT_TLS_CERTCHECK               (256 + 15)
+#define LONGONLYOPT_TLS_FORCE_SSLV3             (256 + 16)
+#define LONGONLYOPT_TLS_MIN_DH_PRIME_BITS       (256 + 17)
+#define LONGONLYOPT_TLS_PRIORITIES              (256 + 18)
+#define LONGONLYOPT_PROTOCOL                    (256 + 19)
+#define LONGONLYOPT_DOMAIN                      (256 + 20)
+#define LONGONLYOPT_KEEPBCC                     (256 + 21)
+#define LONGONLYOPT_RMQS                        (256 + 22)
+#define LONGONLYOPT_SYSLOG                      (256 + 23)
+#define LONGONLYOPT_MAILDOMAIN                  (256 + 24)
+#define LONGONLYOPT_AUTO_FROM                   (256 + 25)
+#define LONGONLYOPT_READ_ENVELOPE_FROM          (256 + 26)
+#define LONGONLYOPT_ALIASES                     (256 + 27)
+#define LONGONLYOPT_PROXY_HOST                  (256 + 28)
+#define LONGONLYOPT_PROXY_PORT                  (256 + 29)
+#define LONGONLYOPT_ADD_MISSING_FROM_HEADER     (256 + 30)
+#define LONGONLYOPT_ADD_MISSING_DATE_HEADER     (256 + 31)
+#define LONGONLYOPT_REMOVE_BCC_HEADERS          (256 + 32)
 
 int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
 {
@@ -2555,7 +2557,6 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
         { "dsn-return", required_argument, 0, 'R' },
         { "protocol", required_argument, 0, LONGONLYOPT_PROTOCOL },
         { "domain", required_argument, 0, LONGONLYOPT_DOMAIN },
-        { "keepbcc", optional_argument, 0, LONGONLYOPT_KEEPBCC },
         { "logfile", required_argument, 0, 'X' },
         { "syslog", optional_argument, 0, LONGONLYOPT_SYSLOG },
         { "aliases", required_argument, 0, LONGONLYOPT_ALIASES },
@@ -2565,6 +2566,9 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
             LONGONLYOPT_ADD_MISSING_FROM_HEADER },
         { "add-missing-date-header", optional_argument, 0,
             LONGONLYOPT_ADD_MISSING_DATE_HEADER },
+        { "remove-bcc-headers", optional_argument, 0,
+            LONGONLYOPT_REMOVE_BCC_HEADERS },
+        { "keepbcc", optional_argument, 0, LONGONLYOPT_KEEPBCC },
         { "read-recipients", no_argument, 0, 't' },
         { "read-envelope-from", no_argument, 0,
             LONGONLYOPT_READ_ENVELOPE_FROM },
@@ -3066,24 +3070,6 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
                 conf->cmdline_account->mask |= ACC_DOMAIN;
                 break;
 
-            case LONGONLYOPT_KEEPBCC:
-                if (!optarg || is_on(optarg))
-                {
-                    conf->cmdline_account->keepbcc = 1;
-                }
-                else if (is_off(optarg))
-                {
-                    conf->cmdline_account->keepbcc = 0;
-                }
-                else
-                {
-                    print_error(_("invalid argument %s for %s"),
-                            optarg, "--keepbcc");
-                    error_code = 1;
-                }
-                conf->cmdline_account->mask |= ACC_KEEPBCC;
-                break;
-
             case 'X':
                 free(conf->cmdline_account->logfile);
                 if (*optarg)
@@ -3205,6 +3191,24 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
                 conf->cmdline_account->mask |= ACC_ADD_MISSING_DATE_HEADER;
                 break;
 
+            case LONGONLYOPT_REMOVE_BCC_HEADERS:
+                if (!optarg || is_on(optarg))
+                {
+                    conf->cmdline_account->remove_bcc_headers = 1;
+                }
+                else if (is_off(optarg))
+                {
+                    conf->cmdline_account->remove_bcc_headers = 0;
+                }
+                else
+                {
+                    print_error(_("invalid argument %s for %s"),
+                            optarg, "--remove-bcc-headers");
+                    error_code = 1;
+                }
+                conf->cmdline_account->mask |= ACC_REMOVE_BCC_HEADERS;
+                break;
+
             case 't':
                 conf->read_recipients = 1;
                 break;
@@ -3235,6 +3239,25 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
             case 'F':
                 free(conf->full_name);
                 conf->full_name = xstrdup(optarg);
+                break;
+
+            case LONGONLYOPT_KEEPBCC:
+                /* compatibility with 1.4.x */
+                if (!optarg || is_on(optarg))
+                {
+                    conf->cmdline_account->remove_bcc_headers = 0;
+                }
+                else if (is_off(optarg))
+                {
+                    conf->cmdline_account->remove_bcc_headers = 1;
+                }
+                else
+                {
+                    print_error(_("invalid argument %s for %s"),
+                            optarg, "--keepbcc");
+                    error_code = 1;
+                }
+                conf->cmdline_account->mask |= ACC_REMOVE_BCC_HEADERS;
                 break;
 
             case 'A':
@@ -3600,7 +3623,8 @@ void msmtp_print_conf(msmtp_cmdline_conf_t conf, account_t *account)
                 account->add_missing_from_header ? _("on") : _("off"));
         printf("add_missing_date_header = %s\n",
                 account->add_missing_date_header ? _("on") : _("off"));
-        printf("keepbcc = %s\n", account->keepbcc ? _("on") : _("off"));
+        printf("remove_bcc_headers = %s\n",
+                account->remove_bcc_headers ? _("on") : _("off"));
         printf("dsn_notify = %s\n",
                 account->dsn_notify ? account->dsn_notify : _("(not set)"));
         printf("dsn_return = %s\n",

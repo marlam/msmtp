@@ -7,6 +7,8 @@ Version 1.6.0rc1:
 - From: and Date: headers are now added to mails if necessary, for compatibility
   with sendmail, postfix, exim, and other MTAs. This can be disabled with the
   add_missing_from_header and add_missing_date_header commands.
+- The new remove_bcc_headers command replaces the old keepbcc command (but the
+  old command is still supported for compatibility).
 - Support for SOCKS proxies was added. This allows msmtp to be used with Tor.
 - SSLv3 is disabled, and the obsolete tls_force_sslv3 command and
   --tls-force-sslv3 option have no effect anymore.

@@ -54,29 +54,29 @@
 #define ACC_MAILDOMAIN                  (1LL << 7LL)
 #define ACC_DSN_RETURN                  (1LL << 8LL)
 #define ACC_DSN_NOTIFY                  (1LL << 9LL)
-#define ACC_KEEPBCC                     (1LL << 10LL)
-#define ACC_AUTH_MECH                   (1LL << 11LL)
-#define ACC_USERNAME                    (1LL << 12LL)
-#define ACC_PASSWORD                    (1LL << 13LL)
-#define ACC_PASSWORDEVAL                (1LL << 14LL)
-#define ACC_NTLMDOMAIN                  (1LL << 15LL)
-#define ACC_TLS                         (1LL << 16LL)
-#define ACC_TLS_NOSTARTTLS              (1LL << 17LL)
-#define ACC_TLS_KEY_FILE                (1LL << 18LL)
-#define ACC_TLS_CERT_FILE               (1LL << 19LL)
-#define ACC_TLS_TRUST_FILE              (1LL << 20LL)
-#define ACC_TLS_CRL_FILE                (1LL << 21LL)
-#define ACC_TLS_FINGERPRINT             (1LL << 22LL)
-#define ACC_TLS_NOCERTCHECK             (1LL << 23LL)
-#define ACC_TLS_MIN_DH_PRIME_BITS       (1LL << 24LL)
-#define ACC_TLS_PRIORITIES              (1LL << 25LL)
-#define ACC_LOGFILE                     (1LL << 26LL)
-#define ACC_SYSLOG                      (1LL << 27LL)
-#define ACC_ALIASES                     (1LL << 28LL)
-#define ACC_PROXY_HOST                  (1LL << 29LL)
-#define ACC_PROXY_PORT                  (1LL << 30LL)
-#define ACC_ADD_MISSING_FROM_HEADER     (1LL << 31LL)
-#define ACC_ADD_MISSING_DATE_HEADER     (1LL << 32LL)
+#define ACC_AUTH_MECH                   (1LL << 10LL)
+#define ACC_USERNAME                    (1LL << 11LL)
+#define ACC_PASSWORD                    (1LL << 12LL)
+#define ACC_PASSWORDEVAL                (1LL << 13LL)
+#define ACC_NTLMDOMAIN                  (1LL << 14LL)
+#define ACC_TLS                         (1LL << 15LL)
+#define ACC_TLS_NOSTARTTLS              (1LL << 16LL)
+#define ACC_TLS_KEY_FILE                (1LL << 17LL)
+#define ACC_TLS_CERT_FILE               (1LL << 18LL)
+#define ACC_TLS_TRUST_FILE              (1LL << 19LL)
+#define ACC_TLS_CRL_FILE                (1LL << 20LL)
+#define ACC_TLS_FINGERPRINT             (1LL << 21LL)
+#define ACC_TLS_NOCERTCHECK             (1LL << 22LL)
+#define ACC_TLS_MIN_DH_PRIME_BITS       (1LL << 23LL)
+#define ACC_TLS_PRIORITIES              (1LL << 24LL)
+#define ACC_LOGFILE                     (1LL << 25LL)
+#define ACC_SYSLOG                      (1LL << 26LL)
+#define ACC_ALIASES                     (1LL << 27LL)
+#define ACC_PROXY_HOST                  (1LL << 28LL)
+#define ACC_PROXY_PORT                  (1LL << 29LL)
+#define ACC_ADD_MISSING_FROM_HEADER     (1LL << 30LL)
+#define ACC_ADD_MISSING_DATE_HEADER     (1LL << 31LL)
+#define ACC_REMOVE_BCC_HEADERS          (1LL << 32LL)
 
 typedef struct
 {
@@ -99,7 +99,6 @@ typedef struct
                                    addresses */
     char *dsn_return;           /* DSN return request */
     char *dsn_notify;           /* DSN notify request */
-    int keepbcc;                /* flag: keep the Bcc header in the mail? */
     /* Authentication */
     char *auth_mech;            /* authentication mechanism */
     char *username;             /* username for authentication */
@@ -129,6 +128,7 @@ typedef struct
     /* header modifications */
     int add_missing_from_header;/* add From header if it is missing? */
     int add_missing_date_header;/* add Date header if it is missing? */
+    int remove_bcc_headers;     /* remove the Bcc headers from the mail? */
 } account_t;
 
 

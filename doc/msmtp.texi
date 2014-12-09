@@ -415,11 +415,11 @@ The default is to add it. @xref{Header handling}.
 @cmindex add_missing_date_header
 This command controls whether to add a Date header if the mail does not have one.
 The default is to add it. @xref{Header handling}.
-@anchor{keepbcc}
-@item keepbcc [(on|off)]
-@cmindex keepbcc
-This command controls whether to remove or keep the Bcc header when sending a 
-mail. The default is to remove it. @xref{Header handling}.
+@anchor{remove_bcc_headers}
+@item remove_bcc_headers [(on|off)]
+@cmindex remove_bcc_headers
+This command controls whether to remove Bcc headers. The default is to remove them.
+@xref{Header handling}.
 @anchor{logfile}
 @item logfile [@var{file}]
 @cmindex logfile
@@ -666,10 +666,10 @@ Enable or disable the addition of a missing From header. @xref{add_missing_from_
 @item --add-missing-date-header[=(on|off)]
 @opindex --add-missing-date-header
 Enable or disable the addition of a missing Date header. @xref{add_missing_date_header}.
-@anchor{--keepbcc}
-@item --keepbcc[=(on|off)]
-@opindex --keepbcc
-Enable or disable the preservation of the Bcc header. @xref{keepbcc}.
+@anchor{--remove-bcc-headers}
+@item --remove-bcc-headers[=(on|off)]
+@opindex --remove-bcc-headers
+Enable or disable the removal of Bcc headers. @xref{remove_bcc_headers}.
 @anchor{--logfile}
 @item -X [@var{file}]
 @itemx --logfile=[@var{file}]
@@ -1036,7 +1036,7 @@ facility. See @ref{syslog}, @ref{--syslog}.
 Msmtp transmits mails unaltered to the SMTP server, with the following exceptions:
 @itemize
 @item The Bcc header(s) will be removed. This behavior can be changed with the
-@samp{keepbcc} command and @samp{--keepbcc} option, see @ref{keepbcc}/@ref{--keepbcc}.
+@samp{remove_bcc_headers} command and @samp{--remove-bcc-headers} option.
 @item A From header will be added if the mail does not have one. This can be changed
 with the @samp{add_missing_from_header} command and
 @samp{--add-missing-from-header} option.

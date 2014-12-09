@@ -76,7 +76,6 @@ account_t *account_new(const char *conffile, const char *id)
     a->maildomain = NULL;
     a->dsn_return = NULL;
     a->dsn_notify = NULL;
-    a->keepbcc = 0;
     a->auth_mech = NULL;
     a->username = NULL;
     a->password = NULL;
@@ -100,6 +99,7 @@ account_t *account_new(const char *conffile, const char *id)
     a->proxy_port = 0;
     a->add_missing_from_header = 1;
     a->add_missing_date_header = 1;
+    a->remove_bcc_headers = 1;
     return a;
 }
 
@@ -130,7 +130,6 @@ account_t *account_copy(account_t *acc)
         a->maildomain = acc->maildomain ? xstrdup(acc->maildomain) : NULL;
         a->dsn_return = acc->dsn_return ? xstrdup(acc->dsn_return) : NULL;
         a->dsn_notify = acc->dsn_notify ? xstrdup(acc->dsn_notify) : NULL;
-        a->keepbcc = acc->keepbcc;
         a->auth_mech = acc->auth_mech ? xstrdup(acc->auth_mech) : NULL;
         a->username = acc->username ? xstrdup(acc->username) : NULL;
         a->password = acc->password ? xstrdup(acc->password) : NULL;
@@ -174,6 +173,7 @@ account_t *account_copy(account_t *acc)
         a->proxy_port = acc->proxy_port;
         a->add_missing_from_header = acc->add_missing_from_header;
         a->add_missing_date_header = acc->add_missing_date_header;
+        a->remove_bcc_headers = acc->remove_bcc_headers;
     }
     return a;
 }
@@ -646,9 +646,9 @@ void override_account(account_t *acc1, account_t *acc2)
         free(acc1->dsn_notify);
         acc1->dsn_notify = acc2->dsn_notify ? xstrdup(acc2->dsn_notify) : NULL;
     }
-    if (acc2->mask & ACC_KEEPBCC)
+    if (acc2->mask & ACC_REMOVE_BCC_HEADERS)
     {
-        acc1->keepbcc = acc2->keepbcc;
+        acc1->remove_bcc_headers = acc2->remove_bcc_headers;
     }
     if (acc2->mask & ACC_LOGFILE)
     {
@@ -1576,26 +1576,6 @@ int read_conffile(const char *conffile, FILE *f, list_t **acc_list,
                 }
             }
         }
-        else if (strcmp(cmd, "keepbcc") == 0)
-        {
-            acc->mask |= ACC_KEEPBCC;
-            if (*arg == '\0' || is_on(arg))
-            {
-                acc->keepbcc = 1;
-            }
-            else if (is_off(arg))
-            {
-                acc->keepbcc = 0;
-            }
-            else
-            {
-                *errstr = xasprintf(
-                        _("line %d: invalid argument %s for command %s"),
-                        line, arg, cmd);
-                e = CONF_ESYNTAX;
-                break;
-            }
-        }
         else if (strcmp(cmd, "logfile") == 0)
         {
             acc->mask |= ACC_LOGFILE;
@@ -1713,6 +1693,47 @@ int read_conffile(const char *conffile, FILE *f, list_t **acc_list,
             else if (is_off(arg))
             {
                 acc->add_missing_date_header = 0;
+            }
+            else
+            {
+                *errstr = xasprintf(
+                        _("line %d: invalid argument %s for command %s"),
+                        line, arg, cmd);
+                e = CONF_ESYNTAX;
+                break;
+            }
+        }
+        else if (strcmp(cmd, "remove_bcc_headers") == 0)
+        {
+            acc->mask |= ACC_REMOVE_BCC_HEADERS;
+            if (*arg == '\0' || is_on(arg))
+            {
+                acc->remove_bcc_headers = 1;
+            }
+            else if (is_off(arg))
+            {
+                acc->remove_bcc_headers = 0;
+            }
+            else
+            {
+                *errstr = xasprintf(
+                        _("line %d: invalid argument %s for command %s"),
+                        line, arg, cmd);
+                e = CONF_ESYNTAX;
+                break;
+            }
+        }
+        else if (strcmp(cmd, "keepbcc") == 0)
+        {
+            /* compatibility with 1.4.x */
+            acc->mask |= ACC_REMOVE_BCC_HEADERS;
+            if (*arg == '\0' || is_on(arg))
+            {
+                acc->remove_bcc_headers = 0;
+            }
+            else if (is_off(arg))
+            {
+                acc->remove_bcc_headers = 1;
             }
             else
             {

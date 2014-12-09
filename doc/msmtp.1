@@ -162,8 +162,8 @@ Enable or disable the addition of a missing From header. See the
 .IP "\-\-add\-missing\-date\-header[=(\fIon\fP|\fIoff\fP)]"
 Enable or disable the addition of a missing Date header. See the
 \fBadd_missing_date_header\fP command below.
-.IP "\-\-keepbcc[=(\fIon\fP|\fIoff\fP)]"
-Enable or disable the preservation of the Bcc header. See the \fBkeepbcc\fP
+.IP "\-\-remove\-bcc\-headers[=(\fIon\fP|\fIoff\fP)]"
+Enable or disable the removal of Bcc headers. See the \fBremove_bcc_headers\fP
 command below.
 .IP "\-X, \-\-logfile=[\fIfile\fP]"
 Set or unset the log file. See the \fBlogfile\fP command below.
@@ -232,7 +232,7 @@ If none of the above options is used (or if no account has a matching
 Msmtp transmits mails unaltered to the SMTP server, with the following exceptions:
 .br
 - The Bcc header(s) will be removed. This behavior can be changed with the
-\fBkeepbcc\fP command and \fB\-\-keepbcc\fP option.
+\fBremove_bcc_headers\fP command and \fB\-\-remove\-bcc\-headers\fP option.
 .br
 - A From header will be added if the mail does not have one. This can be changed
 with the \fBadd_missing_from_header\fP command and
@@ -496,9 +496,8 @@ The default is to add it.
 .IP "add_missing_date_header [(\fIon\fP|\fIoff\fP)]"
 This command controls whether to add a Date header if the mail does not have one.
 The default is to add it.
-.IP "keepbcc [(\fIon\fP|\fIoff\fP)]"
-This command controls whether to remove or keep the Bcc header when sending a 
-mail. The default is to remove it.
+.IP "remove_bcc_headers [(\fIon\fP|\fIoff\fP)]"
+This command controls whether to remove Bcc headers. The default is to remove them.
 .IP "logfile [\fIfile\fP]"
 An empty argument disables logging (this is the default).
 .br

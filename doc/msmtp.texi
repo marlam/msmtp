@@ -405,6 +405,16 @@ The @var{amount} must be @samp{headers}, to just return the message headers, or
 @samp{full}, to return the full mail.
 The SMTP server must support the DSN extension.
 @xref{Delivery Status Notifications}.
+@anchor{add_missing_from_header}
+@item add_missing_from_header [(on|off)]
+@cmindex add_missing_from_header
+This command controls whether to add a From header if the mail does not have one.
+The default is to add it. @xref{Header handling}.
+@anchor{add_missing_date_header}
+@item add_missing_date_header [(on|off)]
+@cmindex add_missing_date_header
+This command controls whether to add a Date header if the mail does not have one.
+The default is to add it. @xref{Header handling}.
 @anchor{keepbcc}
 @item keepbcc [(on|off)]
 @cmindex keepbcc
@@ -648,6 +658,14 @@ Set or unset DSN notification conditions. @xref{dsn_notify}.
 Set or unset the DSN notification amount. @xref{dsn_return}.
 Note that @samp{hdrs} is accepted as an alias for @samp{headers} to be 
 compatible with sendmail.
+@anchor{--add-missing-from-header}
+@item --add-missing-from-header[=(on|off)]
+@opindex --add-missing-from-header
+Enable or disable the addition of a missing From header. @xref{add_missing_from_header}.
+@anchor{--add-missing-date-header}
+@item --add-missing-date-header[=(on|off)]
+@opindex --add-missing-date-header
+Enable or disable the addition of a missing Date header. @xref{add_missing_date_header}.
 @anchor{--keepbcc}
 @item --keepbcc[=(on|off)]
 @opindex --keepbcc
@@ -1019,10 +1037,14 @@ Msmtp transmits mails unaltered to the SMTP server, with the following exception
 @itemize
 @item The Bcc header(s) will be removed. This behavior can be changed with the
 @samp{keepbcc} command and @samp{--keepbcc} option, see @ref{keepbcc}/@ref{--keepbcc}.
-@item A Date header will be added if the mail does not have one.
-@item A From header will be added if the mail does not have one. This header
-will use the envelope from address and optionally a full name set with the
-@samp{-F} option.
+@item A From header will be added if the mail does not have one. This can be changed
+with the @samp{add_missing_from_header} command and
+@samp{--add-missing-from-header} option.
+The header will use the envelope from address and optionally a full name set
+with the @samp{-F} option.
+@item A Date header will be added if the mail does not have one. This can be changed
+with the @samp{add_missing_date_header} command and
+@samp{--add-missing-date-header} option.
 @end itemize
 
 

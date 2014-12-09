@@ -36,6 +36,10 @@
 #include <ctype.h>
 #include <errno.h>
 
+#if (SIZEOF_LONG_LONG * CHAR_BIT) < 64
+# error "long long has fewer than 64 bits"
+#endif
+
 #include "gettext.h"
 #define _(string) gettext(string)
 
@@ -61,7 +65,7 @@ account_t *account_new(const char *conffile, const char *id)
     a = xmalloc(sizeof(account_t));
     a->id = id ? xstrdup(id) : NULL;
     a->conffile = conffile ? xstrdup(conffile) : NULL;
-    a->mask = 0;
+    a->mask = 0LL;
     a->host = NULL;
     a->port = 0;                /* this must be set later */
     a->timeout = 0;
@@ -94,6 +98,8 @@ account_t *account_new(const char *conffile, const char *id)
     a->aliases = NULL;
     a->proxy_host = NULL;
     a->proxy_port = 0;
+    a->add_missing_from_header = 1;
+    a->add_missing_date_header = 1;
     return a;
 }
 
@@ -166,6 +172,8 @@ account_t *account_copy(account_t *acc)
         a->aliases = acc->aliases ? xstrdup(acc->aliases) : NULL;
         a->proxy_host = acc->proxy_host ? xstrdup(acc->proxy_host) : NULL;
         a->proxy_port = acc->proxy_port;
+        a->add_missing_from_header = acc->add_missing_from_header;
+        a->add_missing_date_header = acc->add_missing_date_header;
     }
     return a;
 }
@@ -666,6 +674,14 @@ void override_account(account_t *acc1, account_t *acc2)
     {
         acc1->proxy_port = acc2->proxy_port;
     }
+    if (acc2->mask & ACC_ADD_MISSING_FROM_HEADER)
+    {
+        acc1->add_missing_from_header = acc2->add_missing_from_header;
+    }
+    if (acc2->mask & ACC_ADD_MISSING_DATE_HEADER)
+    {
+        acc1->add_missing_date_header = acc2->add_missing_date_header;
+    }
     acc1->mask |= acc2->mask;
 }
 
@@ -1057,7 +1073,7 @@ int read_conffile(const char *conffile, FILE *f, list_t **acc_list,
             acc = account_copy(defaults);
             acc->id = xstrdup("default");
             acc->conffile = xstrdup(conffile);
-            acc->mask = 0;
+            acc->mask = 0LL;
             list_insert(p, acc);
             p = p->next;
         }
@@ -1118,7 +1134,7 @@ int read_conffile(const char *conffile, FILE *f, list_t **acc_list,
             acc = account_copy(defaults);
             acc->id = acc_id;
             acc->conffile = xstrdup(conffile);
-            acc->mask = 0;
+            acc->mask = 0LL;
             list_insert(p, acc);
             p = p->next;
             lp = copy_from;
@@ -1665,6 +1681,46 @@ int read_conffile(const char *conffile, FILE *f, list_t **acc_list,
                     e = CONF_ESYNTAX;
                     break;
                 }
+            }
+        }
+        else if (strcmp(cmd, "add_missing_from_header") == 0)
+        {
+            acc->mask |= ACC_ADD_MISSING_FROM_HEADER;
+            if (*arg == '\0' || is_on(arg))
+            {
+                acc->add_missing_from_header = 1;
+            }
+            else if (is_off(arg))
+            {
+                acc->add_missing_from_header = 0;
+            }
+            else
+            {
+                *errstr = xasprintf(
+                        _("line %d: invalid argument %s for command %s"),
+                        line, arg, cmd);
+                e = CONF_ESYNTAX;
+                break;
+            }
+        }
+        else if (strcmp(cmd, "add_missing_date_header") == 0)
+        {
+            acc->mask |= ACC_ADD_MISSING_DATE_HEADER;
+            if (*arg == '\0' || is_on(arg))
+            {
+                acc->add_missing_date_header = 1;
+            }
+            else if (is_off(arg))
+            {
+                acc->add_missing_date_header = 0;
+            }
+            else
+            {
+                *errstr = xasprintf(
+                        _("line %d: invalid argument %s for command %s"),
+                        line, arg, cmd);
+                e = CONF_ESYNTAX;
+                break;
             }
         }
         else if (strcmp(cmd, "tls_nocertcheck") == 0)

@@ -5,7 +5,8 @@ Version 1.6.0rc1:
 - Libidn is not required for IDN support anymore on systems where getaddrinfo()
   supports the AI_IDN flag and the GnuTLS version is >= 3.4.0.
 - From: and Date: headers are now added to mails if necessary, for compatibility
-  with sendmail, postfix, exim, and other MTAs.
+  with sendmail, postfix, exim, and other MTAs. This can be disabled with the
+  add_missing_from_header and add_missing_date_header commands.
 - Support for SOCKS proxies was added. This allows msmtp to be used with Tor.
 - SSLv3 is disabled, and the obsolete tls_force_sslv3 command and
   --tls-force-sslv3 option have no effect anymore.

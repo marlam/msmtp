@@ -2440,6 +2440,8 @@ void msmtp_print_help(void)
     printf(_("  --aliases=[file]             set/unset aliases file\n"));
     printf(_("  --proxy-host=[IP|hostname]   set/unset proxy\n"));
     printf(_("  --proxy-port=[number]        set/unset proxy port\n"));
+    printf(_("  --add-missing-from-header[=(on|off)] enable/disable addition of From header\n"));
+    printf(_("  --add-missing-date-header[=(on|off)] enable/disable addition of Date header\n"));
     printf(_("  --                           end of options\n"));
     printf(_("Accepted but ignored: -A, -B, -bm, -F, -G, -h, -i, -L, -m, -n, -O, -o, -v\n"));
     printf(_("\nReport bugs to <%s>.\n"), PACKAGE_BUGREPORT);
@@ -2508,67 +2510,63 @@ typedef struct
 #define LONGONLYOPT_ALIASES                     27
 #define LONGONLYOPT_PROXY_HOST                  28
 #define LONGONLYOPT_PROXY_PORT                  29
+#define LONGONLYOPT_ADD_MISSING_FROM_HEADER     30
+#define LONGONLYOPT_ADD_MISSING_DATE_HEADER     31
 
 int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
 {
     struct option options[] =
     {
-        { "version",               no_argument,       0, LONGONLYOPT_VERSION },
-        { "help",                  no_argument,       0, LONGONLYOPT_HELP },
-        { "pretend",               no_argument,       0, 'P' },
+        { "version", no_argument, 0, LONGONLYOPT_VERSION },
+        { "help", no_argument, 0, LONGONLYOPT_HELP },
+        { "pretend", no_argument, 0, 'P' },
         /* accept an optional argument for sendmail compatibility: */
-        { "debug",                 optional_argument, 0, 'd' },
-        { "serverinfo",            no_argument,       0, 'S' },
-        { "rmqs",                  required_argument, 0, LONGONLYOPT_RMQS },
-        { "file",                  required_argument, 0, 'C' },
-        { "account",               required_argument, 0, 'a' },
-        { "host",                  required_argument, 0, LONGONLYOPT_HOST },
-        { "port",                  required_argument, 0, LONGONLYOPT_PORT },
-        { "timeout",               required_argument, 0, LONGONLYOPT_TIMEOUT},
+        { "debug", optional_argument, 0, 'd' },
+        { "serverinfo", no_argument, 0, 'S' },
+        { "rmqs", required_argument, 0, LONGONLYOPT_RMQS },
+        { "file", required_argument, 0, 'C' },
+        { "account", required_argument, 0, 'a' },
+        { "host", required_argument, 0, LONGONLYOPT_HOST },
+        { "port", required_argument, 0, LONGONLYOPT_PORT },
+        { "timeout", required_argument, 0, LONGONLYOPT_TIMEOUT},
         /* for compatibility with versions <= 1.4.1: */
-        { "connect-timeout",       required_argument, 0, LONGONLYOPT_TIMEOUT},
-        { "auto-from",             optional_argument, 0,
-            LONGONLYOPT_AUTO_FROM },
-        { "from",                  required_argument, 0, 'f' },
-        { "maildomain",            required_argument, 0,
-            LONGONLYOPT_MAILDOMAIN },
-        { "auth",                  optional_argument, 0, LONGONLYOPT_AUTH },
-        { "user",                  required_argument, 0, LONGONLYOPT_USER },
-        { "passwordeval",          required_argument, 0,
-            LONGONLYOPT_PASSWORDEVAL },
-        { "tls",                   optional_argument, 0, LONGONLYOPT_TLS },
-        { "tls-starttls",          optional_argument, 0,
-            LONGONLYOPT_TLS_STARTTLS },
-        { "tls-trust-file",        required_argument, 0,
-            LONGONLYOPT_TLS_TRUST_FILE },
-        { "tls-crl-file",          required_argument, 0,
-            LONGONLYOPT_TLS_CRL_FILE },
-        { "tls-fingerprint",       required_argument, 0,
+        { "connect-timeout", required_argument, 0, LONGONLYOPT_TIMEOUT},
+        { "auto-from", optional_argument, 0, LONGONLYOPT_AUTO_FROM },
+        { "from", required_argument, 0, 'f' },
+        { "maildomain", required_argument, 0, LONGONLYOPT_MAILDOMAIN },
+        { "auth", optional_argument, 0, LONGONLYOPT_AUTH },
+        { "user", required_argument, 0, LONGONLYOPT_USER },
+        { "passwordeval", required_argument, 0, LONGONLYOPT_PASSWORDEVAL },
+        { "tls", optional_argument, 0, LONGONLYOPT_TLS },
+        { "tls-starttls", optional_argument, 0, LONGONLYOPT_TLS_STARTTLS },
+        { "tls-trust-file", required_argument, 0, LONGONLYOPT_TLS_TRUST_FILE },
+        { "tls-crl-file", required_argument, 0, LONGONLYOPT_TLS_CRL_FILE },
+        { "tls-fingerprint", required_argument, 0,
             LONGONLYOPT_TLS_FINGERPRINT },
-        { "tls-key-file",          required_argument, 0,
-            LONGONLYOPT_TLS_KEY_FILE },
-        { "tls-cert-file",         required_argument, 0,
-            LONGONLYOPT_TLS_CERT_FILE },
-        { "tls-certcheck",         optional_argument, 0,
-            LONGONLYOPT_TLS_CERTCHECK },
-        { "tls-force-sslv3",       optional_argument, 0,
+        { "tls-key-file", required_argument, 0, LONGONLYOPT_TLS_KEY_FILE },
+        { "tls-cert-file", required_argument, 0, LONGONLYOPT_TLS_CERT_FILE },
+        { "tls-certcheck", optional_argument, 0, LONGONLYOPT_TLS_CERTCHECK },
+        { "tls-force-sslv3", optional_argument, 0,
             LONGONLYOPT_TLS_FORCE_SSLV3 },
         { "tls-min-dh-prime-bits", required_argument, 0,
             LONGONLYOPT_TLS_MIN_DH_PRIME_BITS },
-        { "tls-priorities",        required_argument, 0,
-            LONGONLYOPT_TLS_PRIORITIES },
-        { "dsn-notify",            required_argument, 0, 'N' },
-        { "dsn-return",            required_argument, 0, 'R' },
-        { "protocol",              required_argument, 0, LONGONLYOPT_PROTOCOL },
-        { "domain",                required_argument, 0, LONGONLYOPT_DOMAIN },
-        { "keepbcc",               optional_argument, 0, LONGONLYOPT_KEEPBCC },
-        { "logfile",               required_argument, 0, 'X' },
-        { "syslog",                optional_argument, 0, LONGONLYOPT_SYSLOG },
-        { "aliases",               required_argument, 0, LONGONLYOPT_ALIASES },
-        { "proxy-host",            required_argument, 0, LONGONLYOPT_PROXY_HOST },
-        { "proxy-port",            required_argument, 0, LONGONLYOPT_PROXY_PORT },
-        { "read-recipients",       no_argument,       0, 't' },
-        { "read-envelope-from",    no_argument,       0,
+        { "tls-priorities", required_argument, 0, LONGONLYOPT_TLS_PRIORITIES },
+        { "dsn-notify", required_argument, 0, 'N' },
+        { "dsn-return", required_argument, 0, 'R' },
+        { "protocol", required_argument, 0, LONGONLYOPT_PROTOCOL },
+        { "domain", required_argument, 0, LONGONLYOPT_DOMAIN },
+        { "keepbcc", optional_argument, 0, LONGONLYOPT_KEEPBCC },
+        { "logfile", required_argument, 0, 'X' },
+        { "syslog", optional_argument, 0, LONGONLYOPT_SYSLOG },
+        { "aliases", required_argument, 0, LONGONLYOPT_ALIASES },
+        { "proxy-host", required_argument, 0, LONGONLYOPT_PROXY_HOST },
+        { "proxy-port", required_argument, 0, LONGONLYOPT_PROXY_PORT },
+        { "add-missing-from-header", optional_argument, 0,
+            LONGONLYOPT_ADD_MISSING_FROM_HEADER },
+        { "add-missing-date-header", optional_argument, 0,
+            LONGONLYOPT_ADD_MISSING_DATE_HEADER },
+        { "read-recipients", no_argument, 0, 't' },
+        { "read-envelope-from", no_argument, 0,
             LONGONLYOPT_READ_ENVELOPE_FROM },
         { 0, 0, 0, 0 }
     };
@@ -3171,6 +3169,42 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
                 conf->cmdline_account->mask |= ACC_PROXY_PORT;
                 break;
 
+            case LONGONLYOPT_ADD_MISSING_FROM_HEADER:
+                if (!optarg || is_on(optarg))
+                {
+                    conf->cmdline_account->add_missing_from_header = 1;
+                }
+                else if (is_off(optarg))
+                {
+                    conf->cmdline_account->add_missing_from_header = 0;
+                }
+                else
+                {
+                    print_error(_("invalid argument %s for %s"),
+                            optarg, "--add-missing-from-header");
+                    error_code = 1;
+                }
+                conf->cmdline_account->mask |= ACC_ADD_MISSING_FROM_HEADER;
+                break;
+
+            case LONGONLYOPT_ADD_MISSING_DATE_HEADER:
+                if (!optarg || is_on(optarg))
+                {
+                    conf->cmdline_account->add_missing_date_header = 1;
+                }
+                else if (is_off(optarg))
+                {
+                    conf->cmdline_account->add_missing_date_header = 0;
+                }
+                else
+                {
+                    print_error(_("invalid argument %s for %s"),
+                            optarg, "--add-missing-date-header");
+                    error_code = 1;
+                }
+                conf->cmdline_account->mask |= ACC_ADD_MISSING_DATE_HEADER;
+                break;
+
             case 't':
                 conf->read_recipients = 1;
                 break;
@@ -3474,15 +3508,12 @@ void msmtp_print_conf(msmtp_cmdline_conf_t conf, account_t *account)
         printf(_("using account %s from %s\n"),
                 account->id, account->conffile);
     }
-    printf("host                  = %s\n"
-            "port                  = %d\n",
-            account->host,
-            account->port);
-    printf("proxy host            = %s\n"
-            "proxy port            = %d\n",
-            account->proxy_host ? account->proxy_host : _("(not set)"),
-            account->proxy_port);
-    printf("timeout               = ");
+    printf("host = %s\n", account->host);
+    printf("port = %d\n", account->port);
+    printf("proxy host = %s\n",
+            account->proxy_host ? account->proxy_host : _("(not set)"));
+    printf("proxy port = %d\n", account->proxy_port);
+    printf("timeout = ");
     if (account->timeout <= 0)
     {
         printf(_("off\n"));
@@ -3498,11 +3529,10 @@ void msmtp_print_conf(msmtp_cmdline_conf_t conf, account_t *account)
             printf(_("1 second\n"));
         }
     }
-    printf("protocol              = %s\n"
-            "domain                = %s\n",
-            account->protocol == SMTP_PROTO_SMTP ? "smtp" : "lmtp",
-            account->domain);
-    printf("auth                  = ");
+    printf("protocol = %s\n",
+            account->protocol == SMTP_PROTO_SMTP ? "smtp" : "lmtp");
+    printf("domain = %s\n", account->domain);
+    printf("auth = ");
     if (!account->auth_mech)
     {
         printf(_("none\n"));
@@ -3515,6 +3545,19 @@ void msmtp_print_conf(msmtp_cmdline_conf_t conf, account_t *account)
     {
         printf("%s\n", account->auth_mech);
     }
+    printf("user = %s\n",
+            account->username ? account->username : _("(not set)"));
+    printf("password = %s\n", account->password ? "*" : _("(not set)"));
+    printf("passwordeval = %s\n",
+            account->passwordeval ? account->passwordeval : _("(not set)"));
+    printf("ntlmdomain = %s\n",
+            account->ntlmdomain ? account->ntlmdomain : _("(not set)"));
+    printf("tls = %s\n", account->tls ? _("on") : _("off"));
+    printf("tls_starttls = %s\n", account->tls_nostarttls ? _("off") : _("on"));
+    printf("tls_trust_file = %s\n",
+            account->tls_trust_file ? account->tls_trust_file : _("(not set)"));
+    printf("tls_crl_file = %s\n",
+            account->tls_crl_file ? account->tls_crl_file : _("(not set)"));
     if (account->tls_sha1_fingerprint)
     {
         msmtp_fingerprint_string(fingerprint_string,
@@ -3525,30 +3568,14 @@ void msmtp_print_conf(msmtp_cmdline_conf_t conf, account_t *account)
         msmtp_fingerprint_string(fingerprint_string,
                 account->tls_md5_fingerprint, 16);
     }
-    printf("user                  = %s\n"
-            "password              = %s\n"
-            "passwordeval          = %s\n"
-            "ntlmdomain            = %s\n"
-            "tls                   = %s\n"
-            "tls_starttls          = %s\n"
-            "tls_trust_file        = %s\n"
-            "tls_crl_file          = %s\n"
-            "tls_fingerprint       = %s\n"
-            "tls_key_file          = %s\n"
-            "tls_cert_file         = %s\n"
-            "tls_certcheck         = %s\n",
-            account->username ? account->username : _("(not set)"),
-            account->password ? "*" : _("(not set)"),
-            account->passwordeval ? account->passwordeval : _("(not set)"),
-            account->ntlmdomain ? account->ntlmdomain : _("(not set)"),
-            account->tls ? _("on") : _("off"),
-            account->tls_nostarttls ? _("off") : _("on"),
-            account->tls_trust_file ? account->tls_trust_file : _("(not set)"),
-            account->tls_crl_file ? account->tls_crl_file : _("(not set)"),
+    printf("tls_fingerprint = %s\n",
             account->tls_sha1_fingerprint || account->tls_md5_fingerprint
-                ? fingerprint_string : _("(not set)"),
-            account->tls_key_file ? account->tls_key_file : _("(not set)"),
-            account->tls_cert_file ? account->tls_cert_file : _("(not set)"),
+            ? fingerprint_string : _("(not set)"));
+    printf("tls_key_file = %s\n",
+            account->tls_key_file ? account->tls_key_file : _("(not set)"));
+    printf("tls_cert_file = %s\n",
+            account->tls_cert_file ? account->tls_cert_file : _("(not set)"));
+    printf("tls_certcheck = %s\n",
             account->tls_nocertcheck ? _("off") : _("on"));
     printf("tls_min_dh_prime_bits = ");
     if (account->tls_min_dh_prime_bits >= 0)
@@ -3559,28 +3586,30 @@ void msmtp_print_conf(msmtp_cmdline_conf_t conf, account_t *account)
     {
         printf("%s\n", _("(not set)"));
     }
-    printf("tls_priorities        = %s\n",
+    printf("tls_priorities = %s\n",
             account->tls_priorities ? account->tls_priorities : _("(not set)"));
     if (conf.sendmail)
     {
-        printf("auto_from             = %s\n"
-                "maildomain            = %s\n"
-                "from                  = %s\n"
-                "dsn_notify            = %s\n"
-                "dsn_return            = %s\n"
-                "keepbcc               = %s\n"
-                "logfile               = %s\n"
-                "syslog                = %s\n"
-                "aliases               = %s\n",
-                account->auto_from ? _("on") : _("off"),
-                account->maildomain ? account->maildomain : _("(not set)"),
+        printf("auto_from = %s\n", account->auto_from ? _("on") : _("off"));
+        printf("maildomain = %s\n",
+                account->maildomain ? account->maildomain : _("(not set)"));
+        printf("from = %s\n",
                 account->from ? account->from : conf.read_envelope_from
-                    ? _("(read from mail)") : _("(not set)"),
-                account->dsn_notify ? account->dsn_notify : _("(not set)"),
-                account->dsn_return ? account->dsn_return : _("(not set)"),
-                account->keepbcc ? _("on") : _("off"),
-                account->logfile ? account->logfile : _("(not set)"),
-                account->syslog ? account->syslog : _("(not set)"),
+                ? _("(read from mail)") : _("(not set)"));
+        printf("add_missing_from_header = %s\n",
+                account->add_missing_from_header ? _("on") : _("off"));
+        printf("add_missing_date_header = %s\n",
+                account->add_missing_date_header ? _("on") : _("off"));
+        printf("keepbcc = %s\n", account->keepbcc ? _("on") : _("off"));
+        printf("dsn_notify = %s\n", 
+                account->dsn_notify ? account->dsn_notify : _("(not set)"));
+        printf("dsn_return = %s\n",
+                account->dsn_return ? account->dsn_return : _("(not set)"));
+        printf("logfile = %s\n",
+                account->logfile ? account->logfile : _("(not set)"));
+        printf("syslog = %s\n",
+                account->syslog ? account->syslog : _("(not set)"));
+        printf("aliases = %s\n",
                 account->aliases ? account->aliases : _("(not set)"));
         if (conf.read_recipients)
         {
@@ -3594,7 +3623,7 @@ void msmtp_print_conf(msmtp_cmdline_conf_t conf, account_t *account)
     }
     if (conf.rmqs)
     {
-        printf("RMQS argument   = %s\n", conf.rmqs_argument);
+        printf("RMQS argument = %s\n", conf.rmqs_argument);
     }
 }
 
@@ -3993,7 +4022,8 @@ int main(int argc, char *argv[])
     /* do the work */
     if (conf.sendmail)
     {
-        if (!have_from_header || !have_date_header)
+        if ((!have_from_header && account->add_missing_from_header)
+                || (!have_date_header && account->add_missing_date_header))
         {
             if (!(prepend_header_tmpfile = tempfile(PACKAGE_NAME)))
             {
@@ -4003,7 +4033,7 @@ int main(int argc, char *argv[])
                 goto exit;
             }
         }
-        if (!have_from_header)
+        if (!have_from_header && account->add_missing_from_header)
         {
             if (conf.full_name)
             {
@@ -4015,7 +4045,7 @@ int main(int argc, char *argv[])
                 fprintf(prepend_header_tmpfile, "From: %s\n", account->from);
             }
         }
-        if (!have_date_header)
+        if (!have_date_header && account->add_missing_date_header)
         {
             time_t t;
             char rfc2822_timestamp[32];

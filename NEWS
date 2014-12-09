@@ -4,7 +4,9 @@ Version 1.6.0rc1:
   file, consider using the passwordeval command or a key ring instead.)
 - The GSSAPI authentication method is not chosen automatically anymore, you have
   to request it manually if you really want to use it.
-- GNOME Keyring support now uses libsecret instead of libgnome-keyring.
+- GNOME Keyring support now uses libsecret instead of libgnome-keyring. It is
+  now documented how to use secret-tool to manage passwords for msmtp; the
+  obsolete msmtp-gnome-tool script is removed.
 - Libidn is not required for IDN support anymore on systems where getaddrinfo()
   supports the AI_IDN flag and the GnuTLS version is >= 3.4.0.
 - From: and Date: headers are now added to mails if necessary, for compatibility

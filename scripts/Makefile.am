@@ -11,6 +11,4 @@ EXTRA_DIST = \
 	set_sendmail/set_sendmail.sh		\
 	vim/README				\
 	vim/msmtp.vim				\
-	find_alias/find_alias_for_msmtp.sh	\
-	msmtp-gnome-tool/README			\
-	msmtp-gnome-tool/msmtp-gnome-tool.py
+	find_alias/find_alias_for_msmtp.sh

@@ -921,11 +921,17 @@ specific keyring (if available). If that fails but a controlling terminal is
 available, msmtp will prompt you for it.
 
 Currently supported keyrings are the Gnome Keyring and the Mac OS X Keychain.
-The script @code{msmtp-gnome-tool.py} can be used to manage Gnome Keyring
-passwords for msmtp. To manage Mac OS X Keychain passwords, use the Keychain
-Access GUI application. The @samp{account name} is same as the msmtp @samp{user}
-argument. The @samp{keychain item name} is @code{smtp://<hostname>} where
-@code{<hostname>} matches the msmtp @samp{host} argument.
+
+The command @samp{secret-tool} (part of Gnome's libsecret) can be used to manage
+Gnome Keyring passwords for msmtp. For that purpose, specify the attributes
+"user" (user name), "protocol" (always "smtp"), and "server" (name of the SMTP
+server). You can also use @samp{secret-tool} via the @samp{passwordeval} command
+if your version of msmtp does not have builtin support for libsecret.
+
+To manage Mac OS X Keychain passwords, use the Keychain Access GUI application.
+The @samp{account name} is same as the msmtp @samp{user} argument. The
+@samp{keychain item name} is @code{smtp://<hostname>} where @code{<hostname>}
+matches the msmtp @samp{host} argument.
 
 The authentication method can be chosen with the @samp{auth} command or 
 @samp{--auth} option, but it is usually sufficient to just use the @samp{on} 

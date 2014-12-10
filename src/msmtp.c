@@ -946,17 +946,17 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
             {
                 printf("SCRAM-SHA-1 ");
             }
-            if (srv.cap.flags & SMTP_CAP_AUTH_CRAM_MD5)
+            if (srv.cap.flags & SMTP_CAP_AUTH_EXTERNAL)
             {
-                printf("CRAM-MD5 ");
+                printf("EXTERNAL ");
             }
             if (srv.cap.flags & SMTP_CAP_AUTH_GSSAPI)
             {
                 printf("GSSAPI ");
             }
-            if (srv.cap.flags & SMTP_CAP_AUTH_EXTERNAL)
+            if (srv.cap.flags & SMTP_CAP_AUTH_CRAM_MD5)
             {
-                printf("EXTERNAL ");
+                printf("CRAM-MD5 ");
             }
             if (srv.cap.flags & SMTP_CAP_AUTH_DIGEST_MD5)
             {

@@ -2326,17 +2326,17 @@ void msmtp_print_version(void)
     {
         printf("scram-sha-1 ");
     }
-    if (smtp_client_supports_authmech("CRAM-MD5"))
+    if (smtp_client_supports_authmech("EXTERNAL"))
     {
-        printf("cram-md5 ");
+        printf("external ");
     }
     if (smtp_client_supports_authmech("GSSAPI"))
     {
         printf("gssapi ");
     }
-    if (smtp_client_supports_authmech("EXTERNAL"))
+    if (smtp_client_supports_authmech("CRAM-MD5"))
     {
-        printf("external ");
+        printf("cram-md5 ");
     }
     if (smtp_client_supports_authmech("DIGEST-MD5"))
     {

@@ -2,9 +2,9 @@
 " Language:     msmtp rc files
 " Maintainer:   Simon Ruderich <simon@ruderich.com>
 "               Eric Pruitt <eric.pruitt@gmail.com>
-" Last Change:  2011-08-21
+" Last Change:  2014-12-11
 " Filenames:    msmtprc
-" Version:      0.2
+" Version:      0.3
 
 
 if version < 600
@@ -18,18 +18,18 @@ endif
 syn match msmtpComment /#.*$/ contains=@Spell
 
 " General commands.
-syntax match msmtpOption /\<\(defaults\|account\|host\|port\|timeout\|protocol\|domain\)\>/
+syntax match msmtpOption /\<\(defaults\|account\|host\|port\|proxy_host\|proxy_port\|timeout\|protocol\|domain\)\>/
 " Authentication commands.
 syntax match msmtpOption /\<\(auth\|user\|password\|passwordeval\|ntlmdomain\)\>/
 " TLS commands.
-syntax match msmtpOption /\<\(tls\|tls_trust_file\|tls_crl_file\|tls_fingerprint\|tls_key_file\|tls_cert_file\|tls_certcheck\|tls_starttls\|tls_force_sslv3\|tls_min_dh_prime_bits\|tls_priorities\)\>/
+syntax match msmtpOption /\<\(tls\|tls_trust_file\|tls_crl_file\|tls_fingerprint\|tls_key_file\|tls_cert_file\|tls_certcheck\|tls_starttls\|tls_min_dh_prime_bits\|tls_priorities\)\>/
 " Sendmail mode specific commands.
-syntax match msmtpOption /\<\(auto_from\|from\|maildomain\|dsn_notify\|dsn_return\|keepbcc\|logfile\|syslog\)\>/
+syntax match msmtpOption /\<\(auto_from\|from\|maildomain\|dsn_notify\|dsn_return\|add_missing_from_header\|add_missing_date_header\|remove_bcc_headers\|logfile\|syslog\)\>/
 
 " Options which accept only an on/off value.
-syn match msmtpWrongOption /\<\(tls\|tls_certcheck\|tls_starttls\|tls_force_sslv3\|auto_from\|keepbcc\) \(on$\|off$\)\@!.*$/
+syn match msmtpWrongOption /\<\(tls\|tls_certcheck\|tls_starttls\|auto_from\|add_missing_from_header\|add_missing_date_header\|remove_bcc_headers\) \(on$\|off$\)\@!.*$/
 " Option port accepts numeric values.
-syn match msmtpWrongOption /\<port \(\d\+$\)\@!.*$/
+syn match msmtpWrongOption /\<\(port\|proxy_port\) \(\d\+$\)\@!.*$/
 " Option timeout accepts off and numeric values.
 syn match msmtpWrongOption /\<timeout \(off$\|\d\+$\)\@!.*$/
 " Option protocol accepts smtp and lmtp.

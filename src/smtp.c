@@ -1879,7 +1879,7 @@ int smtp_etrn(smtp_server_t *srv, const char *etrn_argument,
 int smtp_quit(smtp_server_t *srv, char **errstr)
 {
     int e;
-    list_t *msg;
+    list_t *msg = NULL;
 
     if ((e = smtp_send_cmd(srv, errstr, "QUIT")) == SMTP_EOK)
     {

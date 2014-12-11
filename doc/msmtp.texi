@@ -230,21 +230,18 @@ name.  Authentication must be activated with the @samp{auth} command.
 @item password [@var{secret}]
 @cmindex password
 Set your password for SMTP authentication. An empty argument unsets the
-password.  Authentication must be activated with the @samp{auth} command.
-If no password is set but one is needed during authentication, msmtp will try to
-find it. First, if @samp{passwordeval} is set, it will evaluate that command. If
-@samp{passwordeval} is not set, msmtp will try to find the password in
-@code{~/.netrc}. If that fails, it will try to find it in
-@code{SYSCONFDIR/netrc} (use @code{--version} to find out what @code{SYSCONFDIR}
-is on your platform). If that fails, it will try to get it from a system 
-specific keyring (if available). If that fails but a controlling terminal is
-available, msmtp will prompt you for it.
+password. See the @samp{auth} command for more information about authentication.
+Consider using the @samp{passwordeval} command or a key ring instead of this
+command, to avoid storing plain text passwords.
 @xref{Authentication}.
 @anchor{passwordeval}
 @item passwordeval [@var{eval}]
 @cmindex passwordeval
 Set your password for SMTP authentication to the output (stdout) of the
 execution of @var{eval}.
+This can be used e.g. to decrypt password files on the fly or to query key
+rings, and thus to avoid storing plain text passwords.
+@xref{Authentication}.
 @anchor{ntlmdomain}
 @item ntlmdomain [@var{ntlmdomain}]
 @cmindex ntlmdomain
@@ -869,13 +866,6 @@ Both are send in BASE64 encoding, which can be easily decoded to plain text.
 This authentication method needs a user name and a password.
 The authentication data is not sent in plain text, which means this method can
 safely be used without TLS.
-@item @samp{CRAM-MD5}@*
-This authentication method needs a user name and a password.
-The authentication data is not sent in plain text, which means this method can
-safely be used without TLS.
-@item @samp{GSSAPI}@*
-This authentication method needs a user name. The Kerberos framework takes care
-of secure authentication, therefore this method can safely be used without TLS.
 @item @samp{EXTERNAL}@*
 This is a special authentication method: The actual authentication happens
 outside of the SMTP protocol, typically by sending a TLS client certificate
@@ -890,6 +880,13 @@ manually.@*
 Note: Sendmail 8.12.11 advertises the EXTERNAL mechanism only after a TLS
 client certificate has been send. It seems to ignore the optional user name.
 Does anyone know more about this?
+@item @samp{GSSAPI}@*
+This authentication method needs a user name. The Kerberos framework takes care
+of secure authentication, therefore this method can safely be used without TLS.
+@item @samp{CRAM-MD5}@*
+This authentication method needs a user name and a password.
+The authentication data is not sent in plain text, which means this method can
+safely be used without TLS.
 @item @samp{DIGEST-MD5}@*
 This is an obsolete authentication method needs a user name and a password.
 The authentication data is not sent in plain text, but the encryption based on
@@ -909,18 +906,19 @@ It depends on the underlying authentication library and its version whether a
 particular method is supported or not. Use the @option{--version} to find out
 which methods are supported by your version of msmtp.
 
-Authentication data can be set with the @samp{user} and @samp{password} commands
-or with the @samp{--user} option. See @ref{user}, @ref{password}, @ref{--user}.
-If no password is set but one is needed during authentication, msmtp will try to
-find it. First, if @samp{passwordeval} is set, it will evaluate that command. If
+Authentication data can be set with the @samp{user} and @samp{password} or
+@samp{passwordeval} commands or with the @samp{--user} option. See @ref{user},
+@ref{password}, @ref{passwordeval}, @ref{--user}.  If no password is set but
+one is needed during authentication, msmtp will try to find it. First, if
+@samp{passwordeval} is set, it will evaluate that command. If
 @samp{passwordeval} is not set, msmtp will try to find the password in
 @code{~/.netrc}. If that fails, it will try to find it in
-@code{SYSCONFDIR/netrc} (use @code{--version} to find out what @code{SYSCONFDIR}
-is on your platform). If that fails, it will try to get it from a system 
-specific keyring (if available). If that fails but a controlling terminal is
-available, msmtp will prompt you for it.
+@code{SYSCONFDIR/netrc} (use @code{--version} to find out what
+@code{SYSCONFDIR} is on your platform). If that fails, it will try to get it
+from a system specific key ring (if available). If that fails but a controlling
+terminal is available, msmtp will prompt you for it.
 
-Currently supported keyrings are the Gnome Keyring and the Mac OS X Keychain.
+Currently supported key rings are the Gnome Keyring and the Mac OS X Keychain.
 
 The command @samp{secret-tool} (part of Gnome's libsecret) can be used to manage
 Gnome Keyring passwords for msmtp. For that purpose, specify the attributes
@@ -1198,7 +1196,7 @@ host mail.provider.example
 from smithjoe@@provider.example
 auth on
 user 123
-passwordeval gpg -d ~/.msmtp.password.gpg
+passwordeval gpg2 --no-tty -q -d ~/.msmtp.password.gpg
 
 # Set a default account
 account default : provider

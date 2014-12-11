@@ -292,9 +292,9 @@ const SecretSchema *get_msmtp_schema(void)
     static const SecretSchema schema = {
         "de.marlam.msmtp.password", SECRET_SCHEMA_DONT_MATCH_NAME,
         {
+            {  "host", SECRET_SCHEMA_ATTRIBUTE_STRING },
+            {  "service", SECRET_SCHEMA_ATTRIBUTE_STRING },
             {  "user", SECRET_SCHEMA_ATTRIBUTE_STRING },
-            {  "protocol", SECRET_SCHEMA_ATTRIBUTE_STRING },
-            {  "server", SECRET_SCHEMA_ATTRIBUTE_STRING },
             {  "NULL", 0 },
         }
     };
@@ -354,9 +354,9 @@ char *msmtp_password_callback(const char *hostname, const char *user)
         gchar* libsecret_pw = secret_password_lookup_sync(
                 get_msmtp_schema(),
                 NULL, NULL,
+                "host", hostname,
+                "service", "smtp",
                 "user", user,
-                "protocol", "smtp",
-                "server", hostname,
                 NULL);
         if (!libsecret_pw)
         {

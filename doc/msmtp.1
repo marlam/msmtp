@@ -356,9 +356,9 @@ Currently supported keyrings are the Gnome Keyring and the Mac OS X Keychain.
 .br
 The command \fBsecret-tool\fP (part of Gnome's libsecret) can be used to manage
 Gnome Keyring passwords for msmtp. For that purpose, specify the attributes
-"user" (user name), "protocol" (always "smtp"), and "server" (name of the SMTP
-server). You can also use \fBsecret-tool\fP via the \fBpasswordeval\fP command
-if your version of msmtp does not have builtin support for libsecret.
+"host" (host name of the SMTP server), "service" (always "smtp"), and "user"
+(user name). You can also use \fBsecret-tool\fP via the \fBpasswordeval\fP
+command if your version of msmtp does not have builtin support for libsecret.
 .br
 To manage Mac OS X Keychain passwords, use the Keychain Access GUI application.
 The \fIaccount name\fP is same as the msmtp \fBuser\fP argument. The

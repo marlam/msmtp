@@ -922,9 +922,9 @@ Currently supported key rings are the Gnome Keyring and the Mac OS X Keychain.
 
 The command @samp{secret-tool} (part of Gnome's libsecret) can be used to manage
 Gnome Keyring passwords for msmtp. For that purpose, specify the attributes
-"user" (user name), "protocol" (always "smtp"), and "server" (name of the SMTP
-server). You can also use @samp{secret-tool} via the @samp{passwordeval} command
-if your version of msmtp does not have builtin support for libsecret.
+"host" (host name of the SMTP server), "service" (always "smtp"), and "user"
+(user name). You can also use @samp{secret-tool} via the @samp{passwordeval}
+command if your version of msmtp does not have builtin support for libsecret.
 
 To manage Mac OS X Keychain passwords, use the Keychain Access GUI application.
 The @samp{account name} is same as the msmtp @samp{user} argument. The

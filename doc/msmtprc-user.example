@@ -24,7 +24,7 @@ host mail.provider.example
 from smithjoe@provider.example
 auth on
 user 123456789
-passwordeval gpg -d ~/.msmtp.password.gpg
+passwordeval gpg2 --no-tty -q -d ~/.msmtp.password.gpg
 
 # Set a default account
 account default : provider

@@ -1,20 +1,20 @@
-Version 1.6.0rc1:
+Version 1.6.0:
+- Support for SOCKS proxies was added. This allows msmtp to be used with Tor.
+- GNOME Keyring support now uses libsecret instead of libgnome-keyring. It is
+  now documented how to use secret-tool to manage passwords for msmtp; the
+  obsolete msmtp-gnome-tool script is removed.
 - Configuration file security is now only checked if the file actually contains
   secrets such as passwords. (If you still store passwords in the configuration
   file, consider using the passwordeval command or a key ring instead.)
 - The GSSAPI authentication method is not chosen automatically anymore, you have
   to request it manually if you really want to use it.
-- GNOME Keyring support now uses libsecret instead of libgnome-keyring. It is
-  now documented how to use secret-tool to manage passwords for msmtp; the
-  obsolete msmtp-gnome-tool script is removed.
-- Libidn is not required for IDN support anymore on systems where getaddrinfo()
-  supports the AI_IDN flag and the GnuTLS version is >= 3.4.0.
 - From: and Date: headers are now added to mails if necessary, for compatibility
   with sendmail, postfix, exim, and other MTAs. This can be disabled with the
   add_missing_from_header and add_missing_date_header commands.
+- Libidn is not required for IDN support anymore on systems where getaddrinfo()
+  supports the AI_IDN flag and the GnuTLS version is >= 3.4.0.
 - The new remove_bcc_headers command replaces the old keepbcc command (but the
   old command is still supported for compatibility).
-- Support for SOCKS proxies was added. This allows msmtp to be used with Tor.
 - SSLv3 is disabled, and the obsolete tls_force_sslv3 command and
   --tls-force-sslv3 option have no effect anymore.
 

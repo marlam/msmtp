@@ -557,15 +557,52 @@ addresses.  This is the default.
 .br
 .B Configuration file
 .PP
+.br
+# Example for a user configuration file ~/.msmtprc
+.br
+#
+.br
+# This file focusses on TLS and authentication. Features not used here include
+.br
+# logging, timeouts, SOCKS proxies, TLS parameters, Delivery Status Notification
+.br
+# (DSN) settings, and more.
+.br
+
+.br
 # Set default values for all following accounts.
 .br
 defaults
 .br
+
+.br
+# Use the mail submission port 587 instead of the SMTP port 25.
+.br
+port 587
+.br
+
+.br
+# Always use TLS.
+.br
 tls on
 .br
-tls_trust_file /etc/ssl/certs/ca\-certificates.crt
+
 .br
-logfile ~/.msmtp.log
+# Set a list of trusted CAs for TLS. You can use a system-wide default file,
+.br
+# as in this example, or download the root certificate of your CA and use that.
+.br
+tls_trust_file /etc/ssl/certs/ca-certificates.crt
+.br
+
+.br
+# Additionally, you should use the tls_crl_file command to check for revoked
+.br
+# certificates, but unfortunately getting revocation lists and keeping them
+.br
+# up to date is not straightforward.
+.br
+#tls_crl_file ~/.tls-crls
 .br
 
 .br
@@ -573,15 +610,85 @@ logfile ~/.msmtp.log
 .br
 account freemail
 .br
+
+.br
+# Host name of the SMTP server
+.br
 host smtp.freemail.example
 .br
+
+.br
+# As an alternative to tls_trust_file/tls_crl_file, you can use tls_fingerprint
+.br
+# to pin a single certificate. You have to update the fingerprint when the
+.br
+# server certificate changes, but an attacker cannot trick you into accepting
+.br
+# a fraudulent certificate. Get the fingerprint with
+.br
+# $ msmtp --serverinfo --tls --tls-certcheck=off --host=smtp.freemail.example
+.br
+tls_fingerprint 00:11:22:33:44:55:66:77:88:99:AA:BB:CC:DD:EE:FF:00:11:22:33
+.br
+
+.br
+# Envelope-from address
+.br
 from joe_smith@freemail.example
+.br
+
+.br
+# Authentication. The password is given using one of five methods, see below.
 .br
 auth on
 .br
 user joe.smith
 .br
-password secret
+
+.br
+# Password method 1: Add the password to the system keyring, and let msmtp get
+.br
+# it automatically. To set the keyring password using Gnome's libsecret:
+.br
+# $ secret-tool store --label=msmtp \\
+.br
+#   host smtp.freemail.example \\
+.br
+#   service smtp \\
+.br
+#   user joe.smith
+.br
+
+.br
+# Password method 2: Store the password in an encrypted file, and tell msmtp
+.br
+# which command to use to decrypt it. This is usually used with GnuPG, as in
+.br
+# this example. Usually gpg-agent will ask once for the decryption password.
+.br
+passwordeval gpg2 --no-tty -q -d ~/.msmtp-password.gpg
+.br
+
+.br
+# Password method 3: Store the password directly in this file. Usually it is not
+.br
+# a good idea to store passwords in plain text files. If you do it anyway, at
+.br
+# least make sure that this file can only be read by yourself.
+.br
+#password secret123
+.br
+
+.br
+# Password method 4: Store the password in ~/.netrc. This method is probably not
+.br
+# relevant anymore.
+.br
+
+.br
+# Password method 5: Do not specify a password. Msmtp will then prompt you for
+.br
+# it. This means you need to be able to type into a terminal when msmtp runs.
 .br
 
 .br
@@ -593,25 +700,23 @@ from joey@freemail.example
 .br
 
 .br
-# The SMTP server of the provider.
+# The SMTP server of your ISP
 .br
-account provider
+account isp
 .br
-host mail.provider.example
+host mail.isp.example
 .br
-from smithjoe@provider.example
+from smithjoe@isp.example
 .br
 auth on
 .br
-user 123456789
-.br
-passwordeval gpg2 \-\-no\-tty \-q \-d ~/.msmtp.password.gpg
+user 12345
 .br
 
 .br
 # Set a default account
 .br
-account default : provider
+account default : freemail
 .br
 
 .PP

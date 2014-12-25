@@ -346,11 +346,10 @@ You probably need to set a username (with \fBuser\fP) and password (with
 \fBpasswordeval\fP or \fBpassword\fP, or via a key ring). 
 .br
 If no password is set but one is needed during authentication, msmtp will try to
-find it in ~/.netrc. If that fails, it will try to find it in SYSCONFDIR/netrc
-(use \fB\-\-version\fP to find out what SYSCONFDIR is on your platform). If that
-fails, it will try to get it from a system specific keyring (if available). If
-that fails but a controlling terminal is available, msmtp will prompt you for
-it.
+find it. First, if \fBpasswordeval\fP is set, it will evaluate that command.
+Otherwise it will try to get the password from a system specific keychain.
+If that fails, it will try to find the password in ~/.netrc or SYSCONFDIR/netrc.
+If that fails, it will prompt you for it.
 .br
 Currently supported keyrings are the Gnome Keyring and the Mac OS X Keychain.
 .br
@@ -713,12 +712,8 @@ to find out what SYSCONFDIR is on your platform.
 .IP "~/.msmtprc"
 User configuration file.
 .IP "~/.netrc and SYSCONFDIR/netrc"
-The netrc file contains login information. If a password is not found in the
-configuration file, msmtp will search it in ~/.netrc and SYSCONFDIR/netrc before
-prompting the user for it. The syntax of netrc files is described in 
-.BR netrc (5)
-or 
-.BR ftp (1).
+The netrc file contains login information. Before prompting for a password,
+msmtp will search it in ~/.netrc and SYSCONFDIR/netrc.
 .SH ENVIRONMENT
 .IP "USER, LOGNAME"
 These variables override the user's login name when constructing an 

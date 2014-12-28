@@ -1,4 +1,4 @@
-\input texinfo   @c -*-texinfo-*-
+\input texinfo	 @c -*-texinfo-*-
 @setfilename msmtp.info
 @documentlanguage en
 @documentencoding UTF-8
@@ -56,7 +56,7 @@ notice are preserved. These files are offered as-is, without any warranty.
 * Authentication::			How to use authentication.
 * Delivery Status Notifications::	How to use DSN.
 * Sendmail mode::			How to send mail.
-* Server information mode::		How to obtain information about 
+* Server information mode::		How to obtain information about
 					an SMTP server.
 * Remote Message Queue Starting mode::	How to send RMQS requests.
 * Examples::				Usage examples.
@@ -66,7 +66,7 @@ notice are preserved. These files are offered as-is, without any warranty.
 @node Introduction
 @chapter Introduction
 
-msmtp is an SMTP client. 
+msmtp is an SMTP client.
 
 In its default mode of operation, it reads a mail from standard input and sends
 it to a predefined SMTP server that takes care of proper delivery. Command line
@@ -95,7 +95,7 @@ and so on. Each configuration file can define multiple accounts.
 
 Supported features include:
 @itemize
-@item TLS encrypted connections (including server certificate verification and
+@item TLS secured connections (including server certificate verification and
 the possibility to send a client certificate)
 @item Authentication methods PLAIN, LOGIN, CRAM-MD5 and EXTERNAL
 (and GSSAPI, SCRAM-SHA-1, DIGEST-MD5, and NTLM when compiled with GNU SASL
@@ -113,7 +113,7 @@ support)
 msmtp supports a system wide configuration file and a user configuration file.
 Both are optional and need not exist.
 
-If it exists and is readable, a system wide configuration file 
+If it exists and is readable, a system wide configuration file
 @code{SYSCONFDIR/msmtprc} will be loaded. Use @code{--version} to find out
 which @code{SYSCONFDIR} your version of msmtp uses.
 
@@ -121,9 +121,9 @@ The default user configuration file is @code{~/.msmtprc}.  Accounts defined in
 the user configuration file override accounts from the system configuration
 file.
 Configuration file settings can be changed by command line options.
-					         
-A configuration file is a simple text file. Empty lines and comment lines 
-(first non-blank character is '#') are ignored. Every other line must 
+
+A configuration file is a simple text file. Empty lines and comment lines
+(first non-blank character is '#') are ignored. Every other line must
 contain a command and may contain an argument to that command.
 The argument may be enclosed in double quotes (").
 
@@ -163,7 +163,7 @@ Every account definition must contain this command.
 @anchor{port}
 @item port @var{number}
 @cmindex port
-The port that the SMTP server listens on. 
+The port that the SMTP server listens on.
 The default is 25 ("smtp"), unless TLS without STARTTLS is used, in which case
 it is 465 ("smtps").
 @anchor{timeout}
@@ -172,20 +172,6 @@ it is 465 ("smtps").
 Set or unset a network timeout, in seconds. The argument @samp{off} means that
 no timeout will be set, which means that the operating system default will be
 used.
-@anchor{protocol}
-@item protocol (smtp|lmtp)
-@cmindex protocol
-Set the protocol to use. Currently only SMTP and LMTP are supported. SMTP is
-the default. See @ref{port} for default ports.
-@anchor{domain}
-@item domain @var{argument}
-@cmindex domain
-This command sets the argument of the SMTP EHLO (or LMTP LHLO) command. The
-default is @samp{localhost}, which is stupid but usually works. Try to change
-the default if mails get rejected due to anti-SPAM measures. Possible choices
-are the domain part of your mail address (@code{provider.example} for
-@code{joe@@provider.example}) or the fully qualified domain name of your host
-(if available).
 @anchor{proxy_host}
 @item proxy_host [@var{IP}|@var{hostname}]
 @cmindex proxy_host
@@ -200,6 +186,20 @@ see also @ref{Using msmtp with Tor}.
 @cmindex proxy_port
 Set the port number for the proxy host. An empty @samp{number} argument resets
 this to the default port, which is 1080 ("socks").
+@anchor{protocol}
+@item protocol (smtp|lmtp)
+@cmindex protocol
+Set the protocol to use. Currently only SMTP and LMTP are supported. SMTP is
+the default. See @ref{port} for default ports.
+@anchor{domain}
+@item domain @var{argument}
+@cmindex domain
+This command sets the argument of the SMTP EHLO (or LMTP LHLO) command. The
+default is @samp{localhost}, which is stupid but usually works. Try to change
+the default if mails get rejected due to anti-SPAM measures. Possible choices
+are the domain part of your mail address (@code{provider.example} for
+@code{joe@@provider.example}) or the fully qualified domain name of your host
+(if available).
 @end table
 
 @section Authentication commands
@@ -388,7 +388,7 @@ file name @samp{-} directs the log information to standard output.
 @anchor{syslog}
 @item syslog [(on|off|@var{facility})]
 @cmindex syslog
-Enable or disable syslog logging. The @var{facility} can be one of 
+Enable or disable syslog logging. The @var{facility} can be one of
 @samp{LOG_USER}, @samp{LOG_MAIL}, @samp{LOG_LOCAL0}, @dots{}, @samp{LOG_LOCAL7}.
 The default is @samp{LOG_USER}. Syslog logging is disabled by default.
 @xref{Logging}.
@@ -425,7 +425,7 @@ addresses. This is the default.
 @item Server information mode:@*
 @code{msmtp [@var{option}@dots{}] --serverinfo}
 @item Remote Message Queue Starting mode:@*
-@code{msmtp [@var{option}@dots{}] 
+@code{msmtp [@var{option}@dots{}]
 --rmqs=(@var{host}|@var{@@domain}|@var{#queue})}
 @end itemize
 
@@ -486,20 +486,20 @@ Please refer to @ref{Configuration files} for detailed information.
 @itemx --file=@var{filename}
 @opindex -C
 @opindex --file
-Use the given file instead of @code{~/.msmtprc} as the user configuration 
+Use the given file instead of @code{~/.msmtprc} as the user configuration
 file.
 @item -a @var{account}
 @itemx --account=@var{account}
 @opindex -a
 @opindex --account
 Use the given account instead of the account named @samp{default}. This option
-cannot be used together with the @samp{--host} option.
+cannot be used together with the @option{--host} option.
 @xref{Choosing an account}.
 @item --host=@var{hostname}
 @opindex --host
 Use this server with settings from the command line; do not use any
 configuration file data. This option cannot be used together with the
-@samp{--account} option. It disables loading of configuration files.
+@option{--account} option. It disables loading of configuration files.
 @xref{Choosing an account}.
 @item --port=@var{number}
 @opindex --port
@@ -508,16 +508,17 @@ Set the port number to connect to. @xref{port}.
 @opindex --timeout
 Set or unset a network timeout, in seconds. @xref{timeout}.
 @item --protocol=(smtp|lmtp)
+@opindex --proxy-host
+Set or unset a SOCKS proxy to use. @xref{proxy_host}.
+@item --proxy-port=[@var{number}]
+@opindex --proxy-port
+Set or unset a port number for the proxy host. @xref{proxy_port}.
 @opindex --protocol
 Set the protocol. @xref{protocol}.
 @item --domain=[@var{argument}]
 @opindex --domain
 Set the argument of the SMTP EHLO (or LMTP LHLO) command. @xref{domain}.
 @item --proxy-host=[@var{IP}|@var{hostname}]
-@opindex --proxy-host
-Set or unset a SOCKS proxy to use. @xref{proxy_host}.
-@item --proxy-port=[@var{number}]
-Set or unset a port number for the proxy host. @xref{proxy_port}.
 @anchor{--auth}
 @item --auth[=(on|off|@var{method})]
 @opindex --auth
@@ -536,15 +537,15 @@ Enable or disable TLS/SSL. @xref{tls}.
 @anchor{--tls-starttls}
 @item --tls-starttls[=(on|off)]
 @opindex --tls-starttls
-Enable or disable STARTTLS for TLS encryption. @xref{tls_starttls}.
+Enable or disable STARTTLS for TLS. @xref{tls_starttls}.
 @anchor{--tls-trust-file}
 @item --tls-trust-file=[@var{file}]
 @opindex --tls-trust-file
-Set or unset a trust file for TLS encryption. @xref{tls_trust_file}.
+Set or unset a trust file for TLS. @xref{tls_trust_file}.
 @anchor{--tls-crl-file}
 @item --tls-crl-file=[@var{file}]
 @opindex --tls-crl-file
-Set or unset a certificate revocation list (CRL) file for TLS. 
+Set or unset a certificate revocation list (CRL) file for TLS.
 @xref{tls_crl_file}.
 @anchor{--tls-fingerprint}
 @item --tls-fingerprint=[@var{fingerprint}]
@@ -554,15 +555,15 @@ Set ot unset the fingerprint of a trusted TLS certificate.
 @anchor{--tls-key-file}
 @item --tls-key-file=[@var{file}]
 @opindex --tls-key-file
-Set or unset a key file for TLS encryption. @xref{tls_key_file}.
+Set or unset a key file for TLS. @xref{tls_key_file}.
 @anchor{--tls-cert-file}
 @item --tls-cert-file=[@var{file}]
 @opindex --tls-cert-file
-Set or unset a cert file for TLS encryption. @xref{tls_cert_file}.
+Set or unset a cert file for TLS. @xref{tls_cert_file}.
 @anchor{--tls-certcheck}
 @item --tls-certcheck[=(on|off)]
 @opindex --tls-certcheck
-Enable or disable server certificate checks for TLS encryption.  
+Enable or disable server certificate checks for TLS.
 @xref{tls_certcheck}.
 @anchor{--tls-min-dh-prime-bits}
 @item --tls-min-dh-prime-bits=[@var{bits}]
@@ -583,9 +584,9 @@ Set or unset TLS priorities. @xref{tls_priorities}.
 @opindex -f
 @opindex --from
 Set the envelope-from address. @xref{from}.@*
-If no account was chosen yet (with @samp{--account} or @samp{--host}), this 
+If no account was chosen yet (with @option{--account} or @option{--host}), this
 option will choose the first account that has the given envelope-from address
-(set with the @samp{from} command). If no such account is found, "default" is 
+(set with the @samp{from} command). If no such account is found, "default" is
 used. @xref{Choosing an account}.
 @anchor{--auto-from}
 @item --auto-from[=(on|off)]
@@ -594,7 +595,7 @@ Enable or disable automatic envelope-from addresses. @xref{auto_from}.
 @anchor{--maildomain}
 @item --maildomain=[@var{domain}]
 @opindex --maildomain
-Set the domain part for the @samp{--auto-from} address. @xref{maildomain}.
+Set the domain part for the @option{--auto-from} address. @xref{maildomain}.
 @anchor{--dsn-notify}
 @item -N (off|@var{condition})
 @itemx --dsn-notify=(off|@var{condition})
@@ -607,7 +608,7 @@ Set or unset DSN notification conditions. @xref{dsn_notify}.
 @opindex -R
 @opindex --dsn-return
 Set or unset the DSN notification amount. @xref{dsn_return}.
-Note that @samp{hdrs} is accepted as an alias for @samp{headers} to be 
+Note that @samp{hdrs} is accepted as an alias for @samp{headers} to be
 compatible with sendmail.
 @anchor{--add-missing-from-header}
 @item --add-missing-from-header[=(on|off)]
@@ -648,14 +649,17 @@ correctly.
 @item --aliases=[@var{file}]
 @opindex --aliases
 Set or unset an aliases file. @xref{aliases}.
+@item -F@var{name}
+Msmtp adds a From header to mails that lack it, using the envelope from
+address. This option allows to set a full name to be used in that header.
 @item --
 This marks the end of options. All following arguments will be treated as
 recipient addresses, even if they start with a '-'.
 @end table
 
 The following options are accepted but ignored for sendmail compatibility:
-@samp{-B@var{type}}, @samp{-bm}, @samp{-F@var{name}}, @samp{-G}, @samp{-hN},
-@samp{-i}, @samp{-L @var{tag}}, @samp{-m}, @samp{-n}, 
+@samp{-B@var{type}}, @samp{-bm}, @samp{-G}, @samp{-hN},
+@samp{-i}, @samp{-L @var{tag}}, @samp{-m}, @samp{-n},
 @samp{-O option=@var{value}}, @samp{-ox @var{value}}
 
 @anchor{Choosing an account}
@@ -664,16 +668,16 @@ The following options are accepted but ignored for sendmail compatibility:
 There are three ways to choose the account to use.
 
 @enumerate
-@item @samp{--account=@var{account}}@*
-Use the given account. Command line settings override configuration file 
+@item @option{--account=@var{account}}@*
+Use the given account. Command line settings override configuration file
 settings.
-@item @samp{--host=@var{hostname}}@*
+@item @option{--host=@var{hostname}}@*
 Use only the settings from the command line; do not use any configuration file
 data.
-@item @samp{--from=@var{address}} or @samp{--read-envelope-from}@*
+@item @option{--from=@var{address}} or @option{--read-envelope-from}@*
 Choose the first account from the system or user configuration file that has
 a matching envelope-from address as specified by a @ref{from} command. This
-works only when neither @samp{--account} nor @samp{--host} is used.
+works only when neither @option{--account} nor @option{--host} is used.
 @end enumerate
 If none of the above options is used (or if no account has a matching
 @ref{from} command), then the account "default" is used.
@@ -687,7 +691,7 @@ The standard exit codes from @code{sysexits.h} are used.
 
 @table @samp
 @item @code{SYSCONFDIR/msmtprc}
-The system configuration file. Use the @samp{--version} option to find out what
+The system configuration file. Use the @option{--version} option to find out what
 @code{SYSCONFDIR} is on your platform.
 @item @code{~/.msmtprc}
 The default user configuration file.
@@ -701,18 +705,18 @@ password, msmtp will search it in ~/.netrc and SYSCONFDIR/netrc.
 
 @table @samp
 @item @code{USER}, @code{LOGNAME}
-These variables override the user's login name when constructing an 
+These variables override the user's login name when constructing an
 envelope-from address. @code{LOGNAME} is only used if @code{USER} is unset.
 @item @code{TMPDIR}
-Directory to create temporary files in. If this is unset, a system specific 
+Directory to create temporary files in. If this is unset, a system specific
 default directory is used. A temporary file is used to buffer the headers of
 the mail but not the mail body, so the file will not get very large.
 @item @code{EMAIL}, @code{SMTPSERVER}
-These environment variables are used only if neither @samp{--host} nor
-@samp{--account} is used and there is no default account defined in the
+These environment variables are used only if neither @option{--host} nor
+@option{--account} is used and there is no default account defined in the
 configuration files. In this case, the host name is taken from
 @code{SMTPSERVER}, and the envelope from address is taken from @code{EMAIL},
-unless overridden by @samp{--from} or @samp{--read-envelope-from}. Currently
+unless overridden by @option{--from} or @option{--read-envelope-from}. Currently
 @code{SMTPSERVER} must contain a plain host name (no URL), and @code{EMAIL}
 must contain a plain address (no names or additional information).
 @end table
@@ -886,7 +890,7 @@ A first parameter controls when such messages should be generated:
 never, on delivery failure, on delivery delay, and/or on success.
 This can be set with @ref{dsn_notify} and @ref{--dsn-notify}.
 
-A second parameter controls how much of the original mail should be contained 
+A second parameter controls how much of the original mail should be contained
 in a DSN message: only the headers, or the full mail. This can be set with
 @ref{dsn_return} and @ref{--dsn-return}.
 Note that this parameter only applies to DSNs that indicate delivery failure
@@ -915,7 +919,7 @@ Envelope-from addresses can be generated automatically (when @ref{auto_from}
 is enabled) or set explicitly with the @ref{from} command.
 
 When @ref{auto_from} is enabled, an envelope-from address of the form
-@code{user@@domain} will be generated.  The local part will be set to
+@code{user@@domain} will be generated.	The local part will be set to
 @code{USER} or, if that fails, to @code{LOGNAME} or, if that fails, to the
 login name of the current user.  The domain part can be set with the
 @ref{maildomain} command.  If the maildomain is empty, the envelope-from
@@ -927,24 +931,24 @@ address will only consist of the user name and not have a domain part.
 When logging is enabled, msmtp will generate one log line for each mail it
 tries to send.
 
-The line will include the following information: 
+The line will include the following information:
 @itemize
 @item Host name of the SMTP server:  @code{host=hostname}
 @item Whether TLS was used: @code{tls=(on|off)}
 @item Whether authentication was used: @code{auth=(on|off)}
-@item The user name used for authentication (only if authentication is used): 
+@item The user name used for authentication (only if authentication is used):
 @code{user=name}
 @item The envelope-from address: @code{from=address}
 @item The recipient addresses: @code{recipients=addr1,addr2,@dots{}}
 @item The size of the mail as transferred to the server, in bytes (only if the
 delivery succeeded): @code{mailsize=number}
 @item The SMTP status code and SMTP error message (only in case of
-failure and only if available): @code{smtpstatus=number}, 
+failure and only if available): @code{smtpstatus=number},
 @code{smtpmsg='message'}. Multiline SMTP messages will be concatenated into one
 line.
 @item The msmtp error message (only in case of failure and only
 if available): @code{errormsg='message'}
-@item The msmtp exit code (from @code{sysexits.h}; @samp{EX_OK} indicates 
+@item The msmtp exit code (from @code{sysexits.h}; @samp{EX_OK} indicates
 success): @code{exitcode=EX_@dots{}}
 @end itemize
 
@@ -974,7 +978,7 @@ with the @ref{add_missing_date_header} command.
 @node Server information mode
 @chapter Server information mode
 
-In server information mode, msmtp prints as much information about the SMTP 
+In server information mode, msmtp prints as much information about the SMTP
 server as it can get and then exits.
 
 The SMTP features that can be detected are:
@@ -1008,7 +1012,7 @@ be printed about the SMTP server's TLS certificate (if available):
 @item Country
 @end itemize
 @item Issuer information
-@itemize 
+@itemize
 @item Common Name
 @item Organization
 @item Organizational unit
@@ -1017,7 +1021,7 @@ be printed about the SMTP server's TLS certificate (if available):
 @item Country
 @end itemize
 @item General
-@itemize 
+@itemize
 @item Activation time
 @item Expiration time
 @item SHA1 fingerprint
@@ -1193,11 +1197,11 @@ set envelope_from=yes
 @end example
 
 The @samp{envelope_from=yes} option lets Mutt use the @option{-f} option of
-msmtp.  Therefore msmtp chooses the first account that matches the from address
+msmtp.	Therefore msmtp chooses the first account that matches the from address
 you@@example.com. Alternatively, you can use the @option{-a} option:
 @example
 set sendmail="/path/to/msmtp -a my_account"
-@end example 
+@end example
 
 Or set everything from the command line:
 @example
@@ -1215,9 +1219,9 @@ macro generic "<esc>3" ":set from=you@@some-other-provider.example"
 @end example
 Now you can use <esc>1, <esc>2, and <esc>3 to switch accounts.
 
-The following example uses a different approach: it maps the single key 
-@code{<tab>} in Compose context for switching between the various account in a 
-handy visual way. In the same Compose context, @code{=} is mapped in order to 
+The following example uses a different approach: it maps the single key
+@code{<tab>} in Compose context for switching between the various account in a
+handy visual way. In the same Compose context, @code{=} is mapped in order to
 show the current msmtp account. This example was contributed by Thomas Baruchel.
 @example
 # Define <tab> and = in order to switch or see the current msmtp account

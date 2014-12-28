@@ -11,7 +11,7 @@
 .\" Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
 .TH MSMTP 1 2014-12
 .SH NAME
-msmtp \- An SMTP client 
+msmtp \- An SMTP client
 .SH SYNOPSIS
 .IP "Sendmail mode (default):"
 .B msmtp
@@ -42,10 +42,7 @@ They are compatible with sendmail where appropriate.
 .IP "\fBGeneral options\fP"
 .RS
 .IP "\-\-version"
-Print version information. This includes information about the library used for
-TLS/SSL support (if any), the library used for authentication, the
-authentication mechanisms supported by this library, and the default locations
-of the system and user configuration files.
+Print version information, including information about the libraries used.
 .IP "\-\-help"
 Print help.
 .IP "\-P, \-\-pretend"
@@ -80,110 +77,99 @@ Use this SMTP server with settings from the command line; do not use any
 configuration file data. This option cannot be used together with the
 \fB\-\-account\fP option.
 .IP "\-\-port=\fInumber\fP"
-Set the port number to connect to. See the \fBport\fP command below.
+Set the port number to connect to. See the \fBport\fP command.
 .IP "\-\-timeout=(\fIoff\fP|\fIseconds\fP)"
-Set a network timeout. See the \fBtimeout\fP command below. For compatibility 
-with older versions, \-\-connect\-timeout is accepted as an alias for this
-option.
-.IP "\-\-protocol=(\fIsmtp\fP|\fIlmtp\fP)
-Set the protocol to use. See the \fBprotocol\fP command below.
-.IP "\-\-auth[=(\fIon\fP|\fIoff\fP|\fImethod\fP)]"
-Enable or disable authentication. You can optionally choose the method. See
-the \fBauth\fP command below.
-.IP "\-\-user=\fI[username]\fP"
-Set or unset the user name for authentication. See the \fBuser\fP command
-below.
-.IP "\-\-passwordeval=[\fIeval\fP]"
-Set your password for SMTP authentication to the output (stdout) of the
-execution of \fIeval\fP. See the \fBpasswordeval\fP command below.
+Set or unset a network timeout, in seconds. See the \fBtimeout\fP command.
 .IP "\-\-proxy\-host=[\fIIP\fP|\fIhostname\fP]"
-Set or unset a SOCKS proxy to use. See the \fBproxy_host\fP command below.
+Set or unset a SOCKS proxy to use. See the \fBproxy_host\fP command.
 .IP "\-\-proxy\-port=[\fInumber\fP]"
-Set or unset a port number for the proxy host. See the \fBproxy_port\fP command
-below.
-.IP "\-\-tls[=(\fIon\fP|\fIoff\fP)]"
-Enable or disable TLS/SSL encryption. See the \fBtls\fP command below.
-.IP "\-\-tls\-starttls[=(\fIon\fP|\fIoff\fP)]"
-Enable or disable STARTTLS for TLS encryption. See the \fBtls_starttls\fP
-command below.
-.IP "\-\-tls\-trust\-file=[\fIfile\fP]"
-Set or unset a trust file for TLS encryption. See the \fBtls_trust_file\fP
-command below.
-.IP "\-\-tls\-crl\-file=[\fIfile\fP]"
-Set or unset a certificate revocation list (CRL) file for TLS. See the
-\fBtls_crl_file\fP command below.
-.IP "\-\-tls\-fingerprint=[\fIfingerprint\fP]"
-Set ot unset the fingerprint of a trusted TLS certificate. See the
-\fBtls_fingerprint\fP command below.
-.IP "\-\-tls\-key\-file=[\fIfile\fP]"
-Set or unset a key file for TLS encryption. See the \fBtls_key_file\fP command
-below.
-.IP "\-\-tls\-cert\-file=[\fIfile\fP]"
-Set or unset a cert file for TLS encryption. See the \fBtls_cert_file\fP
-command below.
-.IP "\-\-tls\-certcheck[=(\fIon\fP|\fIoff\fP)]"
-Enable or disable server certificate checks for TLS encryption. See the
-\fBtls_certcheck\fP command below.
-.IP "\-\-tls\-min\-dh\-prime\-bits=[\fIbits\fP]"
-Set or unset minimum bit size of the Diffie-Hellman (DH) prime. See the
-\fBtls_min_dh_prime_bits\fP command below.
-.IP "\-\-tls\-priorities=[\fIpriorities\fP]"
-Set or unset TLS priorities. See the \fBtls_priorities\fP command below.
+Set or unset a port number for the proxy host. See the \fBproxy_port\fP command.
+.IP "\-\-protocol=(\fIsmtp\fP|\fIlmtp\fP)
+Set the protocol. See the \fBprotocol\fP command.
 .IP "\-\-domain=[\fIstring\fP]"
 Set the argument of the SMTP EHLO (or LMTP LHLO) command. See the \fBdomain\fP
-command below.
+command.
+.IP "\-\-auth[=(\fIon\fP|\fIoff\fP|\fImethod\fP)]"
+Enable or disable authentication and optionally choose the method.
+See the \fBauth\fP command.
+.IP "\-\-user=\fI[username]\fP"
+Set or unset the user name for authentication. See the \fBuser\fP command.
+.IP "\-\-passwordeval=[\fIeval\fP]"
+Evaluate password for authentication. See the \fBpasswordeval\fP command.
+.IP "\-\-tls[=(\fIon\fP|\fIoff\fP)]"
+Enable or disable TLS/SSL. See the \fBtls\fP command.
+.IP "\-\-tls\-starttls[=(\fIon\fP|\fIoff\fP)]"
+Enable or disable STARTTLS for TLS. See the \fBtls_starttls\fP command.
+.IP "\-\-tls\-trust\-file=[\fIfile\fP]"
+Set or unset a trust file for TLS. See the \fBtls_trust_file\fP command.
+.IP "\-\-tls\-crl\-file=[\fIfile\fP]"
+Set or unset a certificate revocation list (CRL) file for TLS. See the
+\fBtls_crl_file\fP command.
+.IP "\-\-tls\-fingerprint=[\fIfingerprint\fP]"
+Set ot unset the fingerprint of a trusted TLS certificate. See the
+\fBtls_fingerprint\fP command.
+.IP "\-\-tls\-key\-file=[\fIfile\fP]"
+Set or unset a key file for TLS. See the \fBtls_key_file\fP command.
+.IP "\-\-tls\-cert\-file=[\fIfile\fP]"
+Set or unset a cert file for TLS. See the \fBtls_cert_file\fP command.
+.IP "\-\-tls\-certcheck[=(\fIon\fP|\fIoff\fP)]"
+Enable or disable server certificate checks for TLS. See the
+\fBtls_certcheck\fP command.
+.IP "\-\-tls\-min\-dh\-prime\-bits=[\fIbits\fP]"
+Set or unset minimum bit size of the Diffie-Hellman (DH) prime. See the
+\fBtls_min_dh_prime_bits\fP command.
+.IP "\-\-tls\-priorities=[\fIpriorities\fP]"
+Set or unset TLS priorities. See the \fBtls_priorities\fP command.
 .RE
 .IP "\fBOptions specific to sendmail mode\fP"
 .RS
-.IP "\-\-auto\-from[=(\fIon\fP|\fIoff\fP)]"
-Enable or disable automatic envelope-from addresses. The default is off. 
-See the \fBauto_from\fP command below.
 .IP "\-f, \-\-from=\fIaddress\fI"
 Set the envelope-from address. It is only used when \fIauto_from\fP is off.
 .br
-If no account was chosen yet (with \fB\-\-account\fP or \fB\-\-host\fP), this 
+If no account was chosen yet (with \fB\-\-account\fP or \fB\-\-host\fP), this
 option will choose the first account that has the given envelope-from address
-(set with the \fBfrom\fP command). If no such account is found, "default" is 
+(set with the \fBfrom\fP command). If no such account is found, "default" is
 used.
+.IP "\-\-auto\-from[=(\fIon\fP|\fIoff\fP)]"
+Enable or disable automatic envelope-from addresses. The default is off.
+See the \fBauto_from\fP command.
 .IP "\-\-maildomain=[\fIdomain\fP]"
-Set the domain part for generated envelope-from addresses. It is only used when
-\fIauto_from\fP is on. See the \fBmaildomain\fP command below.
+Set the domain part for the \fI\-\-auto\-from\fP address. See the
+\fBmaildomain\fP command.
 .IP "\-N, \-\-dsn\-notify=(\fIoff\fP|\fIcond\fP)"
-Set or unset DSN notification conditions. See the \fBdsn_notify\fP command
-below.
+Set or unset DSN notification conditions. See the \fBdsn_notify\fP command.
 .IP "\-R, \-\-dsn\-return=(\fIoff\fP|\fIret\fP)"
-Set or unset the DSN notification amount. See the \fBdsn_return\fP command
-below.
+Set or unset the DSN notification amount. See the \fBdsn_return\fP command.
 Note that \fIhdrs\fP is accepted as an alias for \fIheaders\fP to be
 compatible with sendmail.
 .IP "\-\-add\-missing\-from\-header[=(\fIon\fP|\fIoff\fP)]"
 Enable or disable the addition of a missing From header. See the
-\fBadd_missing_from_header\fP command below.
+\fBadd_missing_from_header\fP command.
 .IP "\-\-add\-missing\-date\-header[=(\fIon\fP|\fIoff\fP)]"
 Enable or disable the addition of a missing Date header. See the
-\fBadd_missing_date_header\fP command below.
+\fBadd_missing_date_header\fP command.
 .IP "\-\-remove\-bcc\-headers[=(\fIon\fP|\fIoff\fP)]"
 Enable or disable the removal of Bcc headers. See the \fBremove_bcc_headers\fP
-command below.
+command.
 .IP "\-X, \-\-logfile=[\fIfile\fP]"
-Set or unset the log file. See the \fBlogfile\fP command below.
+Set or unset the log file. See the \fBlogfile\fP command.
 .IP "\-\-syslog[=(\fIon\fP|\fIoff\fP|\fIfacility\fP)]"
-Enable or disable syslog logging. See the \fBsyslog\fP command below.
+Enable or disable syslog logging. See the \fBsyslog\fP command.
 .IP "\-t, \-\-read\-recipients"
 Read recipient addresses from the To, Cc, and Bcc headers of the mail in
 addition to the recipients given on the command line.
 If any Resent- headers are present, then the addresses from any Resent-To,
 Resent-Cc, and Resent-Bcc headers in the first block of Resent- headers are
 used instead.
-.IP "\-F\fIname\fP"
-Msmtp adds a From: header to mails that lack it, using the envelope from
-address. This option allows to set a full name to be used in that header.
 .IP "\-\-read\-envelope\-from"
 Read the envelope from address from the From header of the mail.
 Currently this header must be on a single line for this option to work
 correctly.
 .IP "\-\-aliases=[\fIfile\fP]"
-Set or unset an aliases file. See the \fBaliases\fP command below.
+Set or unset an aliases file. See the \fBaliases\fP command.
+.IP "\-F\fIname\fP"
+Msmtp adds a From header to mails that lack it, using the envelope from
+address. This option allows to set a full name to be used in that header.
 .IP "\-\-"
 This marks the end of options. All following arguments will be treated as
 recipient addresses, even if they start with a `\-'.
@@ -195,28 +181,28 @@ The following options are accepted but ignored for sendmail compatibility:
 \-n, \-O \fIoption=value\fP, \-o\fIx\fP \fIvalue\fP
 .SH USAGE
 Normally, a system wide configuration file and/or a user configuration file
-contain information about which SMTP server to use (and how to use it), but
-almost all settings can also be configured on the command line.
-.PP
-Information about SMTP servers is organized in \fIaccounts\fP. Each account
+contain information about which SMTP server to use and how to use it, but
+all settings can also be configured on the command line.
+.br
+The information about SMTP servers is organized in accounts. Each account
 describes one SMTP server: host name, authentication settings, TLS settings,
-and so on.  Each configuration file can define multiple accounts.
+and so on. Each configuration file can define multiple accounts.
 .PP
 In sendmail mode, an envelope-from address is necessary to send mail. This is
-the mail address that will be presented to the SMTP server as the originator 
+the mail address that will be presented to the SMTP server as the originator
 of the mail.
 Envelope-from addresses can be generated automatically (when \fIauto_from\fP
-is enabled) or set explicitly with the \fBfrom\fP command or \fB\-\-from\fP 
+is enabled) or set explicitly with the \fBfrom\fP command or \fB\-\-from\fP
 option. When \fIauto_from\fP is enabled, an envelope-from address of the form
-user@domain will be generated.  The local part will be set to \fBUSER\fP or,
+user@domain will be generated.	The local part will be set to \fBUSER\fP or,
 if that fails, to \fBLOGNAME\fP or, if that fails, to the login name of the
 current user.  The domain part can be set with the \fBmaildomain\fP command.
-If the maildomain is empty, the envelope-from address will only consist of 
+If the maildomain is empty, the envelope-from address will only consist of
 the user name and not have a domain part.
 .PP
 The user can choose which account to use in one of three ways:
 .IP "\-\-account=\fIid\fP"
-Use the given account. Command line settings override configuration file 
+Use the given account. Command line settings override configuration file
 settings.
 .IP "\-\-host=\fIhostname\fP
 Use only the settings from the command line; do not use any configuration file
@@ -251,7 +237,7 @@ SYSCONFDIR/msmtprc will be loaded, where SYSCONFDIR depends on your platform.
 Use \fB\-\-version\fP to find out which directory is used.
 .br
 If it exists and is readable, a user configuration file will be loaded
-(~/.msmtprc by default). Accounts defined in the user configuration file 
+(~/.msmtprc by default). Accounts defined in the user configuration file
 override accounts from the system configuration file.
 The user configuration file must have no more permissions than user read/write.
 Configuration data from either file can be changed by command line options.
@@ -264,14 +250,13 @@ command.
 .br
 The argument may be enclosed in double quotes ("), for example if its first or
 last character is a blank.
-.br 
-If the first character of a filename is the tilde (~), this tilde will be
-replaced by HOME.
+.br
+If a file name starts with the tilde (~), this tilde will be replaced by $HOME.
 If a command accepts the argument \fIon\fP, it also accepts an empty argument
 and treats that as if it was \fIon\fP.
 .br
-Commands form groups. Each group begins with the \fBaccount\fP command and 
-defines the settings for one SMTP server.
+Commands are organized in accounts. Each account starts with the \fBaccount\fP
+command and defines the settings for one SMTP account.
 .PP
 Skip to the EXAMPLES section for a quick start.
 .PP
@@ -287,31 +272,16 @@ If a colon and a list of previously defined accounts is given after the account
 name, the new account, with the filled in default values, will inherit all
 settings from the accounts in the list.
 .IP "host \fIhostname\fP"
-The SMTP server to send the mail to. 
+The SMTP server to send the mail to.
 The argument may be a host name or a network address.
 Every account definition must contain this command.
 .IP "port \fInumber\fP"
-The port that the SMTP server listens on. 
-The default port will be acquired from your operating system's service database:
-for SMTP, the service is "smtp" (default port 25), unless TLS 
-without STARTTLS is used, in which case it is "smtps" (465). For LMTP, it is 
-"lmtp".
+The port that the SMTP server listens on.
+The default is 25 ("smtp"), unless TLS without STARTTLS is used, in which case
+it is 465 ("smtps").
 .IP "timeout (\fIoff\fP|\fIseconds\fP)"
 Set or unset a network timeout, in seconds. The argument \fIoff\fP means that no
 timeout will be set, which means that the operating system default will be used.
-.br
-For compatibility with older versions, \fBconnect_timeout\fP is accepted as an
-alias for this command.
-.IP "protocol (\fIsmtp\fP|\fIlmtp\fP)"
-Set the protocol to use. Currently only SMTP and LMTP are supported. SMTP is
-the default. See the \fBport\fP command above for default ports.
-.IP "domain \fIargument\fP"
-Use this command to set the argument of the SMTP EHLO (or LMTP LHLO) command. 
-The default is \fIlocalhost\fP, which is stupid but usually works. Try to
-change the default if mails get rejected due to anti-SPAM measures. Possible
-choices are the domain part of your mail address (provider.example for
-joe@provider.example) or the fully qualified domain name of your host (if
-available).
 .IP "proxy_host [\fIIP|hostname\fP]"
 Use a SOCKS proxy. All network traffic will go through this proxy host,
 including DNS queries, except for a DNS query that might be necessary to
@@ -322,160 +292,210 @@ see also "Using msmtp with Tor" below.
 .IP "proxy_port [\fInumber\fP]"
 Set the port number for the proxy host. An empty \fInumber\fP argument resets
 this to the default port.
-.IP "auto_from [(\fIon\fP|\fIoff\fP)]
-Enable or disable automatic envelope-from addresses. The default is off.
-When enabled, an envelope-from address of the form user@domain will be
-generated.  The local part will be set to \fBUSER\fP or, if that fails, to
-\fBLOGNAME\fP or, if that fails, to the login name of the current user.  The
-domain part can be set with the \fBmaildomain\fP command.  If the maildomain 
-is empty, the envelope-from address will only consist of the user name and not
-have a domain part. When auto_from is disabled, the envelope-from address must
-be set explicitly.
-.IP "from \fIenvelope_from\fP"
-Set the envelope-from address. This address will only be used when 
-\fIauto_from\fP is off.
-.IP "maildomain [\fIdomain\fP]"
-Set a domain part for the generation of an envelope-from address. This is only 
-used when \fIauto_from\fP is on. The domain may be empty.
+.IP "protocol (\fIsmtp\fP|\fIlmtp\fP)"
+Set the protocol to use. Currently only SMTP and LMTP are supported. SMTP is
+the default. See the \fBport\fP command above for default ports.
+.IP "domain \fIargument\fP"
+Use this command to set the argument of the SMTP EHLO (or LMTP LHLO) command.
+The default is \fIlocalhost\fP, which is stupid but usually works. Try to
+change the default if mails get rejected due to anti-SPAM measures. Possible
+choices are the domain part of your mail address (provider.example for
+joe@provider.example) or the fully qualified domain name of your host (if
+available).
 .IP "auth [(\fIon\fP|\fIoff\fP|\fImethod\fP)]"
-This command enables or disables SMTP authentication. You should not need to
-set the method yourself; with the argument \fIon\fP, msmtp will choose the best
-one available for you (see below).
+Enable or disable authentication and optionally choose a method to use. The
+argument \fIon\fP chooses a method automatically.
 .br
-You probably need to set a username (with \fBuser\fP) and password (with 
-\fBpasswordeval\fP or \fBpassword\fP, or via a key ring). 
+Usually a user name and a password are used for authentication. The user name
+is specified in the configuration file with the \fBuser\fP command. There are five
+different methods to specify the password:
 .br
-If no password is set but one is needed during authentication, msmtp will try to
-find it. First, if \fBpasswordeval\fP is set, it will evaluate that command.
-Otherwise it will try to get the password from a system specific keychain.
-If that fails, it will try to find the password in ~/.netrc or SYSCONFDIR/netrc.
-If that fails, it will prompt you for it.
+1. Add the password to the system key ring.
+Currently supported key rings are the Gnome key ring and the Mac OS X Keychain.
+For the Gnome key ring, use the command secret-tool (part of Gnome's
+libsecret) to store passwords: secret-tool store --label=msmtp host
+mail.freemail.example service smtp user joe.smith.
+On Mac OS X, use the Keychain Access GUI application.
+The account name is same as the user name. The
+keychain item name is smtp://<hostname> where <hostname> matches the host argument.
 .br
-Currently supported keyrings are the Gnome Keyring and the Mac OS X Keychain.
+2. Store the password in an encrypted files, and use \fBpasswordeval\fP
+to specify a command to decrypt that file, e.g. using GnuPG. See EXAMPLES.
 .br
-The command \fBsecret-tool\fP (part of Gnome's libsecret) can be used to manage
-Gnome Keyring passwords for msmtp. For that purpose, specify the attributes
-"host" (host name of the SMTP server), "service" (always "smtp"), and "user"
-(user name). You can also use \fBsecret-tool\fP via the \fBpasswordeval\fP
-command if your version of msmtp does not have builtin support for libsecret.
+3. Store the password in the configuration file using the \fBpassword\fP command.
+(Usually it is not considered a good idea to store passwords in plain text files.
+If you do it anyway, you must make sure that the file can only be read by yourself.)
 .br
-To manage Mac OS X Keychain passwords, use the Keychain Access GUI application.
-The \fIaccount name\fP is same as the msmtp \fBuser\fP argument. The
-\fIkeychain item name\fP is \fBsmtp://<hostname>\fP where \fB<hostname>\fP
-matches the msmtp \fBhost\fP argument.
+4. Store the password in ~/.netrc. This method is probably obsolete.
 .br
-Available authentication methods are \fIplain\fP, \fIscram\-sha\-1\fP,
-\fIcram\-md5\fP, \fIgssapi\fP, \fIexternal\fP, \fIdigest\-md5\fP, \fIlogin\fP,
-and \fIntlm\fP.
-Note that one or more of these methods may be unavailable due to lack of support
-in the underlying authentication library. Use the \fB\-\-version\fP option to
-find out which methods are supported.
+5. Type the password into the terminal when it is required.
 .br
-The \fIplain\fP and \fIlogin\fP methods send your authentication data in
-cleartext over the net, and the \fIntlm\fP method may be vulnerable to attacks.
-These methods should therefore only be used together with the \fBtls\fP command.
+It is recommended to use method 1 or 2.
 .br
-If you don't choose the method yourself, msmtp chooses the best secure method
-that the SMTP server supports. Secure means that your authentication data will
-not be sent in cleartext (or in an easily decryptable form) over the net. For
-TLS encrypted connections, every authentication method is secure in this sense.
-If TLS is not active, only gssapi, scram\-sha\-1, and cram\-md5 are secure in
-this sense.
+Multiple authentication methods exist. Most servers support only some of them.
+Historically, sophisticated methods were developed to protect passwords from
+being sent unencrypted to the server, but nowadays everybody needs TLS anyway,
+so the simple methods suffice since the whole session is protected. A suitable
+authentication method is chosen automatically, and when TLS is disabled for
+some reason, only methods that avoid sending clear text passwords are
+considered.
 .br
-The \fIexternal\fP is special: the actual authentication happens outside of the
-SMTP protocol, typically by sending a TLS client certificate (see the
-\fBtls_cert_file\fP command). The \fIexternal\fP method merely confirms that
-this authentication succeeded for the given user (or, if no user name is given,
-confirms that authentication succeeded). This authentication method is not
-chosen automatically; you have to request it manually.
-.IP "user [\fIusername\fP]"
-Set your user name for SMTP authentication. An empty argument unsets the user
-name. Authentication must be activated with the \fBauth\fP command.
-.IP "password [\fIsecret\fP]"
-Set your password for SMTP authentication. An empty argument unsets the
-password. See the \fBauth\fP command for more information about authentication.
+The following user / password methods are supported: \fIplain\fP (a simple
+plain text method, with base64 encoding, supported by almost all servers),
+\fIscram\-sha\-1\fP (a method that avoids clear-text passwords),
+\fIcram\-md5\fP (an obsolete method that avoids clear-text passwords),
+\fIdigest\-md5\fP (an overcomplicated
+obsolete method that avoids clear-text passwords, but is not considered secure
+anymore), \fIlogin\fP (a non-standard clear-text method similar to but worse
+than the plain method), \fIntlm\fP (an obscure non-standard method that is now
+considered broken; it sometimes requires a special domain parameter passed via
+\fBntlmdomain\fP).
 .br
+There are currently two authentication methods that are not based on user /
+password information and have to be chosen manually: \fIexternal\fP (the
+authentication happens outside of the protocol, typically by sending a TLS
+client certificate, and the method merely confirms that this authentication
+succeeded), and \fIgssapi\fP (the Kerberos framework takes care of secure
+authentication, only a user name is required).
+.br
+It depends on the underlying authentication library and its version whether a
+particular method is supported or not. Use \fB\-\-version\fP to find out which
+methods are supported.
+.IP "user \fIlogin\fP"
+Set the user name for authentication. An empty argument unsets the user name.
+.IP "password \fIsecret\fP"
+Set the password for authentication. An empty argument unsets the password.
 Consider using the \fBpasswordeval\fP command or a key ring instead of this
-command, to avoid storing plain text passwords.
+command, to avoid storing plain text passwords in the configuration file.
 .IP "passwordeval [\fIeval\fP]"
-Set your password for SMTP authentication to the output (stdout) of the
-execution of \fIeval\fP.
+Set the password for authentication to the output (stdout) of the command
+\fIeval\fP.
 This can be used e.g. to decrypt password files on the fly or to query key
 rings, and thus to avoid storing plain text passwords.
 .IP "ntlmdomain [\fIdomain\fP]"
-Set a domain for the \fIntlm\fP authentication method. The default is to use no
-domain (equivalent to an empty argument), but some servers seem to require one,
-even if it is an arbitrary string.
+Set a domain for the \fBntlm\fP authentication method. This is obsolete.
 .IP "tls [(\fIon\fP|\fIoff\fP)]"
-This command enables or disables TLS (also known as SSL) encrypted connections 
-to the SMTP server. Not every server supports TLS.
+Enable or disable TLS (also known as SSL) for secured connections.
+You also need \fBtls_trust_file\fP or \fBtls_fingerprint\fP, and for some
+servers you may need to disable \fBtls_starttls\fP.
 .br
-With TLS/SSL, the connection with the SMTP server will be protected against
-eavesdroppers and man-in-the-middle attacks. To use TLS/SSL, it is required to 
-either use the \fBtls_trust_file\fP command (highly recommended) or to disable 
-\fBtls_certcheck\fP.
+Transport Layer Security (TLS)
+"... provides communications privacy over the Internet.  The protocol
+allows client/server applications to communicate in a way that is designed to
+prevent eavesdropping, tampering, or message forgery" (quote from RFC2246).
+.br
+A server can use TLS in one of two modes: via a STARTTLS command (the session
+starts with the normal protocol initialization, and TLS is then
+started using the protocol's STARTTLS command), or immediately (TLS is
+initialized before the normal protocol initialization; this requires a
+separate port). The first mode is the default, but you can switch to the
+second mode by disabling \fBtls_starttls\fP.
+.br
+When TLS is started, the server sends a certificate to identify itself. To
+verify the server identity, a client program is expected to check that the
+certificate is formally correct and that it was issued by a Certificate
+Authority (CA) that the user trusts. (There can also be certificate chains with
+intermediate CAs.)
+.br
+The list of trusted CAs is specified using the \fBtls_trust_file\fP command.
+Usually there is some system-wide default file available, e.g.
+/etc/ssl/certs/ca-certificates.crt on Debian-based systems, but you can
+also choose to select the trusted CAs yourself.
+.br
+One practical problem with this approach is that the client program should also
+check if the server certificate has been revoked for some reason, using a
+Certificate Revocation List (CRL). A CRL file can be specified using the
+\fBtls_crl_file\fP command, but getting the relevant CRL files and keeping them
+up to date is not straightforward. You are basically on your own.
+.br
+A much more serious and fundamental problem is is that you need to trust CAs.
+Like any other organization, a CA can be incompetent, malicious, subverted by
+bad people, or forced by government agencies to compromise end users without
+telling them. All of these things happened and continue to happen worldwide.
+The idea to have central organizations that have to be trusted for your
+communication to be secure is fundamentally broken.
+.br
+Instead of putting trust in a CA, you can choose to trust only a single
+certificate for the server you want to connect to. For that purpose, specify
+the certificate fingerprint with \fBtls_fingerprint\fP. This makes sure that no
+man-in-the-middle can fake the identity of the server by presenting you a
+fraudulent certificate issued by some CA that happens to be in your trust list.
+However, you have to update the fingerprint whenever the server certificate
+changes, and you have to make sure that the change is legitimate each time,
+e.g. when the old certificate expired. This is inconvenient, but it's the price
+to pay.
+.br
+Information about a server certificate can be obtained with \fI--serverinfo
+--tls --tls-certcheck=off\fP. This includes the issuer CA of the certificate (so
+you can trust that CA via \fBtls_trust_file\fP), and the fingerprint of the
+certificate (so you can trust that particular certificate via
+\fBtls_fingerprint\fP).
+.br
+TLS also allows the server to verify the identity of the client. For this
+purpose, the client has to present a certificate issued by a CA that the server
+trusts. To present that certificate, the client also needs the matching key
+file. You can set the certificate and key files using \fBtls_cert_file\fP and
+\fBtls_key_file\fP. This mechanism can also be used to authenticate users, so
+that traditional user / password authentication is not necessary anymore. See the
+\fIexternal\fP mechanism in \fBauth\fP.
 .IP "tls_starttls [(\fIon\fP|\fIoff\fP)]"
-By default, TLS encryption is activated using the STARTTLS SMTP command.  By
-disabling this, TLS encryption is immediately started instead (this is known as
-SMTP tunneled through TLS/SSL). The default port is set to 465 for this mode of
-operation.
-.br
-For compatibility with older versions, \fBtls_nostarttls\fP is accepted as an
-alias for \fBtls_starttls off\fP.
-.IP "tls_trust_file [\fIfile\fP]"
-This command activates strict server certificate verification.
-.br
-The filename must be the absolute path name of a file in PEM format containing
-one or more certificates of trusted Certification Authorities (CAs).
-.br
-On Debian based systems, you can install the \fBca\-certificates\fP package and
-use the file \fB/etc/ssl/certs/ca\-certificates.crt\fP.
+Choose the TLS variant: start TLS from within the session (\fIon\fP, default),
+or tunnel the session through TLS (\fIoff\fP).
+.IP "tls_trust_file \fIfile\fP"
+Activate server certificate verification using a list of truted Certification
+Authorities (CAs). The file must be in PEM format. Some systems provide a
+system-wide default file, e.g. /etc/ssl/certs/ca-certificates.crt on
+Debian-based systems with the ca-certificates package.
+An empty argument disables this. You should also use \fBtls_crl_file\fP.
 .IP "tls_crl_file [\fIfile\fP]"
-This command sets or unsets a certificate revocation list (CRL) file for TLS,
-to be used during strict server certificate verification as enabled by the
-\fBtls_trust_file\fP command. This allows the verification procedure to detect
-revoked certificates.
+Set a certificate revocation list (CRL) file for TLS, to check for revoked
+certificates. An empty argument disables this.
 .IP "tls_fingerprint [\fIfingerprint\fP]"
-This command sets or unsets the fingerprint of a particular TLS certificate.
-This certificate will then be trusted, regardless of its contents. This can be
-used to trust broken certificates (e.g. with a non-matching hostname) or in
-situations where \fBtls_trust_file\fP cannot be used for some reason.
-.br
-You can give either an SHA1 (recommended) or an MD5 fingerprint in the format
-01:23:45:67:...
-.br
-You can use \fB\-\-serverinfo \-\-tls \-\-tls\-certcheck=off\fP to get the peer
-certificate's fingerprints.
-.IP "tls_key_file [\fIfile\fP]"
-This command (together with the \fBtls_cert_file\fP command) enables msmtp to
-send a client certificate to the SMTP server if requested.
-The file must contain the private key of a certificate in PEM format.
-An empty argument disables this feature.
-.IP "tls_cert_file [\fIfile\fP]"
-This command (together with the \fBtls_key_file\fP command) enables msmtp to
-send a client certificate to the SMTP server if requested.
-The file must contain a certificate in PEM format.
-An empty argument disables this feature.
+Set the fingerprint of a single certificate to accept for TLS. This certificate
+will be trusted regardless of its contents. The fingerprint can be either an
+SHA1 (recommended) or an MD5 fingerprint in the format
+01:23:45:67:.... Use \fI\-\-serverinfo \-\-tls \-\-tls-certcheck=off\fP
+to get the server certificate fingerprints.
+.IP "tls_key_file \fIfile\fP"
+Send a client certificate to the server (use this together with
+\fBtls_cert_file}\fP).
+The file must contain the private key of a certificate in PEM format. An empty
+argument disables this feature.
+.IP "tls_cert_file \fIfile\fP"
+Send a client certificate to the server (use this together with
+\fBtls_key_file\fP).
+The file must contain a certificate in PEM format. An empty argument disables
+this feature.
 .IP "tls_certcheck [(\fIon\fP|\fIoff\fP)]"
-This command enables or disables checks for the server certificate.
-.br
-\fBWARNING\fP: When the checks are disabled, TLS/SSL sessions will be vulnerable
-to man-in-the-middle attacks!
-.br
-For compatibility with older versions, \fBtls_nocertcheck\fP is accepted as an
-alias for \fBtls_certcheck off\fP.
+Enable or disable checks of the server certificate.
+WARNING: When the checks are disabled, TLS sessions will be vulnerable to
+man-in-the-middle attacks!
 .IP "tls_min_dh_prime_bits [\fIbits\fP]"
-Set or unset the minimum number of Diffie-Hellman (DH) prime bits that msmtp
+Set or unset the minimum number of Diffie-Hellman (DH) prime bits that mpop
 will accept for TLS sessions.  The default is set by the TLS library and can be
 selected by using an empty argument to this command.  Only lower the default
 (for example to 512 bits) if there is no other way to make TLS work with the
 remote server.
 .IP "tls_priorities [\fIpriorities\fP]"
-Set the priorities for TLS sessions.  The default is set by the TLS library and
-can be selected by using an empty argument to this command.  Currently this 
-command only works with sufficiently recent GnuTLS releases. See the GnuTLS
-documentation of the \fBgnutls_priority_init\fP function for a description of 
-the \fIpriorities\fP string.
+Set the priorities for TLS sessions. The default is set by the TLS library and
+can be selected by using an empty argument to this command.
+See the GnuTLS documentation of the \fIgnutls_priority_init\fP function for a
+description of the priorities string.
+.IP "from \fIenvelope_from\fP"
+Set the envelope-from address. This address will only be used when
+\fIauto_from\fP is off.
+.IP "auto_from [(\fIon\fP|\fIoff\fP)]
+Enable or disable automatic envelope-from addresses. The default is off.
+When enabled, an envelope-from address of the form user@domain will be
+generated.  The local part will be set to \fBUSER\fP or, if that fails, to
+\fBLOGNAME\fP or, if that fails, to the login name of the current user.  The
+domain part can be set with the \fBmaildomain\fP command.  If the maildomain
+is empty, the envelope-from address will only consist of the user name and not
+have a domain part. When auto_from is disabled, the envelope-from address must
+be set explicitly.
+.IP "maildomain [\fIdomain\fP]"
+Set a domain part for the generation of an envelope-from address. This is only
+used when \fIauto_from\fP is on. The domain may be empty.
 .IP "dsn_notify (\fIoff\fP|\fIcondition\fP)"
 This command sets the condition(s) under which the mail system should send DSN
 (Delivery Status Notification) messages. The argument \fIoff\fP disables
@@ -508,7 +528,7 @@ An empty argument disables logging (this is the default).
 When logging is enabled by choosing a log file, msmtp will append one line to
 the log file for each mail it tries to send via the account that this log file
 was chosen for.
-.br 
+.br
 The line will include the following information: date and time, host name of the
 SMTP server, whether TLS was used, whether authentication was used,
 authentication user name (only if authentication is used), envelope-from
@@ -524,9 +544,9 @@ output.
 Enable or disable syslog logging. The facility can be one of LOG_USER, LOG_MAIL,
 LOG_LOCAL0, ..., LOG_LOCAL7. The default is LOG_USER.
 .br
-Each time msmtp tries to send a mail via the account that contains this syslog 
+Each time msmtp tries to send a mail via the account that contains this syslog
 command, it will log one entry to the syslog service with the chosen facility.
-.br 
+.br
 The line will include the following information: host name of the SMTP server,
 whether TLS was used, whether authentication was used, envelope-from address,
 recipient addresses, size of the mail as transferred to the server (only if the
@@ -722,7 +742,7 @@ account default : freemail
 .PP
 .B Using msmtp with Mutt
 .PP
-Create a configuration file for msmtp and add the following lines to your 
+Create a configuration file for msmtp and add the following lines to your
 Mutt configuration file:
 .br
 .B set sendmail="/path/to/msmtp"
@@ -735,9 +755,9 @@ Mutt configuration file:
 .br
 .B set envelope_from=yes
 .br
-The envelope_from=yes option lets Mutt use the 
-.BR \-f 
-option of msmtp. Therefore msmtp chooses the first account that matches 
+The envelope_from=yes option lets Mutt use the
+.BR \-f
+option of msmtp. Therefore msmtp chooses the first account that matches
 the from address you@example.com.
 .br
 Alternatively, you can use the
@@ -821,7 +841,7 @@ The netrc file contains login information. Before prompting for a password,
 msmtp will search it in ~/.netrc and SYSCONFDIR/netrc.
 .SH ENVIRONMENT
 .IP "USER, LOGNAME"
-These variables override the user's login name when constructing an 
+These variables override the user's login name when constructing an
 envelope-from address. LOGNAME is only used if USER is unset.
 .IP "TMPDIR"
 Directory to create temporary files in. If this is unset, a system specific
@@ -846,9 +866,7 @@ msmtp was written by Martin Lambers <marlam@marlam.de>.
 .br
 Other authors are listed in the AUTHORS file in the source distribution.
 .SH SEE ALSO
-.BR mutt (1), 
-.BR mail (1),
-.BR sendmail (8), 
+.BR sendmail (8),
 .BR netrc (5)
 or
 .BR ftp (1)

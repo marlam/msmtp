@@ -918,13 +918,6 @@ both addresses are the same.
 Envelope-from addresses can be generated automatically (when @ref{auto_from}
 is enabled) or set explicitly with the @ref{from} command.
 
-When @ref{auto_from} is enabled, an envelope-from address of the form
-@code{user@@domain} will be generated.	The local part will be set to
-@code{USER} or, if that fails, to @code{LOGNAME} or, if that fails, to the
-login name of the current user.  The domain part can be set with the
-@ref{maildomain} command.  If the maildomain is empty, the envelope-from
-address will only consist of the user name and not have a domain part.
-
 @node Logging
 @section Logging
 

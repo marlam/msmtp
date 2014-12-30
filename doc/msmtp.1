@@ -188,18 +188,6 @@ The information about SMTP servers is organized in accounts. Each account
 describes one SMTP server: host name, authentication settings, TLS settings,
 and so on. Each configuration file can define multiple accounts.
 .PP
-In sendmail mode, an envelope-from address is necessary to send mail. This is
-the mail address that will be presented to the SMTP server as the originator
-of the mail.
-Envelope-from addresses can be generated automatically (when \fIauto_from\fP
-is enabled) or set explicitly with the \fBfrom\fP command or \fB\-\-from\fP
-option. When \fIauto_from\fP is enabled, an envelope-from address of the form
-user@domain will be generated.	The local part will be set to \fBUSER\fP or,
-if that fails, to \fBLOGNAME\fP or, if that fails, to the login name of the
-current user.  The domain part can be set with the \fBmaildomain\fP command.
-If the maildomain is empty, the envelope-from address will only consist of
-the user name and not have a domain part.
-.PP
 The user can choose which account to use in one of three ways:
 .IP "\-\-account=\fIid\fP"
 Use the given account. Command line settings override configuration file
@@ -237,9 +225,9 @@ SYSCONFDIR/msmtprc will be loaded, where SYSCONFDIR depends on your platform.
 Use \fB\-\-version\fP to find out which directory is used.
 .br
 If it exists and is readable, a user configuration file will be loaded
-(~/.msmtprc by default). Accounts defined in the user configuration file
-override accounts from the system configuration file.
-The user configuration file must have no more permissions than user read/write.
+(~/.msmtprc by default, but see \fB\-\-version\fP). Accounts defined in the
+user configuration file override accounts from the system configuration file.
+.br
 Configuration data from either file can be changed by command line options.
 .PP
 A configuration file is a simple text file.  Empty lines and comment lines

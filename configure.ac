@@ -64,7 +64,28 @@ want_gnutls="yes"
 want_openssl="yes"
 tls_CFLAGS=""
 tls_LIBS=""
-AC_ARG_WITH([ssl], [AS_HELP_STRING([--with-ssl=[gnutls|openssl|no]],
+with_ssl_was_used=no
+AC_ARG_WITH([ssl], [],
+    with_ssl_was_used=yes
+    if test "$withval" = "gnutls"; then
+	want_tls=yes
+	want_gnutls=yes
+	want_openssl=no
+    elif test "$withval" = "openssl"; then
+	want_tls=yes
+	want_gnutls=no
+	want_openssl=yes
+    elif test "$withval" = "no"; then
+	want_tls=no
+	want_gnutls=no
+	want_openssl=no
+    else
+	AC_MSG_ERROR([Use --with-tls=gnutls or --with-tls=openssl or --with-tls=no])
+    fi)
+if test "$with_ssl_was_used" = "yes"; then
+    AC_MSG_WARN([--with-ssl is deprecated, use --with-tls instead])
+fi
+AC_ARG_WITH([tls], [AS_HELP_STRING([--with-tls=[gnutls|openssl|no]],
     [TLS/SSL support: GnuTLS (default), OpenSSL, or none.])],
     if test "$withval" = "gnutls"; then
 	want_tls=yes
@@ -79,7 +100,7 @@ AC_ARG_WITH([ssl], [AS_HELP_STRING([--with-ssl=[gnutls|openssl|no]],
 	want_gnutls=no
 	want_openssl=no
     else
-	AC_MSG_ERROR([Use --with-ssl=gnutls or --with-ssl=openssl or --with-ssl=no])
+	AC_MSG_ERROR([Use --with-tls=gnutls or --with-tls=openssl or --with-tls=no])
     fi)
 if test "$want_gnutls" = "yes"; then
     PKG_CHECK_MODULES([libgnutls], [gnutls >= 0.0], [HAVE_LIBGNUTLS=1], [HAVE_LIBGNUTLS=0])

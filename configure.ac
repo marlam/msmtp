@@ -136,33 +136,47 @@ if test "$libgsasl" != "no"; then
 fi
 AM_CONDITIONAL([HAVE_LIBGSASL], [test "$libgsasl" = "yes"])
 
-dnl Do we need libidn for IDN support? Modern systems don't.
-want_libidn=yes
-AC_CHECK_DECL([AI_IDN], [], [], [#include <netdb.h>])
-if test "$ac_cv_have_decl_AI_IDN" = "yes"; then
-    if test "$have_tls" = "no"; then
-        want_libidn=no
-    elif test "$tls_lib" = "GnuTLS"; then
-        gnutls_has_idn=no
-        AC_MSG_CHECKING([if GnuTLS has builtin IDN support])
-        CFLAGS_BAK="$CFLAGS"
-        CFLAGS="$CFLAGS $tls_CFLAGS"
-        AC_COMPILE_IFELSE(
-            [AC_LANG_PROGRAM([[
-             #include <gnutls/gnutls.h>
-             #if GNUTLS_VERSION_NUMBER < 0x030400
-              error: GnuTLS does not have builtin IDN support
-             #endif]],
-            [[int x = 0;]])],
-            [gnutls_has_idn="yes"], [])
-        CFLAGS="$CFLAGS_BAK"
-        AC_MSG_RESULT([$gnutls_has_idn])
-        if test "$gnutls_has_idn" = "yes"; then
-            want_libidn=no
-        fi
+dnl Check if getaddrinfo() has IDN support (and we want to use it)
+AC_ARG_ENABLE([gai-idn],
+    [AS_HELP_STRING([--enable-gai-idn], [Use IDN support from getaddrinfo if available. Enabled by default.])],
+    [if test "$enableval" = "yes"; then want_gai_idn="yes"; else want_gai_idn="no"; fi], [want_gai_idn="yes"])
+have_gai_idn=no
+if test "$want_gai_idn" = "yes"; then
+    dnl TODO: in the future there may be getaddrinfo() implementations that
+    dnl support IDN without requiring AI_IDN
+    AC_CHECK_DECL([AI_IDN], [], [], [#include <netdb.h>])
+    if test "$ac_cv_have_decl_AI_IDN" = "yes"; then
+        have_gai_idn=yes
+        AC_DEFINE([HAVE_GAI_IDN], [1], [Define to 1 if getaddrinfo supports IDN])
     fi
 fi
+
+dnl Check if the TLS library has IDN support
+have_tls_idn=no
+if test "$tls_lib" = "GnuTLS"; then
+    AC_MSG_CHECKING([if GnuTLS has builtin IDN support])
+    CFLAGS_BAK="$CFLAGS"
+    CFLAGS="$CFLAGS $tls_CFLAGS"
+    AC_COMPILE_IFELSE(
+        [AC_LANG_PROGRAM([[
+         #include <gnutls/gnutls.h>
+         #if GNUTLS_VERSION_NUMBER < 0x030400
+          error: GnuTLS does not have builtin IDN support
+         #endif]],
+        [[int x = 0;]])],
+        [have_tls_idn="yes"], [])
+    CFLAGS="$CFLAGS_BAK"
+    AC_MSG_RESULT([$have_tls_idn])
+fi
+
+dnl Do we need libidn for IDN support?
 AC_MSG_CHECKING([if libidn is needed for IDN support])
+want_libidn=no
+if test "$have_gai_idn" = "no"; then
+    want_libidn=yes
+elif test "$have_tls" = "yes" -a "$have_tls_idn" = "no"; then
+    want_libidn=yes
+fi
 AC_MSG_RESULT([$want_libidn])
 
 dnl GNU Libidn

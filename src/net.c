@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2012, 2014
+ * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2012, 2014, 2015
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -620,8 +620,10 @@ int net_open_socket(
     hints.ai_addr = NULL;
     hints.ai_next = NULL;
     port_string = xasprintf("%d", port);
-#ifdef AI_IDN
+#ifdef HAVE_GAI_IDN
+# ifdef AI_IDN
     hints.ai_flags |= AI_IDN;
+# endif
 #elif defined(HAVE_LIBIDN)
     idna_to_ascii_lz(hostname, &idn_hostname, 0);
 #endif

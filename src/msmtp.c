@@ -4,7 +4,7 @@
  * This file is part of msmtp, an SMTP client.
  *
  * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011,
- * 2012, 2013, 2014
+ * 2012, 2013, 2014, 2015
  * Martin Lambers <marlam@marlam.de>
  * Jay Soffian <jaysoffian@gmail.com> (Mac OS X keychain support)
  * Satoru SATOH <satoru.satoh@gmail.com> (GNOME keyring support)
@@ -2396,7 +2396,7 @@ void msmtp_print_version(void)
     free(userconffile);
     free(homedir);
     printf("\n");
-    printf(_("Copyright (C) 2014 Martin Lambers and others.\n"
+    printf(_("Copyright (C) 2015 Martin Lambers and others.\n"
                 "This is free software.  You may redistribute copies of "
                     "it under the terms of\n"
                 "the GNU General Public License "

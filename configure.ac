@@ -165,17 +165,57 @@ have_gai_idn=no
 if test "$want_gai_idn" = "yes"; then
     dnl TODO: in the future there may be getaddrinfo() implementations that
     dnl support IDN without requiring AI_IDN
-    AC_CHECK_DECL([AI_IDN], [], [], [#include <netdb.h>])
+    AC_CHECK_DECL([AI_IDN], [], [],
+    [
+     #include <sys/types.h>
+     #include <sys/socket.h>
+     #include <netdb.h>
+    ])
     if test "$ac_cv_have_decl_AI_IDN" = "yes"; then
-        have_gai_idn=yes
-        AC_DEFINE([HAVE_GAI_IDN], [1], [Define to 1 if getaddrinfo supports IDN])
+	dnl AI_IDN is defined, now check if it is actually supported
+	dnl (glibc without libidn will return EAI_BADFLAGS)
+        AC_MSG_CHECKING([whether getaddrinfo accepts AI_IDN])
+	AC_RUN_IFELSE(
+            [AC_LANG_PROGRAM(
+            [[
+             #include <sys/types.h>
+             #include <sys/socket.h>
+	     #include <netdb.h>
+            ]],
+            [[
+             struct addrinfo hints;
+             struct addrinfo *res;
+             int r;
+             hints.ai_flags = AI_IDN;
+             hints.ai_family = PF_UNSPEC;
+             hints.ai_socktype = SOCK_STREAM;
+             hints.ai_protocol = 0;
+             hints.ai_addrlen = 0;
+             hints.ai_addr = 0;
+             hints.ai_canonname = 0;
+             hints.ai_next = 0;
+             r = getaddrinfo("localhost", "1234", &hints, &res);
+             freeaddrinfo(res);
+             return (r == EAI_BADFLAGS ? 1 : 0);
+	    ]])],
+            [have_gai_idn="yes"],
+	    [have_gai_idn="no"],
+	    [have_gai_idn="assuming yes"])
+        AC_MSG_RESULT([$have_gai_idn])
+        if test "$have_gai_idn" = "assuming yes"; then
+            AC_MSG_NOTICE([if this assumption is wrong, use --disable-gai-idn])
+            have_gai_idn="yes"
+        fi
+        if test "$have_gai_idn" = "yes"; then
+            AC_DEFINE([HAVE_GAI_IDN], [1], [Define to 1 if getaddrinfo supports IDN])
+        fi
     fi
 fi
 
 dnl Check if the TLS library has IDN support
 have_tls_idn=no
 if test "$tls_lib" = "GnuTLS"; then
-    AC_MSG_CHECKING([if GnuTLS has builtin IDN support])
+    AC_MSG_CHECKING([whether GnuTLS has builtin IDN support])
     CFLAGS_BAK="$CFLAGS"
     CFLAGS="$CFLAGS $tls_CFLAGS"
     AC_COMPILE_IFELSE(
@@ -191,7 +231,7 @@ if test "$tls_lib" = "GnuTLS"; then
 fi
 
 dnl Do we need libidn for IDN support?
-AC_MSG_CHECKING([if libidn is needed for IDN support])
+AC_MSG_CHECKING([whether libidn is needed for IDN support])
 want_libidn=no
 if test "$have_gai_idn" = "no"; then
     want_libidn=yes

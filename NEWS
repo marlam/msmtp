@@ -1,3 +1,7 @@
+Version 1.6.1:
+- The new configure option --with-tls replaces --with-ssl.
+- A new configure option --disable-gai-idn was added.
+
 Version 1.6.0:
 - Support for SOCKS proxies was added. This allows msmtp to be used with Tor.
 - GNOME Keyring support now uses libsecret instead of libgnome-keyring. It is

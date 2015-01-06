@@ -2358,7 +2358,9 @@ void msmtp_print_version(void)
     printf("\n");
     /* Internationalized Domain Names support */
     printf(_("IDN support: "));
-#ifdef HAVE_LIBIDN
+#if defined(HAVE_LIBIDN) \
+        || (defined(HAVE_GAI_IDN) && (!defined(HAVE_TLS) \
+            || (defined(HAVE_LIBGNUTLS) && GNUTLS_VERSION_NUMBER >= 0x030400)))
     printf(_("enabled"));
 #else
     printf(_("disabled"));

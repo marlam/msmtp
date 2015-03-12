@@ -1,7 +1,7 @@
 
-msmtpq is a modification of the scripts comprising Martin Lambers'
+msmtpq is a modification of the scripts comprising part of Martin Lambers'
 msmtpqueue package ; it attempts be useful to msmtp by holding mail sent
-by an MUA when a machine, e.g. a laptop, is not connected to the net ;
+by an MUA when a system, e.g. a laptop, is not connected to the net ;
 queued mails are held as files in a user defined and created queue
 directory ; when the machine is connected all mail can be sent directly
 out ; the msmtpq package does queue handling for msmtp according to the
@@ -44,7 +44,7 @@ In the case of mutt, in addition to the above setting,
 
 'set sendmail = /path/to/msmtpq'
 
-set, also
+set, also,
 
 'set sendmail_wait = -1'
 
@@ -58,7 +58,7 @@ Configuration :
 all config is done within the msmtpq script
 
   set the MSMTP var to point to the location of the msmtp executable
-    (only if necessary ; if it's not on the path)
+    (set this only if necessary ; if it's not on the path)
   set the Q var to point to the location of the queue directory
   set the LOG var to point to the location of the queue log
 
@@ -72,7 +72,7 @@ the Q variable should have the location of the queue directory
 
 the LOG variable should have the desired name & location of the queue log
 
-the locations are clearly marked near the beginnings of the script ;
+the locations are clearly marked near the beginning of the script ;
 modify all to the locations you prefer (the defaults work for me ; you
 may or may not be happy with them) ... please note that it's preferable
 to create the queue directory (with 0700 permissions) before using these
@@ -95,12 +95,37 @@ msmtp docs & man page.
 
 to use msmtpq with additional options :
 
+the vars : EMAIL_CONN_NOTEST (to test for a net connection or not
+                              before attempting to send a mail)
+
+                             (please note that the above var is deprecated
+                              and will be removed in a future version of msmtpq ;
+                              replace it with EMAIL_CONN_TEST=x
+                              to perform the same function)
+
+           EMAIL_CONN_TEST   (which test for net connection to use)
+           EMAIL_QUEUE_QUIET (suppress unnecessary queue 'chatter')
+
+see below for their values
+
+there are two methods of setting options -
+
+
+- set the vars in the msmtpq script (near the top)
+
+  see the script, just beneath the the three setup vars mentioned above
+
+- set the vars externally to the script
+
+    define the variables as environment vars, set on the command line
+      invoking msmtp
+
 set sendmail = "/path/to/msmtpq"
                  # normal config for mutt to use the queue
                  # (by default the ping connection test is enabled)
-set sendmail = "EMAIL_CONN_NOTEST=t /path/to/msmtpq"
-                 # use queue without a net connection test
 
+set sendmail = "EMAIL_CONN_TEST=x /path/to/msmtpq"
+                 # use queue without a net connection test
 set sendmail = "EMAIL_CONN_TEST=p /path/to/msmtpq"
                  # use queue with ping connection test (the default)
 set sendmail = "EMAIL_CONN_TEST=P /path/to/msmtpq"
@@ -111,19 +136,30 @@ set sendmail = "EMAIL_CONN_TEST=n /path/to/msmtpq"
                  # (netcat must be installed on user's system)
 set sendmail = "EMAIL_CONN_TEST=s /path/to/msmtpq"
                  # use queue with sh sockets connection test
-                 # (this does *not* work on Debian systems
+                 # (this does *not* work on Debian systems ;
                  #  socket use is not compiled into bash for
-                 #  security on multiuser systems - it may not be
-                 #  a serious consideration, however, on
+                 #  security reasons on multiuser systems - it
+                 #  may not be a serious consideration, however, on
                  #  single user workstations - e.g. on laptops -
                  #  or in embedded systems)
 
 set sendmail = "EMAIL_QUEUE_QUIET=t /path/to/msmtpq"
                  # use queue ; suppress messages and 'chatter'
-                 # good, apparently, for use w/emacs
+                 # good, apparently, for use w/emacs MUAs
 
-multiple environmental vars may be used on the command line,
-space separated, before the msmtpq invocation
+set sendmail = "EMAIL_CONN_TEST=? EMAIL_QUEUE_QUIET=t /path/to/msmtpq"
+                 # use queue w/connection test spec &
+                 # suppression of messages and chatter
+
+externally multiple environmental vars may be used on the command
+  line, space separated, before the msmtpq invocation ; internally
+  to the script multiple vars may be set
+
+note that vars set internally will take precedence over vars set
+  externally
+
+if no option is specified, by either method, the net connection test
+  is made using the ping test by default
 
 
 in summary :
@@ -133,9 +169,10 @@ in summary :
   create the queue dir (0700) if necessary
     ( mkdir -p /path/to/queue/dir )
     ( chmod 0700 /path/to/queue/dir )
-  enter or confirm the values of the three config vars in msmtpq
+  enter or confirm the values of the three config setup vars in msmtpq
+  enter or confirm the values of the three option vars in msmtpq - if desired
   for mutt users -
-    set sendmail="/path/to/msmtpq"   ("ANY_ENV_VARS_HERE /path/to/msmtpq")
+    set sendmail="/path/to/msmtpq"   (or "ANY_ENV_VARS_HERE=t /path/to/msmtpq")
     set sendmail_wait = -1
     set use_from=yes
     set realname="Your Name"
@@ -143,8 +180,11 @@ in summary :
     set envelope_from=yes
     (and perhaps more on the msmtp man page & docs ...)
   for other MUAs -
-    set the mta to '/path/to/msmtpq', as above
+    set the mta to '/path/to/msmtpq', as above and
     background its execution, if possible
+
+msmtpq is entirely self contained ; beyond keeping an eye on the queue
+  and queue logs it should require no admin or user attention once set up
 
 
 log(s) rotation :
@@ -172,12 +212,9 @@ it should be trivial to adapt to other systems
 That's it.
 
 
-Usage :
------
 
-msmtpq is entirely self contained ; beyond keeping an eye on the queue
-and queue logs it should require no admin or user attention once set up
-
+msmtp-queue usage :
+-----------------
 
 msmtp-queue offers the following options :
 
@@ -201,7 +238,8 @@ msmtp-queue offers the following options :
 I find it useful to have a display of the number of mails currently
 in the queue in conky ; it uses one shell line (in the .conkyrc script) :
 
-mail queue : ${exec /bin/ls -1 ${HOME}/.msmtp.queue/*.mail 2>/dev/null | /usr/bin/wc -l}
+mailq : ${exec /bin/ls -1 ${HOME}/.msmtp.queue/*.mail 2>/dev/null | /usr/bin/wc -l}
+
 
 
 With hopes that it's useful,

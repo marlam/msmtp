@@ -22,7 +22,7 @@
 ## all configuration and documentation is in the msmtpq script
 
 ## note that for 'special circumstances'
-## e.g. embedded systems, etc.
+##   (e.g. embedded systems, etc.)
 ## where the msmtpq script itself is not on the path
 ## change the below line to be
 ##   exec /path/to/msmtpq --q-mgmt

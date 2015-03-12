@@ -4,7 +4,7 @@
 ##
 ##  msmtpq : queue funtions to both use & manage the msmtp queue,
 ##             as it was defined by Martin Lambers
-##  Copyright (C) 2008, 2009, 2010, 2011 Chris Gianniotis
+##  Copyright (C) 2008 - 2015 Chris Gianniotis
 ##
 ##  This program is free software: you can redistribute it and/or modify
 ##  it under the terms of the GNU General Public License as published by
@@ -12,17 +12,17 @@
 ##  your option, any later version.
 ##
 ##--------------------------------------------------------------
-
+##
 ## msmtpq is meant to be used by an email client - in 'sendmail' mode
 ##   for this purpose, it is invoked directly as 'msmtpq'
 ## it is also meant to be used to maintain the msmtp queue
-##   evoked by the wrapper script 'msmtp-queue'
+##   when it is evoked by the wrapper script 'msmtp-queue'
 ##   (which calls this script as msmtpq --q-mgmt)
-
+##
 ## there is a queue log file, distinct from the msmtp log,
 ##   for all events & operations on the msmtp queue
 ##   that is defined below
-
+##
 ## (mutt users, using msmtpq in 'sendmail' mode,
 ##  should make at least the following two settings in their .muttrc
 ##    set sendmail = /path/to/msmtpq
@@ -31,25 +31,17 @@
 ##  please see the msmtp man page and docs for further mutt settings
 ##    and optimisations
 ## )
-
-## msmtpq now uses the following environment variables :
-##   EMAIL_CONN_NOTEST   if set will suppress any testing for a connection
-##   EMAIL_CONN_TEST     if unset or =p will use a ping test (debian.org) for a connection
-##                       if =P will use a fast ping test (8.8.8.8) for a connection
-##                       if =n will use netcat (nc) to test for a connection
-##                       if =s will use bash sockets to test for a connection
-##   EMAIL_QUEUE_QUIET   if set will cause suppression of messages and 'chatter'
-
+##
 ## two essential patches by Philipp Hartwig
 ## 19 Oct 2011 & 27 Oct 2011
-
+##
 ##--------------------------------------------------------------
 ## the msmtp queue contains unique filenames of the following form :
 ##   two files for each mail in the queue
 ##
 ## creates new unique filenames of the form :
 ##   MLF: ccyy-mm-dd-hh.mm.ss[-x].mail   -- mail file
-##   MSF: ccyy-mm-dd-hh.mm.ss[-x].msmtp  -- msmtp command line file
+##   MSF: ccyy-mm-dd-hh.mm.ss[-x].msmtp  -- msmtp commands file
 ## where x is a consecutive number only appended for uniqueness
 ##   if more than one mail per second is sent
 ##--------------------------------------------------------------
@@ -57,7 +49,6 @@
 
 dsp() { local L ; for L ; do [ -n "$L" ] && echo "  $L" || echo ; done ; }
 err() { dsp '' "$@" '' ; exit 1 ; }
-
 
 ## ======================================================================================
 ##      !!!          please define or confirm the following three vars           !!!
@@ -67,13 +58,14 @@ err() { dsp '' "$@" '' ; exit 1 ; }
 ## only if necessary (in unusual circumstances - e.g. embedded systems),
 ##   enter the location of the msmtp executable  (no quotes !!)
 ##   e.g. ( MSMTP=/path/to/msmtp )
+##   and uncomment the test for its existence
 MSMTP=msmtp
 #[ -x "$MSMTP" ] || \
 #  log -e 1 "msmtpq : can't find the msmtp executable [ $MSMTP ]"   # if not found - complain ; quit
 ##
 ## set the queue var to the location of the msmtp queue directory
-##   if the queue dir doesn't yet exist, better to create it (0700)
-##     before using this routine
+##   if the queue dir doesn't yet exist, create it (0700)
+##     before using this script
 ##       e.g. ( mkdir msmtp.queue      )
 ##            ( chmod 0700 msmtp.queue )
 ##
@@ -95,6 +87,31 @@ Q=~/.msmtp.queue
 LOG=~/log/msmtp.queue.log
 ## ======================================================================================
 
+## msmtpq can use the following environment variables :
+##   EMAIL_CONN_NOTEST   if set will suppress any testing for a connection
+##                         (the above var is deprecated & will be removed ; use the var below)
+##   EMAIL_CONN_TEST     if =x will suppress any testing for a connection
+##                       if =p or unset will use a ping test (debian.org) for a connection
+##                       if =P will use a fast ping test (8.8.8.8) for a connection
+##                       if =n will use netcat (nc) to test for a connection
+##                       if =s will use bash sockets to test for a connection
+##   EMAIL_QUEUE_QUIET   if set will cause suppression of messages and 'chatter'
+##                         (perhaps useful for some of the emacs mail clients)
+##
+## ======================================================================================
+##      !!!      define or confirm the following vars if you wish to set         !!!
+##      !!!      these properties here in the script - the same properties       !!!
+##      !!!      may be set externally, by means of environment variables        !!!
+##      !!!      note the internal variables, if set, will take precedence       !!!
+##      !!!      over properties set via environment variables                   !!!
+## ======================================================================================
+##
+#EMAIL_CONN_NOTEST=y                 # deprecated ; use below var
+#EMAIL_CONN_TEST={x| |p|P|n|s}       # see settings above for EMAIL_CONN_TEST
+EMAIL_CONN_TEST=n
+#EMAIL_QUEUE_QUIET=t
+## ======================================================================================
+
 umask 077                            # set secure permissions on created directories and files
 
 declare -i CNT                       # a count of mail(s) currently in the queue
@@ -105,19 +122,21 @@ declare -a Q_LST                     # queue list array ; used selecting a mail 
 #  trap "rm -f \"\$TMPFILE\"; [[ $sig == EXIT ]] || kill -$sig $$" $sig
 #done
 trap on_exit INT TERM EXIT           # run 'on_exit' on exit
-on_exit() {
-  [ -n "$LKD" ] && lock_queue -u 2>/dev/null   # unlock the queue on exit if the lock was set here
+on_exit() {                          # unlock the queue on exit if the lock was set here
+  [ -n "$LKD" ] && lock_queue -u 2>/dev/null
 }
 
 #
-## ----------------------------------- common functions
+## ----------------------------------- functions common to both modes
+## ----------------------------------- (msmtpq & msmtp-queue)
 #
 
 ## make an entry to the queue log file, possibly an error
-## (log queue changes only ; not interactive chatter)
+##   (log queue changes only ; not interactive chatter)
 ## usage : log [ -e errcode ] msg [ msg ... ]
 ##  opts : -e <exit code>  an error ; log msg & terminate w/prejudice
 ## display msg to user, as well
+##
 log() {
   local ARG RC PFX="$('date' +'%Y %d %b %H:%M:%S')"
                                      # time stamp prefix - "2008 13 Mar 03:59:45 "
@@ -144,6 +163,7 @@ log() {
 }
 
 ## write/remove queue lockfile for a queue op
+##
 lock_queue() {        # <-- '-u' to remove lockfile
   local LOK="${Q}/.lock"             # lock file name
   local -i MAX=240 SEC=0             # max seconds to gain a lock ; seconds waiting
@@ -170,28 +190,35 @@ lock_queue() {        # <-- '-u' to remove lockfile
 
 ## test whether system is connected
 ## returns t/f (0/1)
+##
 connect_test() {
   if [ -z "$EMAIL_CONN_TEST" ] || \
      [ "$EMAIL_CONN_TEST" = 'p' ] ; then                       # use ping test (default)
     # verify net connection - ping ip address of debian.org
     # would ping -qnc2 -w4 be better ?
     # would ping -qnc1 -w10 or -w20 be better ?
-    ping -qnc1 -w4 debian.org >/dev/null 2>&1 || return 1
+    #ping -qnc1 -w4 debian.org >/dev/null 2>&1 || return 1
+    ping -qnc2 -w10 debian.org >/dev/null 2>&1 || return 1
+
   elif [ "$EMAIL_CONN_TEST" = 'P' ] ; then                     # use quicker ping test
     # I personally think that including a DNS lookup
     # is a better connection test but some
     # have found the above test too slow
     ping -qnc1 -w4 8.8.8.8 >/dev/null 2>&1 || return 1
+
   elif [ "$EMAIL_CONN_TEST" = 'n' ] ; then                     # use netcat (nc) test
     # must, of course, have netcat (nc) installed
     which nc >/dev/null 2>&1 || \
       log -e 1 "msmtpq : can't find netcat executable [ nc ]"  # if not found - complain ; quit
-    'nc' -vz www.debian.org 80 || return 1
+    'nc' -vz www.debian.org 80 >/dev/null 2>&1 || return 1
+
   elif [ "$EMAIL_CONN_TEST" = 's' ] ; then                     # use sh sockets test
     # note that this does not work on debian systems
-    # where bash opened sockets are suppressed for security reasons
-    # this should be ok for single user systems (including embedded systems)
-    # test whether this is supported on your system before using
+    #   where bash opened sockets are suppressed for security
+    #   reasons on multiuser systems - however, this should be
+    #   ok for single user systems (including embedded systems)
+    # test whether this is supported on your system before using...
+    # thank you to Brian Goose, on the list, for encouraging this
     exec 3<>/dev/udp/debian.org/80 || return 1                 # open socket on site ; use dns
     exec 3<&- ; exec 3>&-                                      # close socket
   fi
@@ -204,6 +231,7 @@ connect_test() {
 #
 
 ## show queue maintenance functions
+##
 usage() {        # <-- error msg
   dsp ''\
       'usage : msmtp-queue functions' ''\
@@ -219,6 +247,7 @@ usage() {        # <-- error msg
 }
 
 ## get user [y/n] acknowledgement
+##
 ok() {
   local R YN='Y/n'                   # default to yes
 
@@ -239,14 +268,18 @@ ok() {
 }
 
 ## send a queued mail out via msmtp
+##
 send_queued_mail() {   # <-- mail id
   local FQP="${Q}/${1}"              # fully qualified path name
   local -i RC=0                      # for msmtp exit code
 
   if [ -f "${FQP}.msmtp" ] ; then    # corresponding .msmtp file found
-    [ -z "$EMAIL_CONN_NOTEST" ] && { # connection test
-      connect_test || \
+    [ "$EMAIL_CONN_TEST" != 'x' ] && \
+    [ -z "$EMAIL_CONN_NOTEST" ] && { # do connection test
+      connect_test || {
         log "mail [ $2 ] [ $1 ] from queue ; couldn't be sent - host not connected"
+        return
+      }
     }
 
     if $MSMTP $(< "${FQP}.msmtp") < "${FQP}.mail" ; then       # this mail goes out the door
@@ -266,6 +299,7 @@ send_queued_mail() {   # <-- mail id
 }
 
 ## run (flush) queue
+##
 run_queue() {    # <- 'sm' mode      # run queue
   local M LST="$('ls' $Q/*.mail 2>/dev/null)"            # list of mails in queue
   local -i NDX=0
@@ -282,6 +316,7 @@ run_queue() {    # <- 'sm' mode      # run queue
 }
 
 ## display queue contents
+##
 display_queue() {      # <-- { 'purge' | 'send' } (op label) ; { 'rec' } (record array of mail ids)
   local M ID LST="$('ls' ${Q}/*.mail 2>/dev/null)"       # list of mail ids in queue
 
@@ -304,6 +339,7 @@ display_queue() {      # <-- { 'purge' | 'send' } (op label) ; { 'rec' } (record
 }
 
 ## delete all mail in queue, after confirmation
+##
 purge_queue() {
   display_queue 'purge'              # show queue contents
   if ok -n 'remove (purge) all mail from the queue' ; then
@@ -318,6 +354,7 @@ purge_queue() {
 
 ## select a single mail from queue ; delete it or send it
 ## select by mail index (position in queue) or mail id
+##
 select_mail() {  # <-- < 'purge' | 'send' >
   local OK ID                                        # mail id
   local -i I NDX                                     # mail index (position in queue)
@@ -403,6 +440,7 @@ select_mail() {  # <-- < 'purge' | 'send' >
 
 ## ('sendmail' mode only)
 ## make base filename id for queue
+##
 make_id() {
   local -i INC                       # increment counter for (possible) base fqp name collision
 
@@ -421,6 +459,7 @@ make_id() {
 
 ## ('sendmail' mode only)
 ## enqueue a mail
+##
 enqueue_mail() { # <-- all mail args ; mail text via TMP
   if echo "$@" > "${FQP}.msmtp" ; then     # write msmtp command line to queue .msmtp file
     log "enqueued mail as : [ $ID ] ( $* ) : successful" # (queue .mail file is already there)
@@ -432,12 +471,15 @@ enqueue_mail() { # <-- all mail args ; mail text via TMP
 
 ## ('sendmail' mode only)
 ## send a mail (if possible, otherwise enqueue it)
-## if send is successful, msmtp will also log it (if enabled in ~/.msmtprc)
+## if send is successful, msmtp will also log it (if logging enabled in ~/.msmtprc)
+##
 send_mail() {    # <-- all mail args ; mail text via TMP
-  [ -z "$EMAIL_CONN_NOTEST" ] && {   # connection test
+  [ "$EMAIL_CONN_TEST" != 'x' ] && \
+  [ -z "$EMAIL_CONN_NOTEST" ] && {   # do connection test
     connect_test || {
       log "mail for [ $* ] : couldn't be sent - host not connected"
       enqueue_mail "$@"              # enqueue the mail
+      return
     }
   }
 

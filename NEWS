@@ -1,3 +1,7 @@
+Version 1.6.2:
+- A bug was fixed that prevented consecutive Bcc headers from being removed
+  properly.
+
 Version 1.6.1:
 - The new configure option --with-tls replaces --with-ssl.
 - A new configure option --disable-gai-idn was added.

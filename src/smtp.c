@@ -1632,16 +1632,13 @@ int smtp_send_mail(smtp_server_t *srv, FILE *mailf, int keep_bcc,
             {
                 if (line_starts)
                 {
-                    if (!in_bcc)
+                    if (strncasecmp(buffer, "Bcc:", 4) == 0)
                     {
-                        if (strncasecmp(buffer, "Bcc:", 4) == 0)
-                        {
-                            in_bcc = 1;
-                            /* remove Bcc header by ignoring this line */
-                            continue;
-                        }
+                        in_bcc = 1;
+                        /* remove Bcc header by ignoring this line */
+                        continue;
                     }
-                    else
+                    else if (in_bcc)
                     {
                         /* continued header lines begin with "horizontal
                          * whitespace" (RFC 2822, section 2.2.3) */

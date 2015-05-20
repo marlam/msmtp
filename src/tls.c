@@ -1356,24 +1356,16 @@ int tls_start(tls_t *tls, int fd, const char *hostname, int no_certcheck,
     int error_code;
 
     gnutls_transport_set_ptr(tls->session, (gnutls_transport_ptr_t)fd);
-    if ((error_code = gnutls_handshake(tls->session)) < 0)
+    do
     {
-        if (error_code == GNUTLS_E_INTERRUPTED)
-        {
-            *errstr = xasprintf(_("operation aborted"));
-        }
-        else if (error_code == GNUTLS_E_AGAIN)
-        {
-            /* This error message makes more sense than what
-             * gnutls_strerror() would return. */
-            *errstr = xasprintf(_("TLS handshake failed: %s"),
-                    _("the operation timed out"));
-        }
-        else
-        {
-            *errstr = xasprintf(_("TLS handshake failed: %s"),
-                    gnutls_strerror(error_code));
-        }
+        error_code = gnutls_handshake(tls->session);
+    }
+    while (error_code < 0 && gnutls_error_is_fatal(error_code) == 0);
+
+    if (error_code != 0)
+    {
+        *errstr = xasprintf(_("TLS handshake failed: %s"),
+                gnutls_strerror(error_code));
         gnutls_deinit(tls->session);
         gnutls_certificate_free_credentials(tls->cred);
         return TLS_EHANDSHAKE;

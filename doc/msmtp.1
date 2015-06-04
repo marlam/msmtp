@@ -170,7 +170,7 @@ correctly.
 Set or unset an aliases file. See the \fBaliases\fP command.
 .IP "\-F\fIname\fP"
 Msmtp adds a From header to mails that lack it, using the envelope from
-address. This option allows to set a full name to be used in that header.
+address. This option allows one to set a full name to be used in that header.
 .IP "\-\-"
 This marks the end of options. All following arguments will be treated as
 recipient addresses, even if they start with a `\-'.
@@ -637,7 +637,7 @@ host smtp.freemail.example
 .br
 # $ msmtp \-\-serverinfo \-\-tls \-\-tls\-certcheck=off \-\-host=smtp.freemail.example
 .br
-tls_fingerprint 00:11:22:33:44:55:66:77:88:99:AA:BB:CC:DD:EE:FF:00:11:22:33
+tls_fingerprint 00\::11\::22\::33\::44\::55\::66\::77\::88\::99\::AA\::BB\::CC\::DD\::EE\::FF\::00\::11\::22\::33
 .br
 
 .br

@@ -873,13 +873,13 @@ char *trim_string(const char *s)
     if (l >= 1 && s[i] == '"' && s[i + l] == '"')
     {
         t = xmalloc(l * sizeof(char));
-        strncpy(t, s + i + 1, (size_t)l - 1);
+        strncpy(t, s + i + 1, l - 1);
         t[l - 1] = '\0';
     }
     else
     {
         t = xmalloc((l + 2) * sizeof(char));
-        strncpy(t, s + i, (size_t)l + 1);
+        strncpy(t, s + i, l + 1);
         t[l + 1] = '\0';
     }
     return t;

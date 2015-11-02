@@ -524,7 +524,7 @@ int net_socks5_connect(int fd, const char *hostname, int port, char **errstr)
         len = buffer[4];
     }
     len += 2;   /* port number */
-    if ((ret = net_recv(fd, buffer, len, errstr)) < 0)
+    if ((ret = net_recv(fd, buffer + 5, len, errstr)) < 0)
     {
         return NET_EIO;
     }

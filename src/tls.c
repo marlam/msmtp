@@ -1064,9 +1064,6 @@ int tls_init(tls_t *tls,
 {
 #ifdef HAVE_LIBGNUTLS
     int error_code;
-    char *my_priorities;
-    const char *error_pos;
-    char *error_pos_str;
 
     if ((error_code = gnutls_init(&tls->session, GNUTLS_CLIENT)) != 0)
     {
@@ -1074,32 +1071,42 @@ int tls_init(tls_t *tls,
                 gnutls_strerror(error_code));
         return TLS_ELIBFAILED;
     }
-    my_priorities = xstrdup(priorities ? priorities : "NORMAL:-VERS-SSL3.0");
-    error_pos = NULL;
-    if ((error_code = gnutls_priority_set_direct(tls->session,
-                    my_priorities, &error_pos)) != 0)
+    if (priorities)
     {
-        if (error_pos)
+        const char *error_pos = NULL;
+        if ((error_code = gnutls_priority_set_direct(tls->session,
+                        priorities, &error_pos)) != 0)
         {
-            error_pos_str = xasprintf(
-                    _("error in priority string at position %d"),
-                    (int)(error_pos - my_priorities + 1));
-            *errstr = xasprintf(
-                    _("cannot set priorities for TLS session: %s"),
-                    error_pos_str);
-            free(error_pos_str);
+            if (error_pos)
+            {
+                char *error_pos_str = xasprintf(
+                        _("error in priority string at position %d"),
+                        (int)(error_pos - priorities + 1));
+                *errstr = xasprintf(
+                        _("cannot set priorities for TLS session: %s"),
+                        error_pos_str);
+                free(error_pos_str);
+            }
+            else
+            {
+                *errstr = xasprintf(
+                        _("cannot set priorities for TLS session: %s"),
+                        gnutls_strerror(error_code));
+            }
+            gnutls_deinit(tls->session);
+            return TLS_ELIBFAILED;
         }
-        else
-        {
-            *errstr = xasprintf(
-                    _("cannot set priorities for TLS session: %s"),
-                    gnutls_strerror(error_code));
-        }
-        free(my_priorities);
-        gnutls_deinit(tls->session);
-        return TLS_ELIBFAILED;
     }
-    free(my_priorities);
+    else
+    {
+        if ((error_code = gnutls_set_default_priority(tls->session)) != 0)
+        {
+            *errstr = xasprintf(_("cannot set default priority for TLS session: "
+                        "%s"), gnutls_strerror(error_code));
+            gnutls_deinit(tls->session);
+            return TLS_ELIBFAILED;
+        }
+    }
     if (min_dh_prime_bits >= 0)
     {
         gnutls_dh_set_prime_bits(tls->session, min_dh_prime_bits);

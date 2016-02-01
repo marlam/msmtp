@@ -1,3 +1,6 @@
+Version 1.6.4:
+- The system default policy is used with GnuTLS instead of a hardcoded one.
+
 Version 1.6.3:
 - A bug in SOCKS support was fixed.
 - Handling non-fatal errors in TLS handshakes was fixed.

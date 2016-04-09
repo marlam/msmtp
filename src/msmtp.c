@@ -484,16 +484,16 @@ void msmtp_print_tls_cert_info(tls_cert_info_t *tci)
     const char *info_fieldname[6] = { N_("Common Name"), N_("Organization"),
         N_("Organizational unit"), N_("Locality"), N_("State or Province"),
         N_("Country") };
+    char sha256_fingerprint_string[96];
     char sha1_fingerprint_string[60];
-    char md5_fingerprint_string[48];
     char timebuf[128];          /* should be long enough for every locale */
     char *tmp;
     int i;
 
+    msmtp_fingerprint_string(sha256_fingerprint_string,
+            tci->sha256_fingerprint, 32);
     msmtp_fingerprint_string(sha1_fingerprint_string,
             tci->sha1_fingerprint, 20);
-    msmtp_fingerprint_string(md5_fingerprint_string,
-            tci->md5_fingerprint, 16);
 
     printf(_("TLS certificate information:\n"));
     printf("    %s:\n", _("Owner"));
@@ -524,8 +524,8 @@ void msmtp_print_tls_cert_info(tls_cert_info_t *tci)
     msmtp_time_to_string(&tci->expiration_time, timebuf, sizeof(timebuf));
     printf("        %s: %s\n", _("Expiration time"), timebuf);
     printf("    %s:\n", _("Fingerprints"));
-    printf("        SHA1: %s\n", sha1_fingerprint_string);
-    printf("        MD5:  %s\n", md5_fingerprint_string);
+    printf("        SHA256: %s\n", sha256_fingerprint_string);
+    printf("        SHA1 (deprecated): %s\n", sha1_fingerprint_string);
 }
 #endif
 
@@ -589,6 +589,7 @@ int msmtp_rmqs(account_t *acc, int debug, const char *rmqs_argument,
     {
         if ((e = smtp_tls_init(&srv, acc->tls_key_file, acc->tls_cert_file,
                         acc->tls_trust_file, acc->tls_crl_file,
+                        acc->tls_sha256_fingerprint,
                         acc->tls_sha1_fingerprint, acc->tls_md5_fingerprint,
                         acc->tls_min_dh_prime_bits,
                         acc->tls_priorities, errstr)) != TLS_EOK)
@@ -766,6 +767,7 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
         tci = tls_cert_info_new();
         if ((e = smtp_tls_init(&srv, acc->tls_key_file, acc->tls_cert_file,
                         acc->tls_trust_file, acc->tls_crl_file,
+                        acc->tls_sha256_fingerprint,
                         acc->tls_sha1_fingerprint, acc->tls_md5_fingerprint,
                         acc->tls_min_dh_prime_bits,
                         acc->tls_priorities, errstr)) != TLS_EOK)
@@ -1700,6 +1702,7 @@ int msmtp_sendmail(account_t *acc, list_t *recipients,
     {
         if ((e = smtp_tls_init(&srv, acc->tls_key_file, acc->tls_cert_file,
                         acc->tls_trust_file, acc->tls_crl_file,
+                        acc->tls_sha256_fingerprint,
                         acc->tls_sha1_fingerprint, acc->tls_md5_fingerprint,
                         acc->tls_min_dh_prime_bits,
                         acc->tls_priorities, errstr)) != TLS_EOK)
@@ -2930,13 +2933,20 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
                 break;
 
             case LONGONLYOPT_TLS_FINGERPRINT:
+                free(conf->cmdline_account->tls_sha256_fingerprint);
+                conf->cmdline_account->tls_sha256_fingerprint = NULL;
                 free(conf->cmdline_account->tls_sha1_fingerprint);
                 conf->cmdline_account->tls_sha1_fingerprint = NULL;
                 free(conf->cmdline_account->tls_md5_fingerprint);
                 conf->cmdline_account->tls_md5_fingerprint = NULL;
                 if (*optarg)
                 {
-                    if (strlen(optarg) == 2 * 20 + 19)
+                    if (strlen(optarg) == 2 * 32 + 19)
+                    {
+                        conf->cmdline_account->tls_sha256_fingerprint =
+                            get_fingerprint(optarg, 32);
+                    }
+                    else if (strlen(optarg) == 2 * 20 + 19)
                     {
                         conf->cmdline_account->tls_sha1_fingerprint =
                             get_fingerprint(optarg, 20);
@@ -2946,7 +2956,8 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
                         conf->cmdline_account->tls_md5_fingerprint =
                             get_fingerprint(optarg, 16);
                     }
-                    if (!conf->cmdline_account->tls_sha1_fingerprint
+                    if (!conf->cmdline_account->tls_sha256_fingerprint
+                            && !conf->cmdline_account->tls_sha1_fingerprint
                             && !conf->cmdline_account->tls_md5_fingerprint)
                     {
                         print_error(_("invalid argument %s for %s"),
@@ -3559,7 +3570,7 @@ int msmtp_get_conffile_accounts(list_t **account_list,
 
 void msmtp_print_conf(msmtp_cmdline_conf_t conf, account_t *account)
 {
-    char fingerprint_string[2 * 20 + 19 + 1];
+    char fingerprint_string[2 * 32 + 31 + 1];
 
     if (account->id && account->conffile)
     {
@@ -3616,7 +3627,12 @@ void msmtp_print_conf(msmtp_cmdline_conf_t conf, account_t *account)
             account->tls_trust_file ? account->tls_trust_file : _("(not set)"));
     printf("tls_crl_file = %s\n",
             account->tls_crl_file ? account->tls_crl_file : _("(not set)"));
-    if (account->tls_sha1_fingerprint)
+    if (account->tls_sha256_fingerprint)
+    {
+        msmtp_fingerprint_string(fingerprint_string,
+                account->tls_sha256_fingerprint, 32);
+    }
+    else if (account->tls_sha1_fingerprint)
     {
         msmtp_fingerprint_string(fingerprint_string,
                 account->tls_sha1_fingerprint, 20);
@@ -3627,7 +3643,8 @@ void msmtp_print_conf(msmtp_cmdline_conf_t conf, account_t *account)
                 account->tls_md5_fingerprint, 16);
     }
     printf("tls_fingerprint = %s\n",
-            account->tls_sha1_fingerprint || account->tls_md5_fingerprint
+            account->tls_sha256_fingerprint
+            || account->tls_sha1_fingerprint || account->tls_md5_fingerprint
             ? fingerprint_string : _("(not set)"));
     printf("tls_key_file = %s\n",
             account->tls_key_file ? account->tls_key_file : _("(not set)"));

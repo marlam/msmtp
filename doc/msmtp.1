@@ -441,10 +441,11 @@ Set a certificate revocation list (CRL) file for TLS, to check for revoked
 certificates. An empty argument disables this.
 .IP "tls_fingerprint [\fIfingerprint\fP]"
 Set the fingerprint of a single certificate to accept for TLS. This certificate
-will be trusted regardless of its contents. The fingerprint can be either an
-SHA1 (recommended) or an MD5 fingerprint in the format
-01:23:45:67:.... Use \fI\-\-serverinfo \-\-tls \-\-tls\-certcheck=off\fP
-to get the server certificate fingerprints.
+will be trusted regardless of its contents. The fingerprint should be of type SHA256,
+but can for backwards compatibility also be of type SHA1 or MD5 (please avoid this).
+The format should be 01:23:45:67:....
+Use \fI\-\-serverinfo \-\-tls \-\-tls\-certcheck=off \-\-tls\-fingerprint=\fP
+to get the server certificate fingerprint.
 .IP "tls_key_file \fIfile\fP"
 Send a client certificate to the server (use this together with
 \fBtls_cert_file}\fP).

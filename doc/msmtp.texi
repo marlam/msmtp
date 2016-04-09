@@ -275,10 +275,11 @@ certificates. An empty argument disables this.
 @item tls_fingerprint [@var{fingerprint}]
 @cmindex tls_fingerprint
 Set the fingerprint of a single certificate to accept for TLS. This certificate
-will be trusted regardless of its contents. The fingerprint can be either an
-SHA1 (recommended) or an MD5 fingerprint in the format
-@code{01:23:45:67:@dots{}}.  Use @samp{--serverinfo --tls --tls-certcheck=off}
-to get the server certificate fingerprints.
+will be trusted regardless of its contents. The fingerprint should be of type SHA256,
+but can for backwards compatibility also be of type SHA1 or MD5 (please avoid this).
+The format should be @code{01:23:45:67:@dots{}}.
+Use @samp{--serverinfo --tls --tls-certcheck=off --tls-fingerprint=}
+to get the server certificate fingerprint.
 @anchor{tls_key_file}
 @item tls_key_file [@var{file}]
 @cmindex tls_key_file
@@ -1017,8 +1018,8 @@ be printed about the SMTP server's TLS certificate (if available):
 @itemize
 @item Activation time
 @item Expiration time
-@item SHA1 fingerprint
-@item MD5 fingerprint
+@item SHA256 fingerprint
+@item SHA1 fingerprint (deprecated)
 @end itemize
 @end itemize
 

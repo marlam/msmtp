@@ -1,3 +1,7 @@
+Version 1.6.5:
+- Support SHA256 fingerprints for tls_fingerprint, and mark both SHA1 and MD5 as
+  deprecated.
+
 Version 1.6.4:
 - The system default policy is used with GnuTLS instead of a hardcoded one.
 

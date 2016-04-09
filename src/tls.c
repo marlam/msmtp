@@ -4,7 +4,7 @@
  * This file is part of msmtp, an SMTP client.
  *
  * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011,
- * 2012, 2014
+ * 2012, 2014, 2016
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -69,6 +69,7 @@ void tls_clear(tls_t *tls)
 {
     tls->is_active = 0;
     tls->have_trust_file = 0;
+    tls->have_sha256_fingerprint = 0;
     tls->have_sha1_fingerprint = 0;
     tls->have_md5_fingerprint = 0;
 }
@@ -393,19 +394,19 @@ int tls_cert_info_get(tls_t *tls, tls_cert_info_t *tci, char **errstr)
     }
 
     /* certificate information */
+    size = 32;
+    if (gnutls_x509_crt_get_fingerprint(cert, GNUTLS_DIG_SHA256,
+                tci->sha256_fingerprint, &size) != 0)
+    {
+        *errstr = xasprintf(_("%s: error getting SHA256 fingerprint"), errmsg);
+        gnutls_x509_crt_deinit(cert);
+        return TLS_ECERT;
+    }
     size = 20;
     if (gnutls_x509_crt_get_fingerprint(cert, GNUTLS_DIG_SHA,
                 tci->sha1_fingerprint, &size) != 0)
     {
         *errstr = xasprintf(_("%s: error getting SHA1 fingerprint"), errmsg);
-        gnutls_x509_crt_deinit(cert);
-        return TLS_ECERT;
-    }
-    size = 16;
-    if (gnutls_x509_crt_get_fingerprint(cert, GNUTLS_DIG_MD5,
-                tci->md5_fingerprint, &size) != 0)
-    {
-        *errstr = xasprintf(_("%s: error getting MD5 fingerprint"), errmsg);
         gnutls_x509_crt_deinit(cert);
         return TLS_ECERT;
     }
@@ -505,16 +506,16 @@ int tls_cert_info_get(tls_t *tls, tls_cert_info_t *tci, char **errstr)
     }
 
     /* certificate information */
+    usize = 32;
+    if (!X509_digest(x509cert, EVP_sha256(), tci->sha256_fingerprint, &usize))
+    {
+        *errstr = xasprintf(_("%s: error getting SHA256 fingerprint"), errmsg);
+        return TLS_ECERT;
+    }
     usize = 20;
     if (!X509_digest(x509cert, EVP_sha1(), tci->sha1_fingerprint, &usize))
     {
         *errstr = xasprintf(_("%s: error getting SHA1 fingerprint"), errmsg);
-        return TLS_ECERT;
-    }
-    usize = 16;
-    if (!X509_digest(x509cert, EVP_md5(), tci->md5_fingerprint, &usize))
-    {
-        *errstr = xasprintf(_("%s: error getting MD5 fingerprint"), errmsg);
         return TLS_ECERT;
     }
     asn1time = X509_get_notBefore(x509cert);
@@ -642,7 +643,7 @@ int hostname_match(const char *hostname, const char *certname)
  * If the 'tls->have_trust_file' flag is set, perform a real verification of
  * the peer's certificate. If this succeeds, the connection can be considered
  * secure.
- * If the 'tls->have_sha1_fingerprint' or 'tls->have_md5_fingerprint' flag is
+ * If one of the 'tls->have_*_fingerprint' flags is
  * set, compare the 'tls->fingerprint' data with the peer certificate's
  * fingerprint. If this succeeds, the connection can be considered secure.
  * If none of these flags is set, perform only a few sanity checks of the
@@ -662,10 +663,12 @@ int tls_check_cert(tls_t *tls, const char *hostname, char **errstr)
     gnutls_x509_crt_t cert;
     time_t t1, t2;
     size_t size;
-    unsigned char fingerprint[20];
+    unsigned char fingerprint[32];
     char *idn_hostname = NULL;
 
-    if (tls->have_trust_file || tls->have_sha1_fingerprint
+    if (tls->have_trust_file
+            || tls->have_sha256_fingerprint
+            || tls->have_sha1_fingerprint
             || tls->have_md5_fingerprint)
     {
         error_msg = _("TLS certificate verification failed");
@@ -675,7 +678,8 @@ int tls_check_cert(tls_t *tls, const char *hostname, char **errstr)
         error_msg = _("TLS certificate check failed");
     }
 
-    if (tls->have_sha1_fingerprint || tls->have_md5_fingerprint)
+    if (tls->have_sha256_fingerprint
+            || tls->have_sha1_fingerprint || tls->have_md5_fingerprint)
     {
         /* If one of these matches, we trust the peer and do not perform any
          * other checks. */
@@ -699,7 +703,26 @@ int tls_check_cert(tls_t *tls, const char *hostname, char **errstr)
                     error_msg, 0 + 1, cert_list_size);
             return TLS_ECERT;
         }
-        if (tls->have_sha1_fingerprint)
+        if (tls->have_sha256_fingerprint)
+        {
+            size = 32;
+            if (gnutls_x509_crt_get_fingerprint(cert, GNUTLS_DIG_SHA256,
+                        fingerprint, &size) != 0)
+            {
+                *errstr = xasprintf(_("%s: error getting SHA256 fingerprint"),
+                        error_msg);
+                gnutls_x509_crt_deinit(cert);
+                return TLS_ECERT;
+            }
+            if (memcmp(fingerprint, tls->fingerprint, 32) != 0)
+            {
+                *errstr = xasprintf(_("%s: the certificate fingerprint "
+                            "does not match"), error_msg);
+                gnutls_x509_crt_deinit(cert);
+                return TLS_ECERT;
+            }
+        }
+        else if (tls->have_sha1_fingerprint)
         {
             size = 20;
             if (gnutls_x509_crt_get_fingerprint(cert, GNUTLS_DIG_SHA,
@@ -881,7 +904,7 @@ int tls_check_cert(tls_t *tls, const char *hostname, char **errstr)
     int match_found;
     /* needed for fingerprint checking */
     unsigned int usize;
-    unsigned char fingerprint[20];
+    unsigned char fingerprint[32];
 
 
     if (tls->have_trust_file)
@@ -900,11 +923,30 @@ int tls_check_cert(tls_t *tls, const char *hostname, char **errstr)
         return TLS_ECERT;
     }
 
-    if (tls->have_sha1_fingerprint || tls->have_md5_fingerprint)
+    if (tls->have_sha256_fingerprint
+            || tls->have_sha1_fingerprint || tls->have_md5_fingerprint)
     {
         /* If one of these matches, we trust the peer and do not perform any
          * other checks. */
-        if (tls->have_sha1_fingerprint)
+        if (tls->have_sha256_fingerprint)
+        {
+            usize = 32;
+            if (!X509_digest(x509cert, EVP_sha256(), fingerprint, &usize))
+            {
+                *errstr = xasprintf(_("%s: error getting SHA256 fingerprint"),
+                        error_msg);
+                X509_free(x509cert);
+                return TLS_ECERT;
+            }
+            if (memcmp(fingerprint, tls->fingerprint, 32) != 0)
+            {
+                *errstr = xasprintf(_("%s: the certificate fingerprint "
+                            "does not match"), error_msg);
+                X509_free(x509cert);
+                return TLS_ECERT;
+            }
+        }
+        else if (tls->have_sha1_fingerprint)
         {
             usize = 20;
             if (!X509_digest(x509cert, EVP_sha1(), fingerprint, &usize))
@@ -1057,6 +1099,7 @@ int tls_check_cert(tls_t *tls, const char *hostname, char **errstr)
 int tls_init(tls_t *tls,
         const char *key_file, const char *cert_file,
         const char *trust_file, const char *crl_file,
+        const unsigned char *sha256_fingerprint,
         const unsigned char *sha1_fingerprint,
         const unsigned char *md5_fingerprint,
         int min_dh_prime_bits, const char *priorities,
@@ -1159,7 +1202,12 @@ int tls_init(tls_t *tls,
             return TLS_EFILE;
         }
     }
-    if (sha1_fingerprint)
+    if (sha256_fingerprint)
+    {
+        memcpy(tls->fingerprint, sha256_fingerprint, 32);
+        tls->have_sha256_fingerprint = 1;
+    }
+    else if (sha1_fingerprint)
     {
         memcpy(tls->fingerprint, sha1_fingerprint, 20);
         tls->have_sha1_fingerprint = 1;
@@ -1256,7 +1304,12 @@ int tls_init(tls_t *tls,
         }
         tls->have_trust_file = 1;
     }
-    if (sha1_fingerprint)
+    if (sha256_fingerprint)
+    {
+        memcpy(tls->fingerprint, sha256_fingerprint, 32);
+        tls->have_sha256_fingerprint = 1;
+    }
+    else if (sha1_fingerprint)
     {
         memcpy(tls->fingerprint, sha1_fingerprint, 20);
         tls->have_sha1_fingerprint = 1;

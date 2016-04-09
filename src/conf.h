@@ -3,7 +3,8 @@
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2010, 2011, 2014
+ * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2010, 2011, 2014,
+ * 2016
  * Martin Lambers <marlam@marlam.de>
  * Martin Stenberg <martin@gnutiken.se> (passwordeval support)
  * Scott Shumate <sshumate@austin.rr.com> (aliases support)
@@ -111,8 +112,9 @@ typedef struct
     char *tls_cert_file;        /* file in PEM format */
     char *tls_trust_file;       /* file in PEM format */
     char *tls_crl_file;         /* file in PEM format */
-    unsigned char *tls_sha1_fingerprint; /* certificate fingerprint */
-    unsigned char *tls_md5_fingerprint;  /* certificate fingerprint */
+    unsigned char *tls_sha256_fingerprint; /* certificate fingerprint */
+    unsigned char *tls_sha1_fingerprint;   /* certificate fingerprint */
+    unsigned char *tls_md5_fingerprint;    /* certificate fingerprint */
     int tls_nostarttls;         /* flag: start TLS immediatly
                                    (without STARTTLS command)? */
     int tls_nocertcheck;        /* flag: do not check certificate? */

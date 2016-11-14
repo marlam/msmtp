@@ -59,6 +59,11 @@ extern int optind;
 #ifdef HAVE_MACOSXKEYRING
 # include <Security/Security.h>
 #endif
+#ifdef W32_NATIVE
+# define WIN32_LEAN_AND_MEAN    /* do not include more than necessary */
+# define _WIN32_WINNT 0x0502    /* Windows XP SP2 or later */
+# include <winsock2.h>          /* for getservbyname() */
+#endif
 
 #include "gettext.h"
 #define _(string) gettext(string)

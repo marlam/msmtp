@@ -4,7 +4,7 @@
  * This file is part of msmtp, an SMTP client.
  *
  * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011,
- * 2012, 2013, 2014, 2015, 2016
+ * 2012, 2013, 2014, 2015, 2016, 2017
  * Martin Lambers <marlam@marlam.de>
  * Jay Soffian <jaysoffian@gmail.com> (Mac OS X keychain support)
  * Satoru SATOH <satoru.satoh@gmail.com> (GNOME keyring support)
@@ -40,6 +40,7 @@
 extern char *optarg;
 extern int optind;
 #include <unistd.h>
+#include <signal.h>
 #include <fcntl.h>
 #ifdef HAVE_ARPA_INET_H
 # include <arpa/inet.h>
@@ -3779,6 +3780,12 @@ int main(int argc, char *argv[])
     setlocale(LC_ALL, "");
     bindtextdomain(PACKAGE, LOCALEDIR);
     textdomain(PACKAGE);
+#endif
+
+    /* Avoid receiving SIGPIPE when writing to sockets that were closed by the
+     * remote end; we handle write errors where they occur. */
+#ifdef HAVE_SIGNAL
+    signal(SIGPIPE, SIG_IGN);
 #endif
 
     /* the command line */

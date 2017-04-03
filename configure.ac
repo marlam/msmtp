@@ -4,7 +4,7 @@ dnl Process this file with autoconf to produce a configure script.
 # This file is part of msmtp, an SMTP client.
 #
 # Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012,
-# 2013, 2014, 2015, 2016
+# 2013, 2014, 2015, 2016, 2017
 # Christophe Nowicki
 # Martin Lambers <marlam@marlam.de>
 # Jay Soffian <jaysoffian@gmail.com> (Mac OS X keychain support)
@@ -46,7 +46,7 @@ AM_GNU_GETTEXT([external])
 
 dnl Headers, functions, and types
 AC_CHECK_HEADERS([sysexits.h netdb.h arpa/inet.h sys/socket.h sys/wait.h])
-AC_CHECK_FUNCS([fmemopen fseeko fseeko64 getpass getservbyname link mkstemp strndup syslog vasprintf])
+AC_CHECK_FUNCS([fmemopen fseeko fseeko64 getpass getservbyname link mkstemp signal strndup syslog vasprintf])
 AC_SEARCH_LIBS([nanosleep], [rt posix4])
 AC_SEARCH_LIBS([socket], [socket])
 AC_CHECK_SIZEOF([long long])

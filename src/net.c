@@ -319,16 +319,17 @@ int net_connect(int fd, const struct sockaddr *serv_addr, socklen_t addrlen,
         int timeout)
 {
 #ifdef W32_NATIVE
-    /* TODO: I don't know how to do this on Win32. Please send a patch. */
-    return connect(fd, serv_addr, addrlen);
-#else /* UNIX or DJGPP */
-
+    u_long flags;
+    DWORD err;
+    int optlen;
+    fd_set eset;
+#else
     int flags;
-    struct timeval tv;
-    fd_set rset;
-    fd_set wset;
     int err;
     socklen_t optlen;
+#endif
+    struct timeval tv;
+    fd_set wset;
 
     if (timeout <= 0)
     {
@@ -337,8 +338,13 @@ int net_connect(int fd, const struct sockaddr *serv_addr, socklen_t addrlen,
     else
     {
         /* make socket non-blocking */
+#ifdef W32_NATIVE
+        flags = 1;
+        if (ioctlsocket(fd, FIONBIO, &flags) == SOCKET_ERROR)
+#else
         flags = fcntl(fd, F_GETFL, 0);
         if (fcntl(fd, F_SETFL, flags | O_NONBLOCK) == -1)
+#endif
         {
             return -1;
         }
@@ -346,51 +352,75 @@ int net_connect(int fd, const struct sockaddr *serv_addr, socklen_t addrlen,
         /* start connect */
         if (connect(fd, serv_addr, addrlen) < 0)
         {
+#ifdef W32_NATIVE
+            if (WSAGetLastError() != WSAEWOULDBLOCK)
+#else
             if (errno != EINPROGRESS)
+#endif
             {
                 return -1;
             }
 
             tv.tv_sec = timeout;
             tv.tv_usec = 0;
-            FD_ZERO(&rset);
             FD_ZERO(&wset);
-            FD_SET(fd, &rset);
             FD_SET(fd, &wset);
+#ifdef W32_NATIVE
+            FD_ZERO(&eset);
+            FD_SET(fd, &eset);
+#endif
 
             /* wait for connect() to finish */
-            if ((err = select(fd + 1, &rset, &wset, NULL, &tv)) <= 0)
+#ifdef W32_NATIVE
+            /* In case of an error on connect(), eset will be affected instead
+             * of wset (on Windows only). */
+            if ((err = select(fd + 1, NULL, &wset, &eset, &tv)) <= 0)
+#else
+            if ((err = select(fd + 1, NULL, &wset, NULL, &tv)) <= 0)
+#endif
             {
                 /* errno is already set if err < 0 */
                 if (err == 0)
                 {
+#ifdef W32_NATIVE
+                    WSASetLastError(WSAETIMEDOUT);
+#else
                     errno = ETIMEDOUT;
+#endif
                 }
                 return -1;
             }
 
             /* test for success, set errno */
-            optlen = sizeof(int);
+            optlen = sizeof(err);
             if (getsockopt(fd, SOL_SOCKET, SO_ERROR, &err, &optlen) < 0)
             {
                 return -1;
             }
             if (err != 0)
             {
+#ifdef W32_NATIVE
+                WSASetLastError(err);
+#else
                 errno = err;
+#endif
                 return -1;
             }
         }
 
         /* restore blocking mode */
+#ifdef W32_NATIVE
+        flags = 0;
+        if (ioctlsocket(fd, FIONBIO, &flags) == SOCKET_ERROR)
+#else
         if (fcntl(fd, F_SETFL, flags) == -1)
+#endif
         {
             return -1;
         }
 
         return 0;
     }
-#endif /* UNIX */
 }
 
 

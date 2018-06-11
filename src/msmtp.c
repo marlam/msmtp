@@ -2954,7 +2954,7 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
                 conf->cmdline_account->tls_md5_fingerprint = NULL;
                 if (*optarg)
                 {
-                    if (strlen(optarg) == 2 * 32 + 19)
+                    if (strlen(optarg) == 2 * 32 + 31)
                     {
                         conf->cmdline_account->tls_sha256_fingerprint =
                             get_fingerprint(optarg, 32);

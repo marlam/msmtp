@@ -682,7 +682,7 @@ int net_open_socket(
                 failure_errno = errno;
             }
 #endif
-            close(fd);
+            net_close_socket(fd);
             fd = -1;
             continue;
         }

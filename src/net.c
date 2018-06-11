@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2012, 2014, 2015
+ * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2012, 2014, 2015, 2018
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -179,7 +179,7 @@ int net_recv(int fd, void *buf, size_t len, char **errstr)
     {
 #ifdef W32_NATIVE
         int e = WSAGetLastError();
-        if (e == WSAEWOULDBLOCK)
+        if (e == WSAETIMEDOUT)
         {
             *errstr = xasprintf(_("network read error: %s"),
                     _("the operation timed out"));
@@ -226,7 +226,7 @@ int net_send(int fd, const void *buf, size_t len, char **errstr)
     {
 #ifdef W32_NATIVE
         int e = WSAGetLastError();
-        if (e == WSAEWOULDBLOCK)
+        if (e == WSAETIMEDOUT)
         {
             *errstr = xasprintf(_("network write error: %s"),
                     _("the operation timed out"));

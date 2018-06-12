@@ -14,7 +14,7 @@
 This manual was last updated @value{UPDATED} for version
 @value{VERSION} of msmtp.
 
-Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016
+Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018
 Martin Lambers@*
 Copyright (C) 2011
 Scott Shumate
@@ -261,7 +261,7 @@ or tunnel the session through TLS (@samp{off}).
 @anchor{tls_trust_file}
 @item tls_trust_file [@var{file}]
 @cmindex tls_trust_file
-Activate server certificate verification using a list of truted Certification
+Activate server certificate verification using a list of trusted Certification
 Authorities (CAs). The file must be in PEM format. Some systems provide a
 system-wide default file, e.g. @file{/etc/ssl/certs/ca-certificates.crt} on
 Debian-based systems with the @samp{ca-certificates} package.

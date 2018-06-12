@@ -2,7 +2,8 @@
 # Jim Lofft 06/19/2009
 # find_alias_for_msmtp.sh
 # popper email server was replaced by exchange. I replaced sendmail with this script 
-# which scans /etc/alias file for a valid domain email address and calls msmtp (http://msmtp.sourceforge.net/)
+# which scans /etc/alias file for a valid domain email address and calls msmtp
+# (https://marlam.de/msmtp)
 #
 # changed a little by Ovidiu Constantin <ovidiu@mybox.ro> && http://blog.mybox.ro/
 #

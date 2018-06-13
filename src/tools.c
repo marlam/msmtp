@@ -314,6 +314,43 @@ char *get_username(void)
     return username;
 }
 
+char *get_userconfig(const char *userconfigfile)
+{
+    char *homedir = get_homedir();
+    char *path = get_filename(homedir, userconfigfile);
+
+#if !defined(W32_NATIVE) && !defined(DJGPP)
+    struct stat buf;
+    char *xdg_home;
+    char *newpath;
+
+    //does not exist, thus check XDG_CONFIG_HOME/msmtp/config
+    if (stat(path, &buf) != 0) {
+        xdg_home = getenv("XDG_CONFIG_HOME");
+        if (xdg_home) {
+            xdg_home = xstrdup(xdg_home);
+        } else {
+            xdg_home = expand_tilde("~/.config");
+        }
+        newpath = get_filename(xdg_home, "msmtp");
+        free(xdg_home);
+        xdg_home = get_filename(newpath, "config");
+        free(newpath);
+        newpath = xdg_home;
+        //If this does not exist fallback
+        if (stat(newpath, &buf) == 0) {
+            free(path);
+            path = newpath;
+        } else {
+            free(newpath);
+        }
+    }
+#endif
+
+    free(homedir);
+    return path;
+}
+
 
 /*
  * get_homedir()

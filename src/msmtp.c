@@ -4,7 +4,7 @@
  * This file is part of msmtp, an SMTP client.
  *
  * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011,
- * 2012, 2013, 2014, 2015, 2016, 2017
+ * 2012, 2013, 2014, 2015, 2016, 2017, 2018
  * Martin Lambers <marlam@marlam.de>
  * Jay Soffian <jaysoffian@gmail.com> (Mac OS X keychain support)
  * Satoru SATOH <satoru.satoh@gmail.com> (GNOME keyring support)
@@ -2315,7 +2315,6 @@ void msmtp_print_version(void)
 {
     char *sysconfdir;
     char *sysconffile;
-    char *homedir;
     char *userconffile;
 
     printf(_("%s version %s\n"), PACKAGE_NAME, VERSION);
@@ -2408,11 +2407,9 @@ void msmtp_print_version(void)
     printf(_("System configuration file name: %s\n"), sysconffile);
     free(sysconffile);
     free(sysconfdir);
-    homedir = get_homedir();
-    userconffile = get_filename(homedir, USERCONFFILE);
+    userconffile = get_userconfig(USERCONFFILE);
     printf(_("User configuration file name: %s\n"), userconffile);
     free(userconffile);
-    free(homedir);
     printf("\n");
     printf(_("Copyright (C) 2016 Martin Lambers and others.\n"
                 "This is free software.  You may redistribute copies of "
@@ -3432,7 +3429,6 @@ int msmtp_get_conffile_accounts(list_t **account_list,
     char *errstr;
     char *system_confdir;
     char *system_conffile;
-    char *homedir;
     char *real_user_conffile;
     list_t *system_account_list;
     list_t *user_account_list;
@@ -3490,9 +3486,7 @@ int msmtp_get_conffile_accounts(list_t **account_list,
     }
     else
     {
-        homedir = get_homedir();
-        real_user_conffile = get_filename(homedir, USERCONFFILE);
-        free(homedir);
+        real_user_conffile = get_userconfig(USERCONFFILE);
     }
 #ifdef W32_NATIVE
     securitycheck = 1;

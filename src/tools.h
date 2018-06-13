@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2004, 2005, 2006, 2007, 2011, 2014
+ * Copyright (C) 2004, 2005, 2006, 2007, 2011, 2014, 2018
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -112,6 +112,18 @@ char *get_sysconfdir(void);
  * all sorts of rubbish!
  */
 char *get_username(void);
+
+/*
+ * get_userconfig()
+ *
+ * Get the path of the user config. The returned string is allocated.
+ * On windows like systems it will return ~/USERCONFFILE, in unix like systems
+ * it will return the first found file at the following locations:
+ * - ~/USERCONFFILE
+ * - $XDG_CONFIG_DIR/msmtp/config
+ * - ~/.config/msmtp/config
+ */
+char *get_userconfig(const char *userconfigfile);
 
 /*
  * get_homedir()

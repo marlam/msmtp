@@ -68,7 +68,8 @@ queue to the SMTP server and exit.
 .IP "\fBConfiguration options\fP"
 .RS
 .IP "\-C, \-\-file=\fIfilename\fP"
-Use the given file instead of ~/.msmtprc as the user configuration file.
+Use the given file instead of ~/.msmtprc or $XDG_CONFIG_HOME/msmtp/config as
+the user configuration file.
 .IP "\-a, \-\-account=\fIaccount_name\fP"
 Use the given account instead of the account named "default". The settings of
 this account may be changed with command line options. This option cannot be
@@ -226,8 +227,9 @@ SYSCONFDIR/msmtprc will be loaded, where SYSCONFDIR depends on your platform.
 Use \fB\-\-version\fP to find out which directory is used.
 .br
 If it exists and is readable, a user configuration file will be loaded
-(~/.msmtprc by default, but see \fB\-\-version\fP). Accounts defined in the
-user configuration file override accounts from the system configuration file.
+(~/.msmtprc will be tried first followed by $XDG_CONFIG_HOME/msmtp/config by
+default, but see \fB\-\-version\fP). Accounts defined in the user configuration
+file override accounts from the system configuration file.
 .br
 Configuration data from either file can be changed by command line options.
 .PP
@@ -824,7 +826,7 @@ default: admin@domain.example
 System configuration file. Use
 .B \-\-version
 to find out what SYSCONFDIR is on your platform.
-.IP "~/.msmtprc"
+.IP "~/.msmtprc" or "$XDG_CONFIG_HOME/msmtp/config".
 User configuration file.
 .IP "~/.netrc and SYSCONFDIR/netrc"
 The netrc file contains login information. Before prompting for a password,

@@ -117,9 +117,9 @@ If it exists and is readable, a system wide configuration file
 @code{SYSCONFDIR/msmtprc} will be loaded. Use @code{--version} to find out
 which @code{SYSCONFDIR} your version of msmtp uses.
 
-The default user configuration file is @code{~/.msmtprc}.  Accounts defined in
-the user configuration file override accounts from the system configuration
-file.
+The default user configuration file is @code{~/.msmtprc} or
+@code{$XDG_CONFIG_HOME/msmtp/config}.  Accounts defined in the user
+configuration file override accounts from the system configuration file.
 Configuration file settings can be changed by command line options.
 
 A configuration file is a simple text file. Empty lines and comment lines
@@ -487,8 +487,8 @@ Please refer to @ref{Configuration files} for detailed information.
 @itemx --file=@var{filename}
 @opindex -C
 @opindex --file
-Use the given file instead of @code{~/.msmtprc} as the user configuration
-file.
+Use the given file instead of @code{~/.msmtprc} or
+@code{XDG_CONFIG_HOME/msmtp/config} as the user configuration file.
 @item -a @var{account}
 @itemx --account=@var{account}
 @opindex -a
@@ -694,7 +694,7 @@ The standard exit codes from @code{sysexits.h} are used.
 @item @code{SYSCONFDIR/msmtprc}
 The system configuration file. Use the @option{--version} option to find out what
 @code{SYSCONFDIR} is on your platform.
-@item @code{~/.msmtprc}
+@item @code{~/.msmtprc} or @code{$XDG_CONFIG_HOME/msmtp/config}.
 The default user configuration file.
 @item @code{~/.netrc} and @code{SYSCONFDIR/netrc}
 The @code{netrc} file contains login information. Before prompting for a

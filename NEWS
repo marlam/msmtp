@@ -1,3 +1,14 @@
+Version 1.6.7:
+- Add support for ~/.config/msmtp/config as configuration file
+- Add network timeout handling on Windows
+- Fix command line handling of SHA256 TLS fingerprints
+- Fix SIGPIPE handling (affects at least Mac OS X)
+- Add french translation, and update german translation
+
+Version 1.6.6:
+- Fix a memory leak and a double-free in msmtp_read_headers(), triggered by read
+  errors.
+
 Version 1.6.5:
 - Support SHA256 fingerprints for tls_fingerprint, and mark both SHA1 and MD5 as
   deprecated.

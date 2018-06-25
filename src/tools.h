@@ -120,8 +120,8 @@ char *get_username(void);
  * On windows like systems it will return ~/USERCONFFILE, in unix like systems
  * it will return the first found file at the following locations:
  * - ~/USERCONFFILE
- * - $XDG_CONFIG_DIR/msmtp/config
- * - ~/.config/msmtp/config
+ * - $XDG_CONFIG_DIR/PACKAGE_NAME/config
+ * - ~/.config/PACKAGE_NAME/config
  */
 char *get_userconfig(const char *userconfigfile);
 

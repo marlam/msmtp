@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2004, 2005, 2006, 2007, 2009, 2011, 2014
+ * Copyright (C) 2004, 2005, 2006, 2007, 2009, 2011, 2014, 2018
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -324,7 +324,7 @@ char *get_userconfig(const char *userconfigfile)
     char *xdg_home;
     char *newpath;
 
-    //does not exist, thus check XDG_CONFIG_HOME/msmtp/config
+    //does not exist, thus check XDG_CONFIG_HOME/PACKAGE_NAME/config
     if (stat(path, &buf) != 0) {
         xdg_home = getenv("XDG_CONFIG_HOME");
         if (xdg_home) {
@@ -332,7 +332,7 @@ char *get_userconfig(const char *userconfigfile)
         } else {
             xdg_home = expand_tilde("~/.config");
         }
-        newpath = get_filename(xdg_home, "msmtp");
+        newpath = get_filename(xdg_home, PACKAGE_NAME);
         free(xdg_home);
         xdg_home = get_filename(newpath, "config");
         free(newpath);

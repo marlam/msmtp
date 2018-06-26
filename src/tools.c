@@ -24,18 +24,9 @@
 # include "config.h"
 #endif
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <time.h>
-#include <unistd.h>
 #ifdef W32_NATIVE
 # define WIN32_LEAN_AND_MEAN    /* do not include more than necessary */
-# define _WIN32_WINNT 0x0502    /* Windows XP SP2 or later */
+# define _WIN32_WINNT 0x0601    /* Windows 7 or later */
 # include <windows.h>
 # include <io.h>
 # include <conio.h>
@@ -45,6 +36,15 @@
 #else
 # include <pwd.h>
 #endif
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <time.h>
+#include <unistd.h>
 
 #include "xalloc.h"
 #include "tools.h"

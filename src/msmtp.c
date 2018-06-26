@@ -29,6 +29,11 @@
 # include "config.h"
 #endif
 
+#ifdef W32_NATIVE
+# define WIN32_LEAN_AND_MEAN    /* do not include more than necessary */
+# define _WIN32_WINNT 0x0601    /* Windows 7 or later */
+# include <winsock2.h>          /* for getservbyname() */
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -54,16 +59,14 @@ extern int optind;
 #ifdef HAVE_SYSLOG
 # include <syslog.h>
 #endif
+#ifdef HAVE_SIGNAL
+# include <signal.h>
+#endif
 #ifdef HAVE_LIBSECRET
 # include <libsecret/secret.h>
 #endif
 #ifdef HAVE_MACOSXKEYRING
 # include <Security/Security.h>
-#endif
-#ifdef W32_NATIVE
-# define WIN32_LEAN_AND_MEAN    /* do not include more than necessary */
-# define _WIN32_WINNT 0x0502    /* Windows XP SP2 or later */
-# include <winsock2.h>          /* for getservbyname() */
 #endif
 
 #include "gettext.h"
@@ -3779,7 +3782,9 @@ int main(int argc, char *argv[])
     /* Avoid receiving SIGPIPE when writing to sockets that were closed by the
      * remote end; we handle write errors where they occur. */
 #ifdef HAVE_SIGNAL
+#ifdef SIGPIPE
     signal(SIGPIPE, SIG_IGN);
+#endif
 #endif
 
     /* the command line */

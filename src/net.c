@@ -25,6 +25,12 @@
 # include "config.h"
 #endif
 
+#ifdef W32_NATIVE
+# define WIN32_LEAN_AND_MEAN    /* do not include more than necessary */
+# define _WIN32_WINNT 0x0601    /* Windows 7 or later */
+# include <winsock2.h>
+# include <ws2tcpip.h>
+#endif
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -42,12 +48,6 @@
 #endif
 #ifdef HAVE_NETDB_H
 # include <netdb.h>
-#endif
-#ifdef W32_NATIVE
-# define WIN32_LEAN_AND_MEAN    /* do not include more than necessary */
-# define _WIN32_WINNT 0x0502    /* Windows XP SP2 or later */
-# include <winsock2.h>
-# include <ws2tcpip.h>
 #endif
 
 #ifdef HAVE_LIBIDN

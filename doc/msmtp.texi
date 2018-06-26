@@ -166,6 +166,11 @@ Every account definition must contain this command.
 The port that the SMTP server listens on.
 The default is 25 ("smtp"), unless TLS without STARTTLS is used, in which case
 it is 465 ("smtps").
+@anchor{source_ip}
+@item source_ip [@var{IP}]
+@cmindex source_ip
+Set a source IP address to bind the outgoing connection to. Useful only in
+special cases on multi-home systems. An empty argument disables this.
 @anchor{proxy_host}
 @item proxy_host [@var{IP}|@var{hostname}]
 @cmindex proxy_host
@@ -505,6 +510,9 @@ configuration file data. This option cannot be used together with the
 @item --port=@var{number}
 @opindex --port
 Set the port number to connect to. @xref{port}.
+@item --source-ip=[@var{IP}]
+@opindex --source-ip
+Set or unset an IP address to bind the socket to. @xref{source_ip}.
 @item --proxy-host=[@var{IP}|@var{hostname}]
 @opindex --proxy-host
 Set or unset a SOCKS proxy to use. @xref{proxy_host}.

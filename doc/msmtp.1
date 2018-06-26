@@ -80,6 +80,8 @@ configuration file data. This option cannot be used together with the
 \fB\-\-account\fP option.
 .IP "\-\-port=\fInumber\fP"
 Set the port number to connect to. See the \fBport\fP command.
+.IP "\-\-source\-ip=[\fIIP\fP]"
+Set or unset an IP address to bind the socket to. See the \fBsource_ip\fP command.
 .IP "\-\-proxy\-host=[\fIIP\fP|\fIhostname\fP]"
 Set or unset a SOCKS proxy to use. See the \fBproxy_host\fP command.
 .IP "\-\-proxy\-port=[\fInumber\fP]"
@@ -270,6 +272,9 @@ Every account definition must contain this command.
 The port that the SMTP server listens on.
 The default is 25 ("smtp"), unless TLS without STARTTLS is used, in which case
 it is 465 ("smtps").
+.IP "source_ip [\fIIP\fP]"
+Set a source IP address to bind the outgoing connection to. Useful only in
+special cases on multi-home systems. An empty argument disables this.
 .IP "proxy_host [\fIIP|hostname\fP]"
 Use a SOCKS proxy. All network traffic will go through this proxy host,
 including DNS queries, except for a DNS query that might be necessary to

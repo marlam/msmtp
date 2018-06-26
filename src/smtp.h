@@ -3,7 +3,8 @@
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2008, 2010, 2012, 2014, 2016
+ * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2008, 2010, 2012, 2014, 2016,
+ * 2018
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -127,7 +128,7 @@ smtp_server_t smtp_new(FILE *debug, int protocol);
  * Success: NET_EOK
  */
 int smtp_connect(smtp_server_t *srv, const char *proxy_host, int proxy_port,
-        const char *host, int port, int timeout,
+        const char *host, int port, const char *source_ip, int timeout,
         char **server_canonical_name, char **server_address,
         char **errstr);
 

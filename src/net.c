@@ -306,6 +306,45 @@ void net_close_socket(int fd)
 
 
 /*
+ * net_bind_source_ip_to_socket()
+ *
+ * This function binds a source IP (in string representation, either IPv6 or IPv4)
+ * to a socket. It behaves like bind() in terms of return value and errno.
+ */
+
+int net_bind_source_ip_to_socket(int fd, const char *source_ip)
+{
+    struct sockaddr_in6 sa6;
+    struct sockaddr_in sa4;
+
+    memset(&sa6, 0, sizeof(sa6));
+    if (inet_pton(AF_INET6, source_ip, &sa6.sin6_addr) != 0)
+    {
+        sa6.sin6_family = AF_INET6;
+        return bind(fd, &sa6, sizeof(sa6));
+    }
+    else
+    {
+        memset(&sa4, 0, sizeof(sa4));
+        if (inet_pton(AF_INET, source_ip, &sa4.sin_addr) != 0)
+        {
+            sa4.sin_family = AF_INET;
+            return bind(fd, &sa4, sizeof(sa4));
+        }
+        else
+        {
+#ifdef W32_NATIVE
+            WSASetLastError(WSAEINVAL);
+#else
+            errno = EINVAL;
+#endif
+            return -1;
+        }
+    }
+}
+
+
+/*
  * net_connect()
  *
  * connect() with timeout.
@@ -602,6 +641,7 @@ int net_socks5_connect(int fd, const char *hostname, int port, char **errstr)
 int net_open_socket(
         const char *proxy_hostname, int proxy_port,
         const char *hostname, int port,
+        const char *source_ip,
         int timeout,
         int *ret_fd, char **canonical_name, char **address,
         char **errstr)
@@ -620,7 +660,7 @@ int net_open_socket(
     if (proxy_hostname)
     {
         error_code = net_open_socket(NULL, -1, proxy_hostname, proxy_port,
-                timeout, &fd, NULL, NULL, errstr);
+                NULL, timeout, &fd, NULL, NULL, errstr);
         if (error_code != NET_EOK)
         {
             return error_code;
@@ -698,9 +738,21 @@ int net_open_socket(
 #endif
             continue;
         }
-        if (net_connect(fd, res->ai_addr, res->ai_addrlen, timeout) < 0)
+        if (source_ip && net_bind_source_ip_to_socket(fd, source_ip) != 0)
         {
             cause = 2;
+#ifdef W32_NATIVE
+            failure_errno = WSAGetLastError();
+#else
+            failure_errno = errno;
+#endif
+            net_close_socket(fd);
+            fd = -1;
+            continue;
+        }
+        if (net_connect(fd, res->ai_addr, res->ai_addrlen, timeout) < 0)
+        {
+            cause = 3;
 #ifdef W32_NATIVE
             if (WSAGetLastError() != WSAENETUNREACH)
             {
@@ -762,7 +814,18 @@ int net_open_socket(
                     );
             return NET_ESOCKET;
         }
-        else /* cause == 2 */
+        else if (cause == 2)
+        {
+            *errstr = xasprintf(_("cannot bind source ip %s: %s"), source_ip,
+#ifdef W32_NATIVE
+                    wsa_strerror(failure_errno)
+#else
+                    strerror(failure_errno)
+#endif
+                    );
+            return NET_ESOCKET;
+        }
+        else /* cause == 3 */
         {
 #ifdef W32_NATIVE
             if (failure_errno == 0)

@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2014
+ * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2014, 2018
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -56,6 +56,8 @@ int net_lib_init(char **errstr);
  * 'proxy_hostname' and 'proxy_port' define a SOCKS5 proxy to use, unless they
  * are NULL/-1, in which case no proxy will be used.
  * 'hostname' may be a host name or a network address.
+ * 'source_ip' may be NULL or a string representation of an IPv6 or IPv4 address
+ * that will be bound as the source address for the outgoing connection.
  * 'timeout' is measured in secondes. If it is <= 0, no timeout will be set,
  * which means that the OS dependent default timeout value will be used.
  * The timeout will not only apply to the connection attempt but also to all
@@ -74,6 +76,7 @@ int net_lib_init(char **errstr);
 int net_open_socket(
         const char *proxy_hostname, int proxy_port,
         const char *hostname, int port,
+        const char *source_ip,
         int timeout,
         int *fd, char **canonical_name, char **address,
         char **errstr);

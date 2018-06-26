@@ -4,7 +4,7 @@
  * This file is part of msmtp, an SMTP client.
  *
  * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2010, 2011, 2014,
- * 2016
+ * 2016, 2018
  * Martin Lambers <marlam@marlam.de>
  * Martin Stenberg <martin@gnutiken.se> (passwordeval support)
  * Scott Shumate <sshumate@austin.rr.com> (aliases support)
@@ -78,6 +78,7 @@
 #define ACC_ADD_MISSING_FROM_HEADER     (1LL << 30LL)
 #define ACC_ADD_MISSING_DATE_HEADER     (1LL << 31LL)
 #define ACC_REMOVE_BCC_HEADERS          (1LL << 32LL)
+#define ACC_SOURCE_IP                   (1LL << 33LL)
 
 typedef struct
 {
@@ -131,6 +132,8 @@ typedef struct
     int add_missing_from_header;/* add From header if it is missing? */
     int add_missing_date_header;/* add Date header if it is missing? */
     int remove_bcc_headers;     /* remove the Bcc headers from the mail? */
+    /* source ip binding */
+    char *source_ip;            /* Source IP to bind the connection to */
 } account_t;
 
 

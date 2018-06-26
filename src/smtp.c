@@ -4,7 +4,7 @@
  * This file is part of msmtp, an SMTP client.
  *
  * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011,
- * 2014, 2016
+ * 2014, 2016, 2018
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -128,12 +128,12 @@ smtp_server_t smtp_new(FILE *debug, int protocol)
  */
 
 int smtp_connect(smtp_server_t *srv, const char *proxy_host, int proxy_port,
-        const char *host, int port, int timeout,
+        const char *host, int port, const char *source_ip, int timeout,
         char **server_canonical_name, char **server_address,
         char **errstr)
 {
-    return net_open_socket(proxy_host, proxy_port, host, port, timeout, &srv->fd,
-            server_canonical_name, server_address, errstr);
+    return net_open_socket(proxy_host, proxy_port, host, port, source_ip,
+            timeout, &srv->fd, server_canonical_name, server_address, errstr);
 }
 
 

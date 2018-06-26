@@ -4,7 +4,7 @@
  * This file is part of msmtp, an SMTP client.
  *
  * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2010, 2011, 2012,
- * 2014, 2015, 2016
+ * 2014, 2015, 2016, 2018
  * Martin Lambers <marlam@marlam.de>
  * Martin Stenberg <martin@gnutiken.se> (passwordeval support)
  * Scott Shumate <sshumate@austin.rr.com> (aliases support)
@@ -101,6 +101,7 @@ account_t *account_new(const char *conffile, const char *id)
     a->add_missing_from_header = 1;
     a->add_missing_date_header = 1;
     a->remove_bcc_headers = 1;
+    a->source_ip = NULL;
     return a;
 }
 
@@ -184,6 +185,7 @@ account_t *account_copy(account_t *acc)
         a->add_missing_from_header = acc->add_missing_from_header;
         a->add_missing_date_header = acc->add_missing_date_header;
         a->remove_bcc_headers = acc->remove_bcc_headers;
+        a->source_ip = acc->source_ip ? xstrdup(acc->source_ip) : NULL;
     }
     return a;
 }
@@ -225,6 +227,7 @@ void account_free(void *a)
         free(p->syslog);
         free(p->aliases);
         free(p->proxy_host);
+        free(p->source_ip);
         free(p);
     }
 }
@@ -702,6 +705,11 @@ void override_account(account_t *acc1, account_t *acc2)
     if (acc2->mask & ACC_ADD_MISSING_DATE_HEADER)
     {
         acc1->add_missing_date_header = acc2->add_missing_date_header;
+    }
+    if (acc2->mask & ACC_SOURCE_IP)
+    {
+        free(acc1->source_ip);
+        acc1->source_ip = acc2->source_ip ? xstrdup(acc2->source_ip) : NULL;
     }
     acc1->mask |= acc2->mask;
 }
@@ -1753,6 +1761,19 @@ int read_conffile(const char *conffile, FILE *f, list_t **acc_list,
                         line, arg, cmd);
                 e = CONF_ESYNTAX;
                 break;
+            }
+        }
+        else if (strcmp(cmd, "source_ip") == 0)
+        {
+            acc->mask |= ACC_SOURCE_IP;
+            free(acc->source_ip);
+            if (*arg == '\0')
+            {
+                acc->source_ip = NULL;
+            }
+            else
+            {
+                acc->source_ip = xstrdup(arg);
             }
         }
         else if (strcmp(cmd, "keepbcc") == 0)

@@ -166,12 +166,6 @@ Every account definition must contain this command.
 The port that the SMTP server listens on.
 The default is 25 ("smtp"), unless TLS without STARTTLS is used, in which case
 it is 465 ("smtps").
-@anchor{timeout}
-@item timeout (off|@var{seconds})
-@cmindex timeout
-Set or unset a network timeout, in seconds. The argument @samp{off} means that
-no timeout will be set, which means that the operating system default will be
-used.
 @anchor{proxy_host}
 @item proxy_host [@var{IP}|@var{hostname}]
 @cmindex proxy_host
@@ -186,6 +180,12 @@ see also @ref{Using msmtp with Tor}.
 @cmindex proxy_port
 Set the port number for the proxy host. An empty @samp{number} argument resets
 this to the default port, which is 1080 ("socks").
+@anchor{timeout}
+@item timeout (off|@var{seconds})
+@cmindex timeout
+Set or unset a network timeout, in seconds. The argument @samp{off} means that
+no timeout will be set, which means that the operating system default will be
+used.
 @anchor{protocol}
 @item protocol (smtp|lmtp)
 @cmindex protocol
@@ -505,21 +505,21 @@ configuration file data. This option cannot be used together with the
 @item --port=@var{number}
 @opindex --port
 Set the port number to connect to. @xref{port}.
-@item --timeout=(off|@var{seconds})
-@opindex --timeout
-Set or unset a network timeout, in seconds. @xref{timeout}.
-@item --protocol=(smtp|lmtp)
+@item --proxy-host=[@var{IP}|@var{hostname}]
 @opindex --proxy-host
 Set or unset a SOCKS proxy to use. @xref{proxy_host}.
 @item --proxy-port=[@var{number}]
 @opindex --proxy-port
 Set or unset a port number for the proxy host. @xref{proxy_port}.
+@item --timeout=(off|@var{seconds})
+@opindex --timeout
+Set or unset a network timeout, in seconds. @xref{timeout}.
+@item --protocol=(smtp|lmtp)
 @opindex --protocol
 Set the protocol. @xref{protocol}.
 @item --domain=[@var{argument}]
 @opindex --domain
 Set the argument of the SMTP EHLO (or LMTP LHLO) command. @xref{domain}.
-@item --proxy-host=[@var{IP}|@var{hostname}]
 @anchor{--auth}
 @item --auth[=(on|off|@var{method})]
 @opindex --auth

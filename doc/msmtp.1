@@ -80,12 +80,12 @@ configuration file data. This option cannot be used together with the
 \fB\-\-account\fP option.
 .IP "\-\-port=\fInumber\fP"
 Set the port number to connect to. See the \fBport\fP command.
-.IP "\-\-timeout=(\fIoff\fP|\fIseconds\fP)"
-Set or unset a network timeout, in seconds. See the \fBtimeout\fP command.
 .IP "\-\-proxy\-host=[\fIIP\fP|\fIhostname\fP]"
 Set or unset a SOCKS proxy to use. See the \fBproxy_host\fP command.
 .IP "\-\-proxy\-port=[\fInumber\fP]"
 Set or unset a port number for the proxy host. See the \fBproxy_port\fP command.
+.IP "\-\-timeout=(\fIoff\fP|\fIseconds\fP)"
+Set or unset a network timeout, in seconds. See the \fBtimeout\fP command.
 .IP "\-\-protocol=(\fIsmtp\fP|\fIlmtp\fP)
 Set the protocol. See the \fBprotocol\fP command.
 .IP "\-\-domain=[\fIstring\fP]"
@@ -270,9 +270,6 @@ Every account definition must contain this command.
 The port that the SMTP server listens on.
 The default is 25 ("smtp"), unless TLS without STARTTLS is used, in which case
 it is 465 ("smtps").
-.IP "timeout (\fIoff\fP|\fIseconds\fP)"
-Set or unset a network timeout, in seconds. The argument \fIoff\fP means that no
-timeout will be set, which means that the operating system default will be used.
 .IP "proxy_host [\fIIP|hostname\fP]"
 Use a SOCKS proxy. All network traffic will go through this proxy host,
 including DNS queries, except for a DNS query that might be necessary to
@@ -283,6 +280,9 @@ see also "Using msmtp with Tor" below.
 .IP "proxy_port [\fInumber\fP]"
 Set the port number for the proxy host. An empty \fInumber\fP argument resets
 this to the default port.
+.IP "timeout (\fIoff\fP|\fIseconds\fP)"
+Set or unset a network timeout, in seconds. The argument \fIoff\fP means that no
+timeout will be set, which means that the operating system default will be used.
 .IP "protocol (\fIsmtp\fP|\fIlmtp\fP)"
 Set the protocol to use. Currently only SMTP and LMTP are supported. SMTP is
 the default. See the \fBport\fP command above for default ports.

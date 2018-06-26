@@ -201,7 +201,7 @@ int lock_file(FILE *f, int lock_type, int timeout);
 /*
  * string_replace()
  *
- * Replace all occurences of 's' in the string 'str' with 'r'.
+ * Replace all occurrences of 's' in the string 'str' with 'r'.
  * The string 'str' must be an allocated string. A pointer to the expanded
  * string is returned.
  */

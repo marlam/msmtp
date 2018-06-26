@@ -1363,7 +1363,7 @@ char *openssl_io_error(int error_code, int error_code2,
             {
                 if (error_code == 0)
                 {
-                    error_reason = _("a protocol violating EOF occured");
+                    error_reason = _("a protocol violating EOF occurred");
                 }
                 else if (error_code == -1)
                 {

@@ -925,7 +925,7 @@ char *trim_string(const char *s)
  * whitespace) and an argument part (the word after the command).
  * Whitespace is ignored.
  * Sets the flag 'empty_line' if the line is empty.
- * Sets the flag 'eof' if EOF occured.
+ * Sets the flag 'eof' if EOF occurred.
  * On errors, 'empty_line' and 'eof', 'cmd' and 'arg' NULL.
  * On success, 'cmd' and 'arg' are allocated strings.
  * Used error codes: CONF_EIO, CONF_EPARSE

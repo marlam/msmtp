@@ -341,7 +341,7 @@ int smtp_end_mail(smtp_server_t *srv, list_t **msg, char **errstr);
  * the same list that was given to smtp_send_envelope()).
  *
  * If all of these replies are positive, SMTP_EOK will be returned.
- * If an IO error occured, SMTP_EIO will be returned (as always).
+ * If an IO error occurred, SMTP_EIO will be returned (as always).
  * In both cases, 'errstrs' and 'error_msgs' will be NULL.
  *
  * If one or more of the replies are negative, SMTP_EUNAVAIL will be returned,

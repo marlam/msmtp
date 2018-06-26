@@ -564,7 +564,7 @@ void msmtp_endsession(smtp_server_t *srv, int quit)
  * msmtp_rmqs()
  *
  * Sends an ETRN request to the SMTP server specified in the account 'acc'.
- * If an error occured, '*errstr' points to an allocated string that describes
+ * If an error occurred, '*errstr' points to an allocated string that describes
  * the error or is NULL, and '*msg' may contain the offending message from the
  * SMTP server (or be NULL).
  */
@@ -737,7 +737,7 @@ int msmtp_rmqs(account_t *acc, int debug, const char *rmqs_argument,
  * msmtp_serverinfo()
  *
  * Prints information about the SMTP server specified in the account 'acc'.
- * If an error occured, '*errstr' points to an allocated string that describes
+ * If an error occurred, '*errstr' points to an allocated string that describes
  * the error or is NULL, and '*msg' may contain the offending message from the
  * SMTP server (or be NULL).
  */
@@ -1684,7 +1684,7 @@ error_exit:
  * msmtp_sendmail()
  *
  * Sends a mail. Returns a value from sysexits.h.
- * If an error occured, '*errstr' points to an allocated string that describes
+ * If an error occurred, '*errstr' points to an allocated string that describes
  * the error or is NULL, and '*msg' may contain the offending message from the
  * SMTP server (or be NULL).
  * In case of success, 'mailsize' contains the number of bytes of the mail

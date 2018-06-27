@@ -4,7 +4,7 @@
  * This file is part of msmtp, an SMTP client.
  *
  * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011,
- * 2012, 2014, 2016
+ * 2012, 2014, 2016, 2018
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -1415,6 +1415,7 @@ int tls_start(tls_t *tls, int fd, const char *hostname, int no_certcheck,
 #ifdef HAVE_LIBGNUTLS
     int error_code;
 
+    gnutls_server_name_set(tls->session, GNUTLS_NAME_DNS, hostname, strlen(hostname));
     gnutls_transport_set_ptr(tls->session, (gnutls_transport_ptr_t)fd);
     do
     {

@@ -1416,7 +1416,7 @@ int tls_start(tls_t *tls, int fd, const char *hostname, int no_certcheck,
     int error_code;
 
     gnutls_server_name_set(tls->session, GNUTLS_NAME_DNS, hostname, strlen(hostname));
-    gnutls_transport_set_ptr(tls->session, (gnutls_transport_ptr_t)fd);
+    gnutls_transport_set_int(tls->session, fd);
     do
     {
         error_code = gnutls_handshake(tls->session);

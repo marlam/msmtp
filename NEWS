@@ -1,6 +1,7 @@
 Version 1.6.8:
 - Add --source-ip option and source_ip command to bind the outgoing connection
   to a specific source IP address.
+- Enable SNI for TLS
 
 Version 1.6.7:
 - Add support for ~/.config/msmtp/config as configuration file

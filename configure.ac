@@ -45,7 +45,7 @@ dnl Gettext
 AM_GNU_GETTEXT([external])
 
 dnl Headers, functions, and types
-AC_CHECK_HEADERS([sysexits.h netdb.h arpa/inet.h sys/socket.h sys/wait.h])
+AC_CHECK_HEADERS([sysexits.h netdb.h arpa/inet.h sys/socket.h sys/wait.h netinet/in.h])
 AC_CHECK_FUNCS([fmemopen fseeko fseeko64 getpass getservbyname link mkstemp signal strndup syslog vasprintf])
 AC_SEARCH_LIBS([nanosleep], [rt posix4])
 AC_SEARCH_LIBS([socket], [socket])

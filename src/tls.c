@@ -1416,7 +1416,11 @@ int tls_start(tls_t *tls, int fd, const char *hostname, int no_certcheck,
     int error_code;
 
     gnutls_server_name_set(tls->session, GNUTLS_NAME_DNS, hostname, strlen(hostname));
+#if GNUTLS_VERSION_NUMBER < 0x030200
+    gnutls_transport_set_ptr(tls->session, (gnutls_transport_ptr_t)fd);
+#else
     gnutls_transport_set_int(tls->session, fd);
+#endif
     do
     {
         error_code = gnutls_handshake(tls->session);

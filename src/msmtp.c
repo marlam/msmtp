@@ -29,11 +29,6 @@
 # include "config.h"
 #endif
 
-#ifdef W32_NATIVE
-# define WIN32_LEAN_AND_MEAN    /* do not include more than necessary */
-# define _WIN32_WINNT 0x0601    /* Windows 7 or later */
-# include <winsock2.h>          /* for getservbyname() */
-#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -47,12 +42,6 @@ extern int optind;
 #include <unistd.h>
 #include <signal.h>
 #include <fcntl.h>
-#ifdef HAVE_ARPA_INET_H
-# include <arpa/inet.h>
-#endif
-#ifdef HAVE_NETDB_H
-# include <netdb.h>
-#endif
 #ifdef ENABLE_NLS
 # include <locale.h>
 #endif
@@ -4002,42 +3991,20 @@ int main(int argc, char *argv[])
         {
             if (account->tls && account->tls_nostarttls)
             {
-#ifdef HAVE_GETSERVBYNAME
-                se = getservbyname("smtps", NULL);
-                account->port = se ? ntohs(se->s_port) : 465;
-#else
                 account->port = 465;
-#endif
             }
             else
             {
-#ifdef HAVE_GETSERVBYNAME
-                se = getservbyname("smtp", NULL);
-                account->port = se ? ntohs(se->s_port) : 25;
-#else
                 account->port = 25;
-#endif
             }
         }
         else /* LMTP. Has no default port as of 2006-06-17. */
         {
-#ifdef HAVE_GETSERVBYNAME
-            se = getservbyname("lmtp", NULL);
-            if (se)
-            {
-                account->port = ntohs(se->s_port);
-            }
-#endif
         }
     }
     if (account->proxy_host && account->proxy_port == 0)
     {
-#ifdef HAVE_GETSERVBYNAME
-        se = getservbyname("socks", NULL);
-        account->proxy_port = se ? ntohs(se->s_port) : 1080;
-#else
         account->proxy_port = 1080;
-#endif
     }
     if (conf.sendmail && account->auto_from)
     {

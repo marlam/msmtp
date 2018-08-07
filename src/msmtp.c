@@ -1018,7 +1018,7 @@ error_exit:
 /*
  * msmtp_read_headers()
  *
- * Copies the headers of the mail from 'mailf' to a temporary file 'tmpfile',
+ * Copies the headers of the mail from 'mailf' to a temporary file 'tmpf',
  * including the blank line that separates the header from the body of the mail.
  *
  * If 'recipients' is not NULL: extracts all recipients from the To, Cc, and Bcc
@@ -1071,7 +1071,7 @@ error_exit:
 #define STATE_HEADERS_END               24      /* we saw "^$", the blank line
                                                    between headers and body */
 
-int msmtp_read_headers(FILE *mailf, FILE *tmpfile,
+int msmtp_read_headers(FILE *mailf, FILE *tmpf,
         list_t *recipients,
         char **from,
         int *have_date,
@@ -1551,7 +1551,7 @@ int msmtp_read_headers(FILE *mailf, FILE *tmpfile,
             }
         }
 
-        if (tmpfile && c != EOF && fputc(c, tmpfile) == EOF)
+        if (tmpf && c != EOF && fputc(c, tmpf) == EOF)
         {
             *errstr = xasprintf(_("cannot write mail headers to temporary "
                         "file: output error"));
@@ -2633,7 +2633,7 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
     int i;
     int rcptc;
     char **rcptv;
-    FILE *tmpfile;
+    FILE *tmpf;
     char *errstr;
 #ifdef HAVE_FMEMOPEN
     size_t rcptf_size;
@@ -3374,11 +3374,11 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
         rcptf_size += 4 + strlen(rcptv[i]) + 1;
     }
     rcptf_buf = xmalloc(rcptf_size);
-    tmpfile = fmemopen(rcptf_buf, rcptf_size, "w+");
+    tmpf = fmemopen(rcptf_buf, rcptf_size, "w+");
 #else
-    tmpfile = tempfile(PACKAGE_NAME);
+    tmpf = tmpfile();
 #endif
-    if (!tmpfile)
+    if (!tmpf)
     {
         print_error(_("cannot create temporary file: %s"),
                 msmtp_sanitize_string(strerror(errno)));
@@ -3387,19 +3387,19 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
     }
     for (i = 0; i < rcptc && error_code != EOF; i++)
     {
-        error_code = fputs("To: ", tmpfile);
+        error_code = fputs("To: ", tmpf);
         if (error_code != EOF)
         {
-            error_code = fputs(rcptv[i], tmpfile);
+            error_code = fputs(rcptv[i], tmpf);
         }
         if (error_code != EOF)
         {
-            error_code = fputc('\n', tmpfile);
+            error_code = fputc('\n', tmpf);
         }
     }
     if (error_code != EOF)
     {
-        error_code = fputc('\n', tmpfile);
+        error_code = fputc('\n', tmpf);
     }
     if (error_code == EOF)
     {
@@ -3408,7 +3408,7 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
         error_code = EX_IOERR;
         goto error_exit;
     }
-    if (fseeko(tmpfile, 0, SEEK_SET) != 0)
+    if (fseeko(tmpf, 0, SEEK_SET) != 0)
     {
         print_error(_("cannot rewind temporary file: %s"),
                 msmtp_sanitize_string(strerror(errno)));
@@ -3416,7 +3416,7 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
         goto error_exit;
     }
     conf->recipients = list_new();
-    if ((error_code = msmtp_read_headers(tmpfile, NULL,
+    if ((error_code = msmtp_read_headers(tmpf, NULL,
                     list_last(conf->recipients), NULL, NULL, &errstr)) != EX_OK)
     {
         print_error("%s", msmtp_sanitize_string(errstr));
@@ -3425,9 +3425,9 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
     error_code = EX_OK;
 
 error_exit:
-    if (tmpfile)
+    if (tmpf)
     {
-        fclose(tmpfile);
+        fclose(tmpf);
     }
 #ifdef HAVE_FMEMOPEN
     free(rcptf_buf);
@@ -3838,7 +3838,7 @@ int main(int argc, char *argv[])
     if (conf.sendmail)
     {
         char *envelope_from = NULL;
-        if (!(header_tmpfile = tempfile(PACKAGE_NAME)))
+        if (!(header_tmpfile = tmpfile()))
         {
             print_error(_("cannot create temporary file: %s"),
                     msmtp_sanitize_string(strerror(errno)));
@@ -4137,7 +4137,7 @@ int main(int argc, char *argv[])
         if ((!have_from_header && account->add_missing_from_header)
                 || (!have_date_header && account->add_missing_date_header))
         {
-            if (!(prepend_header_tmpfile = tempfile(PACKAGE_NAME)))
+            if (!(prepend_header_tmpfile = tmpfile()))
             {
                 print_error(_("cannot create temporary file: %s"),
                         msmtp_sanitize_string(strerror(errno)));

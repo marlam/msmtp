@@ -80,13 +80,6 @@ char *getpass(const char *prompt);
 #endif
 
 /*
- * mkstemp() - only for systems that lack it
- */
-#ifndef HAVE_MKSTEMP
-int mkstemp(char *template);
-#endif
-
-/*
  * get_prgname()
  *
  * Get the program name from an argv[0]-like string.
@@ -169,21 +162,6 @@ char *expand_tilde(const char *filename);
  * 3 if an error occurred (errno will be set in this case)
  */
 int check_secure(const char *pathname);
-
-/*
- * tempfile()
- *
- * Create a temporary file, only accessible by the current user (if applicable
- * given the platform; on UNIX this means mode 0600). The file will be created
- * in $TMPDIR or, if this variable is unset, in a system specific directory for
- * temporary files. It will be automatically deleted when closed.
- * 'base' is a suggestion for the file name prefix. It may be empty or even
- * NULL, but if it is a string, it must contain only ASCII characters that are
- * safe for filenames on all systems. This function may ignore this suggestion.
- * Return value is the resulting stream (opened with "w+") or NULL on error, in
- * which case errno will be set.
- */
-FILE *tempfile(const char *base);
 
 /*
  * lock_file()

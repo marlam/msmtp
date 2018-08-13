@@ -28,6 +28,7 @@
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>
+#include <signal.h>
 #include <arpa/inet.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -440,11 +441,14 @@ int main(int argc, char* argv[])
                 fprintf(stderr, "%s: cannot accept connection: %s\n", argv[0], strerror(errno));
                 return 1;
             }
+            signal(SIGCHLD, SIG_IGN); /* Make sure child processes do not become zombies */
             if (fork() == 0) {
                 /* Child process */
+                signal(SIGCHLD, SIG_DFL); /* Make popen()/pclose() work again */
                 FILE* conn = fdopen(conn_fd, "rb+");
-                msmtpd_session(conn, conn, command);
+                int ret = msmtpd_session(conn, conn, command);
                 fclose(conn);
+                exit(ret);
             } else {
                 /* Parent process */
                 close(conn_fd);

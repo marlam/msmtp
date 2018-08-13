@@ -302,6 +302,12 @@ if test "$macosx_keyring" != "no"; then
     fi
 fi
 
+dnl Check if msmtpd should be built
+AC_ARG_WITH([msmtpd],
+    [AS_HELP_STRING([--with-msmtpd], [Build msmtpd. Disabled by default.])],
+    [if test "$withval" = "yes"; then build_msmtpd="yes"; else build_msmtpd="no"; fi], [build_msmtpd="no"])
+AM_CONDITIONAL([BUILD_MSMTPD], [test "$build_msmtpd" = "yes"])
+
 dnl Global #defines for all source files
 AH_VERBATIM([W32_NATIVE],
 [/* Define to 1 if the native W32 API should be used. */
@@ -327,3 +333,4 @@ fi
 echo "NLS support ............ : $USE_NLS"
 echo "Libsecret support (GNOME): $libsecret"
 echo "MacOS X Keychain support : $macosx_keyring"
+echo "Build msmtpd ............: $build_msmtpd"

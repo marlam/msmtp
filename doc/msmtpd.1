@@ -1,0 +1,48 @@
+.\" -*-nroff-*-
+.\"
+.\" Copyright (C) 2018 Martin Lambers
+.\"
+.\" Permission is granted to copy, distribute and/or modify this document
+.\" under the terms of the GNU Free Documentation License, Version 1.2 or
+.\" any later version published by the Free Software Foundation; with no
+.\" Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
+.TH MSMTPD 1 2018-08
+.SH NAME
+msmtpd \- A minimal SMTP server
+.SH SYNOPSIS
+.B msmtpd
+[option...]
+.SH DESCRIPTION
+Msmtpd is a minimal SMTP server that pipes mails to msmtp (or some other program) for delivery.
+It is intended to be used with system services that expect an SMTP server on the local host and
+cannot be configured to use the sendmail interface that msmtp provides.
+.br
+Msmtpd handles local SMTP clients. It listens on 127.0.0.1 port 25 by default, but can also run
+without its own network sockets in inetd mode, where it handles a single SMTP session on
+standard input / output.
+.br
+In the string that defines the command that msmtpd pipes each mail to, the first occurence of
+\fI%F\fP will be replaced with the envelope from address. Furthermore, all recipients of the
+mail will be appended as arguments. The command must not write to standard output, as that would
+mess up the SMTP session.
+.br
+Only run msmtpd if you know you need it. Only use a local interface to listen on. Take care
+to run it with correct user rights and permissions (e.g. use \fICAP_NET_BIND_SERVICE\fP to bind
+to port 25 instead of running as root, or use systemd with inetd service
+capabilities). Be aware that the pipe command will be run as the same user that
+msmtpd runs as.
+.SH OPTIONS
+.IP "\-\-version"
+Print version information
+.IP "\-\-help"
+Print help
+.IP "\-\-inetd"
+Start single SMTP session on stdin/stdout
+.IP "\-\-interface=\fIip\fP
+Listen on the given IPv6 or IPv4 address instead of 127.0.0.1
+.IP "\-\-port=\fInumber\fP
+Listen on the given port number instead of 25
+.IP "\-\-command=\fIcmd\fP
+Pipe mails to \fIcmd\fP instead of msmtp
+.SH SEE ALSO
+.BR msmtp(1)

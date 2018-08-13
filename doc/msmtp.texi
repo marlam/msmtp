@@ -60,6 +60,7 @@ notice are preserved. These files are offered as-is, without any warranty.
 					an SMTP server.
 * Remote Message Queue Starting mode::	How to send RMQS requests.
 * Examples::				Usage examples.
+* Minimal SMTP server (msmtpd)::	When and how to use msmtpd.
 @end menu
 
 
@@ -1284,5 +1285,43 @@ cron: mark_jones@@example.com
 # Send everything else to admin
 default: admin@@domain.example
 @end example
+
+@node Minimal SMTP server (msmtpd)
+@chapter Minimal SMTP server (msmtpd)
+
+Msmtpd is a minimal SMTP server that pipes mails to msmtp (or some other program) for delivery.
+It is intended to be used with system services that expect an SMTP server on the local host and
+cannot be configured to use the sendmail interface that msmtp provides.
+
+Msmtpd handles local SMTP clients. It listens on 127.0.0.1 port 25 by default, but can also run
+without its own network sockets in inetd mode, where it handles a single SMTP session on
+standard input / output.
+
+In the string that defines the command that msmtpd pipes each mail to, the first occurence of
+@samp{%F} will be replaced with the envelope from address. Furthermore, all recipients of the
+mail will be appended as arguments. The command must not write to standard output, as that would
+mess up the SMTP session.
+
+Only run msmtpd if you know you need it. Only use a local interface to listen on. Take care
+to run it with correct user rights and permissions (e.g. use @samp{CAP_NET_BIND_SERVICE} to bind
+to port 25 instead of running as root, or use systemd with inetd service
+capabilities). Be aware that the pipe command will be run as the same user that
+msmtpd runs as.
+
+Msmtpd handles the following options:
+@table @samp
+@item --version
+Print version information
+@item --help
+Print help.
+@item --inetd
+Start single SMTP session on stdin/stdout
+@item --interface=@var{ip}
+Listen on the given IPv6 or IPv4 address instead of 127.0.0.1
+@item --port=@var{number}
+Listen on the given port number instead of 25
+@item --command=@var{cmd}
+Pipe mails to @var{cmd} instead of msmtp
+@end table
 
 @bye

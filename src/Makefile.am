@@ -27,4 +27,9 @@ AM_CPPFLAGS = $(tls_CFLAGS) $(libgsasl_CFLAGS) $(libidn_CFLAGS) $(libsecret_CFLA
 
 msmtp_LDADD =  $(tls_LIBS) $(libgsasl_LIBS) $(libidn_LIBS) $(libsecret_LIBS) $(LIBINTL)
 
-DEFS += -DSYSCONFDIR=\"$(sysconfdir)\" -DLOCALEDIR=\"$(localedir)\"
+DEFS += -DSYSCONFDIR=\"$(sysconfdir)\" -DLOCALEDIR=\"$(localedir)\" -DBINDIR=\"$(bindir)\"
+
+if BUILD_MSMTPD
+bin_PROGRAMS += msmtpd
+msmtpd_SOURCES = msmtpd.c
+endif

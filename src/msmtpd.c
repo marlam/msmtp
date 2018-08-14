@@ -396,6 +396,7 @@ int main(int argc, char* argv[])
     }
 
     /* Do it */
+    signal(SIGPIPE, SIG_IGN); /* Do not terminate when piping fails; we want to handle that error */
     if (inetd) {
         /* We are no daemon, so we can just signal error with exit status 1 and success with 0 */
         return msmtpd_session(stdin, stdout, command);

@@ -62,6 +62,8 @@ int read_smtp_cmd(FILE* in, char* buf, int bufsize)
 /* Read a mail address enclosed in < and > */
 int get_addr(const char* inbuf, char* outbuf, int allow_empty, size_t* addrlen)
 {
+    char* p;
+
     /* Skip spaces */
     while (*inbuf == ' ')
         inbuf++;
@@ -74,7 +76,7 @@ int get_addr(const char* inbuf, char* outbuf, int allow_empty, size_t* addrlen)
         return 1;
     outbuf[--len] = '\0';
     /* Check if characters are valid */
-    for (char* p = outbuf; *p; p++) {
+    for (p = outbuf; *p; p++) {
         if ((*p >= 'a' && *p <= 'z')
                 || (*p >= 'A' && *p <= 'Z')
                 || (*p >= '0' && *p <= '9')
@@ -175,6 +177,7 @@ int msmtpd_session(FILE* in, FILE* out, const char* command)
     size_t cmd_index = 0;
     FILE* pipe;
     int pipe_status;
+    size_t i;
 
     setlinebuf(out);
     fprintf(out, "220 localhost ESMTP msmtpd\r\n");
@@ -208,7 +211,7 @@ int msmtpd_session(FILE* in, FILE* out, const char* command)
         return 1;
     }
 
-    for (size_t i = 0; command[i];) {
+    for (i = 0; command[i];) {
         if (!envfrom_was_handled && command[i] == '%' && command[i + 1] == 'F') {
             memcpy(cmd + cmd_index, envfrom, envfrom_len);
             cmd_index += envfrom_len;

@@ -440,8 +440,12 @@ int main(int argc, char* argv[])
             return 1;
         }
 
-        /* Accept connection */
+        /* Set up signal handling, in part conforming to freedesktop.org modern daemon requirements */
+        signal(SIGHUP, SIG_IGN); /* Reloading configuration does not make sense for us */
+        signal(SIGTERM, SIG_DFL); /* We can be terminated as long as there is no running session */
         signal(SIGCHLD, SIG_IGN); /* Make sure child processes do not become zombies */
+
+        /* Accept connection */
         for (;;) {
             int conn_fd = accept(listen_fd, NULL, NULL);
             if (conn_fd < 0) {
@@ -450,9 +454,12 @@ int main(int argc, char* argv[])
             }
             if (fork() == 0) {
                 /* Child process */
+                FILE* conn;
+                int ret;
+                signal(SIGTERM, SIG_IGN); /* A running session should not be terminated */
                 signal(SIGCHLD, SIG_DFL); /* Make popen()/pclose() work again */
-                FILE* conn = fdopen(conn_fd, "rb+");
-                int ret = msmtpd_session(conn, conn, command);
+                conn = fdopen(conn_fd, "rb+");
+                ret = msmtpd_session(conn, conn, command);
                 fclose(conn);
                 exit(ret);
             } else {

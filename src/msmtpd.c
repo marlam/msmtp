@@ -358,6 +358,10 @@ int parse_command_line(int argc, char* argv[],
 
 int main(int argc, char* argv[])
 {
+    /* Exit status values according to LSB init script recommendations */
+    const int exit_ok = 0;
+    const int exit_not_running = 3;
+
     /* Configuration */
     int print_version = 0;
     int print_help = 0;
@@ -370,14 +374,14 @@ int main(int argc, char* argv[])
     if (parse_command_line(argc, argv,
                 &print_version, &print_help,
                 &inetd, &interface, &port, &command) != 0) {
-        return 1;
+        return exit_not_running;
     }
     if (print_version) {
         printf("Copyright (C) 2018 Martin Lambers.\n"
                 "This is free software.  You may redistribute copies of it under the terms of\n"
                 "the GNU General Public License <http://www.gnu.org/licenses/gpl.html>.\n"
                 "There is NO WARRANTY, to the extent permitted by law.\n");
-        return 0;
+        return exit_ok;
     }
     if (print_help) {
         printf("Usage: msmtpd [option...]\n");
@@ -388,11 +392,12 @@ int main(int argc, char* argv[])
         printf("  --interface=ip  listen on ip instead of %s\n", DEFAULT_INTERFACE);
         printf("  --port=number   listen on port number instead of %d\n", DEFAULT_PORT);
         printf("  --command=cmd   pipe mails to cmd instead of %s\n", DEFAULT_COMMAND);
-        return 0;
+        return exit_ok;
     }
 
     /* Do it */
     if (inetd) {
+        /* We are no daemon, so we can just signal error with exit status 1 and success with 0 */
         return msmtpd_session(stdin, stdout, command);
     } else {
         int ipv6;
@@ -415,7 +420,7 @@ int main(int argc, char* argv[])
                 sa4.sin_port = htons(port);
             } else {
                 fprintf(stderr, "%s: invalid interface\n", argv[0]);
-                return 1;
+                return exit_not_running;
             }
         }
 
@@ -423,21 +428,21 @@ int main(int argc, char* argv[])
         listen_fd = socket(ipv6 ? PF_INET6 : PF_INET, SOCK_STREAM, 0);
         if (listen_fd < 0) {
             fprintf(stderr, "%s: cannot create socket: %s\n", argv[0], strerror(errno));
-            return 1;
+            return exit_not_running;
         }
         if (setsockopt(listen_fd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) < 0) {
             fprintf(stderr, "%s: cannot set socket option: %s\n", argv[0], strerror(errno));
-            return 1;
+            return exit_not_running;
         }
         if (bind(listen_fd,
                     ipv6 ? (struct sockaddr*)&sa6 : (struct sockaddr*)&sa4,
                     ipv6 ? sizeof(sa6) : sizeof(sa4)) < 0) {
             fprintf(stderr, "%s: cannot bind to %s:%d: %s\n", argv[0], interface, port, strerror(errno));
-            return 1;
+            return exit_not_running;
         }
         if (listen(listen_fd, 128) < 0) {
             fprintf(stderr, "%s: cannot listen on socket: %s\n", argv[0], strerror(errno));
-            return 1;
+            return exit_not_running;
         }
 
         /* Set up signal handling, in part conforming to freedesktop.org modern daemon requirements */
@@ -450,7 +455,7 @@ int main(int argc, char* argv[])
             int conn_fd = accept(listen_fd, NULL, NULL);
             if (conn_fd < 0) {
                 fprintf(stderr, "%s: cannot accept connection: %s\n", argv[0], strerror(errno));
-                return 1;
+                return exit_not_running;
             }
             if (fork() == 0) {
                 /* Child process */
@@ -461,7 +466,7 @@ int main(int argc, char* argv[])
                 conn = fdopen(conn_fd, "rb+");
                 ret = msmtpd_session(conn, conn, command);
                 fclose(conn);
-                exit(ret);
+                exit(ret); /* exit status does not really matter since nobody checks it, but still... */
             } else {
                 /* Parent process */
                 close(conn_fd);
@@ -469,5 +474,5 @@ int main(int argc, char* argv[])
         }
     }
 
-    return 0;
+    return exit_ok;
 }

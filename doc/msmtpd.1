@@ -44,5 +44,16 @@ Listen on the given IPv6 or IPv4 address instead of 127.0.0.1
 Listen on the given port number instead of 25
 .IP "\-\-command=\fIcmd\fP
 Pipe mails to \fIcmd\fP instead of msmtp
+.SH EXAMPLES
+.br
+.B Managing msmtpd with \fIstart-stop-daemon\fP
+.br
+# start msmtpd
+.br
+start-stop-daemon \-\-start \-\-pidfile /var/run/msmtpd.pid \-\-make-pidfile \-\-chuid msmtpd \-\-background \-\-exec /usr/local/bin/msmtpd \-\- \-\-command '/usr/local/bin/msmtp -f %F'
+.br
+# stop msmtpd
+.br
+start-stop-daemon \-\-stop  \-\-pidfile /var/run/msmtpd.pid \-\-remove-pidfile \-\-quiet \-\-signal TERM
 .SH SEE ALSO
 .BR msmtp(1)

@@ -1324,4 +1324,12 @@ Listen on the given port number instead of 25
 Pipe mails to @var{cmd} instead of msmtp
 @end table
 
+Example for managing msmtpd with @samp{start-stop-daemon}:
+@example
+# start msmtpd
+start-stop-daemon --start --pidfile /var/run/msmtpd.pid --make-pidfile --chuid msmtpd --background --exec /usr/local/bin/msmtpd -- --command '/usr/local/bin/msmtp -f %F'
+# stop msmtpd
+start-stop-daemon --stop  --pidfile /var/run/msmtpd.pid --remove-pidfile --quiet --signal TERM
+@end example
+
 @bye

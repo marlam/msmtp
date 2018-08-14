@@ -441,13 +441,13 @@ int main(int argc, char* argv[])
         }
 
         /* Accept connection */
+        signal(SIGCHLD, SIG_IGN); /* Make sure child processes do not become zombies */
         for (;;) {
             int conn_fd = accept(listen_fd, NULL, NULL);
             if (conn_fd < 0) {
                 fprintf(stderr, "%s: cannot accept connection: %s\n", argv[0], strerror(errno));
                 return 1;
             }
-            signal(SIGCHLD, SIG_IGN); /* Make sure child processes do not become zombies */
             if (fork() == 0) {
                 /* Child process */
                 signal(SIGCHLD, SIG_DFL); /* Make popen()/pclose() work again */

@@ -62,7 +62,10 @@ int read_smtp_cmd(FILE* in, char* buf, int bufsize)
 /* Read a mail address enclosed in < and > */
 int get_addr(const char* inbuf, char* outbuf, int allow_empty, size_t* addrlen)
 {
-    /* Copy content between < and > */
+    /* Skip spaces */
+    while (*inbuf == ' ')
+        inbuf++;
+    /* Copy content between '<' and '>' */
     if (inbuf[0] != '<')
         return 1;
     strcpy(outbuf, inbuf + 1);

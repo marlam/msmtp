@@ -54,7 +54,7 @@
 #endif
 
 #ifdef HAVE_LIBIDN
-# include <idna.h>
+# include <idn2.h>
 #endif
 
 #include "gettext.h"
@@ -699,7 +699,7 @@ int net_open_socket(
     hints.ai_flags |= AI_IDN;
 # endif
 #elif defined(HAVE_LIBIDN)
-    idna_to_ascii_lz(hostname, &idn_hostname, 0);
+    idn2_to_ascii_lz(hostname, &idn_hostname, IDN2_NFC_INPUT | IDN2_NONTRANSITIONAL);
 #endif
     error_code = getaddrinfo(idn_hostname ? idn_hostname : hostname,
             port_string, &hints, &res0);

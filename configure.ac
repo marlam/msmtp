@@ -230,7 +230,7 @@ if test "$want_libidn" = "no"; then
     libidn=no
 fi
 if test "$libidn" != "no"; then
-    PKG_CHECK_MODULES([libidn], [libidn >= 0.0], [HAVE_LIBIDN=1], [HAVE_LIBIDN=0])
+    PKG_CHECK_MODULES([libidn2], [libidn2 >= 0.0], [HAVE_LIBIDN=1], [HAVE_LIBIDN=0])
     if test "$HAVE_LIBIDN" != "1"; then
 	AC_MSG_WARN([library libidn not found:])
 	AC_MSG_WARN([$libidn_PKG_ERRORS])

@@ -48,7 +48,7 @@
 #endif /* HAVE_LIBSSL */
 
 #ifdef HAVE_LIBIDN
-# include <idna.h>
+# include <idn2.h>
 #endif
 
 #include "gettext.h"
@@ -839,7 +839,7 @@ int tls_check_cert(tls_t *tls, const char *hostname, char **errstr)
         if (i == 0)
         {
 #if GNUTLS_VERSION_NUMBER < 0x030400 && defined(HAVE_LIBIDN)
-            idna_to_ascii_lz(hostname, &idn_hostname, 0);
+            idn2_to_ascii_lz(hostname, &idn_hostname, IDN2_NFC_INPUT | IDN2_NONTRANSITIONAL);
 #endif
             error_code = gnutls_x509_crt_check_hostname(cert,
                     idn_hostname ? idn_hostname : hostname);
@@ -1005,7 +1005,7 @@ int tls_check_cert(tls_t *tls, const char *hostname, char **errstr)
      * type DNS or the Common Name (CN). */
 
 #ifdef HAVE_LIBIDN
-    idna_to_ascii_lz(hostname, &idn_hostname, 0);
+    idn2_to_ascii_lz(hostname, &idn_hostname, IDN2_NFC_INPUT | IDN2_NONTRANSITIONAL);
 #endif
 
     /* Try the DNS subjectAltNames. */

@@ -42,8 +42,9 @@ extern int optind;
 static const char* DEFAULT_INTERFACE = "127.0.0.1";
 static const int DEFAULT_PORT = 25;
 static const char* DEFAULT_COMMAND = BINDIR "/msmtp -f %F";
-static const int SMTP_BUFSIZE = 1024;
-static const int MAX_RECIPIENTS = 16;
+static const size_t SMTP_BUFSIZE = 640; /* must be at least 512 according to RFC2821 */
+static const size_t CMD_BLOCK_SIZE = 4096; /* initial buffer size for command */
+static const size_t CMD_MAX_BLOCKS = 16; /* limit memory allocation */
 
 /* Read SMTP command from client */
 int read_smtp_cmd(FILE* in, char* buf, int bufsize)
@@ -168,13 +169,13 @@ int smtp_pipe(FILE* in, FILE* pipe, char* buf, size_t bufsize)
 int msmtpd_session(FILE* in, FILE* out, const char* command)
 {
     char buf[SMTP_BUFSIZE];
-    char envfrom[SMTP_BUFSIZE];
-    size_t envfrom_len;
-    int envfrom_was_handled = 0;
-    int recipient_index = 0;
-    size_t recipient_len;
+    char addrbuf[SMTP_BUFSIZE];
+    size_t addrlen;
     char* cmd;
+    size_t cmd_blocks;
     size_t cmd_index = 0;
+    int envfrom_was_handled = 0;
+    int recipient_was_seen = 0;
     FILE* pipe;
     int pipe_status;
     size_t i;
@@ -198,14 +199,15 @@ int msmtpd_session(FILE* in, FILE* out, const char* command)
         fprintf(out, "221 Bye\r\n");
         return 0;
     }
-    if (get_addr(buf + 10, envfrom, 1, &envfrom_len) != 0) {
+    if (get_addr(buf + 10, addrbuf, 1, &addrlen) != 0) {
         fprintf(out, "501 Invalid address\r\n");
         return 1;
     }
 
-    cmd = malloc(strlen(command)
-            + SMTP_BUFSIZE - 12 /* "MAIL FROM:<>" */
-            + MAX_RECIPIENTS * (1 + SMTP_BUFSIZE - 10 /* "RCPT TO:<>" */));
+    cmd_blocks = 1;
+    while (cmd_blocks * CMD_BLOCK_SIZE < strlen(command) + addrlen + 4 * SMTP_BUFSIZE)
+        cmd_blocks++;
+    cmd = malloc(cmd_blocks * CMD_BLOCK_SIZE);
     if (!cmd) {
         fprintf(out, "554 %s\r\n", strerror(ENOMEM));
         return 1;
@@ -213,8 +215,8 @@ int msmtpd_session(FILE* in, FILE* out, const char* command)
 
     for (i = 0; command[i];) {
         if (!envfrom_was_handled && command[i] == '%' && command[i + 1] == 'F') {
-            memcpy(cmd + cmd_index, envfrom, envfrom_len);
-            cmd_index += envfrom_len;
+            memcpy(cmd + cmd_index, addrbuf, addrlen);
+            cmd_index += addrlen;
             i += 2;
             envfrom_was_handled = 1;
         } else {
@@ -230,7 +232,7 @@ int msmtpd_session(FILE* in, FILE* out, const char* command)
             free(cmd);
             return 1;
         }
-        if (recipient_index == 0) {
+        if (!recipient_was_seen) {
             if (strncmp(buf, "RCPT TO:", 8) != 0) {
                 fprintf(out, "500 Expected RCPT TO:<addr>\r\n");
                 free(cmd);
@@ -246,20 +248,29 @@ int msmtpd_session(FILE* in, FILE* out, const char* command)
         if (strcmp(buf, "DATA") == 0) {
             break;
         } else {
-            if (recipient_index == MAX_RECIPIENTS) {
-                fprintf(out, "554 Too many recipients\r\n");
-                free(cmd);
-                return 1;
-            }
-            cmd[cmd_index++] = ' ';
-            if (get_addr(buf + 8, cmd + cmd_index, 0, &recipient_len) != 0) {
+            if (get_addr(buf + 8, addrbuf, 0, &addrlen) != 0) {
                 fprintf(out, "501 Invalid address\r\n");
                 free(cmd);
                 return 1;
             }
-            cmd_index += recipient_len;
+            if (cmd_index + 1 + addrlen + 1 >= cmd_blocks * CMD_BLOCK_SIZE) {
+                cmd_blocks++;
+                if (cmd_blocks > CMD_MAX_BLOCKS) {
+                    fprintf(out, "554 Too many recipients\r\n");
+                    free(cmd);
+                    return 1;
+                }
+                cmd = realloc(cmd, cmd_blocks * CMD_MAX_BLOCKS);
+                if (!cmd) {
+                    fprintf(out, "554 %s\r\n", strerror(ENOMEM));
+                    return 1;
+                }
+            }
+            cmd[cmd_index++] = ' ';
+            memcpy(cmd + cmd_index, addrbuf, addrlen);
+            cmd_index += addrlen;
             fprintf(out, "250 Ok\r\n");
-            recipient_index++;
+            recipient_was_seen = 1;
         }
     }
     cmd[cmd_index++] = '\0';

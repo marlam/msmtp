@@ -483,7 +483,7 @@ void net_set_io_timeout(int socket, int seconds)
         (void)setsockopt(socket, SOL_SOCKET, SO_RCVTIMEO, &milliseconds, sizeof(int));
         (void)setsockopt(socket, SOL_SOCKET, SO_SNDTIMEO, &milliseconds, sizeof(int));
     }
-#else /* UNIX or DJGPP */
+#else /* UNIX */
     struct timeval tv;
 
     if (seconds > 0)

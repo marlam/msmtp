@@ -229,7 +229,7 @@ char *get_sysconfdir(void)
     RegCloseKey(hkey);
     return xstrdup((char *)sysconfdir);
 
-#else /* UNIX or DJGPP */
+#else /* UNIX */
 
 #ifdef SYSCONFDIR
     return xstrdup(SYSCONFDIR);
@@ -253,7 +253,6 @@ char *get_username(void)
 #ifdef W32_NATIVE
     DWORD size = UNLEN + 1;
     TCHAR buf[UNLEN + 1];
-#elif defined DJGPP
 #else /* UNIX */
     struct passwd *pw;
 #endif
@@ -282,12 +281,6 @@ char *get_username(void)
                 /* last resort */
                 username = xstrdup("unknown");
             }
-#elif defined DJGPP
-            /* DJGPP's getlogin() checks USER, then LOGNAME, and then uses
-             * "dosuser" as a last resort. We already checked USER and LOGNAME
-             * and choose "unknown" as a last resort to be consistent with the
-             * other systems. */
-            username = xstrdup("unknown");
 #else /* UNIX */
             username = getlogin();
             if (username)
@@ -319,7 +312,7 @@ char *get_userconfig(const char *userconfigfile)
     char *homedir = get_homedir();
     char *path = get_filename(homedir, userconfigfile);
 
-#if !defined(W32_NATIVE) && !defined(DJGPP)
+#if !defined(W32_NATIVE)
     struct stat buf;
     char *xdg_home;
     char *newpath;
@@ -393,21 +386,6 @@ char *get_homedir(void)
         {
             home = xstrdup("C:");
         }
-    }
-
-    return home;
-
-#elif defined DJGPP
-
-    char *home;
-
-    if ((home = getenv("HOME")))
-    {
-        home = xstrdup(home);
-    }
-    else
-    {
-        home = xstrdup("C:");
     }
 
     return home;
@@ -499,7 +477,7 @@ char *expand_tilde(const char *filename)
 
 int check_secure(const char *pathname)
 {
-#if defined W32_NATIVE || defined DJGPP || defined __CYGWIN__
+#if defined W32_NATIVE || defined __CYGWIN__
 
     return 0;
 
@@ -539,8 +517,6 @@ static void sleep_tenth_second(void)
 {
 #ifdef W32_NATIVE
     Sleep(100);
-#elif defined DJGPP
-    usleep(100000);
 #else /* POSIX */
     struct timespec tenth_second = { 0, 100000000 };
     nanosleep(&tenth_second, NULL);
@@ -569,7 +545,7 @@ int lock_file(FILE *f, int lock_type, int timeout)
         errno = 0;
 #ifdef W32_NATIVE
         lock_success = (_locking(fd, _LK_NBLCK, LONG_MAX) != -1);
-#else /* UNIX, DJGPP */
+#else /* UNIX */
         lock_success = (fcntl(fd, F_SETLK, &lock) != -1);
 #endif
         if (lock_success || (errno != EACCES && errno != EAGAIN)

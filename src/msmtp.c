@@ -80,11 +80,6 @@ extern int optind;
 #define USERCONFFILE    "msmtprc.txt"
 #define SYSNETRCFILE    "netrc.txt"
 #define USERNETRCFILE   "netrc.txt"
-#elif defined (DJGPP)
-#define SYSCONFFILE     "msmtprc"
-#define USERCONFFILE    "_msmtprc"
-#define SYSNETRCFILE    "netrc"
-#define USERNETRCFILE   "_netrc"
 #else /* UNIX */
 #define SYSCONFFILE     "msmtprc"
 #define USERCONFFILE    ".msmtprc"
@@ -405,15 +400,12 @@ char *msmtp_password_callback(const char *hostname, const char *user)
     }
 
     /* Do not let getpass() read from stdin, because we read the mail from
-     * there. DJGPP's getpass() always reads from stdin. On W32, gnulib's
-     * getpass() uses _getch(), which always reads from the 'console' and not
-     * stdin. On other systems, we test if /dev/tty can be opened before calling
-     * getpass(). */
+     * there. Our W32 getpass() uses _getch(), which always reads from the
+     * 'console' and not stdin. On other systems, we test if /dev/tty can be
+     * opened before calling getpass(). */
     if (!password)
     {
-#ifdef DJGPP
-        getpass_uses_tty = 0;
-#elif defined W32_NATIVE || defined __CYGWIN__
+#if defined W32_NATIVE || defined __CYGWIN__
         getpass_uses_tty = 1;
 #else
         getpass_uses_tty = 0;
@@ -3771,7 +3763,7 @@ int main(int argc, char *argv[])
 
 
     /* Avoid the side effects of text mode interpretations on DOS systems. */
-#if defined W32_NATIVE || defined DJGPP
+#if defined W32_NATIVE
     setmode(fileno(stdin), O_BINARY);
     _fmode = O_BINARY;
 #endif

@@ -1,6 +1,9 @@
 Version 1.8.0:
 - Using OpenSSL is discouraged and may not be supported in the future.
   Please consider using GnuTLS instead.
+- As using GNU SASL is most likely unnecessary, it is disabled by default now.
+  Since everything uses TLS nowadays, you really only need it for GSSAPI and
+  NTLM authentication. If you never heard of those, consider yourself lucky ;)
 
 Version 1.6.8:
 - Add --source-ip option and source_ip command to bind the outgoing connection

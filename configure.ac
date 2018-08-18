@@ -124,7 +124,7 @@ AC_SUBST([tls_LIBS])
 dnl GNU SASL
 AC_ARG_WITH([libgsasl], [AS_HELP_STRING([--with-libgsasl],
 	[Use GNU SASL authentication library.])],
-    [libgsasl=$withval], [libgsasl=yes])
+    [libgsasl=$withval], [libgsasl=no])
 if test "$libgsasl" != "no"; then
     PKG_CHECK_MODULES([libgsasl], [libgsasl >= 0.0], [HAVE_LIBGSASL=1], [HAVE_LIBGSASL=0])
     if test "$HAVE_LIBGSASL" != "1"; then
@@ -302,8 +302,8 @@ AC_OUTPUT
 
 echo
 echo "Install prefix ......... : $prefix"
+echo "NLS support ............ : $USE_NLS"
 echo "TLS support ............ : $have_tls (Library: $tls_lib)"
-echo "GNU SASL support ....... : $libgsasl"
 if test "$want_libidn" = "no"; then
     echo "IDN support ............ : yes (no library required)"
 elif test "$libidn" = "yes"; then
@@ -311,7 +311,7 @@ elif test "$libidn" = "yes"; then
 else
     echo "IDN support ............ : no"
 fi
-echo "NLS support ............ : $USE_NLS"
+echo "GNU SASL support ....... : $libgsasl (most likely unnecessary)"
 echo "Libsecret support (GNOME): $libsecret"
 echo "MacOS X Keychain support : $macosx_keyring"
 echo "Build msmtpd ............: $build_msmtpd"

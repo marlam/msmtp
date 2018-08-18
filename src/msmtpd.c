@@ -42,7 +42,7 @@ extern int optind;
 static const char* DEFAULT_INTERFACE = "127.0.0.1";
 static const int DEFAULT_PORT = 25;
 static const char* DEFAULT_COMMAND = BINDIR "/msmtp -f %F";
-static const size_t SMTP_BUFSIZE = 640; /* must be at least 512 according to RFC2821 */
+static const size_t SMTP_BUFSIZE = 1024; /* must be at least 512 according to RFC2821 */
 static const size_t CMD_BLOCK_SIZE = 4096; /* initial buffer size for command */
 static const size_t CMD_MAX_BLOCKS = 16; /* limit memory allocation */
 
@@ -205,7 +205,7 @@ int msmtpd_session(FILE* in, FILE* out, const char* command)
     }
 
     cmd_blocks = 1;
-    while (cmd_blocks * CMD_BLOCK_SIZE < strlen(command) + addrlen + 4 * SMTP_BUFSIZE)
+    while (cmd_blocks * CMD_BLOCK_SIZE < strlen(command) + addrlen + 2 * SMTP_BUFSIZE)
         cmd_blocks++;
     cmd = malloc(cmd_blocks * CMD_BLOCK_SIZE);
     if (!cmd) {

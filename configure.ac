@@ -57,37 +57,17 @@ if test -z "$PKG_CONFIG"; then
     AC_MSG_ERROR([pkg-config not found])
 fi
 
-dnl TLS/SSL
+dnl TLS
 have_tls="no"
 tls_lib="none"
 want_tls="yes"
 want_gnutls="yes"
-want_openssl="yes"
+want_openssl="no"
 tls_CFLAGS=""
 tls_LIBS=""
 with_ssl_was_used=no
-AC_ARG_WITH([ssl], [],
-    with_ssl_was_used=yes
-    if test "$withval" = "gnutls"; then
-	want_tls=yes
-	want_gnutls=yes
-	want_openssl=no
-    elif test "$withval" = "openssl"; then
-	want_tls=yes
-	want_gnutls=no
-	want_openssl=yes
-    elif test "$withval" = "no"; then
-	want_tls=no
-	want_gnutls=no
-	want_openssl=no
-    else
-	AC_MSG_ERROR([Use --with-tls=gnutls or --with-tls=openssl or --with-tls=no])
-    fi)
-if test "$with_ssl_was_used" = "yes"; then
-    AC_MSG_WARN([--with-ssl is deprecated, use --with-tls instead])
-fi
 AC_ARG_WITH([tls], [AS_HELP_STRING([--with-tls=[gnutls|openssl|no]],
-    [TLS/SSL support: GnuTLS (default), OpenSSL, or none.])],
+    [TLS support: GnuTLS (default), OpenSSL (discouraged), or none.])],
     if test "$withval" = "gnutls"; then
 	want_tls=yes
 	want_gnutls=yes
@@ -118,6 +98,7 @@ if test "$want_gnutls" = "yes"; then
     fi
 fi
 if test "$want_openssl" = "yes" -a "$have_tls" = "no"; then
+    AC_MSG_WARN([Using OpenSSL is discouraged; consider using GnuTLS instead])
     PKG_CHECK_MODULES([libssl], [openssl >= 0.0], [HAVE_LIBSSL=1], [HAVE_LIBSSL=0])
     if test "$HAVE_LIBSSL" != "1"; then
 	AC_MSG_WARN([library libssl not found:])
@@ -125,7 +106,7 @@ if test "$want_openssl" = "yes" -a "$have_tls" = "no"; then
 	AC_MSG_WARN([libssl is provided by OpenSSL])
     else
 	have_tls="yes"
-	tls_lib="OpenSSL"
+	tls_lib="OpenSSL (discouraged)"
 	tls_CFLAGS="$libssl_CFLAGS"
 	tls_LIBS="$libssl_LIBS"
 	AC_DEFINE([HAVE_LIBSSL], [1], [Define to 1 if libssl is available])
@@ -134,7 +115,7 @@ fi
 if test "$have_tls" = "yes"; then
     AC_DEFINE([HAVE_TLS], [1], [Define to 1 to build with TLS/SSL support])
 elif test "$want_tls" = "yes"; then
-    AC_MSG_WARN([Neither GnuTLS nor OpenSSL found, disabling TLS/SSL support])
+    AC_MSG_WARN([Disabling TLS support, which is very bad. Consider using GnuTLS!])
 fi
 AM_CONDITIONAL([HAVE_TLS], [test "$have_tls" = "yes"])
 AC_SUBST([tls_CFLAGS])
@@ -321,7 +302,7 @@ AC_OUTPUT
 
 echo
 echo "Install prefix ......... : $prefix"
-echo "TLS/SSL support ........ : $have_tls (Library: $tls_lib)"
+echo "TLS support ............ : $have_tls (Library: $tls_lib)"
 echo "GNU SASL support ....... : $libgsasl"
 if test "$want_libidn" = "no"; then
     echo "IDN support ............ : yes (no library required)"

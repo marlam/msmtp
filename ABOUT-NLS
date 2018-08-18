@@ -15,7 +15,3 @@ Activate your translation with this command:
     $ make update-po
 With the correct locale setting, your translation should be available after
 'make install'.
-
-There are special translation editors such as poedit <http://www.poedit.net/>
-that can help, and there are several guides available online, e.g.
-<http://freeciv.wikia.com/wiki/Gettext_Guide>.

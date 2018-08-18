@@ -9,9 +9,9 @@ file with your mail account(s) and tell your MUA to call msmtp instead of
 Features include:
 - Sendmail compatible interface (command line options and exit codes)
 - Support for multiple accounts
-- TLS/SSL support including client certificates
-- Many authentication methods
+- TLS support including client certificates
 - Support for Internationalized Domain Names (IDN)
+- Many authentication methods
 - Fast SMTP implementation using command pipelining
 - DSN (Delivery Status Notification) support
 - SOCKS proxy support

@@ -1,4 +1,8 @@
 Version 1.8.0:
+- A minimal SMTP server called msmtpd was added that listens on the local host
+  and pipes mails to msmtp (or another program). It is intended to be used with
+  system services that cannot be configured to call msmtp directly. You can
+  disable it with the configure option --without-msmtpd.
 - Using OpenSSL is discouraged and may not be supported in the future.
   Please consider using GnuTLS instead.
 - As using GNU SASL is most likely unnecessary, it is disabled by default now.

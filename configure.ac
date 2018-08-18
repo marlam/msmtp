@@ -285,8 +285,8 @@ fi
 
 dnl Check if msmtpd should be built
 AC_ARG_WITH([msmtpd],
-    [AS_HELP_STRING([--with-msmtpd], [Build msmtpd. Disabled by default.])],
-    [if test "$withval" = "yes"; then build_msmtpd="yes"; else build_msmtpd="no"; fi], [build_msmtpd="no"])
+    [AS_HELP_STRING([--with-msmtpd], [Build msmtpd. Enabled by default.])],
+    [if test "$withval" = "yes"; then build_msmtpd="yes"; else build_msmtpd="no"; fi], [build_msmtpd="yes"])
 AM_CONDITIONAL([BUILD_MSMTPD], [test "$build_msmtpd" = "yes"])
 
 dnl Global #defines for all source files

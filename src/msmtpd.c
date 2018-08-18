@@ -388,6 +388,7 @@ int main(int argc, char* argv[])
         return exit_not_running;
     }
     if (print_version) {
+        printf("msmtpd version %s\n", VERSION);
         printf("Copyright (C) 2018 Martin Lambers.\n"
                 "This is free software.  You may redistribute copies of it under the terms of\n"
                 "the GNU General Public License <http://www.gnu.org/licenses/gpl.html>.\n"

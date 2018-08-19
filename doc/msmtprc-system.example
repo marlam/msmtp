@@ -5,16 +5,18 @@
 # This allows msmtp to be used like /usr/sbin/sendmail.
 account default
 
-# The SMTP smarthost.
+# The SMTP smarthost
 host mailhub.oursite.example
 
-# Construct envelope-from addresses of the form "user@oursite.example".
+# Use TLS on port 465
+port 465
+tls on
+tls_starttls off
+tls_trust_file /etc/ssl/certs/ca-certificates.crt
+
+# Construct envelope-from addresses of the form "user@oursite.example"
 #auto_from on
 #maildomain oursite.example
 
-# Use TLS.
-#tls on
-#tls_trust_file /etc/ssl/certs/ca-certificates.crt
-
-# Syslog logging with facility LOG_MAIL instead of the default LOG_USER.
+# Syslog logging with facility LOG_MAIL instead of the default LOG_USER
 syslog LOG_MAIL

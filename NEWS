@@ -3,11 +3,12 @@ Version 1.8.0:
   and pipes mails to msmtp (or another program). It is intended to be used with
   system services that cannot be configured to call msmtp directly. You can
   disable it with the configure option --without-msmtpd.
-- Using OpenSSL is discouraged and may not be supported in the future.
-  Please consider using GnuTLS instead.
+- Using OpenSSL is discouraged and may not be supported in the future. Please
+  use GnuTLS instead. The reasons are explained here:
+  https://marlam.de/msmtp/news/openssl-discouraged/
 - As using GNU SASL is most likely unnecessary, it is disabled by default now.
-  Since everything uses TLS nowadays, you really only need it for GSSAPI and
-  NTLM authentication. If you never heard of those, consider yourself lucky ;)
+  Since everything uses TLS nowadays and thus can use PLAIN authentication, you
+  really only need it for GSSAPI and NTLM authentication.
 - If your system requires a library for IDN support, libidn2 is now used instead
   of the older libidn.
 

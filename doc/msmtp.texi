@@ -1179,7 +1179,7 @@ tls on
 tls_starttls off
 tls_trust_file /etc/ssl/certs/ca-certificates.crt
 
-# Construct envelope-from addresses of the form "user@oursite.example"
+# Construct envelope-from addresses of the form "user@@oursite.example"
 #auto_from on
 #maildomain oursite.example
 

@@ -8,7 +8,9 @@ Version 1.8.0:
   https://marlam.de/msmtp/news/openssl-discouraged/
 - As using GNU SASL is most likely unnecessary, it is disabled by default now.
   Since everything uses TLS nowadays and thus can use PLAIN authentication, you
-  really only need it for GSSAPI and NTLM authentication.
+  really only need it for GSSAPI.
+- The CRAM-MD5 authentication method is marked as obsolete / insecure and will
+  not be chosen automatically anymore.
 - If your system requires a library for IDN support, libidn2 is now used instead
   of the older libidn.
 

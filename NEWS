@@ -14,7 +14,8 @@ Version 1.8.0:
 - If your system requires a library for IDN support, libidn2 is now used instead
   of the older libidn.
 - Builtin default port numbers are now used instead of consulting /etc/services.
-- Support for DJGPP and for systems lacking mkstemp() or tmpfile() is removed.
+- Support for DJGPP and for systems lacking vasprintf(), mkstemp(), or tmpfile()
+  is removed.
 
 Version 1.6.8:
 - Add --source-ip option and source_ip command to bind the outgoing connection

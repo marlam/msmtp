@@ -1616,7 +1616,7 @@ int msmtp_read_headers(FILE *mailf, FILE *tmpf,
                 list_insert(recipients, resent_recipients->data);
                 recipients = recipients->next;
             }
-            list_free(resent_recipients);
+            list_free(resent_recipients_list);
         }
         else
         {
@@ -1628,7 +1628,7 @@ int msmtp_read_headers(FILE *mailf, FILE *tmpf,
                 list_insert(recipients, normal_recipients->data);
                 recipients = recipients->next;
             }
-            list_free(normal_recipients);
+            list_free(normal_recipients_list);
         }
         normal_recipients_list = NULL;
         resent_recipients_list = NULL;

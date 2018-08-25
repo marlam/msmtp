@@ -16,6 +16,17 @@ Features include:
 - DSN (Delivery Status Notification) support
 - SOCKS proxy support
 
+msmtp runs on a wide variety of platforms. It needs little more than an ANSI C
+compiler and Berkeley-style sockets. It does not require any additional libraries,
+but it can use the following to enhance its feature set:
+- GnuTLS. The GnuTLS library provides TLS support. It is highly recommended.
+  OpenSSL can be used as an alternative to GnuTLS, but this is discouraged.
+- GNU SASL. Using the GNU SASL library adds support for some exotic
+  authentication methods. You really only need it if you want to use GSSAPI.
+- GNU libidn2. On modern Linux systems with recent glibc and GnuTLS
+  libraries, msmtp has automatic support for Internationalized Domain Names
+  (IDN). On other systems, IDN support is available via libidn2.
+
 The homepage of this program is <https://marlam.de/msmtp>.
 
 This program is free software; you can redistribute it and/or modify it under 

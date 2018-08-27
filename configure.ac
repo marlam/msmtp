@@ -38,8 +38,9 @@ AC_PROG_INSTALL
 AC_LANG([C])
 
 dnl System
+build_msmtpd_default="yes"
 AC_DEFINE_UNQUOTED([PLATFORM], ["${target}"], [Platform triplet])
-case "${target}" in *-*-mingw*) LIBS="$LIBS -lws2_32" ;; esac
+case "${target}" in *-*-mingw*) LIBS="$LIBS -lws2_32"; build_msmtpd_default="no" ;; esac
 
 dnl Gettext
 AM_GNU_GETTEXT([external])
@@ -286,7 +287,7 @@ fi
 dnl Check if msmtpd should be built
 AC_ARG_WITH([msmtpd],
     [AS_HELP_STRING([--with-msmtpd], [Build msmtpd. Enabled by default.])],
-    [if test "$withval" = "yes"; then build_msmtpd="yes"; else build_msmtpd="no"; fi], [build_msmtpd="yes"])
+    [if test "$withval" = "yes"; then build_msmtpd="yes"; else build_msmtpd="no"; fi], [build_msmtpd="$build_msmtpd_default"])
 AM_CONDITIONAL([BUILD_MSMTPD], [test "$build_msmtpd" = "yes"])
 
 dnl Global #defines for all source files

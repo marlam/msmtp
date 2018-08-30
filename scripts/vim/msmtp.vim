@@ -24,7 +24,7 @@ syntax match msmtpOption /\<\(auth\|user\|password\|passwordeval\|ntlmdomain\)\>
 " TLS commands.
 syntax match msmtpOption /\<\(tls\|tls_trust_file\|tls_crl_file\|tls_fingerprint\|tls_key_file\|tls_cert_file\|tls_certcheck\|tls_starttls\|tls_min_dh_prime_bits\|tls_priorities\)\>/
 " Sendmail mode specific commands.
-syntax match msmtpOption /\<\(auto_from\|from\|maildomain\|dsn_notify\|dsn_return\|add_missing_from_header\|add_missing_date_header\|remove_bcc_headers\|logfile\|syslog\)\>/
+syntax match msmtpOption /\<\(auto_from\|from\|maildomain\|dsn_notify\|dsn_return\|add_missing_from_header\|add_missing_date_header\|remove_bcc_headers\|logfile\|logfile_time_format\|syslog\)\>/
 
 " Options which accept only an on/off value.
 syn match msmtpWrongOption /\<\(tls\|tls_certcheck\|tls_starttls\|auto_from\|add_missing_from_header\|add_missing_date_header\|remove_bcc_headers\) \(on$\|off$\)\@!.*$/

@@ -4143,15 +4143,8 @@ int main(int argc, char *argv[])
         }
         if (!have_date_header && account->add_missing_date_header)
         {
-            time_t t;
             char rfc2822_timestamp[32];
-            if ((t = time(NULL)) < 0)
-            {
-                print_error(_("cannot get system time: %s"), strerror(errno));
-                error_code = EX_OSERR;
-                goto exit;
-            }
-            print_time_rfc2822(t, rfc2822_timestamp);
+            print_time_rfc2822(time(NULL), rfc2822_timestamp);
             fprintf(prepend_header_tmpfile, "Date: %s\n", rfc2822_timestamp);
         }
         if (prepend_header_tmpfile

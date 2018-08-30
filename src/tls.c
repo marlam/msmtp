@@ -109,12 +109,7 @@ int seed_prng(char **errstr)
         }
         /* Seed in time. I can't think of other "random" things on DOS
          * systems. */
-        if ((t = time(NULL)) < 0)
-        {
-            *errstr = xasprintf(_("cannot get system time: %s"),
-                    strerror(errno));
-            return TLS_ESEED;
-        }
+        t = time(NULL);
         RAND_seed((unsigned char *)&t, sizeof(time_t));
         /* If the RANDFILE + time is not enough, we fall back to the insecure
          * and stupid method of seeding OpenSSLs PRNG with the systems PRNG. */
@@ -810,12 +805,7 @@ int tls_check_cert(tls_t *tls, const char *hostname, char **errstr)
         return TLS_ECERT;
     }
     /* Needed to check times: */
-    if ((t1 = time(NULL)) < 0)
-    {
-        *errstr = xasprintf("%s: cannot get system time: %s", error_msg,
-                strerror(errno));
-        return TLS_ECERT;
-    }
+    t1 = time(NULL);
     /* Check the certificate chain. All certificates in the chain must have
      * valid activation/expiration times. The first certificate in the chain is
      * the host's certificate; it must match the hostname. */

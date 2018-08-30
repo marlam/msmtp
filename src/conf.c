@@ -94,6 +94,7 @@ account_t *account_new(const char *conffile, const char *id)
     a->tls_min_dh_prime_bits = -1;
     a->tls_priorities = NULL;
     a->logfile = NULL;
+    a->logfile_time_format = NULL;
     a->syslog = NULL;
     a->aliases = NULL;
     a->proxy_host = NULL;
@@ -178,6 +179,8 @@ account_t *account_copy(account_t *acc)
         a->tls_priorities =
             acc->tls_priorities ? xstrdup(acc->tls_priorities) : NULL;
         a->logfile = acc->logfile ? xstrdup(acc->logfile) : NULL;
+        a->logfile_time_format =
+            acc->logfile_time_format ? xstrdup(acc->logfile_time_format) : NULL;
         a->syslog = acc->syslog ? xstrdup(acc->syslog) : NULL;
         a->aliases = acc->aliases ? xstrdup(acc->aliases) : NULL;
         a->proxy_host = acc->proxy_host ? xstrdup(acc->proxy_host) : NULL;
@@ -224,6 +227,7 @@ void account_free(void *a)
         free(p->dsn_return);
         free(p->dsn_notify);
         free(p->logfile);
+        free(p->logfile_time_format);
         free(p->syslog);
         free(p->aliases);
         free(p->proxy_host);
@@ -678,6 +682,12 @@ void override_account(account_t *acc1, account_t *acc2)
     {
         free(acc1->logfile);
         acc1->logfile = acc2->logfile ? xstrdup(acc2->logfile) : NULL;
+    }
+    if (acc2->mask & ACC_LOGFILE_TIME_FORMAT)
+    {
+        free(acc1->logfile_time_format);
+        acc1->logfile_time_format =
+            acc2->logfile_time_format ? xstrdup(acc2->logfile_time_format) : NULL;
     }
     if (acc2->mask & ACC_SYSLOG)
     {
@@ -1632,6 +1642,19 @@ int read_conffile(const char *conffile, FILE *f, list_t **acc_list,
             else
             {
                 acc->logfile = expand_tilde(arg);
+            }
+        }
+        else if (strcmp(cmd, "logfile_time_format") == 0)
+        {
+            acc->mask |= ACC_LOGFILE_TIME_FORMAT;
+            free(acc->logfile_time_format);
+            if (*arg == '\0')
+            {
+                acc->logfile_time_format = NULL;
+            }
+            else
+            {
+                acc->logfile_time_format = xstrdup(arg);
             }
         }
         else if (strcmp(cmd, "syslog") == 0)

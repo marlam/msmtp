@@ -392,6 +392,13 @@ This command controls whether to remove Bcc headers. The default is to remove th
 Enable logging to the specified file. An empty argument disables logging. The
 file name @samp{-} directs the log information to standard output.
 @xref{Logging}.
+@anchor{logfile_time_format}
+@item logfile_time_format [@var{fmt}]
+@cmindex logfile_time_format
+Set or unset the log file time format. This will be used as the format string
+for the strftime() function. An empty argument chooses the default
+(@samp{"%b %d %H:%M:%S"}).
+@xref{Logging}.
 @anchor{syslog}
 @item syslog [(on|off|@var{facility})]
 @cmindex syslog
@@ -638,6 +645,10 @@ Enable or disable the removal of Bcc headers. @xref{remove_bcc_headers}.
 @opindex -X
 @opindex --logfile
 Set or unset the log file. @xref{logfile}.
+@anchor{--logfile-time-format}
+@item --logfile-time-format=[@var{fmt}]
+@opindex --logfile-time-format
+Set or unset the log file time format. @xref{logfile_time_format}.
 @anchor{--syslog}
 @item --syslog[=(on|off|@var{facility})]
 @opindex --syslog
@@ -956,7 +967,8 @@ success): @code{exitcode=EX_@dots{}}
 @end itemize
 
 If a logfile is given with the @ref{logfile} command, this log line will be
-prepended with the current date and time and appended to the specified file.
+prepended with the current date and time (formatted according to
+@ref{logfile_time_format}) and appended to the specified file.
 
 If syslog logging is enabled with the @ref{syslog} command, the log line is
 passed to the syslog service with the specified facility.

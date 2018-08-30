@@ -2119,33 +2119,34 @@ char *msmtp_get_log_info(account_t *acc, list_t *recipients, long mailsize,
 /*
  * msmtp_log_to_file()
  *
- * Append a log entry to 'acc->logfile' with the following information:
- * - date/time
+ * Append a log entry to 'logfile' with the following information:
+ * - date/time in the format given by 'logfile_time_format' (may be NULL)
  * - the log line as delivered by msmtp_get_log_info
  */
 
-void msmtp_log_to_file(const char *logfile, const char *loginfo)
+void msmtp_log_to_file(const char *logfile, const char *logfile_time_format,
+        const char *loginfo)
 {
-    FILE *f;
+    FILE *f = NULL;
     time_t t;
     struct tm *tm;
     char *failure_reason;
-    char time_str[64];
+    const char *time_fmt;
+    char time_str[128];
     int e;
 
     /* get time */
-    if ((t = time(NULL)) < 0)
+    t = time(NULL); /* cannot fail */
+    tm = localtime(&t); /* cannot fail */
+    time_fmt = logfile_time_format ? logfile_time_format : "%b %d %H:%M:%S";
+    if (strftime(time_str, sizeof(time_str), time_fmt, tm) == 0)
     {
-        failure_reason = xasprintf(_("cannot get system time: %s"),
-                strerror(errno));
+        /* a return value of 0 is only an error with a non-empty time_fmt,
+         * but we know it is non-empty since we cannot configure an empty
+         * logfile_time_format in msmtp (it would be set to NULL). */
+        failure_reason = xasprintf(_("invalid logfile_time_format"));
         goto log_failure;
     }
-    if (!(tm = localtime(&t)))
-    {
-        failure_reason = xstrdup(_("cannot convert UTC time to local time"));
-        goto log_failure;
-    }
-    (void)strftime(time_str, sizeof(time_str), "%b %d %H:%M:%S", tm);
 
     /* write log to file */
     if (strcmp(logfile, "-") == 0)
@@ -2191,6 +2192,10 @@ void msmtp_log_to_file(const char *logfile, const char *loginfo)
 
     /* error exit target */
 log_failure:
+    if (f && f != stdout)
+    {
+        fclose(f);
+    }
     print_error(_("cannot log to %s: %s"), logfile, failure_reason);
     free(failure_reason);
     if (loginfo)
@@ -2469,6 +2474,7 @@ void msmtp_print_help(void)
     printf(_("  -N, --dsn-notify=(off|cond)  set/unset DSN conditions\n"));
     printf(_("  -R, --dsn-return=(off|ret)   set/unset DSN amount\n"));
     printf(_("  -X, --logfile=[file]         set/unset log file\n"));
+    printf(_("  --logfile-time-format=[fmt]  set/unset log file time format for strftime()\n"));
     printf(_("  --syslog[=(on|off|facility)] enable/disable/configure syslog logging\n"));
     printf(_("  -t, --read-recipients        read additional recipients from the mail\n"));
     printf(_("  --read-envelope-from         read envelope from address from the mail\n"));
@@ -2548,6 +2554,7 @@ typedef struct
 #define LONGONLYOPT_ADD_MISSING_DATE_HEADER     (256 + 31)
 #define LONGONLYOPT_REMOVE_BCC_HEADERS          (256 + 32)
 #define LONGONLYOPT_SOURCE_IP                   (256 + 33)
+#define LONGONLYOPT_LOGFILE_TIME_FORMAT         (256 + 34)
 
 int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
 {
@@ -2592,6 +2599,8 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
         { "protocol", required_argument, 0, LONGONLYOPT_PROTOCOL },
         { "domain", required_argument, 0, LONGONLYOPT_DOMAIN },
         { "logfile", required_argument, 0, 'X' },
+        { "logfile-time-format", required_argument, 0,
+            LONGONLYOPT_LOGFILE_TIME_FORMAT },
         { "syslog", optional_argument, 0, LONGONLYOPT_SYSLOG },
         { "aliases", required_argument, 0, LONGONLYOPT_ALIASES },
         { "proxy-host", required_argument, 0, LONGONLYOPT_PROXY_HOST },
@@ -3124,6 +3133,19 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
                     conf->cmdline_account->logfile = NULL;
                 }
                 conf->cmdline_account->mask |= ACC_LOGFILE;
+                break;
+
+            case LONGONLYOPT_LOGFILE_TIME_FORMAT:
+                free(conf->cmdline_account->logfile_time_format);
+                if (*optarg)
+                {
+                    conf->cmdline_account->logfile_time_format = xstrdup(optarg);
+                }
+                else
+                {
+                    conf->cmdline_account->logfile_time_format = NULL;
+                }
+                conf->cmdline_account->mask |= ACC_LOGFILE_TIME_FORMAT;
                 break;
 
             case LONGONLYOPT_SYSLOG:
@@ -3692,6 +3714,9 @@ void msmtp_print_conf(msmtp_cmdline_conf_t conf, account_t *account)
                 account->dsn_return ? account->dsn_return : _("(not set)"));
         printf("logfile = %s\n",
                 account->logfile ? account->logfile : _("(not set)"));
+        printf("logfile_time_format = %s\n",
+                account->logfile_time_format ? account->logfile_time_format
+                : _("(not set)"));
         printf("syslog = %s\n",
                 account->syslog ? account->syslog : _("(not set)"));
         printf("aliases = %s\n",
@@ -4220,7 +4245,7 @@ int main(int argc, char *argv[])
                     errmsg, errstr, error_code);
             if (account->logfile)
             {
-                msmtp_log_to_file(account->logfile, log_info);
+                msmtp_log_to_file(account->logfile, account->logfile_time_format, log_info);
             }
 #ifdef HAVE_SYSLOG
             if (account->syslog)

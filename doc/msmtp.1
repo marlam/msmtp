@@ -157,6 +157,8 @@ Enable or disable the removal of Bcc headers. See the \fBremove_bcc_headers\fP
 command.
 .IP "\-X, \-\-logfile=[\fIfile\fP]"
 Set or unset the log file. See the \fBlogfile\fP command.
+.IP "\-\-logfile\-time\-format=[\fIfmt\fP]"
+Set or unset the log file time format. See the \fBlogfile_time_format\fP command.
 .IP "\-\-syslog[=(\fIon\fP|\fIoff\fP|\fIfacility\fP)]"
 Enable or disable syslog logging. See the \fBsyslog\fP command.
 .IP "\-t, \-\-read\-recipients"
@@ -527,7 +529,8 @@ When logging is enabled by choosing a log file, msmtp will append one line to
 the log file for each mail it tries to send via the account that this log file
 was chosen for.
 .br
-The line will include the following information: date and time, host name of the
+The line will include the following information: date and time in the format
+specified by \fBlogfile_time_format\fP, host name of the
 SMTP server, whether TLS was used, whether authentication was used,
 authentication user name (only if authentication is used), envelope-from
 address, recipient addresses, size of the mail as transferred to the server
@@ -538,6 +541,10 @@ success).
 .br
 If the filename is a dash (\-), msmtp prints the log line to the standard
 output.
+.IP "logfile_time_format [\fIfmt\fP]"
+Set or unset the log file time format. This will be used as the format string
+for the strftime() function. An empty argument chooses the default
+("%b %d %H:%M:%S").
 .IP "syslog [(\fIon\fP|\fIoff\fP|\fIfacility\fP)]"
 Enable or disable syslog logging. The facility can be one of LOG_USER, LOG_MAIL,
 LOG_LOCAL0, ..., LOG_LOCAL7. The default is LOG_USER.

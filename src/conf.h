@@ -79,6 +79,7 @@
 #define ACC_ADD_MISSING_DATE_HEADER     (1LL << 31LL)
 #define ACC_REMOVE_BCC_HEADERS          (1LL << 32LL)
 #define ACC_SOURCE_IP                   (1LL << 33LL)
+#define ACC_LOGFILE_TIME_FORMAT         (1LL << 34LL)
 
 typedef struct
 {
@@ -123,6 +124,7 @@ typedef struct
     char *tls_priorities;       /* parameter; NULL for default */
     /* logging */
     char *logfile;              /* NULL or logfile */
+    char *logfile_time_format;  /* NULL or format string for strftime() */
     char *syslog;               /* NULL or syslog facility */
     char *aliases;              /* NULL or aliases file */
     /* proxy */

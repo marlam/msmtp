@@ -9,10 +9,13 @@ Version 1.8.0:
 - As using GNU SASL is most likely unnecessary, it is disabled by default now.
   Since everything uses TLS nowadays and thus can use PLAIN authentication, you
   really only need it for GSSAPI.
-- The CRAM-MD5 authentication method is marked as obsolete / insecure and will
-  not be chosen automatically anymore.
 - If your system requires a library for IDN support, libidn2 is now used instead
   of the older libidn.
+- The CRAM-MD5 authentication method is marked as obsolete / insecure and will
+  not be chosen automatically anymore.
+- The passwordeval command does not require the password to be terminated by a
+  new line character anymore.
+- The new logfile_time_format command allows to customize log file time stamps.
 - Builtin default port numbers are now used instead of consulting /etc/services.
 - Support for DJGPP and for systems lacking vasprintf(), mkstemp(), or tmpfile()
   is removed.

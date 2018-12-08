@@ -1516,20 +1516,17 @@ int tls_readbuf_read(tls_t *tls, readbuf_t *readbuf, char *ptr,
 
     if (readbuf->count <= 0)
     {
-        ret = (int)gnutls_record_recv(tls->session,
-                readbuf->buf, sizeof(readbuf->buf));
+        do
+        {
+            ret = gnutls_record_recv(tls->session,
+                    readbuf->buf, sizeof(readbuf->buf));
+        }
+        while (ret == GNUTLS_E_AGAIN);
         if (ret < 0)
         {
             if (ret == GNUTLS_E_INTERRUPTED)
             {
                 *errstr = xasprintf(_("operation aborted"));
-            }
-            else if (ret == GNUTLS_E_AGAIN)
-            {
-                /* This error message makes more sense than what
-                 * gnutls_strerror() would return. */
-                *errstr = xasprintf(_("cannot read from TLS connection: %s"),
-                        _("the operation timed out"));
             }
             else
             {
@@ -1650,18 +1647,16 @@ int tls_puts(tls_t *tls, const char *s, size_t len, char **errstr)
         return TLS_EOK;
     }
 
-    if ((ret = gnutls_record_send(tls->session, s, len)) < 0)
+    do
+    {
+        ret = gnutls_record_send(tls->session, s, len);
+    }
+    while (ret == GNUTLS_E_AGAIN);
+    if (ret < 0)
     {
         if (ret == GNUTLS_E_INTERRUPTED)
         {
             *errstr = xasprintf(_("operation aborted"));
-        }
-        else if (ret == GNUTLS_E_AGAIN)
-        {
-            /* This error message makes more sense than what
-             * gnutls_strerror() would return. */
-            *errstr = xasprintf(_("cannot write to TLS connection: %s"),
-                    _("the operation timed out"));
         }
         else
         {
@@ -1728,7 +1723,12 @@ void tls_close(tls_t *tls)
     if (tls->is_active)
     {
 #ifdef HAVE_LIBGNUTLS
-        gnutls_bye(tls->session, GNUTLS_SHUT_WR);
+        int e;
+        do
+        {
+            e = gnutls_bye(tls->session, GNUTLS_SHUT_WR);
+        }
+        while (e == GNUTLS_E_AGAIN);
         gnutls_deinit(tls->session);
         gnutls_certificate_free_credentials(tls->cred);
 #endif /* HAVE_LIBGNUTLS */

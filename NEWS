@@ -1,3 +1,6 @@
+Version 1.8.1:
+- Fixed our TLS code to support TLS 1.3 with GnuTLS.
+
 Version 1.8.0:
 - A minimal SMTP server called msmtpd was added that listens on the local host
   and pipes mails to msmtp (or another program). It is intended to be used with

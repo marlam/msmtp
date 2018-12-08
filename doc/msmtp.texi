@@ -834,10 +834,12 @@ $ secret-tool store --label=msmtp \
   service smtp \
   user joe.smith
 @end example
-On Mac OS X, use the Keychain Access GUI application.
-The @samp{account name} is same as the user name. The
-@samp{keychain item name} is @code{smtp://<hostname>} where @code{<hostname>}
-matches the @samp{host} argument.
+On Mac OS X, use the following command:
+@example
+security add-internet-password -s mail.freemail.example -r smtp -a joe.smith -w
+@end example
+In both examples, replace mail.freemail.example with the SMTP server name, and
+joe.smith with your user name.
 @item Store the password in an encrypted files, and use @ref{passwordeval}
 to specify a command to decrypt that file, e.g. using GnuPG. @xref{Examples}.
 @item Store the password in the configuration file using the @ref{password} command.

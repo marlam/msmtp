@@ -762,8 +762,6 @@ int tls_check_cert(tls_t *tls, const char *hostname, char **errstr)
     /* If 'tls->have_trust_file' is true, this function uses the trusted CAs
      * in the credentials structure. So you must have installed one or more CA
      * certificates. */
-    gnutls_certificate_set_verify_flags(tls->cred,
-            GNUTLS_VERIFY_ALLOW_X509_V1_CA_CRT);
     if ((error_code = gnutls_certificate_verify_peers2(tls->session,
                     &status)) != 0)
     {

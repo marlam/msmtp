@@ -1398,7 +1398,7 @@ char *openssl_io_error(int error_code, int error_code2,
  */
 
 int tls_start(tls_t *tls, int fd, const char *hostname, int no_certcheck,
-        tls_cert_info_t *tci, char **errstr)
+        tls_cert_info_t *tci, char **tls_parameter_description, char **errstr)
 {
 #ifdef HAVE_LIBGNUTLS
     int error_code;
@@ -1430,6 +1430,19 @@ int tls_start(tls_t *tls, int fd, const char *hostname, int no_certcheck,
             gnutls_deinit(tls->session);
             gnutls_certificate_free_credentials(tls->cred);
             return error_code;
+        }
+    }
+    if (tls_parameter_description)
+    {
+        char *p = gnutls_session_get_desc(tls->session);
+        if (p)
+        {
+            *tls_parameter_description = xstrdup(p);
+            gnutls_free(p);
+        }
+        else
+        {
+            *tls_parameter_description = NULL;
         }
     }
     if (!no_certcheck)
@@ -1483,6 +1496,10 @@ int tls_start(tls_t *tls, int fd, const char *hostname, int no_certcheck,
             SSL_CTX_free(tls->ssl_ctx);
             return error_code;
         }
+    }
+    if (tls_parameter_description)
+    {
+        *tls_parameter_description = NULL; /* TODO */
     }
     if (!no_certcheck)
     {

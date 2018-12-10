@@ -216,7 +216,7 @@ int smtp_tls_starttls(smtp_server_t *srv, list_t **error_msg, char **errstr);
  */
 #ifdef HAVE_TLS
 int smtp_tls(smtp_server_t *srv, const char *hostname, int tls_nocertcheck,
-        tls_cert_info_t *tci, char **errstr);
+        tls_cert_info_t *tci, char **tls_parameter_description, char **errstr);
 #endif /* HAVE_TLS */
 
 /*

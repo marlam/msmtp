@@ -3,7 +3,8 @@
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2010, 2014, 2016
+ * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2010, 2014, 2016,
+ * 2018
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -151,10 +152,12 @@ int tls_init(tls_t *tls,
  * peer's certificata will be stored in it. It can later be freed with
  * tls_cert_info_free(). 'tci' is allowed to be NULL; no certificate
  * information will be passed in this case.
+ * 'tls_parameter_description' may be NULL; if it is not, it will be used
+ * to return an allocated string describing the TLS session parameters.
  * Used error codes: TLS_ELIBFAILED, TLS_ECERT, TLS_EHANDSHAKE
  */
 int tls_start(tls_t *tls, int fd, const char *hostname, int no_certcheck,
-        tls_cert_info_t *tci, char **errstr);
+        tls_cert_info_t *tci, char **tls_parameter_description, char **errstr);
 
 /*
  * tls_is_active()

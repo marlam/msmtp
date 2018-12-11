@@ -1434,16 +1434,7 @@ int tls_start(tls_t *tls, int fd, const char *hostname, int no_certcheck,
     }
     if (tls_parameter_description)
     {
-        char *p = gnutls_session_get_desc(tls->session);
-        if (p)
-        {
-            *tls_parameter_description = xstrdup(p);
-            gnutls_free(p);
-        }
-        else
-        {
-            *tls_parameter_description = NULL;
-        }
+        *tls_parameter_description = gnutls_session_get_desc(tls->session);
     }
     if (!no_certcheck)
     {

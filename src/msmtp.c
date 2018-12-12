@@ -378,7 +378,7 @@ char *msmtp_password_callback(const char *hostname, const char *user)
             {
                 password = xstrdup(netrc_host->password);
             }
-            free_netrc_entry_list(netrc_hostlist);
+            free_netrc(netrc_hostlist);
         }
         free(netrc_filename);
     }
@@ -394,7 +394,7 @@ char *msmtp_password_callback(const char *hostname, const char *user)
             {
                 password = xstrdup(netrc_host->password);
             }
-            free_netrc_entry_list(netrc_hostlist);
+            free_netrc(netrc_hostlist);
         }
         free(netrc_filename);
     }

@@ -1,27 +1,27 @@
-/*
- * netrc.h
- *
- * This file was taken from fetchmail 6.2.5.
- * Gordon Matzigkeit <gord@gnu.ai.mit.edu>, 1996
- * Copyright assigned to Eric S. Raymond, October 2001.
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software Foundation,
- *   Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+/* This file was taken from fetchmail 6.3.26. */
+/* netrc.h -- declarations for netrc.c
+ * For license terms, see the file COPYING in this directory.
  */
 
 #ifndef _NETRC_H_
 #define _NETRC_H_ 1
+
+# undef __BEGIN_DECLS
+# undef __END_DECLS
+#ifdef __cplusplus
+# define __BEGIN_DECLS extern "C" {
+# define __END_DECLS }
+#else
+# define __BEGIN_DECLS /* empty */
+# define __END_DECLS /* empty */
+#endif
+
+#undef __P
+#if defined (__STDC__) || defined (_AIX) || (defined (__mips) && defined (_SYSTYPE_SVR4)) || defined(WIN32) || defined(__cplusplus)
+# define __P(protos) protos
+#else
+# define __P(protos) ()
+#endif
 
 /* The structure used to return account information from the .netrc. */
 typedef struct _netrc_entry {
@@ -38,17 +38,18 @@ typedef struct _netrc_entry {
   struct _netrc_entry *next;
 } netrc_entry;
 
+__BEGIN_DECLS
 /* Parse FILE as a .netrc file (as described in ftp(1)), and return a
    list of entries.  NULL is returned if the file could not be
    parsed. */
-netrc_entry *parse_netrc(const char *file);
+netrc_entry *parse_netrc __P((const char *file));
 
 /* Return the netrc entry from LIST corresponding to HOST.  NULL is
    returned if no such entry exists. */
-netrc_entry *search_netrc(netrc_entry *list, 
-	const char *host, const char *account);
+netrc_entry *search_netrc __P((netrc_entry *list, const char *host, const char *account));
 
-/* Free a netrc list */
-void free_netrc_entry_list(netrc_entry *list);
+/* Free the netrc list structure */
+void free_netrc __P((netrc_entry *list));
+__END_DECLS
 
 #endif /* _NETRC_H_ */

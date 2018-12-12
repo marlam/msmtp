@@ -1,28 +1,17 @@
+/* This file was taken from fetchmail 6.3.26. */
 /*
- * netrc.c
+ * netrc.c -- parse the .netrc file to get hosts, accounts, and passwords
  *
- * This file was taken from fetchmail 6.2.5.
- * Gordon Matzigkeit <gord@gnu.ai.mit.edu>, 1996
- * Copyright assigned to Eric S. Raymond, October 2001.
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software Foundation,
- *   Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- */
+   Gordon Matzigkeit <gord@gnu.ai.mit.edu>, 1996
+   Copyright assigned to Eric S. Raymond, October 2001.
 
-#ifdef HAVE_CONFIG_H
-# include "config.h"
-#endif
+   For license terms, see the file COPYING in this directory.
+
+   Compile with -DSTANDALONE to test this module.
+   (Makefile.am should have a rule so you can just type "make netrc")
+*/
+
+#include "config.h"
 
 #include <stdio.h>
 #include <ctype.h>
@@ -34,27 +23,20 @@
 
 #define POPBUFSIZE 512
 
-/* Free a netrc list */
-void 
-free_netrc_entry_list(netrc_entry *list)
-{
-    netrc_entry *current = list;
-    netrc_entry *tmp;
+#ifdef STANDALONE
+/* Normally defined in xstrdup.c. */
+# define xstrdup strdup
 
-    while (current)
-    {
-	free(current->host);
-	free(current->login);
-	free(current->password);
-	tmp = current;
-	current = current->next;
-	free(tmp);
-    }
-}
-    
+/* Normally defined in xmalloc.c */
+# define xmalloc malloc
+# define xrealloc realloc
+
+const char *program_name = "netrc";
+#endif
+
 /* Maybe add NEWENTRY to the account information list, LIST.  NEWENTRY is
    set to a ready-to-use netrc_entry, in any event. */
-void
+static void
 maybe_add_to_list (netrc_entry **newentry, netrc_entry **list)
 {
     netrc_entry *a, *l;
@@ -125,7 +107,7 @@ parse_netrc (const char *file)
     premature_token = NULL;
 
     /* While there are lines in the file... */
-    while (fgets(buf, POPBUFSIZE, fp))
+    while (fgets(buf, sizeof(buf) - 1, fp))
     {
 	ln++;
 
@@ -152,7 +134,7 @@ parse_netrc (const char *file)
 	    char *pp;
 
 	    /* Skip any whitespace. */
-	    while (*p && isspace((unsigned char)*p))
+	    while (*p && isspace ((unsigned char)*p))
 		p++;
 
 	    /* Discard end-of-line comments. */
@@ -162,7 +144,7 @@ parse_netrc (const char *file)
 	    tok = pp = p;
 
 	    /* Find the end of the token. */
-	    while (*p && (quote_char || !isspace((unsigned char)*p)))
+	    while (*p && (quote_char || !isspace ((unsigned char)*p)))
 	    {
 		if (quote_char)
 		{
@@ -236,17 +218,11 @@ parse_netrc (const char *file)
 
 	    if (premature_token)
 	    {
-/*
-#ifdef HAVE_ERROR
-		error_at_line (0, file, ln,
-			       GT_("warning: found \"%s\" before any host names"),
-			       premature_token);
-#else
+#if 0
 		fprintf (stderr,
 			 GT_("%s:%d: warning: found \"%s\" before any host names\n"),
 			 file, ln, premature_token);
 #endif
-*/
 		premature_token = NULL;
 	    }
 
@@ -283,10 +259,10 @@ parse_netrc (const char *file)
 
 		else
 		{
-		    /*
+#if 0
 		    fprintf (stderr, GT_("%s:%d: warning: unknown token \"%s\"\n"),
 			     file, ln, tok);
-		    */
+#endif
 		}
 	    }
 	}
@@ -337,3 +313,112 @@ search_netrc (netrc_entry *list, const char *host, const char *login)
     /* Return the matching entry, or NULL. */
     return list;
 }
+
+void
+free_netrc(netrc_entry *a) {
+    while(a) {
+	netrc_entry *n = a->next;
+	if (a->password != NULL) {
+		memset(a->password, 0x55, strlen(a->password));
+		free(a->password);
+	}
+	free(a->login);
+	free(a->host);
+	free(a);
+	a = n;
+    }
+}
+
+#ifdef STANDALONE
+#include <sys/types.h>
+#include <sys/stat.h>
+
+#include <errno.h>
+
+int main (int argc, char **argv)
+{
+    struct stat sb;
+    char *file, *host, *login;
+    netrc_entry *head, *a;
+
+    program_name = argv[0];
+    file = argv[1];
+    host = argv[2];
+    login = argv[3];
+
+    switch (argc) {
+	case 2:
+	case 4:
+	    break;
+	default:
+	    fprintf (stderr, "Usage: %s <file> [<host> <login>]\n", argv[0]);
+	    exit(EXIT_FAILURE);
+    }
+
+    if (stat (file, &sb))
+    {
+	fprintf (stderr, "%s: cannot stat %s: %s\n", argv[0], file,
+		 strerror (errno));
+	exit (1);
+    }
+
+    head = parse_netrc (file);
+    if (!head)
+    {
+	fprintf (stderr, "%s: no entries found in %s\n", argv[0], file);
+	exit (1);
+    }
+
+    if (host && login)
+    {
+	int status;
+	status = EXIT_SUCCESS;
+
+	printf("Host: %s, Login: %s\n", host, login);
+	    
+	a = search_netrc (head, host, login);
+	if (a)
+	{
+	    /* Print out the password (if any). */
+	    if (a->password)
+	    {
+		printf("Password: %s\n", a->password);
+	    }
+	} else
+	    status = EXIT_FAILURE;
+	fputc ('\n', stdout);
+
+	exit (status);
+    }
+
+    /* Print out the entire contents of the netrc. */
+    a = head;
+    while (a)
+    {
+	/* Print the host name. */
+	if (a->host)
+	    fputs (a->host, stdout);
+	else
+	    fputs ("DEFAULT", stdout);
+
+	fputc (' ', stdout);
+
+	/* Print the login name. */
+	fputs (a->login, stdout);
+
+	if (a->password)
+	{
+	    /* Print the password, if there is any. */
+	    fputc (' ', stdout);
+	    fputs (a->password, stdout);
+	}
+
+	fputc ('\n', stdout);
+	a = a->next;
+    }
+
+    free_netrc(head);
+
+    exit (0);
+}
+#endif /* STANDALONE */

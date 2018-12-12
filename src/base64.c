@@ -1,5 +1,5 @@
 /* base64.c -- Encode binary data using printable characters.
-   Copyright (C) 1999-2001, 2004-2006, 2009-2011 Free Software Foundation, Inc.
+   Copyright (C) 1999-2001, 2004-2006, 2009-2018 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -12,14 +12,13 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software Foundation,
-   Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
+   along with this program; if not, see <https://www.gnu.org/licenses/>.  */
 
 /* Written by Simon Josefsson.  Partially adapted from GNU MailUtils
  * (mailbox/filter_trans.c, as of 2004-11-28).  Improved by review
  * from Paul Eggert, Bruno Haible, and Stepan Kasal.
  *
- * See also RFC 3548 <http://www.ietf.org/rfc/rfc3548.txt>.
+ * See also RFC 4648 <https://www.ietf.org/rfc/rfc4648.txt>.
  *
  * Be careful with error checking.  Here is how you would typically
  * use these functions:
@@ -54,10 +53,31 @@
 #include <string.h>
 
 /* C89 compliant way to cast 'char' to 'unsigned char'. */
-static inline unsigned char
+static unsigned char
 to_uchar (char ch)
 {
   return ch;
+}
+
+static const char b64c[64] =
+  "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+/* Base64 encode IN array of size INLEN into OUT array. OUT needs
+   to be of length >= BASE64_LENGTH(INLEN), and INLEN needs to be
+   a multiple of 3.  */
+static void
+base64_encode_fast (const char *in, size_t inlen, char *out)
+{
+  while (inlen)
+    {
+      *out++ = b64c[to_uchar (in[0]) >> 2];
+      *out++ = b64c[((to_uchar (in[0]) << 4) + (to_uchar (in[1]) >> 4)) & 0x3f];
+      *out++ = b64c[((to_uchar (in[1]) << 2) + (to_uchar (in[2]) >> 6)) & 0x3f];
+      *out++ = b64c[to_uchar (in[2]) & 0x3f];
+
+      inlen -= 3;
+      in += 3;
+    }
 }
 
 /* Base64 encode IN array of size INLEN into OUT array of size OUTLEN.
@@ -68,28 +88,38 @@ void
 base64_encode (const char *in, size_t inlen,
                char *out, size_t outlen)
 {
-  static const char b64str[64] =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+  /* Note this outlen constraint can be enforced at compile time.
+     I.E. that the output buffer is exactly large enough to hold
+     the encoded inlen bytes.  The inlen constraints (of corresponding
+     to outlen, and being a multiple of 3) can change at runtime
+     at the end of input.  However the common case when reading
+     large inputs is to have both constraints satisfied, so we depend
+     on both in base_encode_fast().  */
+  if (outlen % 4 == 0 && inlen == outlen / 4 * 3)
+    {
+      base64_encode_fast (in, inlen, out);
+      return;
+    }
 
   while (inlen && outlen)
     {
-      *out++ = b64str[(to_uchar (in[0]) >> 2) & 0x3f];
+      *out++ = b64c[to_uchar (in[0]) >> 2];
       if (!--outlen)
         break;
-      *out++ = b64str[((to_uchar (in[0]) << 4)
+      *out++ = b64c[((to_uchar (in[0]) << 4)
                        + (--inlen ? to_uchar (in[1]) >> 4 : 0))
                       & 0x3f];
       if (!--outlen)
         break;
       *out++ =
         (inlen
-         ? b64str[((to_uchar (in[1]) << 2)
+         ? b64c[((to_uchar (in[1]) << 2)
                    + (--inlen ? to_uchar (in[2]) >> 6 : 0))
                   & 0x3f]
          : '=');
       if (!--outlen)
         break;
-      *out++ = inlen ? b64str[to_uchar (in[2]) & 0x3f] : '=';
+      *out++ = inlen ? b64c[to_uchar (in[2]) & 0x3f] : '=';
       if (!--outlen)
         break;
       if (inlen)
@@ -315,7 +345,7 @@ base64_decode_ctx_init (struct base64_decode_context *ctx)
    and return CTX->buf.  In either case, advance *IN to point to the byte
    after the last one processed, and set *N_NON_NEWLINE to the number of
    verified non-newline bytes accessible through the returned pointer.  */
-static inline char *
+static char *
 get_4 (struct base64_decode_context *ctx,
        char const **in, char const *in_end,
        size_t *n_non_newline)
@@ -369,7 +399,7 @@ get_4 (struct base64_decode_context *ctx,
    as many bytes as possible are written to *OUT.  On return, advance
    *OUT to point to the byte after the last one written, and decrement
    *OUTLEN to reflect the number of bytes remaining in *OUT.  */
-static inline bool
+static bool
 decode_4 (char const *in, size_t inlen,
           char **outp, size_t *outleft)
 {
@@ -552,10 +582,10 @@ base64_decode_alloc_ctx (struct base64_decode_context *ctx,
 {
   /* This may allocate a few bytes too many, depending on input,
      but it's not worth the extra CPU time to compute the exact size.
-     The exact size is 3 * inlen / 4, minus 1 if the input ends
-     with "=" and minus another 1 if the input ends with "==".
+     The exact size is 3 * (inlen + (ctx ? ctx->i : 0)) / 4, minus 1 if the
+     input ends with "=" and minus another 1 if the input ends with "==".
      Dividing before multiplying avoids the possibility of overflow.  */
-  size_t needlen = 3 * (inlen / 4) + 2;
+  size_t needlen = 3 * (inlen / 4) + 3;
 
   *out = malloc (needlen);
   if (!*out)

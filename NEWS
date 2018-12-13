@@ -1,3 +1,11 @@
+Version 1.8.2:
+- To simplify TLS setup, the tls_trust_file command has a new default value
+  'system' that selects the system default trust. Now you just need tls=on to
+  use TLS; the other TLS options are only required in special cases.
+  To make this work without breaking compatibility with older msmtp versions,
+  tls_fingerprint now overrides tls_trust_file, and tls_certcheck=off overrides
+  both (previously, you could not specify contradicting options).
+
 Version 1.8.1:
 - Fixed our TLS code to support TLS 1.3 with GnuTLS.
 

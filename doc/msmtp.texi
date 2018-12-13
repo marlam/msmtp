@@ -257,8 +257,6 @@ Set a domain for the @samp{ntlm} authentication method. This is obsolete.
 @item tls [(on|off)]
 @cmindex tls
 Enable or disable TLS (also known as SSL) for secured connections.
-You also need @samp{tls_trust_file} or @samp{tls_fingerprint}, and for some
-servers you may need to disable @samp{tls_starttls}.
 @anchor{tls_starttls}
 @item tls_starttls [(on|off)]
 @cmindex tls_starttls
@@ -268,10 +266,10 @@ or tunnel the session through TLS (@samp{off}).
 @item tls_trust_file [@var{file}]
 @cmindex tls_trust_file
 Activate server certificate verification using a list of trusted Certification
-Authorities (CAs). The file must be in PEM format. Some systems provide a
-system-wide default file, e.g. @file{/etc/ssl/certs/ca-certificates.crt} on
-Debian-based systems with the @samp{ca-certificates} package.
-An empty argument disables this. You should also use @samp{tls_crl_file}.
+Authorities (CAs). The default is the special value @samp{system}, which selects the
+system default. An empty argument disables trust in CAs.
+If you select a file, it must be in PEM format, and you should also use
+@samp{tls_crl_file}.
 @anchor{tls_crl_file}
 @item tls_crl_file [@var{file}]
 @cmindex tls_crl_file
@@ -281,8 +279,9 @@ certificates. An empty argument disables this.
 @item tls_fingerprint [@var{fingerprint}]
 @cmindex tls_fingerprint
 Set the fingerprint of a single certificate to accept for TLS. This certificate
-will be trusted regardless of its contents. The fingerprint should be of type SHA256,
-but can for backwards compatibility also be of type SHA1 or MD5 (please avoid this).
+will be trusted regardless of its contents (this overrides @samp{tls_trust_file}).
+The fingerprint should be of type SHA256, but can for backwards compatibility
+also be of type SHA1 or MD5 (please avoid this).
 The format should be @code{01:23:45:67:@dots{}}.
 Use @samp{--serverinfo --tls --tls-certcheck=off --tls-fingerprint=}
 to get the server certificate fingerprint.
@@ -303,9 +302,9 @@ this feature.
 @anchor{tls_certcheck}
 @item tls_certcheck [(on|off)]
 @cmindex tls_certcheck
-Enable or disable checks of the server certificate.@*
-WARNING: When the checks are disabled, TLS sessions will be vulnerable to
-man-in-the-middle attacks!
+Enable or disable checks of the server certificate. They are enabled by default.@*
+Disabling them will override @samp{tls_trust_file} and @samp{tls_fingerprint}.
+WARNING: When the checks are disabled, TLS sessions will not be secure!
 @anchor{tls_min_dh_prime_bits}
 @item tls_min_dh_prime_bits [@var{bits}]
 @cmindex tls_min_dh_prime_bits
@@ -769,9 +768,8 @@ Authority (CA) that the user trusts. (There can also be certificate chains with
 intermediate CAs.)
 
 The list of trusted CAs is specified using the @ref{tls_trust_file} command.
-Usually there is some system-wide default file available, e.g.
-@file{/etc/ssl/certs/ca-certificates.crt} on Debian-based systems, but you can
-also choose to select the trusted CAs yourself.
+The default value ist @samp{system} and chooses the system-wide default, but you can
+also choose the trusted CAs yourself.
 
 One practical problem with this approach is that the client program should also
 check if the server certificate has been revoked for some reason, using a
@@ -1104,13 +1102,12 @@ port 587
 # Always use TLS.
 tls on
 
-# Set a list of trusted CAs for TLS. You can use a system-wide default file,
-# as in this example, or download the root certificate of your CA and use that.
-tls_trust_file /etc/ssl/certs/ca-certificates.crt
-
-# Additionally, you should use the tls_crl_file command to check for revoked
-# certificates, but unfortunately getting revocation lists and keeping them
-# up to date is not straightforward.
+# Set a list of trusted CAs for TLS. The default is to use system settings, but
+# you can select your own file.
+#tls_trust_file /etc/ssl/certs/ca-certificates.crt
+# If you select your own file, you should also use the tls_crl_file command to
+# check for revoked certificates, but unfortunately getting revocation lists and
+# keeping them up to date is not straightforward.
 #tls_crl_file ~/.tls-crls
 
 
@@ -1125,7 +1122,7 @@ host smtp.freemail.example
 # server certificate changes, but an attacker cannot trick you into accepting
 # a fraudulent certificate. Get the fingerprint with
 # $ msmtp --serverinfo --tls --tls-certcheck=off --host=smtp.freemail.example
-tls_fingerprint 00:11:22:33:44:55:66:77:88:99:AA:BB:CC:DD:EE:FF:00:11:22:33
+#tls_fingerprint 00:11:22:33:44:55:66:77:88:99:AA:BB:CC:DD:EE:FF:00:11:22:33
 
 # Envelope-from address
 from joe_smith@@freemail.example
@@ -1191,7 +1188,6 @@ host mailhub.oursite.example
 port 465
 tls on
 tls_starttls off
-tls_trust_file /etc/ssl/certs/ca-certificates.crt
 
 # Construct envelope-from addresses of the form "user@@oursite.example"
 #auto_from on

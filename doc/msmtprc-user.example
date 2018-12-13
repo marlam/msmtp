@@ -14,13 +14,12 @@ port 587
 # Always use TLS.
 tls on
 
-# Set a list of trusted CAs for TLS. You can use a system-wide default file,
-# as in this example, or download the root certificate of your CA and use that.
-tls_trust_file /etc/ssl/certs/ca-certificates.crt
-
-# Additionally, you should use the tls_crl_file command to check for revoked
-# certificates, but unfortunately getting revocation lists and keeping them
-# up to date is not straightforward.
+# Set a list of trusted CAs for TLS. The default is to use system settings, but
+# you can select your own file.
+#tls_trust_file /etc/ssl/certs/ca-certificates.crt
+# If you select your own file, you should also use the tls_crl_file command to
+# check for revoked certificates, but unfortunately getting revocation lists and
+# keeping them up to date is not straightforward.
 #tls_crl_file ~/.tls-crls
 
 
@@ -35,7 +34,7 @@ host smtp.freemail.example
 # server certificate changes, but an attacker cannot trick you into accepting
 # a fraudulent certificate. Get the fingerprint with
 # $ msmtp --serverinfo --tls --tls-certcheck=off --host=smtp.freemail.example
-tls_fingerprint 00:11:22:33:44:55:66:77:88:99:AA:BB:CC:DD:EE:FF:00:11:22:33
+#tls_fingerprint 00:11:22:33:44:55:66:77:88:99:AA:BB:CC:DD:EE:FF:00:11:22:33
 
 # Envelope-from address
 from joe_smith@freemail.example

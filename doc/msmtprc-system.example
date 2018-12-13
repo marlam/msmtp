@@ -12,7 +12,6 @@ host mailhub.oursite.example
 port 465
 tls on
 tls_starttls off
-tls_trust_file /etc/ssl/certs/ca-certificates.crt
 
 # Construct envelope-from addresses of the form "user@oursite.example"
 #auto_from on

@@ -1165,29 +1165,45 @@ int tls_init(tls_t *tls,
     }
     if (trust_file)
     {
-        if ((error_code = gnutls_certificate_set_x509_trust_file(
-                        tls->cred, trust_file, GNUTLS_X509_FMT_PEM)) <= 0)
+        if (strcmp(trust_file, "system") == 0)
         {
-            *errstr = xasprintf(
-                    _("cannot set X509 trust file %s for TLS session: %s"),
-                    trust_file, gnutls_strerror(error_code));
-            gnutls_deinit(tls->session);
-            gnutls_certificate_free_credentials(tls->cred);
-            return TLS_EFILE;
+            if ((error_code = gnutls_certificate_set_x509_system_trust(
+                            tls->cred)) < 0)
+            {
+                *errstr = xasprintf(
+                        _("cannot set X509 system trust for TLS session: %s"),
+                        gnutls_strerror(error_code));
+                gnutls_deinit(tls->session);
+                gnutls_certificate_free_credentials(tls->cred);
+                return TLS_ELIBFAILED;
+            }
         }
-        tls->have_trust_file = 1;
-    }
-    if (trust_file && crl_file)
-    {
-        if ((error_code = gnutls_certificate_set_x509_crl_file(
-                        tls->cred, crl_file, GNUTLS_X509_FMT_PEM)) < 0)
+        else
         {
-            *errstr = xasprintf(
-                    _("cannot set X509 CRL file %s for TLS session: %s"),
-                    crl_file, gnutls_strerror(error_code));
-            gnutls_deinit(tls->session);
-            gnutls_certificate_free_credentials(tls->cred);
-            return TLS_EFILE;
+            if ((error_code = gnutls_certificate_set_x509_trust_file(
+                            tls->cred, trust_file, GNUTLS_X509_FMT_PEM)) <= 0)
+            {
+                *errstr = xasprintf(
+                        _("cannot set X509 trust file %s for TLS session: %s"),
+                        trust_file, gnutls_strerror(error_code));
+                gnutls_deinit(tls->session);
+                gnutls_certificate_free_credentials(tls->cred);
+                return TLS_EFILE;
+            }
+            tls->have_trust_file = 1;
+            if (crl_file)
+            {
+                if ((error_code = gnutls_certificate_set_x509_crl_file(
+                                tls->cred, crl_file, GNUTLS_X509_FMT_PEM)) < 0)
+                {
+                    *errstr = xasprintf(
+                            _("cannot set X509 CRL file %s for TLS session: %s"),
+                            crl_file, gnutls_strerror(error_code));
+                    gnutls_deinit(tls->session);
+                    gnutls_certificate_free_credentials(tls->cred);
+                    return TLS_EFILE;
+                }
+            }
         }
     }
     if (sha256_fingerprint)
@@ -1235,6 +1251,14 @@ int tls_init(tls_t *tls,
     {
         *errstr = xasprintf(
                 _("cannot set priorities for TLS session: %s"),
+                _("feature not yet implemented for OpenSSL"));
+        return TLS_ELIBFAILED;
+    }
+    /* FIXME: Implement support for special trust file value 'system' */
+    if (trust_file && strcmp(trust_file, "system") == 0)
+    {
+        *errstr = xasprintf(
+                _("cannot set X509 system trust for TLS session: %s"),
                 _("feature not yet implemented for OpenSSL"));
         return TLS_ELIBFAILED;
     }

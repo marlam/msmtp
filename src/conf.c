@@ -758,28 +758,6 @@ int check_account(account_t *acc, int sendmail_mode, char **errstr)
         *errstr = xasprintf(_("tls_cert_file requires tls_key_file"));
         return CONF_ESYNTAX;
     }
-    if (acc->tls_nocertcheck && acc->tls_trust_file)
-    {
-        *errstr = xasprintf(
-                _("cannot use tls_trust_file with tls_certcheck turned off"));
-        return CONF_ESYNTAX;
-    }
-    if (acc->tls_nocertcheck
-            && (acc->tls_sha256_fingerprint
-                || acc->tls_sha1_fingerprint || acc->tls_md5_fingerprint))
-    {
-        *errstr = xasprintf(
-                _("cannot use tls_fingerprint with tls_certcheck turned off"));
-        return CONF_ESYNTAX;
-    }
-    if (acc->tls_trust_file
-            && (acc->tls_sha256_fingerprint
-                || acc->tls_sha1_fingerprint || acc->tls_md5_fingerprint))
-    {
-        *errstr = xasprintf(
-                _("cannot use both tls_trust_file and tls_fingerprint"));
-        return CONF_ESYNTAX;
-    }
     if (acc->tls && !acc->tls_trust_file
             && !acc->tls_sha256_fingerprint && !acc->tls_sha1_fingerprint
             && !acc->tls_md5_fingerprint && !acc->tls_nocertcheck)

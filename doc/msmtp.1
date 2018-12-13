@@ -376,8 +376,6 @@ rings, and thus to avoid storing plain text passwords.
 Set a domain for the \fBntlm\fP authentication method. This is obsolete.
 .IP "tls [(\fIon\fP|\fIoff\fP)]"
 Enable or disable TLS (also known as SSL) for secured connections.
-You also need \fBtls_trust_file\fP or \fBtls_fingerprint\fP, and for some
-servers you may need to disable \fBtls_starttls\fP.
 .br
 Transport Layer Security (TLS)
 "... provides communications privacy over the Internet.  The protocol
@@ -398,9 +396,8 @@ Authority (CA) that the user trusts. (There can also be certificate chains with
 intermediate CAs.)
 .br
 The list of trusted CAs is specified using the \fBtls_trust_file\fP command.
-Usually there is some system-wide default file available, e.g.
-/etc/ssl/certs/ca\-certificates.crt on Debian-based systems, but you can
-also choose to select the trusted CAs yourself.
+The default value ist "system" and chooses the system-wide default, but you can
+also choose the trusted CAs yourself.
 .br
 One practical problem with this approach is that the client program should also
 check if the server certificate has been revoked for some reason, using a
@@ -443,17 +440,18 @@ Choose the TLS variant: start TLS from within the session (\fIon\fP, default),
 or tunnel the session through TLS (\fIoff\fP).
 .IP "tls_trust_file \fIfile\fP"
 Activate server certificate verification using a list of trusted Certification
-Authorities (CAs). The file must be in PEM format. Some systems provide a
-system-wide default file, e.g. /etc/ssl/certs/ca\-certificates.crt on
-Debian-based systems with the ca\-certificates package.
-An empty argument disables this. You should also use \fBtls_crl_file\fP.
+Authorities (CAs). The default is the special value "system", which selects the
+system default. An empty argument disables trust in CAs.
+If you select a file, it must be in PEM format, and you should also use
+\fBtls_crl_file\fP.
 .IP "tls_crl_file [\fIfile\fP]"
 Set a certificate revocation list (CRL) file for TLS, to check for revoked
 certificates. An empty argument disables this.
 .IP "tls_fingerprint [\fIfingerprint\fP]"
 Set the fingerprint of a single certificate to accept for TLS. This certificate
-will be trusted regardless of its contents. The fingerprint should be of type SHA256,
-but can for backwards compatibility also be of type SHA1 or MD5 (please avoid this).
+will be trusted regardless of its contents (this overrides \fBtls_trust_file\fP).
+The fingerprint should be of type SHA256, but can for backwards compatibility
+also be of type SHA1 or MD5 (please avoid this).
 The format should be 01:23:45:67:....
 Use \fI\-\-serverinfo \-\-tls \-\-tls\-certcheck=off \-\-tls\-fingerprint=\fP
 to get the server certificate fingerprint.
@@ -468,9 +466,9 @@ Send a client certificate to the server (use this together with
 The file must contain a certificate in PEM format. An empty argument disables
 this feature.
 .IP "tls_certcheck [(\fIon\fP|\fIoff\fP)]"
-Enable or disable checks of the server certificate.
-WARNING: When the checks are disabled, TLS sessions will be vulnerable to
-man-in-the-middle attacks!
+Enable or disable checks of the server certificate. They are enabled by default.
+Disabling them will override \fBtls_trust_file\fP and \fBtls_fingerprint\fP.
+WARNING: When the checks are disabled, TLS sessions will not be secure!
 .IP "tls_min_dh_prime_bits [\fIbits\fP]"
 Set or unset the minimum number of Diffie-Hellman (DH) prime bits that mpop
 will accept for TLS sessions.  The default is set by the TLS library and can be
@@ -614,19 +612,19 @@ tls on
 .br
 
 .br
-# Set a list of trusted CAs for TLS. You can use a system-wide default file,
+# Set a list of trusted CAs for TLS. The default is to use system settings, but
 .br
-# as in this example, or download the root certificate of your CA and use that.
+# you can select your own file.
 .br
-tls_trust_file /etc/ssl/certs/ca\-certificates.crt
+#tls_trust_file /etc/ssl/certs/ca\-certificates.crt
 .br
 
 .br
-# Additionally, you should use the tls_crl_file command to check for revoked
+# If you select your own file, you should also use the tls_crl_file command to
 .br
-# certificates, but unfortunately getting revocation lists and keeping them
+# check for revoked certificates, but unfortunately getting revocation lists and
 .br
-# up to date is not straightforward.
+# keeping them up to date is not straightforward.
 .br
 #tls_crl_file ~/.tls\-crls
 .br
@@ -654,7 +652,7 @@ host smtp.freemail.example
 .br
 # $ msmtp \-\-serverinfo \-\-tls \-\-tls\-certcheck=off \-\-host=smtp.freemail.example
 .br
-tls_fingerprint 00\::11\::22\::33\::44\::55\::66\::77\::88\::99\::AA\::BB\::CC\::DD\::EE\::FF\::00\::11\::22\::33
+#tls_fingerprint 00\::11\::22\::33\::44\::55\::66\::77\::88\::99\::AA\::BB\::CC\::DD\::EE\::FF\::00\::11\::22\::33
 .br
 
 .br
@@ -811,9 +809,7 @@ Use the following settings:
 Use an IP address as proxy host name, so that msmtp does not leak a DNS query
 when resolving it.
 .br
-TLS is required to prevent exit hosts from reading your SMTP session. You also
-need \fBtls_trust_file\fP or \fBtls_fingerprint\fP to check the server
-identity.
+TLS is required to prevent exit hosts from reading your SMTP session.
 .br
 Do not set \fBdomain\fP to something that you do not want to reveal (do not set
 it at all if possible).

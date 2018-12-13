@@ -2,9 +2,9 @@
 # Copyright (C) 2005, 2011 Martin Lambers <marlam@marlam.de>
 
 # Package source files
-src/conf.c
 src/msmtp.c
-src/net.c
+src/conf.c
 src/smtp.c
 src/stream.c
+src/net.c
 src/tls.c

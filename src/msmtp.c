@@ -97,6 +97,8 @@ const char *prgname;
 
 void xalloc_die(void)
 {
+    /* TRANSLATORS: msmtp shares a lot of code and translatable strings with
+       mpop <https://marlam.de/mpop>. */
     fprintf(stderr, _("%s: FATAL: %s\n"), prgname, strerror(ENOMEM));
     exit(EX_OSERR);
 }

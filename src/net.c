@@ -1,7 +1,7 @@
 /*
  * net.c
  *
- * This file is part of msmtp, an SMTP client.
+ * This file is part of msmtp, an SMTP client, and of mpop, a POP3 client.
  *
  * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2012, 2014, 2015, 2018
  * Martin Lambers <marlam@marlam.de>

@@ -1,7 +1,7 @@
 /*
  * tools.h
  *
- * This file is part of msmtp, an SMTP client.
+ * This file is part of msmtp, an SMTP client, and of mpop, a POP3 client.
  *
  * Copyright (C) 2004, 2005, 2006, 2007, 2011, 2014, 2018
  * Martin Lambers <marlam@marlam.de>

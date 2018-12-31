@@ -24,7 +24,7 @@ dnl Process this file with autoconf to produce a configure script.
 #
 
 dnl Autotools init stuff
-AC_INIT([msmtp], [1.8.2rc1], [marlam@marlam.de], [msmtp], [https://marlam.de/msmtp])
+AC_INIT([msmtp], [1.8.2rc2], [marlam@marlam.de], [msmtp], [https://marlam.de/msmtp])
 AC_CONFIG_SRCDIR([src/msmtp.c])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_HEADERS([config.h])
@@ -51,6 +51,40 @@ AC_CHECK_FUNCS([fmemopen fseeko fseeko64 getpass link signal strndup syslog])
 AC_SEARCH_LIBS([nanosleep], [rt posix4])
 AC_SEARCH_LIBS([socket], [socket])
 AC_CHECK_SIZEOF([long long])
+
+dnl Unfortunately AC_SEARCH_LIBS([res_query], [resolv]) does not work because we
+dnl apparently need to include the appropriate header files, so we use a double
+dnl AC_TRY_LINK instead.
+AC_MSG_CHECKING([for library containing res_query])
+AC_TRY_LINK([
+    #include <netinet/in.h>
+    #include <arpa/nameser.h>
+    #include <resolv.h>
+    ], [res_query(0, 0, 0, 0, 0);],
+    found_res_query=yes,
+    found_res_query=no)
+if test "$found_res_query" = "yes"; then
+    AC_MSG_RESULT([none required])
+else
+    LIBS_BAK="$LIBS"
+    LIBS="$LIBS -lresolv"
+    AC_TRY_LINK([
+        #include <netinet/in.h>
+        #include <arpa/nameser.h>
+        #include <resolv.h>
+        ], [res_query(0, 0, 0, 0, 0);],
+        found_res_query=yes,
+        found_res_query=no)
+    if test "$found_res_query" = "yes"; then
+        AC_MSG_RESULT([-lresolv])
+    else
+        LIBS="$LIBS_BAK"
+        AC_MSG_RESULT([none])
+    fi
+fi
+if test "$found_res_query" = "yes"; then
+    AC_DEFINE([HAVE_LIBRESOLV], [1], [Define to 1 if libresolv is available])
+fi
 
 dnl pkg-config (required to detect libraries)
 PKG_PROG_PKG_CONFIG([])

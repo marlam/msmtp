@@ -57,6 +57,12 @@
 # include <idn2.h>
 #endif
 
+#ifdef HAVE_LIBRESOLV
+# include <netinet/in.h>
+# include <arpa/nameser.h>
+# include <resolv.h>
+#endif
+
 #include "gettext.h"
 #define _(string) gettext(string)
 
@@ -1000,6 +1006,89 @@ char *net_get_canonical_hostname(void)
     }
 
     return canonname;
+}
+
+
+/*
+ * net_get_srv_query()
+ *
+ * see net.h
+ */
+char* net_get_srv_query(const char *domain, const char *service)
+{
+    size_t domain_len = strlen(domain);
+    size_t service_len = strlen(service);
+    size_t query_len = 1 /* '_' */ + service_len + 6 /* "._tcp." */ + domain_len;
+    char* query = xmalloc(query_len + 1);
+    query[0] = '_';
+    strncpy(query + 1, service, service_len);
+    strncpy(query + 1 + service_len, "._tcp.", 6);
+    strcpy(query + 1 + service_len + 6, domain);
+    return query;
+}
+
+
+/*
+ * net_get_srv()
+ *
+ * see net.h
+ */
+int net_get_srv_record(const char* query, char **hostname, int *port)
+{
+#ifdef HAVE_LIBRESOLV
+
+    unsigned char buffer[NS_PACKETSZ];
+    int response_len;
+    ns_msg msg;
+    int i;
+    int current_prio = INT_MAX;
+    int current_weight = -1;
+    char *current_hostname = NULL;
+    int current_port = 0;
+
+    response_len = res_query(query, ns_c_in, ns_t_srv, buffer, sizeof(buffer));
+    if (response_len < 0) {
+        return NET_ESRVNOTFOUND;
+    }
+
+    ns_initparse(buffer, response_len, &msg);
+
+    for (i = 0; i < ns_msg_count(msg, ns_s_an); i++) {
+        ns_rr rr;
+        if (ns_parserr(&msg, ns_s_an, i, &rr))
+            continue; /* don't know what's wrong; ignore this part */
+        if (ns_rr_type(rr) == ns_t_srv) {
+            char name[NI_MAXHOST];
+            int prio, weight;
+            if (dn_expand(ns_msg_base(msg), ns_msg_end(msg), ns_rr_rdata(rr) + 6, name, sizeof(name)) < 0)
+                continue; /* don't know what's wrong; ignore this part */
+            if (name[0] == '\0')
+                continue; /* empty host name; ignore this part */
+            prio = ntohs(*((unsigned short*)ns_rr_rdata(rr) + 0));
+            weight = ntohs(*((unsigned short*)ns_rr_rdata(rr) + 1));
+            if (prio < current_prio || (prio == current_prio && weight > current_weight)) {
+                free(current_hostname);
+                current_hostname = xstrdup(name);
+                current_port = ntohs(*((unsigned short*)ns_rr_rdata(rr) + 2));
+                current_prio = prio;
+                current_weight = weight;
+            }
+        }
+    }
+    if (!current_hostname) {
+        /* the loop finished but we did not find usable information */
+        return NET_EIO;
+    } else {
+        *hostname = current_hostname;
+        *port = current_port;
+        return NET_EOK;
+    }
+
+#else
+
+    return NET_ELIBFAILED;
+
+#endif
 }
 
 

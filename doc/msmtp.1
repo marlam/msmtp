@@ -10,7 +10,7 @@
 .\" under the terms of the GNU Free Documentation License, Version 1.2 or
 .\" any later version published by the Free Software Foundation; with no
 .\" Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
-.TH MSMTP 1 2016-02
+.TH MSMTP 1 2018-12
 .SH NAME
 msmtp \- An SMTP client
 .SH SYNOPSIS
@@ -20,6 +20,9 @@ msmtp \- An SMTP client
 .br
 .B msmtp
 [option...] \-t [\-\-] [recipient...]
+.IP "Configuration mode:"
+.B msmtp
+\-\-configure <mailaddress>
 .IP "Server information mode:"
 .B msmtp
 [option...] \-\-serverinfo
@@ -57,6 +60,11 @@ format!
 .RE
 .IP "\fBChanging the mode of operation\fP"
 .RS
+.IP "\-\-configure=\fImailaddress\fP"
+Generate a configuration for the given mail address and print it. This can be
+modified or copied unchanged to the configuration file.
+Note that this only works for mail domains that publish appropriate SRV records;
+see RFC 8314.
 .IP "\-S, \-\-serverinfo"
 Print information about the SMTP server and exit. This includes information
 about supported features (mail size limit, authentication, TLS, DSN, ...) and
@@ -186,6 +194,8 @@ The following options are accepted but ignored for sendmail compatibility:
 \-B\fItype\fP, \-bm, \-G, \-h\fIN\fP, \-i, \-L \fItag\fP, \-m,
 \-n, \-O \fIoption=value\fP, \-o\fIx\fP \fIvalue\fP
 .SH USAGE
+A suggestion for a suitable configuration file can be generated using the
+\-\-configure option.
 Normally, a system wide configuration file and/or a user configuration file
 contain information about which SMTP server to use and how to use it, but
 all settings can also be configured on the command line.

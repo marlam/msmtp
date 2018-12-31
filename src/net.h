@@ -39,6 +39,7 @@
 #define NET_ECONNECT            4       /* Cannot connect */
 #define NET_EIO                 5       /* Input/output error */
 #define NET_EPROXY              6       /* Proxy failure */
+#define NET_ESRVNOTFOUND        7       /* SRV record not found */
 
 /*
  * net_lib_init()
@@ -118,6 +119,29 @@ void net_close_socket(int fd);
  * other hosts. Usually, it is the fully qualified domain name of this host.
  */
 char *net_get_canonical_hostname(void);
+
+/*
+ * net_get_srv_query()
+ *
+ * Construct a SRV record query for the given service at the given domain.
+ * For example, with service "pop3s" and domain "example.com", this function
+ * returns the SRV query "_pop3._tcp.example.com" as an allocated string.
+ */
+char* net_get_srv_query(const char *domain, const char *service);
+
+/*
+ * net_get_srv()
+ *
+ * Fetches a SRV record for the given query string (typically constructed with
+ * net_get_srv_query()), and returns its hostname and port.
+ * If more than one matching SRV record exists, this chooses the record based
+ * on its priority and weight.
+ * Used error codes:
+ * - NET_ELIBFAILED: libresolv is missing so we cannot get SRV records
+ * - NET_ESRVNOTFOUND: the SRV record was not found
+ * - NET_EIO: a SRV record was found but could not be interpreted
+ */
+int net_get_srv_record(const char* query, char **hostname, int *port);
 
 /*
  * net_lib_deinit()

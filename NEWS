@@ -5,6 +5,9 @@ Version 1.8.2:
   To make this work without breaking compatibility with older msmtp versions,
   tls_fingerprint now overrides tls_trust_file, and tls_certcheck=off overrides
   both (previously, you could not specify contradicting options).
+- To simplify setup, a new option '--configure <mailaddress>' was added that
+  automatically generates a configuration file for a given mail address.
+  However, this only works if the mail domain publishes appropriate SRV records.
 
 Version 1.8.1:
 - Fixed our TLS code to support TLS 1.3 with GnuTLS.

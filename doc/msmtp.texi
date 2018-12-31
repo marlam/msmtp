@@ -111,6 +111,9 @@ support)
 @node Configuration files
 @chapter Configuration files
 
+A suggestion for a suitable configuration file can be generated using the
+@samp{--configure} option; see @ref{--configure}.
+
 msmtp supports a system wide configuration file and a user configuration file.
 Both are optional and need not exist.
 
@@ -435,6 +438,8 @@ addresses. This is the default.
 @item Sendmail mode (default):@*
 @code{msmtp [@var{option}@dots{}] [--] @var{recipient}@dots{}}@*
 @code{msmtp [@var{option}@dots{}] -t [--] [@var{recipient}@dots{}]}
+@item Configuration mode:@*
+@code{msmtp --configure @var{mailaddress}}@*
 @item Server information mode:@*
 @code{msmtp [@var{option}@dots{}] --serverinfo}
 @item Remote Message Queue Starting mode:@*
@@ -474,6 +479,13 @@ format!
 
 @subsection Changing the mode of operation
 @table @samp
+@anchor{--configure}
+@item --configure=@var{mailaddress}
+@opindex --configure
+Generate a configuration for the given mail address and print it. This can be
+modified or copied unchanged to the configuration file.
+Note that this only works for mail domains that publish appropriate SRV records;
+see RFC 8314.
 @anchor{--serverinfo}
 @item -S
 @itemx --serverinfo

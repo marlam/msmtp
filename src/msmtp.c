@@ -1943,6 +1943,162 @@ void print_error(const char *format, ...)
 
 
 /*
+ * msmtp_split_address()
+ *
+ * Splits a mail address into a local part (before the last '@') and a domain
+ * part (after the last '@').
+ */
+
+void msmtp_split_address(const char *address, char **local_part, char **domain_part)
+{
+    const char *p = strrchr(address, '@');
+    if (p)
+    {
+        size_t local_part_len = p - address;
+        size_t domain_part_len = strlen(p + 1);
+        *local_part = xmalloc(local_part_len + 1);
+        strncpy(*local_part, address, local_part_len);
+        (*local_part)[local_part_len] = '\0';
+        *domain_part = xmalloc(domain_part_len + 1);
+        strcpy(*domain_part, p + 1);
+    }
+    else
+    {
+        size_t local_part_len = strlen(address);
+        *local_part = xmalloc(local_part_len + 1);
+        strcpy(*local_part, address);
+        *domain_part = NULL;
+    }
+}
+
+
+/*
+ * msmtp_hostname_matches_domain()
+ *
+ * Checks whether the given host name is within the given domain.
+ */
+
+int msmtp_hostname_matches_domain(const char *hostname, const char *domain)
+{
+    size_t hostname_len = strlen(hostname);
+    size_t domain_len = strlen(domain);
+    size_t i;
+
+    if (hostname_len < domain_len || domain_len < 1)
+        return 0;
+
+    for (i = 0; i < domain_len; i++)
+    {
+        if (tolower(domain[domain_len - 1 - i])
+                != tolower(hostname[hostname_len - 1 - i]))
+        {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+
+/*
+ * msmtp_configure()
+ *
+ * Tries autoconfiguration for the given mail address based on the methods
+ * described in RFC 8314 (SRV records).
+ * If successfull, this function will print a configuration file excerpt to
+ * standard output and return EX_OK.
+ * Otherwise, it will print an appropriate error message to standard error
+ * and return an EX_* status.
+ */
+
+int msmtp_configure(const char *address, const char *conffile)
+{
+#ifdef HAVE_LIBRESOLV
+
+    int e;
+
+    char *local_part;
+    char *domain_part;
+
+    char *submissions_query;
+    char *submission_query;
+
+    char *hostname = NULL;
+    int port = -1;
+    int starttls = -1;
+
+    char *tmpstr;
+
+    msmtp_split_address(address, &local_part, &domain_part);
+    if (!domain_part)
+    {
+        print_error(_("automatic configuration based on SRV records failed: %s"),
+                _("address has no domain part"));
+        free(local_part);
+        return EX_DATAERR;
+    }
+
+    submissions_query = net_get_srv_query(domain_part, "submissions");
+    e = net_get_srv_record(submissions_query, &hostname, &port);
+    if (e == NET_EOK) {
+        starttls = 0;
+    } else {
+        submission_query = net_get_srv_query(domain_part, "submission");
+        e = net_get_srv_record(submission_query, &hostname, &port);
+        if (e == NET_EOK) {
+            starttls = 1;
+        } else {
+            char *errstr = xasprintf(_("no SRV records for %s or %s"),
+                    submissions_query, submission_query);
+            print_error(_("automatic configuration based on SRV records failed: %s"),
+                    errstr);
+            free(errstr);
+            free(submissions_query);
+            free(submission_query);
+            free(local_part);
+            free(domain_part);
+            return EX_NOHOST;
+        }
+        free(submission_query);
+    }
+    free(submissions_query);
+
+    /* comment header */
+
+    tmpstr = xasprintf(_("copy this to your configuration file %s"), conffile);
+    printf("# - %s\n", tmpstr);
+    free(tmpstr);
+    if (!msmtp_hostname_matches_domain(hostname, domain_part))
+        printf("# - %s\n", _("warning: the host does not match the mail domain; please check"));
+#if !defined HAVE_LIBSECRET && !defined HAVE_MACOSXKEYRING
+    printf("# - %s\n", _("consider using the passwordeval command"));
+#endif
+
+    /* account definition */
+    printf("account %s\n", address);
+    printf("host %s\n", hostname);
+    printf("port %d\n", port);
+    printf("tls on\n");
+    printf("tls_starttls %s\n", starttls ? "on" : "off");
+    printf("auth on\n");
+    printf("user %s\n", local_part);
+    printf("from %s\n", address);
+
+    free(local_part);
+    free(domain_part);
+    free(hostname);
+    return EX_OK;
+
+#else
+
+    print_error(_("automatic configuration based on SRV records failed: %s"),
+            _("this system lacks libresolv"));
+    return EX_UNAVAILABLE;
+
+#endif
+}
+
+
+/*
  * msmtp_get_log_info()
  *
  * Gather log information for syslog or logfile and put it in a string:
@@ -2454,6 +2610,7 @@ void msmtp_print_help(void)
     printf(_("  -P, --pretend                print configuration info and exit\n"));
     printf(_("  -d, --debug                  print debugging information\n"));
     printf(_("Changing the mode of operation:\n"));
+    printf(_("  --configure=mailaddress      generate and print configuration for address\n"));
     printf(_("  -S, --serverinfo             print information about the server\n"));
     printf(_("  --rmqs=host|@domain|#queue   send a Remote Message Queue Starting request\n"));
     printf(_("Configuration options:\n"));
@@ -2524,6 +2681,8 @@ typedef struct
     int read_envelope_from;
     /* mode of operation */
     int sendmail;
+    int configure;
+    char *configure_address;
     int serverinfo;
     int rmqs;
     char *rmqs_argument;
@@ -2573,6 +2732,7 @@ typedef struct
 #define LONGONLYOPT_REMOVE_BCC_HEADERS          (256 + 32)
 #define LONGONLYOPT_SOURCE_IP                   (256 + 33)
 #define LONGONLYOPT_LOGFILE_TIME_FORMAT         (256 + 34)
+#define LONGONLYOPT_CONFIGURE                   (256 + 35)
 
 int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
 {
@@ -2580,6 +2740,7 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
     {
         { "version", no_argument, 0, LONGONLYOPT_VERSION },
         { "help", no_argument, 0, LONGONLYOPT_HELP },
+        { "configure", required_argument, 0, LONGONLYOPT_CONFIGURE },
         { "pretend", no_argument, 0, 'P' },
         /* accept an optional argument for sendmail compatibility: */
         { "debug", optional_argument, 0, 'd' },
@@ -2660,6 +2821,8 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
     conf->read_envelope_from = 0;
     /* mode of operation */
     conf->sendmail = 1;
+    conf->configure = 0;
+    conf->configure_address = NULL;
     conf->serverinfo = 0;
     conf->rmqs = 0;
     conf->rmqs_argument = NULL;
@@ -2692,6 +2855,14 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
 
             case LONGONLYOPT_HELP:
                 conf->print_help = 1;
+                conf->sendmail = 0;
+                conf->serverinfo = 0;
+                break;
+
+            case LONGONLYOPT_CONFIGURE:
+                conf->configure = 1;
+                free(conf->configure_address);
+                conf->configure_address = xstrdup(optarg);
                 conf->sendmail = 0;
                 conf->serverinfo = 0;
                 break;
@@ -3842,6 +4013,15 @@ int main(int argc, char *argv[])
     if (conf.print_help)
     {
         msmtp_print_help();
+    }
+
+    if (conf.configure)
+    {
+        char *userconfigfile = conf.user_conffile ? xstrdup(conf.user_conffile) : get_userconfig(USERCONFFILE);
+        error_code = msmtp_configure(conf.configure_address, userconfigfile);
+        free(userconfigfile);
+        free(conf.configure_address);
+        goto exit;
     }
 
     if (conf.print_help || conf.print_version

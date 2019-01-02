@@ -38,12 +38,12 @@ if [ $v_recipient != 0 ] ; then
 
         if [ "$v_domain" = 0 ]; then
 
-                v_find_alias=`grep "$v_recipient": /etc/aliases | awk '{print $2}'`  #grep alias file
+                v_find_alias=`grep -- "$v_recipient": /etc/aliases | awk '{print $2}'`  #grep alias file
                 v_alias_domain=`expr index "{$v_find_alias}" @` # grep for an @domain address
 
                         if [ "$v_alias_domain" = 0 ]; then      # we didn't find an @, grep alias again
 
-                                v_next_alias=`grep "$v_find_alias": /etc/aliases | awk '{print $2}'`
+                                v_next_alias=`grep -- "$v_find_alias": /etc/aliases | awk '{print $2}'`
                                 v_alias_domain=`expr index "{$v_next_alias}" @`
 
                                  if [ "$v_alias_domain" = 0 ]; then # email someone important if no @ alias is found

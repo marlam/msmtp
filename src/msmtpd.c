@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2018  Martin Lambers <marlam@marlam.de>
+ * Copyright (C) 2018, 2019  Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -173,6 +173,7 @@ int msmtpd_session(FILE* in, FILE* out, const char* command)
     char addrbuf[SMTP_BUFSIZE];
     size_t addrlen;
     char* cmd;
+    char* tmpcmd;
     size_t cmd_blocks;
     size_t cmd_index = 0;
     int envfrom_was_handled = 0;
@@ -261,11 +262,13 @@ int msmtpd_session(FILE* in, FILE* out, const char* command)
                     free(cmd);
                     return 1;
                 }
-                cmd = realloc(cmd, cmd_blocks * CMD_MAX_BLOCKS);
-                if (!cmd) {
+                tmpcmd = realloc(cmd, cmd_blocks * CMD_MAX_BLOCKS);
+                if (!tmpcmd) {
+                    free(cmd);
                     fprintf(out, "554 %s\r\n", strerror(ENOMEM));
                     return 1;
                 }
+                cmd = tmpcmd;
             }
             cmd[cmd_index++] = ' ';
             memcpy(cmd + cmd_index, addrbuf, addrlen);

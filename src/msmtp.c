@@ -2608,6 +2608,9 @@ void msmtp_print_help(void)
              "  %s [option...] -t [--] [recipient...]\n"
              "  Read a mail from standard input and transmit it to an SMTP "
                 "or LMTP server.\n"), prgname, prgname);
+    printf(_("Configuration mode:\n"
+             "  %s --configure=mailadress\n"
+             "  Generate and print configuration for address.\n"), prgname);
     printf(_("Server information mode:\n"
              "  %s [option...] --serverinfo\n"
              "  Print information about a server.\n"), prgname);
@@ -2647,11 +2650,11 @@ void msmtp_print_help(void)
     printf(_("  --tls-trust-file=[file]      set/unset trust file for TLS\n"));
     printf(_("  --tls-crl-file=[file]        set/unset revocation file for TLS\n"));
     printf(_("  --tls-fingerprint=[f]        set/unset trusted certificate fingerprint for TLS\n"));
+    printf(_("  --tls-certcheck[=(on|off)]   enable/disable server certificate checks for TLS\n"));
     printf(_("  --tls-key-file=[file]        set/unset private key file for TLS\n"));
     printf(_("  --tls-cert-file=[file]       set/unset private cert file for TLS\n"));
-    printf(_("  --tls-certcheck[=(on|off)]   enable/disable server certificate checks for TLS\n"));
-    printf(_("  --tls-min-dh-prime-bits=[b]  set/unset minimum bit size of DH prime\n"));
     printf(_("  --tls-priorities=[prios]     set/unset TLS priorities.\n"));
+    printf(_("  --tls-min-dh-prime-bits=[b]  set/unset minimum bit size of DH prime\n"));
     printf(_("Options specific to sendmail mode:\n"));
     printf(_("  --auto-from[=(on|off)]       enable/disable automatic envelope-from addresses\n"));
     printf(_("  -f, --from=address           set envelope from address\n"));

@@ -21,7 +21,7 @@ Msmtpd handles local SMTP clients. It listens on 127.0.0.1 port 25 by default, b
 without its own network sockets in inetd mode, where it handles a single SMTP session on
 standard input / output.
 .br
-In the string that defines the command that msmtpd pipes each mail to, the first occurence of
+In the string that defines the command that msmtpd pipes each mail to, the first occurrence of
 \fI%F\fP will be replaced with the envelope from address. Furthermore, all recipients of the
 mail will be appended as arguments. The command must not write to standard output, as that would
 mess up the SMTP session.

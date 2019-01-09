@@ -164,7 +164,7 @@ int smtp_pipe(FILE* in, FILE* pipe, char* buf, size_t bufsize)
 }
 
 /* SMTP session with input and output from FILE descriptors.
- * Mails are piped to the given command, where the first occurence of %F
+ * Mails are piped to the given command, where the first occurrence of %F
  * will be replaced with the envelope-from address, and all recipient addresses
  * will be appended as arguments. */
 int msmtpd_session(FILE* in, FILE* out, const char* command)

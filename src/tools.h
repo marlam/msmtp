@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client, and of mpop, a POP3 client.
  *
- * Copyright (C) 2004, 2005, 2006, 2007, 2011, 2014, 2018
+ * Copyright (C) 2004, 2005, 2006, 2007, 2011, 2014, 2018, 2019
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -191,5 +191,24 @@ char *string_replace(char *str, const char *s, const char *r);
  * Print the given time stamp in RFC2822 format into the given buffer.
  */
 void print_time_rfc2822(time_t t, char rfc2822_timestamp[32]);
+
+/*
+ * split_mail_address()
+ *
+ * Splits a mail address into a local part (before the last '@') and a domain
+ * part (after the last '@'). The returned domain_part pointer may be NULL if
+ * there is no '@' in the address, and both local and domain part may be empty.
+ */
+
+void split_mail_address(const char *address, char **local_part, char **domain_part);
+
+
+/*
+ * check_hostname_matches_domain()
+ *
+ * Checks whether the given host name is within the given domain.
+ */
+
+int check_hostname_matches_domain(const char *hostname, const char *domain);
 
 #endif

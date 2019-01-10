@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client, and of mpop, a POP3 client.
  *
- * Copyright (C) 2004, 2005, 2006, 2007, 2009, 2011, 2014, 2018
+ * Copyright (C) 2004, 2005, 2006, 2007, 2009, 2011, 2014, 2018, 2019
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -39,6 +39,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <sys/types.h>
@@ -641,4 +642,69 @@ void print_time_rfc2822(time_t t, char rfc2822_timestamp[32])
             weekday[lt->tm_wday], lt->tm_mday, month[lt->tm_mon],
             lt->tm_year + 1900, lt->tm_hour, lt->tm_min, lt->tm_sec,
             tz_offset_sign, tz_offset_hours, tz_offset_minutes);
+}
+
+/*
+ * split_mail_address()
+ *
+ * see tools.h
+ */
+
+void split_mail_address(const char *address, char **local_part, char **domain_part)
+{
+    const char *p = strrchr(address, '@');
+    if (p)
+    {
+        size_t local_part_len = p - address;
+        size_t domain_part_len = strlen(p + 1);
+        *local_part = xmalloc(local_part_len + 1);
+        strncpy(*local_part, address, local_part_len);
+        (*local_part)[local_part_len] = '\0';
+        *domain_part = xmalloc(domain_part_len + 1);
+        strcpy(*domain_part, p + 1);
+    }
+    else
+    {
+        size_t local_part_len = strlen(address);
+        *local_part = xmalloc(local_part_len + 1);
+        strcpy(*local_part, address);
+        *domain_part = NULL;
+    }
+}
+
+
+/*
+ * check_hostname_matches_domain()
+ *
+ * see tools.h
+ */
+
+int check_hostname_matches_domain(const char *hostname, const char *domain)
+{
+    size_t hostname_len = strlen(hostname);
+    size_t domain_len = strlen(domain);
+    size_t i;
+
+    /* empty domain? */
+    if (domain_len < 1)
+        return 0;
+
+    /* host name shorter than domain? */
+    if (hostname_len < domain_len)
+        return 0;
+
+    /* if lengths match, then the strings must match */
+    if (hostname_len == domain_len)
+        return strcasecmp(hostname, domain) == 0 ? 1 : 0;
+
+    /* if host name is longer, than it must be at least two longer because of
+     * the '.' (e.g. hostname="a.example.com", domain="example.com") */
+    if (hostname_len < domain_len + 2)
+        return 0;
+
+    /* host name is at least two longer than domain name:
+     * check that domain matches and that we have a separating dot
+     * (so that hostname="xxexample.com" does not match "example.com") */
+    return (hostname[hostname_len - 1 - domain_len] == '.'
+            && strcasecmp(hostname + (hostname_len - domain_len), domain) == 0) ? 1 : 0;
 }

@@ -1943,63 +1943,6 @@ void print_error(const char *format, ...)
 
 
 /*
- * msmtp_split_address()
- *
- * Splits a mail address into a local part (before the last '@') and a domain
- * part (after the last '@').
- */
-
-void msmtp_split_address(const char *address, char **local_part, char **domain_part)
-{
-    const char *p = strrchr(address, '@');
-    if (p)
-    {
-        size_t local_part_len = p - address;
-        size_t domain_part_len = strlen(p + 1);
-        *local_part = xmalloc(local_part_len + 1);
-        strncpy(*local_part, address, local_part_len);
-        (*local_part)[local_part_len] = '\0';
-        *domain_part = xmalloc(domain_part_len + 1);
-        strcpy(*domain_part, p + 1);
-    }
-    else
-    {
-        size_t local_part_len = strlen(address);
-        *local_part = xmalloc(local_part_len + 1);
-        strcpy(*local_part, address);
-        *domain_part = NULL;
-    }
-}
-
-
-/*
- * msmtp_hostname_matches_domain()
- *
- * Checks whether the given host name is within the given domain.
- */
-
-int msmtp_hostname_matches_domain(const char *hostname, const char *domain)
-{
-    size_t hostname_len = strlen(hostname);
-    size_t domain_len = strlen(domain);
-    size_t i;
-
-    if (hostname_len < domain_len || domain_len < 1)
-        return 0;
-
-    for (i = 0; i < domain_len; i++)
-    {
-        if (tolower(domain[domain_len - 1 - i])
-                != tolower(hostname[hostname_len - 1 - i]))
-        {
-            return 0;
-        }
-    }
-    return 1;
-}
-
-
-/*
  * msmtp_configure()
  *
  * Tries autoconfiguration for the given mail address based on the methods
@@ -2028,12 +1971,13 @@ int msmtp_configure(const char *address, const char *conffile)
 
     char *tmpstr;
 
-    msmtp_split_address(address, &local_part, &domain_part);
-    if (!domain_part)
+    split_mail_address(address, &local_part, &domain_part);
+    if (!domain_part || domain_part[0] == '\0' || local_part[0] == '\0')
     {
         print_error(_("automatic configuration based on SRV records failed: %s"),
-                _("address has no domain part"));
+                _("invalid mail address"));
         free(local_part);
+        free(domain_part);
         return EX_DATAERR;
     }
 
@@ -2067,7 +2011,7 @@ int msmtp_configure(const char *address, const char *conffile)
     tmpstr = xasprintf(_("copy this to your configuration file %s"), conffile);
     printf("# - %s\n", tmpstr);
     free(tmpstr);
-    if (!msmtp_hostname_matches_domain(hostname, domain_part))
+    if (!check_hostname_matches_domain(hostname, domain_part))
         printf("# - %s\n", _("warning: the host does not match the mail domain; please check"));
 #if defined HAVE_LIBSECRET
     tmpstr = xasprintf("secret-tool store --label=msmtp host %s service smtp user %s", hostname, local_part);

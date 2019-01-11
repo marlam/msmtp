@@ -38,6 +38,7 @@
 #endif
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include <string.h>
 #include <strings.h>
 #include <errno.h>
@@ -588,6 +589,28 @@ char *string_replace(char *str, const char *s, const char *r)
         free(str);
         str = new_str;
     }
+    return str;
+}
+
+/*
+ * sanitize_string()
+ *
+ * see tools.h
+ */
+
+char *sanitize_string(char *str)
+{
+    char *p = str;
+
+    while (*p != '\0')
+    {
+        if (iscntrl((unsigned char)*p))
+        {
+            *p = '?';
+        }
+        p++;
+    }
+
     return str;
 }
 

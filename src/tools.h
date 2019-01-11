@@ -186,6 +186,13 @@ int lock_file(FILE *f, int lock_type, int timeout);
 char *string_replace(char *str, const char *s, const char *r);
 
 /*
+ * sanitize_string()
+ *
+ * Replaces all control characters in the string with a question mark
+ */
+char *sanitize_string(char *str);
+
+/*
  * print_time_rfc2822()
  *
  * Print the given time stamp in RFC2822 format into the given buffer.

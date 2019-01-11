@@ -249,29 +249,6 @@ const char *exitcode_to_string(int exitcode)
 
 
 /*
- * msmtp_sanitize_string()
- *
- * Replaces all control characters in the string with a question mark
- */
-
-char *msmtp_sanitize_string(char *str)
-{
-    char *p = str;
-
-    while (*p != '\0')
-    {
-        if (iscntrl((unsigned char)*p))
-        {
-            *p = '?';
-        }
-        p++;
-    }
-
-    return str;
-}
-
-
-/*
  * msmtp_password_callback()
  *
  * This function will be called by smtp_auth() to get a password if none was
@@ -499,7 +476,7 @@ void msmtp_print_tls_info(const char *tls_parameter_description, tls_cert_info_t
         {
             tmp = xstrdup(tci->owner_info[i]);
             printf("        %s: %s\n", gettext(info_fieldname[i]),
-                    msmtp_sanitize_string(tmp));
+                    sanitize_string(tmp));
             free(tmp);
         }
     }
@@ -510,7 +487,7 @@ void msmtp_print_tls_info(const char *tls_parameter_description, tls_cert_info_t
         {
             tmp = xstrdup(tci->issuer_info[i]);
             printf("        %s: %s\n", gettext(info_fieldname[i]),
-                    msmtp_sanitize_string(tmp));
+                    sanitize_string(tmp));
             free(tmp);
         }
     }
@@ -876,7 +853,7 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
     }
     if (*server_greeting != '\0')
     {
-        printf("    %s\n", msmtp_sanitize_string(server_greeting));
+        printf("    %s\n", sanitize_string(server_greeting));
     }
 #ifdef HAVE_TLS
     if (acc->tls)
@@ -2118,7 +2095,7 @@ char *msmtp_get_log_info(account_t *acc, list_t *recipients, long mailsize,
         while (!list_is_empty(l))
         {
             l = l->next;
-            p = msmtp_sanitize_string(l->data);
+            p = sanitize_string(l->data);
             while (*p != '\0')
             {
                 /* hide single quotes to make the info easy to parse */
@@ -2232,7 +2209,7 @@ char *msmtp_get_log_info(account_t *acc, list_t *recipients, long mailsize,
             }
             tmp++;
         }
-        n = snprintf(p, s, "errormsg='%s' ", msmtp_sanitize_string(errstr));
+        n = snprintf(p, s, "errormsg='%s' ", sanitize_string(errstr));
         s -= n;
         p += n;
     }
@@ -3531,7 +3508,7 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
     if (!tmpf)
     {
         print_error(_("cannot create temporary file: %s"),
-                msmtp_sanitize_string(strerror(errno)));
+                sanitize_string(strerror(errno)));
         error_code = EX_IOERR;
         goto error_exit;
     }
@@ -3561,7 +3538,7 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
     if (fseeko(tmpf, 0, SEEK_SET) != 0)
     {
         print_error(_("cannot rewind temporary file: %s"),
-                msmtp_sanitize_string(strerror(errno)));
+                sanitize_string(strerror(errno)));
         error_code = EX_IOERR;
         goto error_exit;
     }
@@ -3569,7 +3546,7 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
     if ((error_code = msmtp_read_headers(tmpf, NULL,
                     list_last(conf->recipients), NULL, NULL, &errstr)) != EX_OK)
     {
-        print_error("%s", msmtp_sanitize_string(errstr));
+        print_error("%s", sanitize_string(errstr));
         goto error_exit;
     }
     error_code = EX_OK;
@@ -3625,13 +3602,13 @@ int msmtp_get_conffile_accounts(list_t **account_list,
             if (print_info)
             {
                 printf(_("ignoring system configuration file %s: %s\n"),
-                        system_conffile, msmtp_sanitize_string(errstr));
+                        system_conffile, sanitize_string(errstr));
             }
         }
         else
         {
             print_error("%s: %s", system_conffile,
-                    msmtp_sanitize_string(errstr));
+                    sanitize_string(errstr));
             return (e == CONF_EIO) ? EX_IOERR : EX_CONFIG;
         }
     }
@@ -3672,20 +3649,20 @@ int msmtp_get_conffile_accounts(list_t **account_list,
             if (user_conffile)
             {
                 print_error("%s: %s", real_user_conffile,
-                        msmtp_sanitize_string(errstr));
+                        sanitize_string(errstr));
                 return EX_IOERR;
             }
             /* otherwise, we can ignore it */
             if (print_info)
             {
                 printf(_("ignoring user configuration file %s: %s\n"),
-                        real_user_conffile, msmtp_sanitize_string(errstr));
+                        real_user_conffile, sanitize_string(errstr));
             }
         }
         else
         {
             print_error("%s: %s", real_user_conffile,
-                    msmtp_sanitize_string(errstr));
+                    sanitize_string(errstr));
             return (e == CONF_EIO) ? EX_IOERR : EX_CONFIG;
         }
     }
@@ -4003,7 +3980,7 @@ int main(int argc, char *argv[])
         if (!(header_tmpfile = tmpfile()))
         {
             print_error(_("cannot create temporary file: %s"),
-                    msmtp_sanitize_string(strerror(errno)));
+                    sanitize_string(strerror(errno)));
             error_code = EX_IOERR;
             goto exit;
         }
@@ -4012,7 +3989,7 @@ int main(int argc, char *argv[])
                             ? list_last(conf.recipients) : NULL,
                         &envelope_from, &have_date_header, &errstr)) != EX_OK)
         {
-            print_error("%s", msmtp_sanitize_string(errstr));
+            print_error("%s", sanitize_string(errstr));
             goto exit;
         }
         have_from_header = (envelope_from ? 1 : 0);
@@ -4028,7 +4005,7 @@ int main(int argc, char *argv[])
         if (fseeko(header_tmpfile, 0, SEEK_SET) != 0)
         {
             print_error(_("cannot rewind temporary file: %s"),
-                    msmtp_sanitize_string(strerror(errno)));
+                    sanitize_string(strerror(errno)));
             error_code = EX_IOERR;
             goto exit;
         }
@@ -4153,7 +4130,7 @@ int main(int argc, char *argv[])
         if (get_password_eval(account->passwordeval,
                     &account->password, &errstr) != CONF_EOK)
         {
-            print_error("%s", msmtp_sanitize_string(errstr));
+            print_error("%s", sanitize_string(errstr));
             error_code = EX_CONFIG;
             goto exit;
         }
@@ -4194,11 +4171,11 @@ int main(int argc, char *argv[])
         if (account->id && account->conffile)
         {
             print_error(_("account %s from %s: %s"), account->id,
-                    account->conffile, msmtp_sanitize_string(errstr));
+                    account->conffile, sanitize_string(errstr));
         }
         else
         {
-            print_error("%s", msmtp_sanitize_string(errstr));
+            print_error("%s", sanitize_string(errstr));
         }
         error_code = EX_CONFIG;
         goto exit;
@@ -4217,7 +4194,7 @@ int main(int argc, char *argv[])
                          &errstr)) != ALIASES_EOK)
         {
             print_error("%s: %s", account->aliases,
-                    msmtp_sanitize_string(errstr));
+                    sanitize_string(errstr));
             error_code = EX_CONFIG;
             goto exit;
         }
@@ -4252,7 +4229,7 @@ int main(int argc, char *argv[])
     if ((e = net_lib_init(&errstr)) != NET_EOK)
     {
         print_error(_("cannot initialize networking: %s"),
-                msmtp_sanitize_string(errstr));
+                sanitize_string(errstr));
         error_code = EX_SOFTWARE;
         goto exit;
     }
@@ -4263,7 +4240,7 @@ int main(int argc, char *argv[])
         if ((e = tls_lib_init(&errstr)) != TLS_EOK)
         {
             print_error(_("cannot initialize TLS library: %s"),
-                    msmtp_sanitize_string(errstr));
+                    sanitize_string(errstr));
             error_code = EX_SOFTWARE;
             goto exit;
         }
@@ -4284,7 +4261,7 @@ int main(int argc, char *argv[])
             if (!(prepend_header_tmpfile = tmpfile()))
             {
                 print_error(_("cannot create temporary file: %s"),
-                        msmtp_sanitize_string(strerror(errno)));
+                        sanitize_string(strerror(errno)));
                 error_code = EX_IOERR;
                 goto exit;
             }
@@ -4311,7 +4288,7 @@ int main(int argc, char *argv[])
                 && fseeko(prepend_header_tmpfile, 0, SEEK_SET) != 0)
         {
             print_error(_("cannot rewind temporary file: %s"),
-                    msmtp_sanitize_string(strerror(errno)));
+                    sanitize_string(strerror(errno)));
             error_code = EX_IOERR;
             goto exit;
         }
@@ -4331,7 +4308,7 @@ int main(int argc, char *argv[])
                     lp_lmtp_error_msgs = lp_lmtp_error_msgs->next;
                     if (lp_lmtp_errstrs->data)
                     {
-                        print_error("%s", msmtp_sanitize_string(
+                        print_error("%s", sanitize_string(
                                     lp_lmtp_errstrs->data));
                         if ((lp = lp_lmtp_error_msgs->data))
                         {
@@ -4339,7 +4316,7 @@ int main(int argc, char *argv[])
                             {
                                 lp = lp->next;
                                 print_error(_("LMTP server message: %s"),
-                                        msmtp_sanitize_string(lp->data));
+                                        sanitize_string(lp->data));
                             }
                             list_xfree(lp_lmtp_error_msgs->data, free);
                         }
@@ -4362,7 +4339,7 @@ int main(int argc, char *argv[])
             {
                 if (errstr)
                 {
-                    print_error("%s", msmtp_sanitize_string(errstr));
+                    print_error("%s", sanitize_string(errstr));
                 }
                 if (errmsg)
                 {
@@ -4371,7 +4348,7 @@ int main(int argc, char *argv[])
                     {
                         lp = lp->next;
                         print_error(_("server message: %s"),
-                                msmtp_sanitize_string(lp->data));
+                                sanitize_string(lp->data));
                     }
                 }
                 if (account->id && account->conffile)
@@ -4417,7 +4394,7 @@ int main(int argc, char *argv[])
         {
             if (errstr)
             {
-                print_error("%s", msmtp_sanitize_string(errstr));
+                print_error("%s", sanitize_string(errstr));
             }
             if (errmsg)
             {
@@ -4426,7 +4403,7 @@ int main(int argc, char *argv[])
                 {
                     lp = lp->next;
                     print_error(_("server message: %s"),
-                            msmtp_sanitize_string(lp->data));
+                            sanitize_string(lp->data));
                 }
             }
         }
@@ -4438,7 +4415,7 @@ int main(int argc, char *argv[])
         {
             if (errstr)
             {
-                print_error("%s", msmtp_sanitize_string(errstr));
+                print_error("%s", sanitize_string(errstr));
             }
             if (errmsg)
             {
@@ -4447,7 +4424,7 @@ int main(int argc, char *argv[])
                 {
                     lp = lp->next;
                     print_error(_("server message: %s"),
-                            msmtp_sanitize_string(lp->data));
+                            sanitize_string(lp->data));
                 }
             }
         }

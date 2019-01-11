@@ -4,7 +4,7 @@
  * This file is part of msmtp, an SMTP client.
  *
  * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2008, 2010, 2012, 2014, 2016,
- * 2018
+ * 2018, 2019
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -386,5 +386,12 @@ int smtp_quit(smtp_server_t *srv, char **errstr);
  * to reuse it.
  */
 void smtp_close(smtp_server_t *srv);
+
+/*
+ * smtp_exitcode()
+ *
+ * Translate SMTP_* error code to an error code from sysexits.h
+ */
+int smtp_exitcode(int smtp_error_code);
 
 #endif

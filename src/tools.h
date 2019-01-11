@@ -66,6 +66,13 @@
 
 
 /*
+ * exitcode_to_string()
+ *
+ * Return the name of a sysexits.h exitcode
+ */
+const char *exitcode_to_string(int exitcode);
+
+/*
  * link() - only for systems that lack it
  */
 #ifndef HAVE_LINK

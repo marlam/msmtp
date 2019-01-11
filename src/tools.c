@@ -53,6 +53,54 @@
 
 
 /*
+ * exitcode_to_string()
+ *
+ * see tools.h
+ */
+
+const char *exitcode_to_string(int exitcode)
+{
+    switch (exitcode)
+    {
+        case EX_OK:
+            return "EX_OK";
+        case EX_USAGE:
+            return "EX_USAGE";
+        case EX_DATAERR:
+            return "EX_DATAERR";
+        case EX_NOINPUT:
+            return "EX_NOINPUT";
+        case EX_NOUSER:
+            return "EX_NOUSER";
+        case EX_NOHOST:
+            return "EX_NOHOST";
+        case EX_UNAVAILABLE:
+            return "EX_UNAVAILABLE";
+        case EX_SOFTWARE:
+            return "EX_SOFTWARE";
+        case EX_OSERR:
+            return "EX_OSERR";
+        case EX_OSFILE:
+            return "EX_OSFILE";
+        case EX_CANTCREAT:
+            return "EX_CANTCREAT";
+        case EX_IOERR:
+            return "EX_IOERR";
+        case EX_TEMPFAIL:
+            return "EX_TEMPFAIL";
+        case EX_PROTOCOL:
+            return "EX_PROTOCOL";
+        case EX_NOPERM:
+            return "EX_NOPERM";
+        case EX_CONFIG:
+            return "EX_CONFIG";
+        default:
+            return "BUG:UNKNOWN";
+    }
+}
+
+
+/*
  * link()
  *
  * A link replacement, currently only for W32.

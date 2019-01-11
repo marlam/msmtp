@@ -232,4 +232,11 @@ void tls_close(tls_t *tls);
  */
 void tls_lib_deinit(void);
 
+/*
+ * tls_exitcode()
+ *
+ * Translate TLS_* error code to an error code from sysexits.h
+ */
+int tls_exitcode(int tls_error_code);
+
 #endif

@@ -70,6 +70,7 @@
 
 #include "xalloc.h"
 #include "readbuf.h"
+#include "tools.h"
 #include "net.h"
 
 
@@ -1105,4 +1106,31 @@ void net_lib_deinit(void)
 #ifdef W32_NATIVE
     (void)WSACleanup();
 #endif
+}
+
+
+/*
+ * net_exitcode()
+ *
+ * see net.h
+ */
+
+int net_exitcode(int net_error_code)
+{
+    switch (net_error_code)
+    {
+        case NET_EHOSTNOTFOUND:
+            return EX_NOHOST;
+        case NET_ESOCKET:
+            return EX_OSERR;
+        case NET_ECONNECT:
+            return EX_TEMPFAIL;
+        case NET_EIO:
+            return EX_IOERR;
+        case NET_EPROXY:
+            return EX_UNAVAILABLE;
+        case NET_ELIBFAILED:
+        default:
+            return EX_SOFTWARE;
+    }
 }

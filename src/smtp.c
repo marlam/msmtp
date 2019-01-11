@@ -4,7 +4,7 @@
  * This file is part of msmtp, an SMTP client.
  *
  * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011,
- * 2014, 2016, 2018
+ * 2014, 2016, 2018, 2019
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -48,6 +48,7 @@
 #include "xalloc.h"
 #include "list.h"
 #include "readbuf.h"
+#include "tools.h"
 #include "net.h"
 #include "smtp.h"
 #include "stream.h"
@@ -1914,4 +1915,32 @@ void smtp_close(smtp_server_t *srv)
     }
 #endif /* HAVE_TLS */
     net_close_socket(srv->fd);
+}
+
+
+/*
+ * smtp_exitcode()
+ *
+ * see smtp.h
+ */
+
+int smtp_exitcode(int smtp_error_code)
+{
+    switch (smtp_error_code)
+    {
+        case SMTP_EIO:
+            return EX_IOERR;
+        case SMTP_EPROTO:
+            return EX_PROTOCOL;
+        case SMTP_EINVAL:
+            return EX_DATAERR;
+        case SMTP_EAUTHFAIL:
+            return EX_NOPERM;
+        case SMTP_EINSECURE:
+        case SMTP_EUNAVAIL:
+            return EX_UNAVAILABLE;
+        case SMTP_ELIBFAILED:
+        default:
+            return EX_SOFTWARE;
+    }
 }

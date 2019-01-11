@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client, and of mpop, a POP3 client.
  *
- * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2014, 2018
+ * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2014, 2018, 2019
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -149,5 +149,12 @@ int net_get_srv_record(const char* query, char **hostname, int *port);
  * Deinit networking library
  */
 void net_lib_deinit(void);
+
+/*
+ * net_exitcode()
+ *
+ * Translate NET_* error code to an error code from sysexits.h
+ */
+int net_exitcode(int net_error_code);
 
 #endif

@@ -4,7 +4,7 @@
  * This file is part of msmtp, an SMTP client.
  *
  * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011,
- * 2012, 2014, 2016, 2018
+ * 2012, 2014, 2016, 2018, 2019
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -1860,4 +1860,31 @@ void tls_lib_deinit(void)
 #ifdef HAVE_LIBGNUTLS
     gnutls_global_deinit();
 #endif /* HAVE_LIBGNUTLS */
+}
+
+
+/*
+ * tls_exitcode()
+ *
+ * see tls.h
+ */
+
+int tls_exitcode(int tls_error_code)
+{
+    switch (tls_error_code)
+    {
+        case TLS_EIO:
+            return EX_IOERR;
+        case TLS_EFILE:
+            return EX_NOINPUT;
+        case TLS_EHANDSHAKE:
+            return EX_PROTOCOL;
+        case TLS_ECERT:
+            /* did not find anything better... */
+            return EX_UNAVAILABLE;
+        case TLS_ELIBFAILED:
+        case TLS_ESEED:
+        default:
+            return EX_SOFTWARE;
+    }
 }

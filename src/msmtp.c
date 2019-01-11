@@ -104,150 +104,6 @@ void xalloc_die(void)
 
 
 /*
- * Translate error codes from net.h, tls.h or smtp.h
- * to error codes from sysexits.h
- */
-
-int exitcode_net(int net_error_code)
-{
-    switch (net_error_code)
-    {
-        case NET_EHOSTNOTFOUND:
-            return EX_NOHOST;
-
-        case NET_ESOCKET:
-            return EX_OSERR;
-
-        case NET_ECONNECT:
-            return EX_TEMPFAIL;
-
-        case NET_EIO:
-            return EX_IOERR;
-
-        case NET_EPROXY:
-            return EX_UNAVAILABLE;
-
-        case NET_ELIBFAILED:
-        default:
-            return EX_SOFTWARE;
-    }
-}
-
-#ifdef HAVE_TLS
-int exitcode_tls(int tls_error_code)
-{
-    switch (tls_error_code)
-    {
-        case TLS_EIO:
-            return EX_IOERR;
-
-        case TLS_EFILE:
-            return EX_NOINPUT;
-
-        case TLS_EHANDSHAKE:
-            return EX_PROTOCOL;
-
-        case TLS_ECERT:
-            /* did not find anything better... */
-            return EX_UNAVAILABLE;
-
-        case TLS_ELIBFAILED:
-        case TLS_ESEED:
-        default:
-            return EX_SOFTWARE;
-    }
-}
-#endif /* HAVE_TLS */
-
-int exitcode_smtp(int smtp_error_code)
-{
-    switch (smtp_error_code)
-    {
-        case SMTP_EIO:
-            return EX_IOERR;
-
-        case SMTP_EPROTO:
-            return EX_PROTOCOL;
-
-        case SMTP_EINVAL:
-            return EX_DATAERR;
-
-        case SMTP_EAUTHFAIL:
-            return EX_NOPERM;
-
-        case SMTP_EINSECURE:
-        case SMTP_EUNAVAIL:
-            return EX_UNAVAILABLE;
-
-        case SMTP_ELIBFAILED:
-        default:
-            return EX_SOFTWARE;
-    }
-}
-
-
-/*
- * Return the name of a sysexits.h exitcode
- */
-const char *exitcode_to_string(int exitcode)
-{
-    switch (exitcode)
-    {
-        case EX_OK:
-            return "EX_OK";
-
-        case EX_USAGE:
-            return "EX_USAGE";
-
-        case EX_DATAERR:
-            return "EX_DATAERR";
-
-        case EX_NOINPUT:
-            return "EX_NOINPUT";
-
-        case EX_NOUSER:
-            return "EX_NOUSER";
-
-        case EX_NOHOST:
-            return "EX_NOHOST";
-
-        case EX_UNAVAILABLE:
-            return "EX_UNAVAILABLE";
-
-        case EX_SOFTWARE:
-            return "EX_SOFTWARE";
-
-        case EX_OSERR:
-            return "EX_OSERR";
-
-        case EX_OSFILE:
-            return "EX_OSFILE";
-
-        case EX_CANTCREAT:
-            return "EX_CANTCREAT";
-
-        case EX_IOERR:
-            return "EX_IOERR";
-
-        case EX_TEMPFAIL:
-            return "EX_TEMPFAIL";
-
-        case EX_PROTOCOL:
-            return "EX_PROTOCOL";
-
-        case EX_NOPERM:
-            return "EX_NOPERM";
-
-        case EX_CONFIG:
-            return "EX_CONFIG";
-
-        default:
-            return "BUG:UNKNOWN";
-    }
-}
-
-
-/*
  * msmtp_password_callback()
  *
  * This function will be called by smtp_auth() to get a password if none was
@@ -460,7 +316,7 @@ int msmtp_rmqs(account_t *acc, int debug, const char *rmqs_argument,
                     acc->host, acc->port, acc->source_ip, acc->timeout,
                     NULL, NULL, errstr)) != NET_EOK)
     {
-        return exitcode_net(e);
+        return net_exitcode(e);
     }
 
     /* prepare tls */
@@ -474,7 +330,7 @@ int msmtp_rmqs(account_t *acc, int debug, const char *rmqs_argument,
                         acc->tls_min_dh_prime_bits,
                         acc->tls_priorities, errstr)) != TLS_EOK)
         {
-            return exitcode_tls(e);
+            return tls_exitcode(e);
         }
     }
 #endif /* HAVE_TLS */
@@ -496,7 +352,7 @@ int msmtp_rmqs(account_t *acc, int debug, const char *rmqs_argument,
                 free(tls_parameter_description);
             }
             msmtp_endsession(&srv, 0);
-            return exitcode_tls(e);
+            return tls_exitcode(e);
         }
         if (debug)
         {
@@ -511,14 +367,14 @@ int msmtp_rmqs(account_t *acc, int debug, const char *rmqs_argument,
     if ((e = smtp_get_greeting(&srv, msg, NULL, errstr)) != SMTP_EOK)
     {
         msmtp_endsession(&srv, 0);
-        return exitcode_smtp(e);
+        return smtp_exitcode(e);
     }
 
     /* initialize session */
     if ((e = smtp_init(&srv, acc->domain, msg, errstr)) != SMTP_EOK)
     {
         msmtp_endsession(&srv, 0);
-        return exitcode_smtp(e);
+        return smtp_exitcode(e);
     }
 
     /* start tls for starttls servers */
@@ -535,7 +391,7 @@ int msmtp_rmqs(account_t *acc, int debug, const char *rmqs_argument,
         if ((e = smtp_tls_starttls(&srv, msg, errstr)) != SMTP_EOK)
         {
             msmtp_endsession(&srv, 0);
-            return exitcode_smtp(e);
+            return smtp_exitcode(e);
         }
         if (debug)
         {
@@ -550,7 +406,7 @@ int msmtp_rmqs(account_t *acc, int debug, const char *rmqs_argument,
                 free(tls_parameter_description);
             }
             msmtp_endsession(&srv, 0);
-            return exitcode_tls(e);
+            return tls_exitcode(e);
         }
         if (debug)
         {
@@ -562,7 +418,7 @@ int msmtp_rmqs(account_t *acc, int debug, const char *rmqs_argument,
         if ((e = smtp_init(&srv, acc->domain, msg, errstr)) != SMTP_EOK)
         {
             msmtp_endsession(&srv, 0);
-            return exitcode_smtp(e);
+            return smtp_exitcode(e);
         }
     }
 #endif /* HAVE_TLS */
@@ -591,7 +447,7 @@ int msmtp_rmqs(account_t *acc, int debug, const char *rmqs_argument,
                 != SMTP_EOK)
         {
             msmtp_endsession(&srv, 0);
-            return exitcode_smtp(e);
+            return smtp_exitcode(e);
         }
     }
 
@@ -599,7 +455,7 @@ int msmtp_rmqs(account_t *acc, int debug, const char *rmqs_argument,
     if ((e = smtp_etrn(&srv, rmqs_argument, msg, errstr)) != SMTP_EOK)
     {
         msmtp_endsession(&srv, 0);
-        return exitcode_smtp(e);
+        return smtp_exitcode(e);
     }
 
     /* end session */
@@ -641,7 +497,7 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
                     &server_canonical_name, &server_address, errstr))
             != NET_EOK)
     {
-        e = exitcode_net(e);
+        e = net_exitcode(e);
         goto error_exit;
     }
 
@@ -657,7 +513,7 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
                         acc->tls_min_dh_prime_bits,
                         acc->tls_priorities, errstr)) != TLS_EOK)
         {
-            e = exitcode_tls(e);
+            e = tls_exitcode(e);
             goto error_exit;
         }
     }
@@ -671,7 +527,7 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
                         &tls_parameter_description, errstr)) != TLS_EOK)
         {
             msmtp_endsession(&srv, 0);
-            e = exitcode_tls(e);
+            e = tls_exitcode(e);
             goto error_exit;
         }
     }
@@ -682,7 +538,7 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
                     errstr)) != SMTP_EOK)
     {
         msmtp_endsession(&srv, 0);
-        e = exitcode_smtp(e);
+        e = smtp_exitcode(e);
         goto error_exit;
     }
 
@@ -690,7 +546,7 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
     if ((e = smtp_init(&srv, acc->domain, msg, errstr)) != SMTP_EOK)
     {
         msmtp_endsession(&srv, 0);
-        e = exitcode_smtp(e);
+        e = smtp_exitcode(e);
         goto error_exit;
     }
 
@@ -709,21 +565,21 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
         if ((e = smtp_tls_starttls(&srv, msg, errstr)) != SMTP_EOK)
         {
             msmtp_endsession(&srv, 0);
-            e = exitcode_smtp(e);
+            e = smtp_exitcode(e);
             goto error_exit;
         }
         if ((e = smtp_tls(&srv, acc->host, acc->tls_nocertcheck, tci,
                         &tls_parameter_description, errstr)) != TLS_EOK)
         {
             msmtp_endsession(&srv, 0);
-            e = exitcode_tls(e);
+            e = tls_exitcode(e);
             goto error_exit;
         }
         /* initialize again */
         if ((e = smtp_init(&srv, acc->domain, msg, errstr)) != SMTP_EOK)
         {
             msmtp_endsession(&srv, 0);
-            e = exitcode_smtp(e);
+            e = smtp_exitcode(e);
             goto error_exit;
         }
     }
@@ -1601,7 +1457,7 @@ int msmtp_sendmail(account_t *acc, list_t *recipients,
                         acc->tls_min_dh_prime_bits,
                         acc->tls_priorities, errstr)) != TLS_EOK)
         {
-            e = exitcode_tls(e);
+            e = tls_exitcode(e);
             return e;
         }
     }
@@ -1612,7 +1468,7 @@ int msmtp_sendmail(account_t *acc, list_t *recipients,
                     acc->host, acc->port, acc->source_ip, acc->timeout,
                     NULL, NULL, errstr)) != NET_EOK)
     {
-        e = exitcode_net(e);
+        e = net_exitcode(e);
         return e;
     }
 
@@ -1633,7 +1489,7 @@ int msmtp_sendmail(account_t *acc, list_t *recipients,
                 free(tls_parameter_description);
             }
             msmtp_endsession(&srv, 0);
-            e = exitcode_tls(e);
+            e = tls_exitcode(e);
             return e;
         }
         if (debug)
@@ -1649,7 +1505,7 @@ int msmtp_sendmail(account_t *acc, list_t *recipients,
     if ((e = smtp_get_greeting(&srv, msg, NULL, errstr)) != SMTP_EOK)
     {
         msmtp_endsession(&srv, 0);
-        e = exitcode_smtp(e);
+        e = smtp_exitcode(e);
         return e;
     }
 
@@ -1657,7 +1513,7 @@ int msmtp_sendmail(account_t *acc, list_t *recipients,
     if ((e = smtp_init(&srv, acc->domain, msg, errstr)) != SMTP_EOK)
     {
         msmtp_endsession(&srv, 0);
-        e = exitcode_smtp(e);
+        e = smtp_exitcode(e);
         return e;
     }
 
@@ -1676,7 +1532,7 @@ int msmtp_sendmail(account_t *acc, list_t *recipients,
         if ((e = smtp_tls_starttls(&srv, msg, errstr)) != SMTP_EOK)
         {
             msmtp_endsession(&srv, 0);
-            e = exitcode_smtp(e);
+            e = smtp_exitcode(e);
             return e;
         }
         if (debug)
@@ -1692,7 +1548,7 @@ int msmtp_sendmail(account_t *acc, list_t *recipients,
                 free(tls_parameter_description);
             }
             msmtp_endsession(&srv, 0);
-            e = exitcode_tls(e);
+            e = tls_exitcode(e);
             return e;
         }
         if (debug)
@@ -1705,7 +1561,7 @@ int msmtp_sendmail(account_t *acc, list_t *recipients,
         if ((e = smtp_init(&srv, acc->domain, msg, errstr)) != SMTP_EOK)
         {
             msmtp_endsession(&srv, 0);
-            e = exitcode_smtp(e);
+            e = smtp_exitcode(e);
             return e;
         }
     }
@@ -1736,7 +1592,7 @@ int msmtp_sendmail(account_t *acc, list_t *recipients,
                 != SMTP_EOK)
         {
             msmtp_endsession(&srv, 0);
-            e = exitcode_smtp(e);
+            e = smtp_exitcode(e);
             return e;
         }
     }
@@ -1746,7 +1602,7 @@ int msmtp_sendmail(account_t *acc, list_t *recipients,
                     acc->dsn_notify, acc->dsn_return, msg, errstr)) != SMTP_EOK)
     {
         msmtp_endsession(&srv, 0);
-        e = exitcode_smtp(e);
+        e = smtp_exitcode(e);
         return e;
     }
     /* send header and body */
@@ -1759,7 +1615,7 @@ int msmtp_sendmail(account_t *acc, list_t *recipients,
                         errstr)) != SMTP_EOK)
         {
             msmtp_endsession(&srv, 0);
-            e = exitcode_smtp(e);
+            e = smtp_exitcode(e);
             return e;
         }
     }
@@ -1768,14 +1624,14 @@ int msmtp_sendmail(account_t *acc, list_t *recipients,
                     mailsize, errstr)) != SMTP_EOK)
     {
         msmtp_endsession(&srv, 0);
-        e = exitcode_smtp(e);
+        e = smtp_exitcode(e);
         return e;
     }
     /* then: the body from the original file */
     if ((e = smtp_send_mail(&srv, f, 1, mailsize, errstr)) != SMTP_EOK)
     {
         msmtp_endsession(&srv, 0);
-        e = exitcode_smtp(e);
+        e = smtp_exitcode(e);
         return e;
     }
     /* end the mail */
@@ -1791,7 +1647,7 @@ int msmtp_sendmail(account_t *acc, list_t *recipients,
     if (e != SMTP_EOK)
     {
         msmtp_endsession(&srv, 0);
-        e = exitcode_smtp(e);
+        e = smtp_exitcode(e);
         return e;
     }
 

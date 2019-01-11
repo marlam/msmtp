@@ -199,7 +199,7 @@ char *sanitize_string(char *str);
  * buffer. Each input byte is transformed to three output characters (the last
  * one is '\0').
  */
-void print_fingerprint(char *s, unsigned char *fingerprint, size_t len);
+void print_fingerprint(char *s, const unsigned char *fingerprint, size_t len);
 
 /*
  * print_time_rfc2822()

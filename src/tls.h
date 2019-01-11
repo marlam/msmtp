@@ -4,7 +4,7 @@
  * This file is part of msmtp, an SMTP client.
  *
  * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2010, 2014, 2016,
- * 2018
+ * 2018, 2019
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -186,6 +186,14 @@ void tls_cert_info_free(tls_cert_info_t *tci);
  * Used error codes: TLS_ECERT
  */
 int tls_cert_info_get(tls_t *tls, tls_cert_info_t *tci, char **errstr);
+
+/*
+ * tls_print_info()
+ *
+ * Prints information about a TLS session.
+ */
+void tls_print_info(const char *tls_parameter_description,
+        const tls_cert_info_t *tci);
 
 /*
  * tls_gets()

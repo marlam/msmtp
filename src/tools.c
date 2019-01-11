@@ -622,7 +622,7 @@ char *sanitize_string(char *str)
  * see tools.h
  */
 
-void print_fingerprint(char *s, unsigned char *fingerprint, size_t len)
+void print_fingerprint(char *s, const unsigned char *fingerprint, size_t len)
 {
     const char *hex = "0123456789ABCDEF";
     size_t i;

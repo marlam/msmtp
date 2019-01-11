@@ -206,16 +206,13 @@ void print_time_rfc2822(time_t t, char rfc2822_timestamp[32]);
  * part (after the last '@'). The returned domain_part pointer may be NULL if
  * there is no '@' in the address, and both local and domain part may be empty.
  */
-
 void split_mail_address(const char *address, char **local_part, char **domain_part);
-
 
 /*
  * check_hostname_matches_domain()
  *
  * Checks whether the given host name is within the given domain.
  */
-
 int check_hostname_matches_domain(const char *hostname, const char *domain);
 
 #endif

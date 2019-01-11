@@ -592,6 +592,7 @@ char *string_replace(char *str, const char *s, const char *r)
     return str;
 }
 
+
 /*
  * sanitize_string()
  *
@@ -613,6 +614,7 @@ char *sanitize_string(char *str)
 
     return str;
 }
+
 
 /*
  * print_time_rfc2822()
@@ -666,6 +668,7 @@ void print_time_rfc2822(time_t t, char rfc2822_timestamp[32])
             lt->tm_year + 1900, lt->tm_hour, lt->tm_min, lt->tm_sec,
             tz_offset_sign, tz_offset_hours, tz_offset_minutes);
 }
+
 
 /*
  * split_mail_address()

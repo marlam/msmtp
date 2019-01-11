@@ -12,7 +12,8 @@ msmtp_SOURCES = \
 	tools.c tools.h \
 	xalloc.c xalloc.h \
 	gettext.h \
-	aliases.c aliases.h
+	aliases.c aliases.h \
+	password.c password.h
 
 if HAVE_TLS
 msmtp_SOURCES += tls.c tls.h

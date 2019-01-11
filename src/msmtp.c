@@ -6,8 +6,6 @@
  * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011,
  * 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019
  * Martin Lambers <marlam@marlam.de>
- * Jay Soffian <jaysoffian@gmail.com> (Mac OS X keychain support)
- * Satoru SATOH <satoru.satoh@gmail.com> (GNOME keyring support)
  * Martin Stenberg <martin@gnutiken.se> (passwordeval support)
  * Scott Shumate <sshumate@austin.rr.com> (aliases support)
  *
@@ -51,12 +49,6 @@ extern int optind;
 #ifdef HAVE_SIGNAL
 # include <signal.h>
 #endif
-#ifdef HAVE_LIBSECRET
-# include <libsecret/secret.h>
-#endif
-#ifdef HAVE_MACOSXKEYRING
-# include <Security/Security.h>
-#endif
 
 #include "gettext.h"
 #define _(string) gettext(string)
@@ -65,10 +57,10 @@ extern int optind;
 #include "conf.h"
 #include "list.h"
 #include "net.h"
-#include "netrc.h"
 #include "smtp.h"
 #include "tools.h"
 #include "aliases.h"
+#include "password.h"
 #ifdef HAVE_TLS
 # include "tls.h"
 #endif /* HAVE_TLS */
@@ -77,13 +69,9 @@ extern int optind;
 #ifdef W32_NATIVE
 #define SYSCONFFILE     "msmtprc.txt"
 #define USERCONFFILE    "msmtprc.txt"
-#define SYSNETRCFILE    "netrc.txt"
-#define USERNETRCFILE   "netrc.txt"
 #else /* UNIX */
 #define SYSCONFFILE     "msmtprc"
 #define USERCONFFILE    ".msmtprc"
-#define SYSNETRCFILE    "netrc"
-#define USERNETRCFILE   ".netrc"
 #endif
 
 /* The name of this program */
@@ -108,160 +96,11 @@ void xalloc_die(void)
  *
  * This function will be called by smtp_auth() to get a password if none was
  * given.
- * It tries to get it from the system's keychain (if available).
- * If that fails, it tries to read a password from .netrc.
- * If that fails, it tries to read a password from /dev/tty (not stdin) with
- * getpass().
- * It must return NULL on failure or a password in an allocated buffer.
  */
-
-#ifdef HAVE_LIBSECRET
-const SecretSchema *get_msmtp_schema(void)
-{
-    static const SecretSchema schema = {
-        "de.marlam.msmtp.password", SECRET_SCHEMA_DONT_MATCH_NAME,
-        {
-            {  "host", SECRET_SCHEMA_ATTRIBUTE_STRING },
-            {  "service", SECRET_SCHEMA_ATTRIBUTE_STRING },
-            {  "user", SECRET_SCHEMA_ATTRIBUTE_STRING },
-            {  "NULL", 0 },
-        }
-    };
-    return &schema;
-}
-#endif
 
 char *msmtp_password_callback(const char *hostname, const char *user)
 {
-    char *netrc_directory;
-    char *netrc_filename;
-    netrc_entry *netrc_hostlist;
-    netrc_entry *netrc_host;
-#ifdef HAVE_MACOSXKEYRING
-    void *password_data;
-    UInt32 password_length;
-    OSStatus status;
-#endif
-    FILE *tty;
-    int getpass_uses_tty;
-    char *prompt;
-    char *gpw;
-    char *password = NULL;
-
-#ifdef HAVE_LIBSECRET
-    if (!password)
-    {
-        gchar* libsecret_pw = secret_password_lookup_sync(
-                get_msmtp_schema(),
-                NULL, NULL,
-                "host", hostname,
-                "service", "smtp",
-                "user", user,
-                NULL);
-        if (!libsecret_pw)
-        {
-            /* for compatibility with passwords stored by the older
-             * libgnome-keyring */
-            libsecret_pw = secret_password_lookup_sync(
-                    SECRET_SCHEMA_COMPAT_NETWORK,
-                    NULL, NULL,
-                    "user", user,
-                    "protocol", "smtp",
-                    "server", hostname,
-                    NULL);
-        }
-        if (libsecret_pw)
-        {
-            password = xstrdup(libsecret_pw);
-            secret_password_free(libsecret_pw);
-        }
-    }
-#endif /* HAVE_LIBSECRET */
-
-#ifdef HAVE_MACOSXKEYRING
-    if (!password)
-    {
-        if (SecKeychainFindInternetPassword(
-                    NULL,
-                    strlen(hostname), hostname,
-                    0, NULL,
-                    strlen(user), user,
-                    0, (char *)NULL,
-                    0,
-                    kSecProtocolTypeSMTP,
-                    kSecAuthenticationTypeDefault,
-                    &password_length, &password_data,
-                    NULL) == noErr)
-        {
-            password = xmalloc((password_length + 1) * sizeof(char));
-            strncpy(password, password_data, (size_t)password_length);
-            password[password_length] = '\0';
-            SecKeychainItemFreeContent(NULL, password_data);
-        }
-    }
-#endif /* HAVE_MACOSXKEYRING */
-
-    if (!password)
-    {
-        netrc_directory = get_homedir();
-        netrc_filename = get_filename(netrc_directory, USERNETRCFILE);
-        free(netrc_directory);
-        if ((netrc_hostlist = parse_netrc(netrc_filename)))
-        {
-            if ((netrc_host = search_netrc(netrc_hostlist, hostname, user)))
-            {
-                password = xstrdup(netrc_host->password);
-            }
-            free_netrc(netrc_hostlist);
-        }
-        free(netrc_filename);
-    }
-
-    if (!password)
-    {
-        netrc_directory = get_sysconfdir();
-        netrc_filename = get_filename(netrc_directory, SYSNETRCFILE);
-        free(netrc_directory);
-        if ((netrc_hostlist = parse_netrc(netrc_filename)))
-        {
-            if ((netrc_host = search_netrc(netrc_hostlist, hostname, user)))
-            {
-                password = xstrdup(netrc_host->password);
-            }
-            free_netrc(netrc_hostlist);
-        }
-        free(netrc_filename);
-    }
-
-    /* Do not let getpass() read from stdin, because we read the mail from
-     * there. Our W32 getpass() uses _getch(), which always reads from the
-     * 'console' and not stdin. On other systems, we test if /dev/tty can be
-     * opened before calling getpass(). */
-    if (!password)
-    {
-#if defined W32_NATIVE || defined __CYGWIN__
-        getpass_uses_tty = 1;
-#else
-        getpass_uses_tty = 0;
-        if ((tty = fopen("/dev/tty", "w+")))
-        {
-            getpass_uses_tty = 1;
-            fclose(tty);
-        }
-#endif
-        if (getpass_uses_tty)
-        {
-            prompt = xasprintf(_("password for %s at %s: "), user, hostname);
-            gpw = getpass(prompt);
-            free(prompt);
-            if (gpw)
-            {
-                password = xstrdup(gpw);
-            }
-        }
-    }
-
-    return password;
+    return password_get(hostname, user, password_service_smtp, 1);
 }
 
 

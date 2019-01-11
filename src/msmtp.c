@@ -434,19 +434,6 @@ void msmtp_time_to_string(time_t *t, char *buf, size_t bufsize)
 }
 #endif
 
-void msmtp_fingerprint_string(char *s, unsigned char *fingerprint, size_t len)
-{
-    const char *hex = "0123456789ABCDEF";
-    size_t i;
-
-    for (i = 0; i < len; i++)
-    {
-        s[3 * i + 0] = hex[(fingerprint[i] & 0xf0) >> 4];
-        s[3 * i + 1] = hex[fingerprint[i] & 0x0f];
-        s[3 * i + 2] = (i < len - 1 ? ':' : '\0');
-    }
-}
-
 #ifdef HAVE_TLS
 void msmtp_print_tls_info(const char *tls_parameter_description, tls_cert_info_t *tci)
 {
@@ -463,10 +450,8 @@ void msmtp_print_tls_info(const char *tls_parameter_description, tls_cert_info_t
     printf("    %s\n", tls_parameter_description
             ? tls_parameter_description : _("not available"));
 
-    msmtp_fingerprint_string(sha256_fingerprint_string,
-            tci->sha256_fingerprint, 32);
-    msmtp_fingerprint_string(sha1_fingerprint_string,
-            tci->sha1_fingerprint, 20);
+    print_fingerprint(sha256_fingerprint_string, tci->sha256_fingerprint, 32);
+    print_fingerprint(sha1_fingerprint_string, tci->sha1_fingerprint, 20);
 
     printf(_("TLS certificate information:\n"));
     printf("    %s:\n", _("Owner"));
@@ -3784,17 +3769,17 @@ void msmtp_print_conf(msmtp_cmdline_conf_t conf, account_t *account)
             account->tls_crl_file ? account->tls_crl_file : _("(not set)"));
     if (account->tls_sha256_fingerprint)
     {
-        msmtp_fingerprint_string(fingerprint_string,
+        print_fingerprint(fingerprint_string,
                 account->tls_sha256_fingerprint, 32);
     }
     else if (account->tls_sha1_fingerprint)
     {
-        msmtp_fingerprint_string(fingerprint_string,
+        print_fingerprint(fingerprint_string,
                 account->tls_sha1_fingerprint, 20);
     }
     else if (account->tls_md5_fingerprint)
     {
-        msmtp_fingerprint_string(fingerprint_string,
+        print_fingerprint(fingerprint_string,
                 account->tls_md5_fingerprint, 16);
     }
     printf("tls_fingerprint = %s\n",

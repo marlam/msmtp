@@ -193,6 +193,15 @@ char *string_replace(char *str, const char *s, const char *r);
 char *sanitize_string(char *str);
 
 /*
+ * print_fingerprint()
+ *
+ * Prints a fingerprint of the given length in bytes in hexadecimal form into a
+ * buffer. Each input byte is transformed to three output characters (the last
+ * one is '\0').
+ */
+void print_fingerprint(char *s, unsigned char *fingerprint, size_t len);
+
+/*
  * print_time_rfc2822()
  *
  * Print the given time stamp in RFC2822 format into the given buffer.

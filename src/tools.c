@@ -617,6 +617,26 @@ char *sanitize_string(char *str)
 
 
 /*
+ * print_fingerprint()
+ *
+ * see tools.h
+ */
+
+void print_fingerprint(char *s, unsigned char *fingerprint, size_t len)
+{
+    const char *hex = "0123456789ABCDEF";
+    size_t i;
+
+    for (i = 0; i < len; i++)
+    {
+        s[3 * i + 0] = hex[(fingerprint[i] & 0xf0) >> 4];
+        s[3 * i + 1] = hex[fingerprint[i] & 0x0f];
+        s[3 * i + 2] = (i < len - 1 ? ':' : '\0');
+    }
+}
+
+
+/*
  * print_time_rfc2822()
  *
  * see tools.h

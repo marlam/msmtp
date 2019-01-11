@@ -683,7 +683,6 @@ int check_hostname_matches_domain(const char *hostname, const char *domain)
 {
     size_t hostname_len = strlen(hostname);
     size_t domain_len = strlen(domain);
-    size_t i;
 
     /* empty domain? */
     if (domain_len < 1)

@@ -3493,7 +3493,7 @@ int main(int argc, char *argv[])
 #endif
     int net_lib_initialized = 0;
     /* the size of a sent mail */
-    long mailsize;
+    long mailsize = 0;
     /* special LMTP error info */
     list_t *lmtp_errstrs;
     list_t *lmtp_error_msgs;

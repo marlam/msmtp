@@ -80,6 +80,7 @@ static const char *service_string(password_service_t service)
     case password_service_pop3:
         return "pop3";
     }
+    return NULL;
 }
 #endif
 

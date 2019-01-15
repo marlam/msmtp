@@ -1137,6 +1137,7 @@ int read_conffile(const char *conffile, FILE *f, list_t **acc_list,
                 list_free(copy_from);
                 *errstr = xasprintf(_("line %d: missing account name"), line);
                 e = CONF_ESYNTAX;
+                free(acc_id);
                 break;
             }
             if (strchr(acc_id, ':') || strchr(acc_id, ','))
@@ -1145,15 +1146,17 @@ int read_conffile(const char *conffile, FILE *f, list_t **acc_list,
                 *errstr = xasprintf(_("line %d: an account name must not "
                             "contain colons or commas"), line);
                 e = CONF_ESYNTAX;
+                free(acc_id);
                 break;
             }
             if (find_account(*acc_list, acc_id))
             {
                 list_free(copy_from);
                 *errstr = xasprintf(
-                        _("line %d: account %s was already defined "
-                            "in this file"), line, arg);
+                        _("line %d: account %s was already defined"),
+                        line, acc_id);
                 e = CONF_ESYNTAX;
+                free(acc_id);
                 break;
             }
             acc = account_copy(defaults);

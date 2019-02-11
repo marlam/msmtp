@@ -845,8 +845,15 @@ int tls_check_cert(tls_t *tls, const char *hostname, char **errstr)
         *errstr = xasprintf("%s: %s", error_msg, gnutls_strerror(error_code));
         return TLS_ECERT;
     }
+    if (gnutls_certificate_type_get(tls->session) != GNUTLS_CRT_X509)
+    {
+        *errstr = xasprintf(_("%s: the certificate type is not X509"),
+                error_msg);
+        return TLS_ECERT;
+    }
     if (tls->have_trust_file)
     {
+#if GNUTLS_VERSION_NUMBER < 0x030200
         if (status & GNUTLS_CERT_REVOKED)
         {
             *errstr = xasprintf(_("%s: the certificate has been revoked"),
@@ -866,12 +873,17 @@ int tls_check_cert(tls_t *tls, const char *hostname, char **errstr)
                     error_msg);
             return TLS_ECERT;
         }
-    }
-    if (gnutls_certificate_type_get(tls->session) != GNUTLS_CRT_X509)
-    {
-        *errstr = xasprintf(_("%s: the certificate type is not X509"),
-                error_msg);
-        return TLS_ECERT;
+#else
+        if (status)
+        {
+            gnutls_datum_t txt;
+            gnutls_certificate_verification_status_print(status,
+                    GNUTLS_CRT_X509, &txt, 0);
+            *errstr = xasprintf(_("%s: %s"), error_msg, txt.data);
+            gnutls_free(txt.data);
+            return TLS_ECERT;
+        }
+#endif
     }
     if (!(cert_list = gnutls_certificate_get_peers(
                     tls->session, &cert_list_size)))

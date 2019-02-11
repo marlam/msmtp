@@ -1267,7 +1267,6 @@ int tls_init(tls_t *tls,
                 gnutls_certificate_free_credentials(tls->cred);
                 return TLS_EFILE;
             }
-            tls->have_trust_file = 1;
             if (crl_file)
             {
                 if ((error_code = gnutls_certificate_set_x509_crl_file(
@@ -1282,6 +1281,7 @@ int tls_init(tls_t *tls,
                 }
             }
         }
+        tls->have_trust_file = 1;
     }
     if (sha256_fingerprint)
     {

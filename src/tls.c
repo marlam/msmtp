@@ -1331,14 +1331,6 @@ int tls_init(tls_t *tls,
                 _("feature not yet implemented for OpenSSL"));
         return TLS_ELIBFAILED;
     }
-    /* FIXME: Implement support for special trust file value 'system' */
-    if (trust_file && strcmp(trust_file, "system") == 0)
-    {
-        *errstr = xasprintf(
-                _("cannot set X509 system trust for TLS session: %s"),
-                _("feature not yet implemented for OpenSSL"));
-        return TLS_ELIBFAILED;
-    }
     /* FIXME: Implement support for 'crl_file' */
     if (trust_file && crl_file)
     {
@@ -1383,13 +1375,27 @@ int tls_init(tls_t *tls,
     }
     if (trust_file)
     {
-        if (SSL_CTX_load_verify_locations(tls->ssl_ctx, trust_file, NULL) != 1)
+        if (strcmp(trust_file, "system") == 0)
         {
-            *errstr = xasprintf(_("cannot load trust file %s: %s"),
-                    trust_file, ERR_error_string(ERR_get_error(), NULL));
-            SSL_CTX_free(tls->ssl_ctx);
-            tls->ssl_ctx = NULL;
-            return TLS_EFILE;
+            if (SSL_CTX_set_default_verify_paths(tls->ssl_ctx) != 1)
+            {
+                *errstr = xasprintf(_("cannot set X509 system trust for TLS session: %s"),
+                        ERR_error_string(ERR_get_error(), NULL));
+                SSL_CTX_free(tls->ssl_ctx);
+                tls->ssl_ctx = NULL;
+                return TLS_EFILE;
+            }
+        }
+        else
+        {
+            if (SSL_CTX_load_verify_locations(tls->ssl_ctx, trust_file, NULL) != 1)
+            {
+                *errstr = xasprintf(_("cannot load trust file %s: %s"),
+                        trust_file, ERR_error_string(ERR_get_error(), NULL));
+                SSL_CTX_free(tls->ssl_ctx);
+                tls->ssl_ctx = NULL;
+                return TLS_EFILE;
+            }
         }
         tls->have_trust_file = 1;
     }

@@ -1279,18 +1279,18 @@ int tls_init(tls_t *tls,
                 gnutls_certificate_free_credentials(tls->cred);
                 return TLS_EFILE;
             }
-            if (crl_file)
+        }
+        if (crl_file)
+        {
+            if ((error_code = gnutls_certificate_set_x509_crl_file(
+                            tls->cred, crl_file, GNUTLS_X509_FMT_PEM)) < 0)
             {
-                if ((error_code = gnutls_certificate_set_x509_crl_file(
-                                tls->cred, crl_file, GNUTLS_X509_FMT_PEM)) < 0)
-                {
-                    *errstr = xasprintf(
-                            _("cannot set X509 CRL file %s for TLS session: %s"),
-                            crl_file, gnutls_strerror(error_code));
-                    gnutls_deinit(tls->session);
-                    gnutls_certificate_free_credentials(tls->cred);
-                    return TLS_EFILE;
-                }
+                *errstr = xasprintf(
+                        _("cannot set X509 CRL file %s for TLS session: %s"),
+                        crl_file, gnutls_strerror(error_code));
+                gnutls_deinit(tls->session);
+                gnutls_certificate_free_credentials(tls->cred);
+                return TLS_EFILE;
             }
         }
         tls->have_trust_file = 1;

@@ -6,6 +6,19 @@ MAXWAIT=120
 
 OPTIONS=$@
 
+# eat some options that would cause msmtp to return 0 without sendmail mail
+case "$OPTIONS" in 
+	*--help*)
+	echo "$0: send mails in $QUEUEDIR"
+	echo "Options are passed to msmtp"
+	exit 0
+	;;
+	*--version*)
+	echo "$0: unknown version"
+	exit 0
+	;;
+esac
+
 # wait for a lock that another instance has set
 WAIT=0
 while [ -e "$LOCKFILE" -a "$WAIT" -lt "$MAXWAIT" ]; do

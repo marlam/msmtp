@@ -1195,6 +1195,12 @@ int msmtp_read_headers(FILE *mailf, FILE *tmpf,
         }
     }
 
+    /* Corner case: we saw a "From: " header without a recipient. */
+    if (from_hdr == 0)
+    {
+        *from = xstrdup("");
+    }
+
     if (recipients)
     {
         if (resent_block >= 0)

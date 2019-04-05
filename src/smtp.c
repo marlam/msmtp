@@ -518,6 +518,10 @@ int smtp_init(smtp_server_t *srv, const char *ehlo_domain, list_t **errmsg,
             {
                 srv->cap.flags |= SMTP_CAP_AUTH_NTLM;
             }
+            if (strstr(s + 9, "XOAUTH2"))
+            {
+                srv->cap.flags |= SMTP_CAP_AUTH_XOAUTH2;
+            }
         }
         else if (strncmp(s + 4, "ETRN", 4) == 0)
         {
@@ -917,6 +921,43 @@ int smtp_auth_external(smtp_server_t *srv, const char *user,
 
 
 /*
+ * smtp_auth_xoauth2()
+ *
+ * Do SMTP authentication via AUTH XOAUTH2.
+ * The SMTP server must support SMTP_CAP_AUTH_XOAUTH2
+ * Used error codes: SMTP_EIO, SMTP_EAUTHFAIL, SMTP_EINVAL
+ */
+
+int smtp_auth_xoauth2(smtp_server_t *srv, const char *password,
+        list_t **error_msg, char **errstr)
+{
+    list_t *msg;
+    int e;
+    int status;
+
+    *error_msg = NULL;
+
+    if ((e = smtp_send_cmd(srv, errstr, "AUTH XOAUTH2 %s", password)) != SMTP_EOK)
+    {
+        return e;
+    }
+    if ((e = smtp_get_msg(srv, &msg, errstr)) != SMTP_EOK)
+    {
+        return e;
+    }
+    if ((status = smtp_msg_status(msg)) != 235)
+    {
+        *error_msg = msg;
+        *errstr = xasprintf(_("authentication failed (method %s)"), "XOAUTH2");
+        return SMTP_EAUTHFAIL;
+    }
+    list_xfree(msg, free);
+
+    return SMTP_EOK;
+}
+
+
+/*
  * smtp_server_supports_authmech()
  *
  * see smtp.h
@@ -939,7 +980,9 @@ int smtp_server_supports_authmech(smtp_server_t *srv, const char *mech)
             || ((srv->cap.flags & SMTP_CAP_AUTH_LOGIN)
                 && strcmp(mech, "LOGIN") == 0)
             || ((srv->cap.flags & SMTP_CAP_AUTH_NTLM)
-                && strcmp(mech, "NTLM") == 0));
+                && strcmp(mech, "NTLM") == 0)
+            || ((srv->cap.flags & SMTP_CAP_AUTH_XOAUTH2)
+                && strcmp(mech, "XOAUTH2") == 0));
 }
 
 
@@ -956,12 +999,19 @@ int smtp_client_supports_authmech(const char *mech)
     int supported = 0;
     Gsasl *ctx;
 
-    if (gsasl_init(&ctx) != GSASL_OK)
+    if (strcmp(mech, "XOAUTH2") == 0)
     {
-        return 0;
+        supported = 1;
     }
-    supported = gsasl_client_support_p(ctx, mech);
-    gsasl_done(ctx);
+    else
+    {
+        if (gsasl_init(&ctx) != GSASL_OK)
+        {
+            return 0;
+        }
+        supported = gsasl_client_support_p(ctx, mech);
+        gsasl_done(ctx);
+    }
     return supported;
 
 #else /* not HAVE_LIBGSASL */
@@ -969,7 +1019,8 @@ int smtp_client_supports_authmech(const char *mech)
     return (strcmp(mech, "CRAM-MD5") == 0
             || strcmp(mech, "PLAIN") == 0
             || strcmp(mech, "EXTERNAL") == 0
-            || strcmp(mech, "LOGIN") == 0);
+            || strcmp(mech, "LOGIN") == 0
+            || strcmp(mech, "XOAUTH2") == 0);
 
 #endif /* not HAVE_LIBGSASL */
 }
@@ -1018,7 +1069,7 @@ int smtp_auth(smtp_server_t *srv,
         *errstr = xasprintf(_("GNU SASL: %s"), gsasl_strerror(error_code));
         return SMTP_ELIBFAILED;
     }
-    if (strcmp(auth_mech, "") != 0 && !gsasl_client_support_p(ctx, auth_mech))
+    if (strcmp(auth_mech, "") != 0 && !smtp_client_supports_authmech(auth_mech))
     {
         gsasl_done(ctx);
         *errstr = xasprintf(
@@ -1097,16 +1148,16 @@ int smtp_auth(smtp_server_t *srv,
     if (strcmp(auth_mech, "EXTERNAL") != 0)
     {
         /* GSSAPI, SCRAM-SHA-1, DIGEST-MD5, CRAM-MD5, PLAIN, LOGIN, NTLM all
-         * need a user name */
-        if (!user)
+         * need a user name, but XOAUTH2 does not */
+        if (strcmp(auth_mech, "XOAUTH2") != 0 && !user)
         {
             gsasl_done(ctx);
             *errstr = xasprintf(_("authentication method %s needs a user name"),
                     auth_mech);
             return SMTP_EUNAVAIL;
         }
-        /* SCRAM-SHA-1, DIGEST-MD5, CRAM-MD5, PLAIN, LOGIN, NTLM all need a
-         * password */
+        /* SCRAM-SHA-1, DIGEST-MD5, CRAM-MD5, PLAIN, LOGIN, NTLM and XOAUTH2
+         * all need a password */
         if (strcmp(auth_mech, "GSSAPI") != 0 && !password)
         {
             if (!password_callback
@@ -1122,7 +1173,15 @@ int smtp_auth(smtp_server_t *srv,
         }
     }
 
-    if ((error_code = gsasl_client_start(ctx, auth_mech, &sctx)) != GSASL_OK)
+    /* XOAUTH2 is built-in, all other methods are provided by GNU SASL */
+    if (strcmp(auth_mech, "XOAUTH2") == 0)
+    {
+        gsasl_done(ctx);
+        e = smtp_auth_xoauth2(srv, password, error_msg, errstr);
+        free(callback_password);
+        return e;
+    }
+    else if ((error_code = gsasl_client_start(ctx, auth_mech, &sctx)) != GSASL_OK)
     {
         gsasl_done(ctx);
         *errstr = xasprintf(_("GNU SASL: %s"), gsasl_strerror(error_code));
@@ -1359,8 +1418,9 @@ int smtp_auth(smtp_server_t *srv,
 
     if (strcmp(auth_mech, "EXTERNAL") != 0)
     {
-        /* CRAMD-MD5, PLAIN, LOGIN all need a user name and a password */
-        if (!user)
+        /* CRAMD-MD5, PLAIN, LOGIN all need a user name and a password;
+         * XOAUTH2 just needs the password */
+        if (strcmp(auth_mech, "XOAUTH2") != 0 && !user)
         {
             *errstr = xasprintf(_("authentication method %s needs a user name"),
                     auth_mech);
@@ -1395,6 +1455,10 @@ int smtp_auth(smtp_server_t *srv,
     else if (strcmp(auth_mech, "LOGIN") == 0)
     {
         e = smtp_auth_login(srv, user, password, error_msg, errstr);
+    }
+    else if (strcmp(auth_mech, "XOAUTH2") == 0)
+    {
+        e = smtp_auth_xoauth2(srv, password, error_msg, errstr);
     }
     else
     {

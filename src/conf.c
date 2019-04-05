@@ -4,7 +4,7 @@
  * This file is part of msmtp, an SMTP client.
  *
  * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2010, 2011, 2012,
- * 2014, 2015, 2016, 2018
+ * 2014, 2015, 2016, 2018, 2019
  * Martin Lambers <marlam@marlam.de>
  * Martin Stenberg <martin@gnutiken.se> (passwordeval support)
  * Scott Shumate <sshumate@austin.rr.com> (aliases support)
@@ -402,7 +402,8 @@ int check_auth_arg(char *arg)
             || strcmp(arg, "gssapi") == 0
             || strcmp(arg, "external") == 0
             || strcmp(arg, "login") == 0
-            || strcmp(arg, "ntlm") == 0)
+            || strcmp(arg, "ntlm") == 0
+            || strcmp(arg, "xoauth2") == 0)
     {
         l = strlen(arg);
         for (i = 0; i < l; i++)

@@ -10,7 +10,7 @@
 .\" under the terms of the GNU Free Documentation License, Version 1.2 or
 .\" any later version published by the Free Software Foundation; with no
 .\" Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
-.TH MSMTP 1 2019-01
+.TH MSMTP 1 2019-04
 .SH NAME
 msmtp \- An SMTP client
 .SH SYNOPSIS
@@ -361,8 +361,13 @@ than the plain method), \fIntlm\fP (an obscure non-standard method that is now
 considered broken; it sometimes requires a special domain parameter passed via
 \fBntlmdomain\fP).
 .br
-There are currently two authentication methods that are not based on user /
-password information and have to be chosen manually: \fIexternal\fP (the
+There are currently three authentication methods that are not based on user /
+password information and have to be chosen manually: \fIxoauth2\fP (an OAuth2
+token from the mail provider is used as the password; a user name is not
+required. See the documentation of your mail provider for details on how to get this
+token. The \fBpasswordeval\fP command can be used to pass the regularly changing
+tokens into msmtp from a script or an environment variable),
+\fIexternal\fP (the
 authentication happens outside of the protocol, typically by sending a TLS
 client certificate, and the method merely confirms that this authentication
 succeeded), and \fIgssapi\fP (the Kerberos framework takes care of secure

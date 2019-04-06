@@ -221,7 +221,7 @@ are the domain part of your mail address (@code{provider.example} for
 @cmindex auth
 Enable or disable authentication and optionally choose a method to use. The
 argument @samp{on} chooses a method automatically.
-Accepted methods are @samp{plain}, @samp{scram-sha-1}, @samp{xoauth2}, @samp{cram-md5},
+Accepted methods are @samp{plain}, @samp{scram-sha-1}, @samp{oauthbearer}, @samp{cram-md5},
 @samp{gssapi}, @samp{external}, @samp{digest-md5}, @samp{login}, and
 @samp{ntlm}.
 @xref{Authentication}.@*
@@ -890,7 +890,7 @@ a special domain parameter passed via @ref{ntlmdomain}. Do not use it.
 There are currently two authentication methods that are not based on user /
 password information and have to be chosen manually:
 @itemize
-@item @samp{XOAUTH2}@*
+@item @samp{OAUTHBEARER}@*
 An OAuth2 token from the mail provider is used as the password; a user name is not
 required. See the documentation of your mail provider for details on how to get this
 token. The @samp{passwordeval} command can be used to pass the regularly changing

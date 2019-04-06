@@ -887,7 +887,7 @@ An obscure non-standard method that is now considered broken. It sometimes requi
 a special domain parameter passed via @ref{ntlmdomain}. Do not use it.
 @end itemize
 
-There are currently two authentication methods that are not based on user /
+There are currently three authentication methods that are not based on user /
 password information and have to be chosen manually:
 @itemize
 @item @samp{OAUTHBEARER}@*

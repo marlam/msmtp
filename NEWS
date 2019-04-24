@@ -1,3 +1,13 @@
+Version 1.8.4:
+- Added support for the OAUTHBEARER authentication method.
+- Several minor bug fixes.
+
+Version 1.8.3:
+- This version fixes a security problem that affects version 1.8.2 (older
+  versions are not affected): when the new default value system for
+  tls_trust_file is used, the result of certificate verification was not
+  properly checked.
+
 Version 1.8.2:
 - To simplify TLS setup, the tls_trust_file command has a new default value
   'system' that selects the system default trust. Now you just need tls=on to

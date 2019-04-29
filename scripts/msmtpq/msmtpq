@@ -138,7 +138,8 @@ on_exit() {                          # unlock the queue on exit if the lock was 
 ## display msg to user, as well
 ##
 log() {
-  local ARG RC PFX="$('date' +'%Y %d %b %H:%M:%S')"
+  local ARG RC PFX
+  PFX="$('date' +'%Y %d %b %H:%M:%S')"
                                      # time stamp prefix - "2008 13 Mar 03:59:45 "
   if [ "$1" = '-e' ] ; then          # there's an error exit code
     RC="$2"                          # take it
@@ -257,7 +258,7 @@ ok() {
   dsp "$@"
   while true ; do
     echo -n "  ok [${YN}] ..: "
-    read R
+    read -r R
     case $R in
       y|Y) return 0 ;;
       n|N) return 1 ;;
@@ -301,9 +302,10 @@ send_queued_mail() {   # <-- mail id
 ## run (flush) queue
 ##
 run_queue() {    # <- 'sm' mode      # run queue
-  local M LST="$('ls' $Q/*.mail 2>/dev/null)"            # list of mails in queue
+  local M LST
   local -i NDX=0
 
+  LST="$('ls' $Q/*.mail 2>/dev/null)"            # list of mails in queue
   if [ -n "$LST" ] ; then            # something in queue
     for M in $LST ; do               # process all mails
       ((NDX++))
@@ -318,15 +320,16 @@ run_queue() {    # <- 'sm' mode      # run queue
 ## display queue contents
 ##
 display_queue() {      # <-- { 'purge' | 'send' } (op label) ; { 'rec' } (record array of mail ids)
-  local M ID LST="$('ls' ${Q}/*.mail 2>/dev/null)"       # list of mail ids in queue
+  local M ID LST
 
+  LST="$('ls' ${Q}/*.mail 2>/dev/null)"       # list of mail ids in queue
   CNT=0
   if [ -n "$LST" ] ; then            # list has contents (any mails in queue)
     for M in $LST ; do               # cycle through each
       ID="$(basename $M .mail)"      # take mail id from filename
       ((CNT++))
       dsp '' "mail  num=[ $CNT ]  id=[ $ID ]"                  # show mail id ## patch in
-      'egrep' -s --colour -h '(^From:|^To:|^Subject:)' "$M"    # show mail info
+      'grep' -E -s --colour -h '(^From:|^To:|^Subject:)' "$M"    # show mail info
       [ -n "$2" ] && Q_LST[$CNT]="$ID" # bang mail id into array (note 1-based array indexing)
     done
     echo
@@ -371,13 +374,13 @@ select_mail() {  # <-- < 'purge' | 'send' >
         OK='t'                                       # optimistic to a fault
         dsp "enter mail number or id to $1"          # <-- num or file name (only, no suff)
         echo -n '    ( <cr> alone to exit ) ..: '
-        read ID
+        read -r ID
         [ -n "$ID" ] || return                       # entry made - or say good bye
 
         if [ "${ID:4:1}" != '-' ] ; then             # mail id *not* entered ; test index num
           for (( I=0 ; I<${#ID} ; I++ )) ; do        # test index number
-            if [[ "${ID:${I}:1}" < '0' || \
-                  "${ID:${I}:1}" > '9' ]] ; then
+            if [[ "${ID:${I}:1}" -lt '0' || \
+                  "${ID:${I}:1}" -gt '9' ]] ; then
               dsp '' "[ $ID ] is neither a valid mail id"\
                      'nor a valid mail number' ''
               unset OK
@@ -447,9 +450,9 @@ make_id() {
   ID="$(date +%Y-%m-%d-%H.%M.%S)"    # make filename id for queue    (global
   FQP="${Q}/$ID"                     # make fully qualified pathname  vars)
   ## Philipp Hartwig patch #1
-  if [ -f "${FQP}.mail" -o -f "${FQP}.msmtp" ] ; then    # ensure fqp name is unique
+  if [ -f "${FQP}.mail" ] || [ -f "${FQP}.msmtp" ] ; then    # ensure fqp name is unique
     INC=1                            # initial increment
-	  while [ -f "${FQP}-${INC}.mail" -o -f "${FQP}-${INC}.msmtp" ] ; do # fqp name w/incr exists
+	  while [ -f "${FQP}-${INC}.mail" ] || [ -f "${FQP}-${INC}.msmtp" ] ; do # fqp name w/incr exists
       (( ++INC ))                    # bump increment
 	  done
 	  ID="${ID}-${INC}"                # unique ; set id

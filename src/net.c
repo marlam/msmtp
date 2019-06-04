@@ -515,8 +515,7 @@ void net_set_io_timeout(int socket, int seconds)
 int net_socks5_connect(int fd, const char *hostname, int port, char **errstr)
 {
     /* maximum size of a SOCKS5 message (send or receive) */
-    const size_t required_buffer_size = 1 + 1 + 1 + 1 + 1 + 255 + 2;
-    unsigned char buffer[required_buffer_size];
+    unsigned char buffer[1 + 1 + 1 + 1 + 1 + 255 + 2];
     size_t hostname_len = strlen(hostname);
     uint16_t nport = htons(port);
     size_t len;

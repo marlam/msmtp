@@ -542,7 +542,7 @@ int smtp_init(smtp_server_t *srv, const char *ehlo_domain, list_t **errmsg,
 
 #ifdef HAVE_TLS
 int smtp_tls_init(smtp_server_t *srv,
-        const char *tls_key_file, const char *tls_cert_file,
+        const char *tls_key_file, const char *tls_cert_file, const char *pin,
         const char *tls_trust_file, const char *tls_crl_file,
         const unsigned char *tls_sha256_fingerprint,
         const unsigned char *tls_sha1_fingerprint,
@@ -550,7 +550,7 @@ int smtp_tls_init(smtp_server_t *srv,
         int min_dh_prime_bits,
         const char *priorities, char **errstr)
 {
-    return tls_init(&srv->tls, tls_key_file, tls_cert_file,
+    return tls_init(&srv->tls, tls_key_file, tls_cert_file, pin,
             tls_trust_file, tls_crl_file,
             tls_sha256_fingerprint, tls_sha1_fingerprint, tls_md5_fingerprint,
             min_dh_prime_bits, priorities, errstr);

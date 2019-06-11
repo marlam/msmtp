@@ -177,7 +177,7 @@ int smtp_init(smtp_server_t *srv, const char *ehlo_domain, list_t **msg,
  */
 #ifdef HAVE_TLS
 int smtp_tls_init(smtp_server_t *srv,
-        const char *tls_key_file, const char *tls_cert_file,
+        const char *tls_key_file, const char *tls_cert_file, const char *pin,
         const char *tls_trust_file, const char *tls_crl_file,
         const unsigned char *tls_sha256_fingerprint,
         const unsigned char *tls_sha1_fingerprint,

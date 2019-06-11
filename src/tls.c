@@ -37,6 +37,7 @@
 #ifdef HAVE_LIBGNUTLS
 # include <gnutls/gnutls.h>
 # include <gnutls/x509.h>
+# include <gnutls/pkcs11.h>
 #endif /* HAVE_LIBGNUTLS */
 #ifdef HAVE_LIBSSL
 # include <openssl/ssl.h>
@@ -1174,13 +1175,41 @@ int tls_check_cert(tls_t *tls, const char *hostname, char **errstr)
 
 
 /*
+ * tls_pin_callback()
+ *
+ * Passes a PIN to GnuTLS for PKCS11 smart cards or similar
+ */
+#ifdef HAVE_LIBGNUTLS
+static int tls_pin_callback(void *userdata, int attempt,
+        const char *token_url, const char *token_label,
+        unsigned int flags, char *pin, size_t pin_max)
+{
+    (void)attempt;
+    (void)token_url;
+    (void)token_label;
+    (void)flags;
+
+    size_t len;
+    if (userdata && (len = strlen(userdata)) < pin_max)
+    {
+        strcpy(pin, userdata);
+        return 0;
+    }
+    else
+    {
+        return 1;
+    }
+}
+#endif
+
+/*
  * tls_init()
  *
  * see tls.h
  */
 
 int tls_init(tls_t *tls,
-        const char *key_file, const char *cert_file,
+        const char *key_file, const char *cert_file, const char *pin,
         const char *trust_file, const char *crl_file,
         const unsigned char *sha256_fingerprint,
         const unsigned char *sha1_fingerprint,
@@ -1247,6 +1276,7 @@ int tls_init(tls_t *tls,
     }
     if (key_file && cert_file)
     {
+        gnutls_pkcs11_set_pin_function(tls_pin_callback, (void*)pin);
         if ((error_code = gnutls_certificate_set_x509_key_file(tls->cred,
                         cert_file, key_file, GNUTLS_X509_FMT_PEM)) < 0)
         {

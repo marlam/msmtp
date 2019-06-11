@@ -112,7 +112,10 @@ void tls_clear(tls_t *tls);
  * tls_init()
  *
  * Initializes a tls_t. If both 'key_file' and 'cert_file' are not NULL, they
- * are set to be used when the peer request a certificate. If 'trust_file' is
+ * are set to be used when the peer request a certificate.
+ * If 'key_file' and 'cert_file' are PKCS11 URIS, a PIN might be needed to access
+ * e.g. a smart card; this must be given in 'pin' (which can be NULL if there is no PIN).
+ * If 'trust_file' is
  * not NULL, it will be used to verify the peer certificate. If additionally
  * 'crl_file' is not NULL, then this file will be used during verification to
  * check if a certificate has been revoked. If 'trust_file' is NULL and one of
@@ -128,7 +131,7 @@ void tls_clear(tls_t *tls);
  * Used error codes: TLS_ELIBFAILED, TLS_EFILE
  */
 int tls_init(tls_t *tls,
-        const char *key_file, const char *cert_file,
+        const char *key_file, const char *cert_file, const char* pin,
         const char *trust_file, const char *crl_file,
         const unsigned char *sha256_fingerprint,
         const unsigned char *sha1_fingerprint,

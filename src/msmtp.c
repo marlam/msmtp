@@ -162,7 +162,8 @@ int msmtp_rmqs(account_t *acc, int debug, const char *rmqs_argument,
 #ifdef HAVE_TLS
     if (acc->tls)
     {
-        if ((e = smtp_tls_init(&srv, acc->tls_key_file, acc->tls_cert_file,
+        if ((e = smtp_tls_init(&srv,
+                        acc->tls_key_file, acc->tls_cert_file, acc->password,
                         acc->tls_trust_file, acc->tls_crl_file,
                         acc->tls_sha256_fingerprint,
                         acc->tls_sha1_fingerprint, acc->tls_md5_fingerprint,
@@ -345,7 +346,8 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
     if (acc->tls)
     {
         tci = tls_cert_info_new();
-        if ((e = smtp_tls_init(&srv, acc->tls_key_file, acc->tls_cert_file,
+        if ((e = smtp_tls_init(&srv,
+                        acc->tls_key_file, acc->tls_cert_file, acc->password,
                         acc->tls_trust_file, acc->tls_crl_file,
                         acc->tls_sha256_fingerprint,
                         acc->tls_sha1_fingerprint, acc->tls_md5_fingerprint,
@@ -1299,7 +1301,8 @@ int msmtp_sendmail(account_t *acc, list_t *recipients,
 #ifdef HAVE_TLS
     if (acc->tls)
     {
-        if ((e = smtp_tls_init(&srv, acc->tls_key_file, acc->tls_cert_file,
+        if ((e = smtp_tls_init(&srv,
+                        acc->tls_key_file, acc->tls_cert_file, acc->password,
                         acc->tls_trust_file, acc->tls_crl_file,
                         acc->tls_sha256_fingerprint,
                         acc->tls_sha1_fingerprint, acc->tls_md5_fingerprint,

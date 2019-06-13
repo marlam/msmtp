@@ -2,7 +2,7 @@
 " Language:     msmtp rc files
 " Maintainer:   Simon Ruderich <simon@ruderich.com>
 "               Eric Pruitt <eric.pruitt@gmail.com>
-" Last Change:  2014-12-11
+" Last Change:  2019-06-13
 " Filenames:    msmtprc
 " Version:      0.3
 
@@ -49,6 +49,7 @@ highlight default link msmtpWrongOption msmtpOption
 syntax match msmtpAddress /[a-z0-9_.-]*[a-z0-9]\+@[a-z0-9_.-]*[a-z0-9]\+\.[a-z]\+/
 " Host names
 syn match msmtpHost "\%(host\s*\)\@<=\h\%(\w\|\.\|-\)*"
+syn match msmtpHost "\%(host\s*\)\@<=\%([0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+\)"
 " Numeric values
 syn match msmtpNumber /\<\(\d\+$\)/
 "Strings

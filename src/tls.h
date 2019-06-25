@@ -61,6 +61,8 @@ typedef struct
     int have_sha1_fingerprint;
     int have_md5_fingerprint;
     unsigned char fingerprint[32];
+    int no_certcheck;
+    char *hostname;
 #ifdef HAVE_LIBGNUTLS
     gnutls_session_t session;
     gnutls_certificate_credentials_t cred;
@@ -128,6 +130,13 @@ void tls_clear(tls_t *tls);
  * zero, the library default is used.
  * If 'priorities' is not NULL, it must contain a string describing the TLS
  * priorities. This is library dependent; see gnutls_priority_init().
+ * 'hostname' is the host to start TLS with. It is needed for sanity checks/
+ * verification.
+ * If 'no_certcheck' is true, then no checks will be performed on the peer
+ * certificate. If it is false and no trust file was set with tls_init(),
+ * only sanity checks are performed on the peer certificate. If it is false
+ * and a trust file was set, real verification of the peer certificate is
+ * performed.
  * Used error codes: TLS_ELIBFAILED, TLS_EFILE
  */
 int tls_init(tls_t *tls,
@@ -137,6 +146,8 @@ int tls_init(tls_t *tls,
         const unsigned char *sha1_fingerprint,
         const unsigned char *md5_fingerprint,
         int min_dh_prime_bits, const char *priorities,
+        const char *hostname,
+        int no_certcheck,
         char **errstr);
 
 /*
@@ -144,13 +155,6 @@ int tls_init(tls_t *tls,
  *
  * Starts TLS encryption on a socket.
  * 'tls' must be initialized using tls_init().
- * If 'no_certcheck' is true, then no checks will be performed on the peer
- * certificate. If it is false and no trust file was set with tls_init(),
- * only sanity checks are performed on the peer certificate. If it is false
- * and a trust file was set, real verification of the peer certificate is
- * performed.
- * 'hostname' is the host to start TLS with. It is needed for sanity checks/
- * verification.
  * 'tci' must be allocated with tls_cert_info_new(). Information about the
  * peer's certificata will be stored in it. It can later be freed with
  * tls_cert_info_free(). 'tci' is allowed to be NULL; no certificate
@@ -159,7 +163,7 @@ int tls_init(tls_t *tls,
  * to return an allocated string describing the TLS session parameters.
  * Used error codes: TLS_ELIBFAILED, TLS_ECERT, TLS_EHANDSHAKE
  */
-int tls_start(tls_t *tls, int fd, const char *hostname, int no_certcheck,
+int tls_start(tls_t *tls, int fd,
         tls_cert_info_t *tci, char **tls_parameter_description, char **errstr);
 
 /*

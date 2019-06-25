@@ -548,12 +548,15 @@ int smtp_tls_init(smtp_server_t *srv,
         const unsigned char *tls_sha1_fingerprint,
         const unsigned char *tls_md5_fingerprint,
         int min_dh_prime_bits,
-        const char *priorities, char **errstr)
+        const char *priorities,
+        const char *hostname,
+        int no_certcheck,
+        char **errstr)
 {
     return tls_init(&srv->tls, tls_key_file, tls_cert_file, pin,
             tls_trust_file, tls_crl_file,
             tls_sha256_fingerprint, tls_sha1_fingerprint, tls_md5_fingerprint,
-            min_dh_prime_bits, priorities, errstr);
+            min_dh_prime_bits, priorities, hostname, no_certcheck, errstr);
 }
 #endif /* HAVE_TLS */
 
@@ -603,10 +606,10 @@ int smtp_tls_starttls(smtp_server_t *srv, list_t **error_msg, char **errstr)
  */
 
 #ifdef HAVE_TLS
-int smtp_tls(smtp_server_t *srv, const char *hostname, int tls_nocertcheck,
+int smtp_tls(smtp_server_t *srv,
         tls_cert_info_t *tci, char **tls_parameter_description, char **errstr)
 {
-    return tls_start(&srv->tls, srv->fd, hostname, tls_nocertcheck, tci,
+    return tls_start(&srv->tls, srv->fd, tci,
             tls_parameter_description, errstr);
 }
 #endif /* HAVE_TLS */

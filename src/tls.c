@@ -79,6 +79,8 @@ void tls_clear(tls_t *tls)
     tls->have_sha256_fingerprint = 0;
     tls->have_sha1_fingerprint = 0;
     tls->have_md5_fingerprint = 0;
+    tls->no_certcheck = 0;
+    tls->hostname = NULL;
 }
 
 
@@ -730,7 +732,7 @@ int hostname_match(const char *hostname, const char *certname)
  * Used error codes: TLS_ECERT
  */
 
-int tls_check_cert(tls_t *tls, const char *hostname, char **errstr)
+int tls_check_cert(tls_t *tls, char **errstr)
 {
 #ifdef HAVE_LIBGNUTLS
     int error_code;
@@ -923,15 +925,15 @@ int tls_check_cert(tls_t *tls, const char *hostname, char **errstr)
         if (i == 0)
         {
 #if GNUTLS_VERSION_NUMBER < 0x030400 && defined(HAVE_LIBIDN)
-            idn2_to_ascii_lz(hostname, &idn_hostname, IDN2_NFC_INPUT | IDN2_NONTRANSITIONAL);
+            idn2_to_ascii_lz(tls->hostname, &idn_hostname, IDN2_NFC_INPUT | IDN2_NONTRANSITIONAL);
 #endif
             error_code = gnutls_x509_crt_check_hostname(cert,
-                    idn_hostname ? idn_hostname : hostname);
+                    idn_hostname ? idn_hostname : tls->hostname);
             free(idn_hostname);
             if (error_code == 0)
             {
                 *errstr = xasprintf(_("%s: the certificate owner does not "
-                            "match hostname %s"), error_msg, hostname);
+                            "match hostname %s"), error_msg, tls->hostname);
                 return TLS_ECERT;
             }
         }
@@ -1089,7 +1091,7 @@ int tls_check_cert(tls_t *tls, const char *hostname, char **errstr)
      * type DNS or the Common Name (CN). */
 
 #ifdef HAVE_LIBIDN
-    idn2_to_ascii_lz(hostname, &idn_hostname, IDN2_NFC_INPUT | IDN2_NONTRANSITIONAL);
+    idn2_to_ascii_lz(tls->hostname, &idn_hostname, IDN2_NFC_INPUT | IDN2_NONTRANSITIONAL);
 #endif
 
     /* Try the DNS subjectAltNames. */
@@ -1113,7 +1115,7 @@ int tls_check_cert(tls_t *tls, const char *hostname, char **errstr)
                     return TLS_ECERT;
                 }
                 if ((match_found = hostname_match(
-                                idn_hostname ? idn_hostname : hostname,
+                                idn_hostname ? idn_hostname : tls->hostname,
                                 (char *)(subj_alt_name->d.ia5->data))))
                 {
                     break;
@@ -1154,7 +1156,7 @@ int tls_check_cert(tls_t *tls, const char *hostname, char **errstr)
             free(buf);
             return TLS_ECERT;
         }
-        match_found = hostname_match(idn_hostname ? idn_hostname : hostname,
+        match_found = hostname_match(idn_hostname ? idn_hostname : tls->hostname,
                 buf);
         free(buf);
     }
@@ -1165,7 +1167,7 @@ int tls_check_cert(tls_t *tls, const char *hostname, char **errstr)
     {
         *errstr = xasprintf(
                 _("%s: the certificate owner does not match hostname %s"),
-                error_msg, hostname);
+                error_msg, tls->hostname);
         return TLS_ECERT;
     }
 
@@ -1215,6 +1217,8 @@ int tls_init(tls_t *tls,
         const unsigned char *sha1_fingerprint,
         const unsigned char *md5_fingerprint,
         int min_dh_prime_bits, const char *priorities,
+        const char *hostname,
+        int no_certcheck,
         char **errstr)
 {
 #ifdef HAVE_LIBGNUTLS
@@ -1288,7 +1292,11 @@ int tls_init(tls_t *tls,
             return TLS_EFILE;
         }
     }
-    if (trust_file)
+    if (trust_file
+            && !no_certcheck
+            && !sha256_fingerprint
+            && !sha1_fingerprint
+            && !md5_fingerprint)
     {
         if (strcmp(trust_file, "system") == 0)
         {
@@ -1331,17 +1339,17 @@ int tls_init(tls_t *tls,
         }
         tls->have_trust_file = 1;
     }
-    if (sha256_fingerprint)
+    if (sha256_fingerprint && !no_certcheck)
     {
         memcpy(tls->fingerprint, sha256_fingerprint, 32);
         tls->have_sha256_fingerprint = 1;
     }
-    else if (sha1_fingerprint)
+    else if (sha1_fingerprint && !no_certcheck)
     {
         memcpy(tls->fingerprint, sha1_fingerprint, 20);
         tls->have_sha1_fingerprint = 1;
     }
-    else if (md5_fingerprint)
+    else if (md5_fingerprint && !no_certcheck)
     {
         memcpy(tls->fingerprint, md5_fingerprint, 16);
         tls->have_md5_fingerprint = 1;
@@ -1355,6 +1363,8 @@ int tls_init(tls_t *tls,
         gnutls_certificate_free_credentials(tls->cred);
         return TLS_ELIBFAILED;
     }
+    tls->no_certcheck = no_certcheck;
+    tls->hostname = xstrdup(hostname);
     return TLS_EOK;
 
 #endif /* HAVE_LIBGNUTLS */
@@ -1421,7 +1431,11 @@ int tls_init(tls_t *tls,
             return TLS_EFILE;
         }
     }
-    if (trust_file)
+    if (trust_file
+            && !no_certcheck
+            && !sha256_fingerprint
+            && !sha1_fingerprint
+            && !md5_fingerprint)
     {
         if (strcmp(trust_file, "system") == 0)
         {
@@ -1447,17 +1461,17 @@ int tls_init(tls_t *tls,
         }
         tls->have_trust_file = 1;
     }
-    if (sha256_fingerprint)
+    if (sha256_fingerprint && !no_certcheck)
     {
         memcpy(tls->fingerprint, sha256_fingerprint, 32);
         tls->have_sha256_fingerprint = 1;
     }
-    else if (sha1_fingerprint)
+    else if (sha1_fingerprint && !no_certcheck)
     {
         memcpy(tls->fingerprint, sha1_fingerprint, 20);
         tls->have_sha1_fingerprint = 1;
     }
-    else if (md5_fingerprint)
+    else if (md5_fingerprint && !no_certcheck)
     {
         memcpy(tls->fingerprint, md5_fingerprint, 16);
         tls->have_md5_fingerprint = 1;
@@ -1470,6 +1484,8 @@ int tls_init(tls_t *tls,
         tls->ssl_ctx = NULL;
         return TLS_ELIBFAILED;
     }
+    tls->no_certcheck = no_certcheck;
+    tls->hostname = xstrdup(hostname);
     return TLS_EOK;
 
 #endif /* HAVE_LIBSSL */
@@ -1552,13 +1568,13 @@ char *openssl_io_error(int error_code, int error_code2,
  * see tls.h
  */
 
-int tls_start(tls_t *tls, int fd, const char *hostname, int no_certcheck,
+int tls_start(tls_t *tls, int fd,
         tls_cert_info_t *tci, char **tls_parameter_description, char **errstr)
 {
 #ifdef HAVE_LIBGNUTLS
     int error_code;
 
-    gnutls_server_name_set(tls->session, GNUTLS_NAME_DNS, hostname, strlen(hostname));
+    gnutls_server_name_set(tls->session, GNUTLS_NAME_DNS, tls->hostname, strlen(tls->hostname));
 #if GNUTLS_VERSION_NUMBER < 0x030200
     gnutls_transport_set_ptr(tls->session, (gnutls_transport_ptr_t)fd);
 #else
@@ -1591,9 +1607,9 @@ int tls_start(tls_t *tls, int fd, const char *hostname, int no_certcheck,
     {
         *tls_parameter_description = gnutls_session_get_desc(tls->session);
     }
-    if (!no_certcheck)
+    if (!tls->no_certcheck)
     {
-        if ((error_code = tls_check_cert(tls, hostname, errstr)) != TLS_EOK)
+        if ((error_code = tls_check_cert(tls, errstr)) != TLS_EOK)
         {
             gnutls_deinit(tls->session);
             gnutls_certificate_free_credentials(tls->cred);
@@ -1647,9 +1663,9 @@ int tls_start(tls_t *tls, int fd, const char *hostname, int no_certcheck,
     {
         *tls_parameter_description = NULL; /* TODO */
     }
-    if (!no_certcheck)
+    if (!tls->no_certcheck)
     {
-        if ((error_code = tls_check_cert(tls, hostname, errstr)) != TLS_EOK)
+        if ((error_code = tls_check_cert(tls, errstr)) != TLS_EOK)
         {
             SSL_free(tls->ssl);
             SSL_CTX_free(tls->ssl_ctx);
@@ -1898,6 +1914,10 @@ void tls_close(tls_t *tls)
         SSL_free(tls->ssl);
         SSL_CTX_free(tls->ssl_ctx);
 #endif /* HAVE_LIBSSL */
+    }
+    if (tls->hostname)
+    {
+        free(tls->hostname);
     }
     tls_clear(tls);
 }

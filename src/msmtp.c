@@ -168,7 +168,10 @@ int msmtp_rmqs(account_t *acc, int debug, const char *rmqs_argument,
                         acc->tls_sha256_fingerprint,
                         acc->tls_sha1_fingerprint, acc->tls_md5_fingerprint,
                         acc->tls_min_dh_prime_bits,
-                        acc->tls_priorities, errstr)) != TLS_EOK)
+                        acc->tls_priorities,
+                        acc->host,
+                        acc->tls_nocertcheck,
+                        errstr)) != TLS_EOK)
         {
             return tls_exitcode(e);
         }
@@ -183,7 +186,7 @@ int msmtp_rmqs(account_t *acc, int debug, const char *rmqs_argument,
         {
             tci = tls_cert_info_new();
         }
-        if ((e = smtp_tls(&srv, acc->host, acc->tls_nocertcheck, tci,
+        if ((e = smtp_tls(&srv, tci,
                         &tls_parameter_description, errstr)) != TLS_EOK)
         {
             if (debug)
@@ -237,7 +240,7 @@ int msmtp_rmqs(account_t *acc, int debug, const char *rmqs_argument,
         {
             tci = tls_cert_info_new();
         }
-        if ((e = smtp_tls(&srv, acc->host, acc->tls_nocertcheck, tci,
+        if ((e = smtp_tls(&srv, tci,
                         &tls_parameter_description, errstr)) != TLS_EOK)
         {
             if (debug)
@@ -352,7 +355,10 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
                         acc->tls_sha256_fingerprint,
                         acc->tls_sha1_fingerprint, acc->tls_md5_fingerprint,
                         acc->tls_min_dh_prime_bits,
-                        acc->tls_priorities, errstr)) != TLS_EOK)
+                        acc->tls_priorities,
+                        acc->host,
+                        acc->tls_nocertcheck,
+                        errstr)) != TLS_EOK)
         {
             e = tls_exitcode(e);
             goto error_exit;
@@ -364,7 +370,7 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
 #ifdef HAVE_TLS
     if (acc->tls && acc->tls_nostarttls)
     {
-        if ((e = smtp_tls(&srv, acc->host, acc->tls_nocertcheck, tci,
+        if ((e = smtp_tls(&srv, tci,
                         &tls_parameter_description, errstr)) != TLS_EOK)
         {
             msmtp_endsession(&srv, 0);
@@ -409,7 +415,7 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
             e = smtp_exitcode(e);
             goto error_exit;
         }
-        if ((e = smtp_tls(&srv, acc->host, acc->tls_nocertcheck, tci,
+        if ((e = smtp_tls(&srv, tci,
                         &tls_parameter_description, errstr)) != TLS_EOK)
         {
             msmtp_endsession(&srv, 0);
@@ -1307,7 +1313,10 @@ int msmtp_sendmail(account_t *acc, list_t *recipients,
                         acc->tls_sha256_fingerprint,
                         acc->tls_sha1_fingerprint, acc->tls_md5_fingerprint,
                         acc->tls_min_dh_prime_bits,
-                        acc->tls_priorities, errstr)) != TLS_EOK)
+                        acc->tls_priorities,
+                        acc->host,
+                        acc->tls_nocertcheck,
+                        errstr)) != TLS_EOK)
         {
             e = tls_exitcode(e);
             return e;
@@ -1332,7 +1341,7 @@ int msmtp_sendmail(account_t *acc, list_t *recipients,
         {
             tci = tls_cert_info_new();
         }
-        if ((e = smtp_tls(&srv, acc->host, acc->tls_nocertcheck, tci,
+        if ((e = smtp_tls(&srv, tci,
                         &tls_parameter_description, errstr)) != TLS_EOK)
         {
             if (debug)
@@ -1391,7 +1400,7 @@ int msmtp_sendmail(account_t *acc, list_t *recipients,
         {
             tci = tls_cert_info_new();
         }
-        if ((e = smtp_tls(&srv, acc->host, acc->tls_nocertcheck, tci,
+        if ((e = smtp_tls(&srv, tci,
                         &tls_parameter_description, errstr)) != TLS_EOK)
         {
             if (debug)

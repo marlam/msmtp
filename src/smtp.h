@@ -183,7 +183,10 @@ int smtp_tls_init(smtp_server_t *srv,
         const unsigned char *tls_sha1_fingerprint,
         const unsigned char *tls_md5_fingerprint,
         int min_dh_prime_bits,
-        const char *priorities, char **errstr);
+        const char *priorities,
+        const char *hostname,
+        int no_certcheck,
+        char **errstr);
 #endif /* HAVE_TLS */
 
 /*
@@ -216,7 +219,7 @@ int smtp_tls_starttls(smtp_server_t *srv, list_t **error_msg, char **errstr);
  * Success: TLS_EOK
  */
 #ifdef HAVE_TLS
-int smtp_tls(smtp_server_t *srv, const char *hostname, int tls_nocertcheck,
+int smtp_tls(smtp_server_t *srv,
         tls_cert_info_t *tci, char **tls_parameter_description, char **errstr);
 #endif /* HAVE_TLS */
 

@@ -55,6 +55,8 @@ syn match msmtpNumber /\<\(\d\+$\)/
 "Strings
 syntax region msmtpString start=/"/ end=/"/
 syntax region msmtpString start=/'/ end=/'/
+" Booleans
+syntax match msmtpBool "\s\@<=\(on\|off\)$"
 
 highlight default link msmtpComment Comment
 highlight default link msmtpOption Type
@@ -63,6 +65,7 @@ highlight default link msmtpString String
 highlight default link msmtpAddress Constant
 highlight default link msmtpNumber Number
 highlight default link msmtpHost Identifier
+highlight default link msmtpBool Constant
 
 
 let b:current_syntax = "msmtp"

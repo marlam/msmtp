@@ -49,7 +49,7 @@ highlight default link msmtpWrongOption msmtpOption
 syntax match msmtpAddress /[a-z0-9_.-]*[a-z0-9]\+@[a-z0-9_.-]*[a-z0-9]\+\.[a-z]\+/
 " Host names
 syn match msmtpHost "\%(host\s*\)\@<=\h\%(\w\|\.\|-\)*"
-syn match msmtpHost "\%(host\s*\)\@<=\%([0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+\)"
+syn match msmtpHost "\%(host\s*\)\@<=\%([0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\)"
 " Numeric values
 syn match msmtpNumber /\<\(\d\+$\)/
 "Strings

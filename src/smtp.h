@@ -251,6 +251,8 @@ int smtp_server_supports_authmech(smtp_server_t *srv, const char *mech);
  * SMTP_EINSECURE.
  * The hostname is the name of the SMTP server. It may be needed for
  * authentication.
+ * The port is port number SMTP server accepts connections on. It may be needed
+ * for authentication.
  * The ntlmdomain may be NULL (even if you use NTLM authentication).
  * If 'password' is NULL, but the authentication method needs a password,
  * the 'password_callback' function is called (if 'password_callback' is not
@@ -262,6 +264,7 @@ int smtp_server_supports_authmech(smtp_server_t *srv, const char *mech);
  */
 int smtp_auth(smtp_server_t *srv,
         const char *hostname,
+        unsigned short port,
         const char *user,
         const char *password,
         const char *ntlmdomain,

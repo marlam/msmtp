@@ -931,16 +931,40 @@ int smtp_auth_external(smtp_server_t *srv, const char *user,
  * Used error codes: SMTP_EIO, SMTP_EAUTHFAIL, SMTP_EINVAL
  */
 
-int smtp_auth_oauthbearer(smtp_server_t *srv, const char *password,
+int smtp_auth_oauthbearer(smtp_server_t *srv,
+        const char *hostname, unsigned short port,
+        const char *user, const char *token,
         list_t **error_msg, char **errstr)
 {
     list_t *msg;
+    char *oauth;
+    size_t oa_len;
+    char *b64;
+    size_t b64_len;
     int e;
     int status;
 
     *error_msg = NULL;
 
-    if ((e = smtp_send_cmd(srv, errstr, "AUTH OAUTHBEARER %s", password)) != SMTP_EOK)
+    oa_len = 4 + /* "n,a=" */
+             strlen(user) +
+             7 + /* ",^Ahost=" */
+             strlen(hostname) +
+             6 + 5 + /* "^Aport=" + up to 5 digits */
+             13 + /* "^Aauth=Bearer " */
+             strlen(token) +
+             2 /* "^A^A" */;
+    oauth = xmalloc(oa_len + 1);
+    oa_len = snprintf(oauth, oa_len + 1,
+                      "n,a=%s,\001host=%s\001port=%d\001auth=Bearer %s\001\001",
+                      user, hostname, port, token);
+    b64_len = BASE64_LENGTH(oa_len) + 1;
+    b64 = xmalloc(b64_len);
+    base64_encode(oauth, oa_len, b64, b64_len);
+    e = smtp_send_cmd(srv, errstr, "AUTH OAUTHBEARER %s", b64);
+    free(oauth);
+    free(b64);
+    if (e != SMTP_EOK)
     {
         return e;
     }
@@ -1049,6 +1073,7 @@ int smtp_client_supports_authmech(const char *mech)
 
 int smtp_auth(smtp_server_t *srv,
         const char *hostname,
+        unsigned short port,
         const char *user,
         const char *password,
         const char *ntlmdomain,
@@ -1162,9 +1187,8 @@ int smtp_auth(smtp_server_t *srv,
     /* Check availability of required authentication data */
     if (strcmp(auth_mech, "EXTERNAL") != 0)
     {
-        /* GSSAPI, SCRAM-SHA-1, DIGEST-MD5, CRAM-MD5, PLAIN, LOGIN, NTLM all
-         * need a user name, but OAUTHBEARER does not */
-        if (strcmp(auth_mech, "OAUTHBEARER") != 0 && !user)
+        /* All authentication schemes need a user name */
+        if (!user)
         {
             gsasl_done(ctx);
             *errstr = xasprintf(_("authentication method %s needs a user name"),
@@ -1192,7 +1216,8 @@ int smtp_auth(smtp_server_t *srv,
     if (strcmp(auth_mech, "OAUTHBEARER") == 0)
     {
         gsasl_done(ctx);
-        e = smtp_auth_oauthbearer(srv, password, error_msg, errstr);
+        e = smtp_auth_oauthbearer(srv, hostname, port, user, password,
+                                  error_msg, errstr);
         free(callback_password);
         return e;
     }
@@ -1473,7 +1498,8 @@ int smtp_auth(smtp_server_t *srv,
     }
     else if (strcmp(auth_mech, "OAUTHBEARER") == 0)
     {
-        e = smtp_auth_oauthbearer(srv, password, error_msg, errstr);
+        e = smtp_auth_oauthbearer(srv, hostname, port, user, password,
+                                  error_msg, errstr);
     }
     else
     {

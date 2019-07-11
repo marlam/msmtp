@@ -789,7 +789,7 @@ Certificate Revocation List (CRL). A CRL file can be specified using the
 @ref{tls_crl_file} command, but getting the relevant CRL files and keeping them
 up to date is not straightforward. You are basically on your own.
 
-A much more serious and fundamental problem is is that you need to trust CAs.
+A much more serious and fundamental problem is that you need to trust CAs.
 Like any other organization, a CA can be incompetent, malicious, subverted by
 bad people, or forced by government agencies to compromise end users without
 telling them. All of these things happened and continue to happen worldwide.
@@ -813,6 +813,12 @@ certificate (so you can trust that particular certificate via
 @samp{tls_fingerprint}).
 @xref{Server information mode}.
 
+If you need to fine tune TLS parameters, have a look at the
+@ref{tls_priorities} and @ref{tls_min_dh_prime_bits} commands.
+
+@anchor{Client Certificates}
+@section Client Certificates
+
 TLS also allows the server to verify the identity of the client. For this
 purpose, the client has to present a certificate issued by a CA that the server
 trusts. To present that certificate, the client also needs the matching key
@@ -821,8 +827,30 @@ file. You can set the certificate and key files using @ref{tls_cert_file} and
 that traditional user / password authentication is not necessary anymore. See the
 EXTERNAL mechanism in @ref{Authentication}.
 
-If you need to fine tune TLS parameters, have a look at the
-@ref{tls_priorities} and @ref{tls_min_dh_prime_bits} commands.
+@example
+# Enable TLS
+tls on
+# Enable TLS client certificates
+tls_cert_file /path/to/client_cert
+tls_key_file /path/to/client_key
+# Enable authentication via the EXTERNAL mechanism (optional; depends on server)
+# The user name is empty because the server should get it from the client cert
+auth external
+user ""
+@end example
+
+You can also use client certificates stored on some external authentication
+device by specifying GnuTLS device URIs in @ref{tls_cert_file} and
+@ref{tls_key_file}. You can find the correct URIs using @code{p11tool
+--list-privkeys --login} (p11tool is bundled with GnuTLS). If your device
+requires a PIN to access the data, you can specify that using one of the
+password mechanisms (e.g. @ref{passwordeval}, @ref{password}). 
+
+@example
+tls_cert_file pkcs11:model=PKCS%2315%20emulated;manufacturer=piv_II;serial=00000000;token=PIV_II%20%28PIV%20Card%20Holder%20pin%29;id=%01;object=Certificate%20for%20PIV%20Authentication;type=cert
+tls_key_file  pkcs11:model=PKCS%2315%20emulated;manufacturer=piv_II;serial=00000000;token=PIV_II%20%28PIV%20Card%20Holder%20pin%29;id=%01;object=PIV%20AUTH%20key;type=private
+passwordeval  gpg2 --no-tty -q -d ~/.smart-card-pin.gpg
+@end example
 
 
 @node Authentication
@@ -897,7 +925,7 @@ token. The @samp{passwordeval} command can be used to pass the regularly changin
 tokens into msmtp from a script or an environment variable.
 @item @samp{EXTERNAL}@*
 The authentication happens outside of the protocol, typically by sending a TLS
-client certificate (see @ref{Transport Layer Security}).@*
+client certificate (see @ref{Client Certificates}).@*
 The EXTERNAL method merely confirms that this authentication succeeded; it does
 not perform the authentication. Thus it may not be necessary to use it for
 authentication to succeed, and if the server does not support the EXTERNAL

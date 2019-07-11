@@ -420,7 +420,7 @@ Certificate Revocation List (CRL). A CRL file can be specified using the
 \fBtls_crl_file\fP command, but getting the relevant CRL files and keeping them
 up to date is not straightforward. You are basically on your own.
 .br
-A much more serious and fundamental problem is is that you need to trust CAs.
+A much more serious and fundamental problem is that you need to trust CAs.
 Like any other organization, a CA can be incompetent, malicious, subverted by
 bad people, or forced by government agencies to compromise end users without
 telling them. All of these things happened and continue to happen worldwide.
@@ -450,6 +450,13 @@ file. You can set the certificate and key files using \fBtls_cert_file\fP and
 \fBtls_key_file\fP. This mechanism can also be used to authenticate users, so
 that traditional user / password authentication is not necessary anymore. See the
 \fIexternal\fP mechanism in \fBauth\fP.
+.br
+You can also use client certificates stored on some external authentication
+device by specifying GnuTLS device URIs in \fBtls_cert_file\fP and
+\fBtls_key_file\fP. You can find the correct URIs using \fBp11tool
+\-\-list-privkeys \-\-login\fP (p11tool is bundled with GnuTLS). If your device
+requires a PIN to access the data, you can specify that using one of the
+password mechanisms (e.g. \fBpasswordeval\fP, \fBpassword\fP). 
 .IP "tls_starttls [(\fIon\fP|\fIoff\fP)]"
 Choose the TLS variant: start TLS from within the session (\fIon\fP, default),
 or tunnel the session through TLS (\fIoff\fP).

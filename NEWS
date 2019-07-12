@@ -1,3 +1,8 @@
+Version 1.8.5:
+- Fixed OAUTHBEARER.
+- Support for TLS client certificates via PKCS11 devices, e.g. smart cards.
+- Various small bug fixes and improvements.
+
 Version 1.8.4:
 - Added support for the OAUTHBEARER authentication method.
 - Several minor bug fixes.

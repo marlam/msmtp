@@ -284,7 +284,8 @@ int msmtp_rmqs(account_t *acc, int debug, const char *rmqs_argument,
             msmtp_endsession(&srv, 1);
             return EX_UNAVAILABLE;
         }
-        if ((e = smtp_auth(&srv, acc->host, acc->username, acc->password,
+        if ((e = smtp_auth(&srv, acc->host, acc->port,
+                        acc->username, acc->password,
                         acc->ntlmdomain, acc->auth_mech,
                         msmtp_password_callback, msg, errstr))
                 != SMTP_EOK)
@@ -1447,7 +1448,8 @@ int msmtp_sendmail(account_t *acc, list_t *recipients,
             e = EX_UNAVAILABLE;
             return e;
         }
-        if ((e = smtp_auth(&srv, acc->host, acc->username, acc->password,
+        if ((e = smtp_auth(&srv, acc->host, acc->port,
+                        acc->username, acc->password,
                         acc->ntlmdomain, acc->auth_mech,
                         msmtp_password_callback, msg, errstr))
                 != SMTP_EOK)

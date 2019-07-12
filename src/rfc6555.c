@@ -60,8 +60,14 @@
  *
  * [rfc6555]: https://tools.ietf.org/rfcmarkup/6555
  */
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif
+
 #include <stdlib.h>
+#ifdef HAVE_NETDB_H
 #include <netdb.h>
+#endif
 
 #include <fcntl.h>
 #include <sys/select.h>

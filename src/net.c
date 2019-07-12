@@ -72,6 +72,7 @@
 #include "readbuf.h"
 #include "tools.h"
 #include "net.h"
+#include "rfc6555.h"
 
 
 /*
@@ -667,6 +668,7 @@ int net_open_socket(
     int cause;
     char nameinfo_buffer[NI_MAXHOST];
     char *idn_hostname = NULL;
+    rfc6555_ctx *ctx;
 
     if (proxy_hostname)
     {
@@ -733,6 +735,9 @@ int net_open_socket(
         return NET_EHOSTNOTFOUND;
     }
 
+    rfc6555_reorder(res0);
+    ctx = rfc6555_context_create();
+
     fd = -1;
     cause = 0;
     failure_errno = 0;
@@ -761,7 +766,12 @@ int net_open_socket(
             fd = -1;
             continue;
         }
+#ifdef W32_NATIVE
+	// Don't know if rfc6555 works for W32
         if (net_connect(fd, res->ai_addr, res->ai_addrlen, timeout) < 0)
+#else
+	if ((fd = rfc6555_connect(ctx, fd, &res)) < 0)
+#endif
         {
             cause = 3;
 #ifdef W32_NATIVE
@@ -781,6 +791,7 @@ int net_open_socket(
         }
         break;
     }
+    rfc6555_context_destroy(ctx);
 
     if (fd >= 0)
     {

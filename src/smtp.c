@@ -1458,9 +1458,9 @@ int smtp_auth(smtp_server_t *srv,
 
     if (strcmp(auth_mech, "EXTERNAL") != 0)
     {
-        /* CRAMD-MD5, PLAIN, LOGIN all need a user name and a password;
-         * OAUTHBEARER just needs the password */
-        if (strcmp(auth_mech, "OAUTHBEARER") != 0 && !user)
+        /* CRAMD-MD5, PLAIN, LOGIN, OAUTHBEARER all need a user name and a
+         * password */
+        if (!user)
         {
             *errstr = xasprintf(_("authentication method %s needs a user name"),
                     auth_mech);

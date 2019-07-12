@@ -38,9 +38,9 @@
 #ifdef HAVE_LIBGSASL
 # include <gsasl.h>
 #else
-# include "base64.h"
 # include "md5-apps.h"
 #endif
+#include "base64.h"
 
 #include "gettext.h"
 #define _(string) gettext(string)

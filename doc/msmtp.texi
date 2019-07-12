@@ -919,8 +919,8 @@ There are currently three authentication methods that are not based on user /
 password information and have to be chosen manually:
 @itemize
 @item @samp{OAUTHBEARER}@*
-An OAuth2 token from the mail provider is used as the password; a user name is not
-required. See the documentation of your mail provider for details on how to get this
+An OAuth2 token from the mail provider is used as the password.
+See the documentation of your mail provider for details on how to get this
 token. The @samp{passwordeval} command can be used to pass the regularly changing
 tokens into msmtp from a script or an environment variable.
 @item @samp{EXTERNAL}@*

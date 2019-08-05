@@ -88,11 +88,6 @@ static int is_alias(const char *str)
     return (*str != '\0' && strchr(str, '@') == NULL);
 }
 
-static int is_address(const char *str)
-{
-    return (*str != '\0' && strchr(str, '@') != NULL);
-}
-
 static alias_t *alias_find(const char *alias_str, list_t *alias_list)
 {
     alias_t *entry;
@@ -242,7 +237,6 @@ int aliases_replace(const char *aliases, list_t *recipient_list, char **errstr)
     int e;
     list_t *alias_list;
     list_t *addr_list, *addr_itr;
-    alias_t *entry;
     list_t *rec_itr;
 
     /* Make sure there is at least one alias */

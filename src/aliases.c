@@ -287,7 +287,7 @@ int aliases_replace(const char *aliases, list_t *recipient_list, char **errstr)
             if (e != ALIASES_EOK)
             {
                 *errstr = xasprintf(
-                    "Too many redirects when expanding alias %s.",
+                    _("Too many redirects when expanding alias %s."),
                     (char *) rec_itr->next->data);
                 list_xfree(addr_list, free);
                 list_xfree(alias_list, alias_free);

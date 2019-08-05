@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2011
+ * Copyright (C) 2011, 2019
  * Scott Shumate <sshumate@austin.rr.com>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -22,6 +22,7 @@
 
 #define MAXTOKS 32
 #define MAXLINE 512
+#define MAXDEPTH 16
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -172,13 +173,6 @@ static int aliases_read(FILE *f, list_t *alias_list, char **errstr)
             tokc = split(tokv[1], ',', tokv);
             for (i = 0; i < tokc; i++)
             {
-                if (!is_address(tokv[i]))
-                {
-                    *errstr = xasprintf(_("line %d: invalid address '%s'"),
-                            lnum, tokv[i]);
-                    return ALIASES_EPARSE;
-                }
-
                 list_insert(addr_list, xstrdup(tokv[i]));
                 addr_list = addr_list->next;
             }
@@ -206,12 +200,48 @@ static void alias_free(void *ptr)
     }
 }
 
+static int expand_alias(char *alias, list_t *alias_list, int depth, list_t *addr_list)
+{
+    alias_t *e;
+    int rc;
+    list_t *a;
+
+    if (depth > MAXDEPTH)
+        return ALIASES_ELOOP;
+
+    e = alias_find(alias, alias_list);
+    if (e == NULL)
+        e = alias_find("default", alias_list);
+
+    if (e == NULL)
+    {
+        /* Can't find it in aliases, use as-is */
+        list_insert(addr_list, xstrdup(alias));
+        return ALIASES_EOK;
+    }
+
+    for (a = e->addr_list; !list_is_empty(a); a = a->next)
+    {
+        if (! is_alias(a->next->data))
+        {
+            list_insert(addr_list, xstrdup(a->next->data));
+            continue;
+        }
+        /* found an alias, recursively expand */
+        rc = expand_alias(a->next->data, alias_list, depth+1, addr_list);
+        if (rc != ALIASES_EOK)
+            return rc;
+    }
+
+    return ALIASES_EOK;
+}
+
 int aliases_replace(const char *aliases, list_t *recipient_list, char **errstr)
 {
     FILE *f;
     int e;
     list_t *alias_list;
-    list_t *addr_list;
+    list_t *addr_list, *addr_itr;
     alias_t *entry;
     list_t *rec_itr;
 
@@ -252,27 +282,26 @@ int aliases_replace(const char *aliases, list_t *recipient_list, char **errstr)
     {
         if (is_alias(rec_itr->next->data))
         {
-            entry = alias_find(rec_itr->next->data, alias_list);
-            if (entry == NULL)
+            addr_list = list_new();
+            e = expand_alias(rec_itr->next->data, alias_list, 0, addr_list);
+            if (e != ALIASES_EOK)
             {
-                entry = alias_find("default", alias_list);
+                *errstr = xasprintf(
+                    "Too many redirects when expanding alias %s.",
+                    (char *) rec_itr->next->data);
+                list_xfree(addr_list, free);
+                list_xfree(alias_list, alias_free);
+                return e;
             }
-            if (entry != NULL)
+            list_xremove(rec_itr, free);
+            for (addr_itr = addr_list;
+                 !list_is_empty(addr_itr);
+                 addr_itr = addr_itr->next)
             {
-                list_xremove(rec_itr, free);
-                addr_list = entry->addr_list;
-                if (!list_is_empty(addr_list))
-                {
-                    list_insert(rec_itr, xstrdup(addr_list->next->data));
-                    addr_list = addr_list->next;
-                    while (!list_is_empty(addr_list))
-                    {
-                        list_insert(rec_itr, xstrdup(addr_list->next->data));
-                        rec_itr = rec_itr->next;
-                        addr_list = addr_list->next;
-                    }
-                }
+                list_insert(rec_itr, addr_itr->next->data);
+                rec_itr = rec_itr->next;
             }
+            list_free(addr_list);
         }
     }
 

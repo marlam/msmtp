@@ -583,13 +583,11 @@ if available), exit code (from sysexits.h; EX_OK indicates success).
 .IP "aliases [\fIfile\fP]"
 Replace local recipients with addresses in the aliases file.  The aliases file
 is a plain text file containing mappings between a local address and a list of
-domain addresses.  A local address is defined as one without an `@' character
-and a domain address is one with an `@' character.  The mappings are of the
-form:
+replacement addresses. The mappings are of the form:
 .br
     local: someone@example.com, person@domain.example
 .br
-Multiple domain addresses are separated with commas.  Comments start with `#'
+Multiple replacement addresses are separated with commas.  Comments start with `#'
 and continue to the end of the line.
 .br
 The local address \fIdefault\fP has special significance and is matched if the

@@ -413,13 +413,11 @@ The default is @samp{LOG_USER}. Syslog logging is disabled by default.
 @cmindex aliases
 Replace local recipients with addresses in the aliases file. The aliases file
 is a plain text file containing mappings between a local address and a list of
-domain addresses. A local address is defined as one without an '@@' character
-and a domain address is one with an '@@' character.  The mappings are of the
-form:
+replacement addresses. The mappings are of the form:
 @example
 local: someone@@example.com, person@@domain.example
 @end example
-Multiple domain addresses are separated with commas. Comments start with '#'
+Multiple replacement addresses are separated with commas. Comments start with '#'
 and continue to the end of the line.@*
 The local address @samp{default} has special significance and is matched if the
 local address is not found in the aliases file. If no @samp{default} alias is

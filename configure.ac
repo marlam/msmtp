@@ -60,7 +60,7 @@ AC_TRY_LINK([
     #include <netinet/in.h>
     #include <arpa/nameser.h>
     #include <resolv.h>
-    ], [res_query(0, 0, 0, 0, 0);],
+    ], [res_query(0, 0, 0, 0, 0); ns_initparse(0, 0, 0);],
     found_res_query=yes,
     found_res_query=no)
 if test "$found_res_query" = "yes"; then
@@ -72,7 +72,7 @@ else
         #include <netinet/in.h>
         #include <arpa/nameser.h>
         #include <resolv.h>
-        ], [res_query(0, 0, 0, 0, 0);],
+        ], [res_query(0, 0, 0, 0, 0); ns_initparse(0, 0, 0);],
         found_res_query=yes,
         found_res_query=no)
     if test "$found_res_query" = "yes"; then

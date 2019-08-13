@@ -674,8 +674,6 @@ used instead.
 @item --read-envelope-from
 @opindex --read-envelope-from
 Read the envelope from address from the From header of the mail.
-Currently this header must be on a single line for this option to work
-correctly.
 @item --aliases=[@var{file}]
 @opindex --aliases
 Set or unset an aliases file. @xref{aliases}.

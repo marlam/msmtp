@@ -2,7 +2,7 @@
 " Language:     msmtp rc files
 " Maintainer:   Simon Ruderich <simon@ruderich.com>
 "               Eric Pruitt <eric.pruitt@gmail.com>
-" Last Change:  2019-06-13
+" Last Change:  2019-09-27
 " Filenames:    msmtprc
 " Version:      0.3
 
@@ -18,13 +18,13 @@ endif
 syn match msmtpComment /#.*$/ contains=@Spell
 
 " General commands.
-syntax match msmtpOption /\<\(defaults\|account\|host\|port\|proxy_host\|proxy_port\|timeout\|protocol\|domain\)\>/
+syntax match msmtpOption /\<\(defaults\|account\|host\|port\|source_ip\|proxy_host\|proxy_port\|timeout\|protocol\|domain\)\>/
 " Authentication commands.
 syntax match msmtpOption /\<\(auth\|user\|password\|passwordeval\|ntlmdomain\)\>/
 " TLS commands.
 syntax match msmtpOption /\<\(tls\|tls_trust_file\|tls_crl_file\|tls_fingerprint\|tls_key_file\|tls_cert_file\|tls_certcheck\|tls_starttls\|tls_min_dh_prime_bits\|tls_priorities\)\>/
 " Sendmail mode specific commands.
-syntax match msmtpOption /\<\(auto_from\|from\|maildomain\|dsn_notify\|dsn_return\|add_missing_from_header\|add_missing_date_header\|remove_bcc_headers\|logfile\|logfile_time_format\|syslog\)\>/
+syntax match msmtpOption /\<\(auto_from\|from\|maildomain\|dsn_notify\|dsn_return\|add_missing_from_header\|add_missing_date_header\|remove_bcc_headers\|logfile\|logfile_time_format\|syslog\|aliases\)\>/
 
 " Options which accept only an on/off value.
 syn match msmtpWrongOption /\<\(tls\|tls_certcheck\|tls_starttls\|auto_from\|add_missing_from_header\|add_missing_date_header\|remove_bcc_headers\) \(on$\|off$\)\@!.*$/
@@ -36,7 +36,7 @@ syn match msmtpWrongOption /\<timeout \(off$\|\d\+$\)\@!.*$/
 syn match msmtpWrongOption /\<protocol \(smtp$\|lmtp$\)\@!.*$/
 " Option auth accepts on, off and the method.
 syn match msmtpWrongOption /\<auth \(on$\|off$\|plain$\|cram-md5$\|digest-md5$\|scram-sha-1$\|gssapi$\|external$\|login$\|ntlm$\|oauthbearer\)\@!.*$/
-" Option auth accepts on, off and the facility.
+" Option syslog accepts on, off and the facility.
 syn match msmtpWrongOption /\<syslog \(on$\|off$\|LOG_USER$\|LOG_MAIL$\|LOG_LOCAL\d$\)\@!.*$/
 
 " Marks all wrong option values as errors.

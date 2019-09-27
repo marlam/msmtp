@@ -1,3 +1,7 @@
+Version 1.8.6:
+- Aliases are now expanded recursively
+- Minor bug fixes
+
 Version 1.8.5:
 - Fixed OAUTHBEARER.
 - Support for TLS client certificates via PKCS11 devices, e.g. smart cards.

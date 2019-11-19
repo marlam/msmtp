@@ -135,19 +135,15 @@ Set or unset TLS priorities. See the \fBtls_priorities\fP command.
 .RE
 .IP "\fBOptions specific to sendmail mode\fP"
 .RS
-.IP "\-f, \-\-from=\fIaddress\fI"
-Set the envelope-from address. It is only used when \fIauto_from\fP is off.
+.IP "\-f, \-\-from=\fIaddress\fP"
+Set the envelope-from address.
 .br
 If no account was chosen yet (with \fB\-\-account\fP or \fB\-\-host\fP), this
 option will choose the first account that has the given envelope-from address
 (set with the \fBfrom\fP command). If no such account is found, "default" is
 used.
-.IP "\-\-auto\-from[=(\fIon\fP|\fIoff\fP)]"
-Enable or disable automatic envelope-from addresses. The default is off.
-See the \fBauto_from\fP command.
-.IP "\-\-maildomain=[\fIdomain\fP]"
-Set the domain part for the \fI\-\-auto\-from\fP address. See the
-\fBmaildomain\fP command.
+.br
+See the \fBfrom\fP command for substitution patterns supported in \fIaddress\fP.
 .IP "\-N, \-\-dsn\-notify=(\fIoff\fP|\fIcond\fP)"
 Set or unset DSN notification conditions. See the \fBdsn_notify\fP command.
 .IP "\-R, \-\-dsn\-return=(\fIoff\fP|\fIret\fP)"
@@ -182,6 +178,10 @@ Set or unset an aliases file. See the \fBaliases\fP command.
 .IP "\-F\fIname\fP"
 Msmtp adds a From header to mails that lack it, using the envelope from
 address. This option allows one to set a full name to be used in that header.
+.IP "\-\-auto\-from[=(\fIon\fP|\fIoff\fP)]"
+Obsolete. See the \fBauto_from\fP command.
+.IP "\-\-maildomain=[\fIdomain\fP]"
+Obsolete. See the \fBmaildomain\fP command.
 .IP "\-\-"
 This marks the end of options. All following arguments will be treated as
 recipient addresses, even if they start with a `\-'.
@@ -501,20 +501,20 @@ can be selected by using an empty argument to this command.
 See the GnuTLS documentation of the \fIgnutls_priority_init\fP function for a
 description of the priorities string.
 .IP "from \fIenvelope_from\fP"
-Set the envelope-from address. This address will only be used when
-\fIauto_from\fP is off.
-.IP "auto_from [(\fIon\fP|\fIoff\fP)]
-Enable or disable automatic envelope-from addresses. The default is off.
-When enabled, an envelope-from address of the form user@domain will be
-generated.  The local part will be set to \fBUSER\fP or, if that fails, to
-\fBLOGNAME\fP or, if that fails, to the login name of the current user.  The
-domain part can be set with the \fBmaildomain\fP command.  If the maildomain
-is empty, the envelope-from address will only consist of the user name and not
-have a domain part. When auto_from is disabled, the envelope-from address must
-be set explicitly.
-.IP "maildomain [\fIdomain\fP]"
-Set a domain part for the generation of an envelope-from address. This is only
-used when \fIauto_from\fP is on. The domain may be empty.
+Set the envelope-from address. The following substitution patterns are supported:
+.br
+%U will be replaced by $USER, or if that fails by $LOGNAME, or if that fails by
+the login name of the user running msmtp.
+.br
+%H will be replaced by $HOSTNAME, or if that fails by the host name of the system.
+.br
+%C will be replaced by the canonical name of %H.
+.br
+%M will be replaced by the contents of /etc/mailname (potentially a different
+directory is used depending on the build configuration; see the output of msmtp
+\-\-version and look for the location of the system configuration file).
+.br
+Note that the obsolete \fIauto_from\fP command replaces this envelope-from address.
 .IP "dsn_notify (\fIoff\fP|\fIcondition\fP)"
 This command sets the condition(s) under which the mail system should send DSN
 (Delivery Status Notification) messages. The argument \fIoff\fP disables
@@ -594,6 +594,24 @@ found, then the local address is left as is.
 .br
 An empty argument to the aliases command disables the replacement of local
 addresses.  This is the default.
+.IP "auto_from [(\fIon\fP|\fIoff\fP)]
+Obsolete; you can achieve the same and more using the substitution patterns of the
+\fIfrom\fP command.
+.br
+Enable or disable automatic envelope-from addresses. The default is off.
+When enabled, an envelope-from address of the form user@domain will be
+generated.  The local part will be set to \fBUSER\fP or, if that fails, to
+\fBLOGNAME\fP or, if that fails, to the login name of the current user.  The
+domain part can be set with the \fBmaildomain\fP command.  If the maildomain
+is empty, the envelope-from address will only consist of the user name and not
+have a domain part. When auto_from is disabled, the envelope-from address must
+be set explicitly.
+.IP "maildomain [\fIdomain\fP]"
+Obsolete; you can achieve the same and more using the substitution patterns of the
+\fIfrom\fP command.
+.br
+Set a domain part for the generation of an envelope-from address. This is only
+used when \fIauto_from\fP is on. The domain may be empty.
 .br
 .SH EXAMPLES
 .br

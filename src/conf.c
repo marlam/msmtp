@@ -842,6 +842,101 @@ int get_password_eval(const char *arg, char **buf, char **errstr)
 
 
 /*
+ * expand_from()
+ *
+ * see conf.h
+ */
+
+int expand_from(char **from, char **errstr)
+{
+    char* M = NULL;
+    char* U = NULL;
+    char* H = NULL;
+    char* C = NULL;
+
+    if (strstr(*from, "%M"))
+    {
+        char *sysconfdir;
+        char *filename;
+        FILE *f;
+        char buf[256];
+        size_t buflen;
+
+        sysconfdir = get_sysconfdir();
+        filename = get_filename(sysconfdir, "mailname");
+        free(sysconfdir);
+        if (!(f = fopen(filename, "r")))
+        {
+            *errstr = xasprintf(_("%s: %s"), filename, strerror(errno));
+            free(filename);
+            return CONF_ECANTOPEN;
+        }
+        buf[0] = '\0';
+        if (!fgets(buf, sizeof(buf), f) && ferror(f))
+        {
+            *errstr = xasprintf(_("%s: %s"), filename, strerror(errno));
+            free(filename);
+            fclose(f);
+            return CONF_EIO;
+        }
+        fclose(f);
+        buflen = strlen(buf);
+        if (buflen > 0 && buf[buflen - 1] == '\r')
+        {
+            buf[--buflen] = '\0';
+        }
+        if (buflen == 0)
+        {
+            *errstr = xasprintf(_("%s: %s"), filename, strerror(EINVAL));
+            free(filename);
+            return CONF_EPARSE;
+        }
+        fclose(f);
+        free(filename);
+        M = xstrdup(buf);
+        sanitize_string(M);
+    }
+    if (strstr(*from, "%U"))
+    {
+        U = get_username();
+        sanitize_string(U);
+    }
+    if (strstr(*from, "%H") || strstr(*from, "%C"))
+    {
+        H = get_hostname();
+        sanitize_string(H);
+    }
+    if (strstr(*from, "%C"))
+    {
+        C = net_get_canonical_hostname(H);
+    }
+
+    if (M)
+    {
+        *from = string_replace(*from, "%M", M);
+        free(M);
+    }
+    if (U)
+    {
+        *from = string_replace(*from, "%U", U);
+        free(U);
+    }
+    if (H)
+    {
+        *from = string_replace(*from, "%H", H);
+        free(H);
+    }
+    if (C)
+    {
+        *from = string_replace(*from, "%C", C);
+        free(C);
+    }
+
+    return CONF_EOK;
+}
+
+
+/*
  * some small helper functions
  */
 
@@ -1285,37 +1380,11 @@ int read_conffile(const char *conffile, FILE *f, list_t **acc_list,
             free(acc->domain);
             acc->domain = xstrdup(arg);
         }
-        else if (strcmp(cmd, "auto_from") == 0)
-        {
-            acc->mask |= ACC_AUTO_FROM;
-            if (*arg == '\0' || is_on(arg))
-            {
-                acc->auto_from = 1;
-            }
-            else if (is_off(arg))
-            {
-                acc->auto_from = 0;
-            }
-            else
-            {
-                *errstr = xasprintf(
-                        _("line %d: invalid argument %s for command %s"),
-                        line, arg, cmd);
-                e = CONF_ESYNTAX;
-                break;
-            }
-        }
         else if (strcmp(cmd, "from") == 0)
         {
             acc->mask |= ACC_FROM;
             free(acc->from);
             acc->from = xstrdup(arg);
-        }
-        else if (strcmp(cmd, "maildomain") == 0)
-        {
-            acc->mask |= ACC_MAILDOMAIN;
-            free(acc->maildomain);
-            acc->maildomain = xstrdup(arg);
         }
         else if (strcmp(cmd, "auth") == 0)
         {
@@ -1782,6 +1851,34 @@ int read_conffile(const char *conffile, FILE *f, list_t **acc_list,
             {
                 acc->source_ip = xstrdup(arg);
             }
+        }
+        else if (strcmp(cmd, "auto_from") == 0)
+        {
+            /* compatibility with <= 1.8.7 */
+            acc->mask |= ACC_AUTO_FROM;
+            if (*arg == '\0' || is_on(arg))
+            {
+                acc->auto_from = 1;
+            }
+            else if (is_off(arg))
+            {
+                acc->auto_from = 0;
+            }
+            else
+            {
+                *errstr = xasprintf(
+                        _("line %d: invalid argument %s for command %s"),
+                        line, arg, cmd);
+                e = CONF_ESYNTAX;
+                break;
+            }
+        }
+        else if (strcmp(cmd, "maildomain") == 0)
+        {
+            /* compatibility with <= 1.8.7 */
+            acc->mask |= ACC_MAILDOMAIN;
+            free(acc->maildomain);
+            acc->maildomain = xstrdup(arg);
         }
         else if (strcmp(cmd, "keepbcc") == 0)
         {

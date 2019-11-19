@@ -2002,6 +2002,9 @@ void msmtp_log_to_syslog(const char *facility_str,
 /*
  * msmtp_construct_env_from()
  *
+ * OBSOLETE: triggered by auto_from, uses maildomain. both are replaced
+ * with substitution patterns supported in from.
+ *
  * Build an envelope from address for the current user.
  * If maildomain is not NULL and not the empty string, it will be the domain
  * part of the address. Otherwise, the address won't have a domain part.
@@ -3789,7 +3792,16 @@ int main(int argc, char *argv[])
     {
         account->proxy_port = 1080;
     }
-    if (conf.sendmail && account->auto_from)
+    if (conf.sendmail && account->from)
+    {
+        if (expand_from(&(account->from), &errstr) != CONF_EOK)
+        {
+            print_error("%s", sanitize_string(errstr));
+            error_code = EX_CONFIG;
+            goto exit;
+        }
+    }
+    if (conf.sendmail && account->auto_from /* obsolete */)
     {
         free(account->from);
         account->from = msmtp_construct_env_from(account->maildomain);

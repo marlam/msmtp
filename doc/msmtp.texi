@@ -332,23 +332,18 @@ description of the @var{priorities} string.
 @anchor{from}
 @item from [@var{address}]
 @cmindex from
-Set the envelope-from address. This is usually required, but sometimes
-@samp{auto_from} is a useful alternative.
+Set the envelope-from address. The following substitution patterns are supported:
+@itemize
+@item @code{%U} will be replaced by @code{$USER}, or if that fails by @code{$LOGNAME}, or if that fails by
+the login name of the user running msmtp.
+@item @code{%H} will be replaced by @code{$HOSTNAME}, or if that fails by the host name of the system.
+@item @code{%C} will be replaced by the canonical name of @code{%H}.
+@item @code{%M} will be replaced by the contents of @code{/etc/mailname} (potentially a different
+directory is used depending on the build configuration; see the output of
+@samp{msmtp --version} and look for the location of the system configuration file).
+@end itemize
+Note that the obsolete @samp{auto_from} command replaces this envelope-from address.
 @xref{Envelope-from address}.
-@anchor{auto_from}
-@item auto_from [(on|off)]
-@cmindex auto_from
-Enable or disable automatic envelope-from addresses. The default is @samp{off}.
-When enabled, an envelope-from address of the form user@@domain will be
-generated. The local part will be set to @code{USER} or, if that fails, to
-@code{LOGNAME} or, if that fails, to the login name of the current user. The
-domain part can be set with the @samp{maildomain} command; if that is empty,
-the address not have a domain part.
-@xref{Envelope-from address}.
-@anchor{maildomain}
-@item maildomain [@var{domain}]
-@cmindex maildomain
-Set a domain part for the generation of an envelope-from address. See @ref{auto_from}.
 @anchor{dsn_notify}
 @item dsn_notify (off|@var{condition})
 @cmindex dsn_notify
@@ -424,6 +419,24 @@ local address is not found in the aliases file. If no @samp{default} alias is
 found, then the local address is left as is.@*
 An empty argument to the aliases command disables the replacement of local
 addresses. This is the default.
+@anchor{auto_from}
+@item auto_from [(on|off)]
+@cmindex auto_from
+Obsolete; you can achieve the same and more using the substitution patterns of the
+@samp{from} command.@*
+Enable or disable automatic envelope-from addresses. The default is @samp{off}.
+When enabled, an envelope-from address of the form user@@domain will be
+generated. The local part will be set to @code{USER} or, if that fails, to
+@code{LOGNAME} or, if that fails, to the login name of the current user. The
+domain part can be set with the @samp{maildomain} command; if that is empty,
+the address not have a domain part.
+@xref{Envelope-from address}.
+@anchor{maildomain}
+@item maildomain [@var{domain}]
+@cmindex maildomain
+Obsolete; you can achieve the same and more using the substitution patterns of the
+@samp{from} command.@*
+Set a domain part for the generation of an envelope-from address. See @ref{auto_from}.
 @end table
 
 
@@ -613,15 +626,8 @@ Set the envelope-from address. @xref{from}.@*
 If no account was chosen yet (with @option{--account} or @option{--host}), this
 option will choose the first account that has the given envelope-from address
 (set with the @samp{from} command). If no such account is found, "default" is
-used. @xref{Choosing an account}.
-@anchor{--auto-from}
-@item --auto-from[=(on|off)]
-@opindex --auto-from
-Enable or disable automatic envelope-from addresses. @xref{auto_from}.
-@anchor{--maildomain}
-@item --maildomain=[@var{domain}]
-@opindex --maildomain
-Set the domain part for the @option{--auto-from} address. @xref{maildomain}.
+used. @xref{Choosing an account}.@*
+See the @samp{from} command for substitution patterns supported in @var{address}.
 @anchor{--dsn-notify}
 @item -N (off|@var{condition})
 @itemx --dsn-notify=(off|@var{condition})
@@ -680,6 +686,14 @@ Set or unset an aliases file. @xref{aliases}.
 @item -F@var{name}
 Msmtp adds a From header to mails that lack it, using the envelope from
 address. This option allows to set a full name to be used in that header.
+@anchor{--auto-from}
+@item --auto-from[=(on|off)]
+@opindex --auto-from
+Obsolete. @xref{auto_from}.
+@anchor{--maildomain}
+@item --maildomain=[@var{domain}]
+@opindex --maildomain
+Obsolete. @xref{maildomain}.
 @item --
 This marks the end of options. All following arguments will be treated as
 recipient addresses, even if they start with a '-'.
@@ -977,8 +991,8 @@ envelope-from address. It is independent of the From header (because it is
 part of the mail @emph{envelope}, not of the mail itself), but in most cases
 both addresses are the same.
 
-Envelope-from addresses can be generated automatically (when @ref{auto_from}
-is enabled) or set explicitly with the @ref{from} command.
+Envelope-from addresses are set with the @ref{from} command, which allows
+automatisms using some substitution patterns.
 
 @node Logging
 @section Logging
@@ -1223,7 +1237,7 @@ account default : freemail
 account default
 
 # The SMTP smarthost
-host mailhub.oursite.example
+host mail.oursite.example
 
 # Use TLS on port 465
 port 465
@@ -1231,8 +1245,7 @@ tls on
 tls_starttls off
 
 # Construct envelope-from addresses of the form "user@@oursite.example"
-#auto_from on
-#maildomain oursite.example
+from %U@@oursite.example
 
 # Syslog logging with facility LOG_MAIL instead of the default LOG_USER
 syslog LOG_MAIL

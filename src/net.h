@@ -115,10 +115,13 @@ void net_close_socket(int fd);
 /*
  * net_get_canonical_hostname()
  *
- * Get a canonical name of this host. This means that the name is meaningful to
- * other hosts. Usually, it is the fully qualified domain name of this host.
+ * Get a canonical host name. This means that the name is meaningful to
+ * other hosts. Usually, it is the fully qualified domain name.
+ *
+ * You can optionally specify a hostname to try and canonicalize; if this is
+ * NULL, the name of the local host is used.
  */
-char *net_get_canonical_hostname(void);
+char *net_get_canonical_hostname(const char *hostname);
 
 /*
  * net_get_srv_query()

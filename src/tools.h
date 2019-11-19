@@ -114,6 +114,15 @@ char *get_sysconfdir(void);
 char *get_username(void);
 
 /*
+ * get_hostname()
+ *
+ * Get the name of the host. The returned string is allocated.
+ * The returned string may come from a environment variable and may contain
+ * all sorts of rubbish!
+ */
+char *get_hostname(void);
+
+/*
  * get_userconfig()
  *
  * Get the path of the user config. The returned string is allocated.

@@ -973,17 +973,24 @@ int net_puts(int fd, const char *s, size_t len, char **errstr)
  * see net.h
  */
 
-char *net_get_canonical_hostname(void)
+char *net_get_canonical_hostname(const char *hostname)
 {
-    char hostname[256];
+    char buf[256];
     char *canonname = NULL;
     struct addrinfo hints;
     struct addrinfo *res0;
 
-    if (gethostname(hostname, 256) == 0)
+    if (!hostname)
     {
-        /* Make sure the hostname is NUL-terminated. */
-        hostname[255] = '\0';
+        if (gethostname(buf, 256) == 0)
+        {
+            /* Make sure the hostname is NUL-terminated. */
+            buf[255] = '\0';
+            hostname = buf;
+        }
+    }
+    if (hostname)
+    {
         hints.ai_family = PF_UNSPEC;
         hints.ai_socktype = 0;
         hints.ai_flags = AI_CANONNAME;
@@ -1001,7 +1008,10 @@ char *net_get_canonical_hostname(void)
             freeaddrinfo(res0);
         }
     }
-
+    if (!canonname && hostname)
+    {
+        canonname = xstrdup(hostname);
+    }
     if (!canonname)
     {
         canonname = xstrdup("localhost");

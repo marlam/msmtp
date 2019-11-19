@@ -357,6 +357,46 @@ char *get_username(void)
     return username;
 }
 
+
+/*
+ * get_hostname()
+ *
+ * see tools.h
+ */
+
+char *get_hostname(void)
+{
+    char *host;
+
+    host = getenv("HOSTNAME");
+    if (host)
+    {
+        host = xstrdup(host);
+    }
+    else
+    {
+        char buf[256];
+        if (gethostname(buf, 256) == 0)
+        {
+            /* Make sure the hostname is NUL-terminated. */
+            buf[255] = '\0';
+            host = xstrdup(buf);
+        }
+    }
+    if (!host)
+    {
+        host = xstrdup("localhost");
+    }
+    return host;
+}
+
+
+/*
+ * get_userconfig()
+ *
+ * see tools.h
+ */
+
 char *get_userconfig(const char *userconfigfile)
 {
     char *homedir = get_homedir();

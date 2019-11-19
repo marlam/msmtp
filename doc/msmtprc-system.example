@@ -6,7 +6,7 @@
 account default
 
 # The SMTP smarthost
-host mailhub.oursite.example
+host mail.oursite.example
 
 # Use TLS on port 465
 port 465
@@ -14,8 +14,7 @@ tls on
 tls_starttls off
 
 # Construct envelope-from addresses of the form "user@oursite.example"
-#auto_from on
-#maildomain oursite.example
+from %U@oursite.example
 
 # Syslog logging with facility LOG_MAIL instead of the default LOG_USER
 syslog LOG_MAIL

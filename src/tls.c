@@ -889,7 +889,7 @@ int tls_check_cert(tls_t *tls, char **errstr)
             gnutls_certificate_verification_status_print(status,
                     GNUTLS_CRT_X509, &txt, 0);
             *errstr = xasprintf(_("%s: %s"), error_msg, txt.data);
-            gnutls_free(txt.data);
+            free(txt.data);
             return TLS_ECERT;
         }
 #endif

@@ -28,6 +28,7 @@
 # define WIN32_LEAN_AND_MEAN    /* do not include more than necessary */
 # define _WIN32_WINNT 0x0601    /* Windows 7 or later */
 # include <windows.h>
+# include <winsock2.h>
 # include <io.h>
 # include <conio.h>
 # include <lmcons.h>

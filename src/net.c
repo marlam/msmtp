@@ -333,7 +333,7 @@ int net_bind_source_ip_to_socket(int fd, const char *source_ip)
     if (inet_pton(AF_INET6, source_ip, &sa6.sin6_addr) != 0)
     {
         sa6.sin6_family = AF_INET6;
-        return bind(fd, &sa6, sizeof(sa6));
+        return bind(fd, (struct sockaddr *)&sa6, sizeof(sa6));
     }
     else
     {
@@ -341,7 +341,7 @@ int net_bind_source_ip_to_socket(int fd, const char *source_ip)
         if (inet_pton(AF_INET, source_ip, &sa4.sin_addr) != 0)
         {
             sa4.sin_family = AF_INET;
-            return bind(fd, &sa4, sizeof(sa4));
+            return bind(fd, (struct sockaddr *)&sa4, sizeof(sa4));
         }
         else
         {

@@ -159,7 +159,7 @@ log() {
     [ -n "$LKD" ] && lock_queue -u   # unlock here (if locked)
     [ -n "$LOG" ] && \
       echo "    exit code = $RC" >> "$LOG" # logging ok ; send exit code to log
-    exit $RC                         # exit w/return code
+    exit "$RC"                       # exit w/return code
   fi
 }
 
@@ -172,9 +172,9 @@ lock_queue() {        # <-- '-u' to remove lockfile
   if [ -z "$1" ] ; then              # lock queue
     ## Philipp Hartwig patch #2
     'mkdir' "$LOK" 2>/dev/null && LKD='t'
-    while [ -z "$LKD" ] && (( SEC < MAX )) ; do      # lock file present
-  	  sleep 1                                        # wait a second
-	    (( ++SEC ))                                    # accumulate seconds
+    while [ -z "$LKD" ] && [ "$SEC" -lt "$MAX" ]; do # lock file present
+      sleep 1                                        # wait a second
+      SEC=$((SEC + 1))                               # accumulate seconds
       'mkdir' "$LOK" 2>/dev/null && LKD='t'          # make lockdir ; lock queue ; set flag
     done                                             # try again while locked for MAX secs
     [ -z "$LKD" ] && \
@@ -244,7 +244,12 @@ usage() {        # <-- error msg
       '              -a   purge all mail in queue'\
       '              -h   this helpful blurt' ''\
       '        ( one op only ; any others ignored )' ''
-  [ -z "$1" ] && exit 0 || { dsp "$@" '' ; exit 1 ; }
+  if [ -z "$1" ]; then
+    exit 0;
+  else
+    dsp "$@" '';
+    exit 1;
+  fi
 }
 
 ## get user [y/n] acknowledgement
@@ -283,9 +288,9 @@ send_queued_mail() {   # <-- mail id
       }
     }
 
-    if $MSMTP $(< "${FQP}.msmtp") < "${FQP}.mail" ; then       # this mail goes out the door
+    if "$MSMTP" $(< "${FQP}.msmtp") < "${FQP}.mail" ; then     # this mail goes out the door
       log "mail [ $2 ] [ $1 ] from queue ; send was successful ; purged from queue"  # good news to user
-      'rm' -f ${FQP}.*                                         # nuke both queue mail files
+      'rm' -f "${FQP}.*"                                       # nuke both queue mail files
       ALT='t'                        # set queue changed flag
     else                             # send was unsuccessful
       RC=$?                          # take msmtp exit code
@@ -308,7 +313,7 @@ run_queue() {    # <- 'sm' mode      # run queue
   LST="$('ls' $Q/*.mail 2>/dev/null)"            # list of mails in queue
   if [ -n "$LST" ] ; then            # something in queue
     for M in $LST ; do               # process all mails
-      ((NDX++))
+      NDX=$((NDX + 1))
       send_queued_mail "$(basename $M .mail)" "$NDX"     # send mail - pass {id} only
     done
   else                               # queue is empty
@@ -327,16 +332,18 @@ display_queue() {      # <-- { 'purge' | 'send' } (op label) ; { 'rec' } (record
   if [ -n "$LST" ] ; then            # list has contents (any mails in queue)
     for M in $LST ; do               # cycle through each
       ID="$(basename $M .mail)"      # take mail id from filename
-      ((CNT++))
+      CNT=$((CNT + 1))
       dsp '' "mail  num=[ $CNT ]  id=[ $ID ]"                  # show mail id ## patch in
       'grep' -E -s --colour -h '(^From:|^To:|^Subject:)' "$M"    # show mail info
       [ -n "$2" ] && Q_LST[$CNT]="$ID" # bang mail id into array (note 1-based array indexing)
     done
     echo
   else                               # no mails ; no contents
-    [ -z "$1" ] && \
-      dsp '' 'no mail in queue' '' || \
+    if [ -z "$1" ]; then
+      dsp '' 'no mail in queue' ''
+    else
       dsp '' "mail queue is empty (nothing to $1)" ''    # inform user
+    fi
     exit 0
   fi
 }
@@ -378,18 +385,20 @@ select_mail() {  # <-- < 'purge' | 'send' >
         [ -n "$ID" ] || return                       # entry made - or say good bye
 
         if [ "${ID:4:1}" != '-' ] ; then             # mail id *not* entered ; test index num
-          for (( I=0 ; I<${#ID} ; I++ )) ; do        # test index number
-            if [[ "${ID:${I}:1}" -lt '0' || \
-                  "${ID:${I}:1}" -gt '9' ]] ; then
+          I=0
+          while [ "$I" -lt ${#ID} ]; do              # test index number
+            if [ "${ID:${I}:1}" -lt '0' ] || \
+                  [ "${ID:${I}:1}" -gt '9' ] ; then
               dsp '' "[ $ID ] is neither a valid mail id"\
                      'nor a valid mail number' ''
               unset OK
             fi
+          I=$((I + 1))
           done
           [ -z "$OK" ] && continue                   # format not ok (not all nums)
 
           NDX=$ID
-          if [ $NDX -lt 1 ] || [ $NDX -gt $CNT ] ; then  # test number range (1 - $CNT)
+          if [ "$NDX" -lt 1 ] || [ "$NDX" -gt "$CNT" ] ; then  # test number range (1 - $CNT)
             dsp '' "[ $NDX ] is out of range as a mail number"\
                    "validity is from 1 to $CNT"
             continue                                 # try again
@@ -398,12 +407,16 @@ select_mail() {  # <-- < 'purge' | 'send' >
           ID="${Q_LST[$NDX]}"                        # format & range were ok ; use it
           break                                      # valid mail selection
         else                                         # mail id entered
-          for (( NDX=1 ; NDX<=${#Q_LST[*]} ; NDX++ )) ; do # find entered id in queue list
+          NDX=1
+          while [ "$NDX" -le ${#Q_LST[*]} ]; do                 # find entered id in queue list
             [ "$ID" = "${Q_LST[$NDX]}" ] && break
+            NDX=$((NDX + 1))
           done
-          [ $NDX -le ${#Q_LST[*]} ] && \
-            break || \
+          if [ "$NDX" -le ${#Q_LST[*]} ]; then
+            break
+          else
             dsp '' "mail [ $ID ] not found ; invalid id" # mail selection valid (found) or
+          fi
         fi                                               # fell through (not found) complain
       done                                               # and ask again
     fi
@@ -452,11 +465,11 @@ make_id() {
   ## Philipp Hartwig patch #1
   if [ -f "${FQP}.mail" ] || [ -f "${FQP}.msmtp" ] ; then    # ensure fqp name is unique
     INC=1                            # initial increment
-	  while [ -f "${FQP}-${INC}.mail" ] || [ -f "${FQP}-${INC}.msmtp" ] ; do # fqp name w/incr exists
-      (( ++INC ))                    # bump increment
-	  done
-	  ID="${ID}-${INC}"                # unique ; set id
-	  FQP="${FQP}-${INC}"              # unique ; set fqp name
+      while [ -f "${FQP}-${INC}.mail" ] || [ -f "${FQP}-${INC}.msmtp" ] ; do # fqp name w/incr exists
+        INC=$((INC + 1))             # bump increment
+      done
+      ID="${ID}-${INC}"              # unique ; set id
+      FQP="${FQP}-${INC}"            # unique ; set fqp name
   fi
 }
 
@@ -488,7 +501,7 @@ send_mail() {    # <-- all mail args ; mail text via TMP
 
   if $MSMTP "$@" < "${FQP}.mail" > /dev/null ; then      # send mail using queue .mail fil
     log "mail for [ $* ] : send was successful"          # log it
-    'rm' -f ${FQP}.*                 # remove all queue mail files .mail & .msmtp file
+    'rm' -f "${FQP}.*"               # remove all queue mail files .mail & .msmtp file
     run_queue 'sm'                   # run/flush any other mails in queue
   else                               # send failed - the mail stays in the queue
     log "mail for [ $* ] : send was unsuccessful ; msmtp exit code was $?"\

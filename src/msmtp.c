@@ -757,8 +757,13 @@ int msmtp_read_headers(FILE *mailf, FILE *tmpf,
 
                 case STATE_LINESTART_AFTER_ADDRHDR:
                     resent_index = -1;
-                    if (c != ' ' && c != '\t' && current_recipient)
-                        finish_current_recipient = 1;
+                    if (c != ' ' && c != '\t')
+                    {
+                        if (current_recipient)
+                            finish_current_recipient = 1;
+                        else if (from_hdr == 0)
+                            from_hdr = -1; /* the preceding From: header was empty */
+                    }
                     if (c == ' ' || c == '\t')
                         state = folded_rcpthdr_savestate;
                     else if (have_date && (c == 'd' || c == 'D'))

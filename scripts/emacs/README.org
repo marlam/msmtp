@@ -1,0 +1,32 @@
+* msmtp-config-mode
+
+Simple major mode which fontifies configuration files of [[https://marlam.de/msmtp/][msmtp]] (an SMTP
+client).
+
+** Installation
+
+Put =msmtp-config-mode.el= in your =load-path= and add the following to your
+Emacs configuration file:
+
+#+BEGIN_SRC elisp
+(require 'msmtp-config-mode)
+#+END_SRC
+
+** Usage
+
+=~/.msmtprc= and =${XDG_CONFIG}/msmtp/config= should be recognized
+automatically.
+
+Otherwise, run =M-x msmtp-config-mode RET= in the buffer, or add
+  : -*- msmtp-config-mode -*-
+at the top of the file.
+
+** Contributing
+
+Please open a pull request either on [[https://gitlab.com/augfab/msmtp-config-mode][GitLab]] or on [[https://github.com/augfab/msmtp-config-mode][GitHub]], or send patches
+directly to =<msmtp-config-mode@augfab.fr>=.
+
+
+** License
+
+[[https://www.gnu.org/licenses/gpl-3.0.txt][GPL v3]].

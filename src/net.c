@@ -44,6 +44,7 @@
 #include <sys/types.h>
 #ifdef HAVE_SYS_SOCKET_H
 # include <sys/socket.h>
+# include <sys/un.h>
 #endif
 #ifdef HAVE_NETINET_IN_H
 # include <netinet/in.h>
@@ -650,6 +651,7 @@ int net_socks5_connect(int fd, const char *hostname, int port, char **errstr)
 }
 
 int net_open_socket(
+        const char *socketname,
         const char *proxy_hostname, int proxy_port,
         const char *hostname, int port,
         const char *source_ip,
@@ -668,9 +670,50 @@ int net_open_socket(
     char nameinfo_buffer[NI_MAXHOST];
     char *idn_hostname = NULL;
 
+    if (socketname)
+    {
+#ifdef W32_NATIVE
+        *errstr = xasprintf(_("cannot connect to %s: %s"), socketname,
+                wsa_strerror(WSAESOCKTNOSUPPORT));
+        return NET_ELIBFAILED;
+#else
+        struct sockaddr_un addr;
+        if (strlen(socketname) + 1 > sizeof(addr.sun_path))
+        {
+            *errstr = xasprintf(_("cannot connect to %s: %s"), socketname,
+                    _("invalid argument"));
+            return NET_EIO;
+        }
+        if ((fd = socket(AF_UNIX, SOCK_STREAM, 0)) == -1)
+        {
+            *errstr = xasprintf(_("cannot create socket: %s"), strerror(errno));
+            return NET_ESOCKET;
+        }
+        memset(&addr, 0, sizeof(addr));
+        addr.sun_family = AF_UNIX;
+        strcpy(addr.sun_path, socketname);
+        if (net_connect(fd, (struct sockaddr *)&addr, sizeof(addr), timeout) < 0)
+        {
+            net_close_socket(fd);
+            *errstr = xasprintf(_("cannot connect to %s: %s"), socketname, strerror(errno));
+            return NET_ECONNECT;
+        }
+        *ret_fd = fd;
+        if (canonical_name)
+        {
+            *canonical_name = NULL;
+        }
+        if (address)
+        {
+            *address = NULL;
+        }
+        return NET_EOK;
+#endif
+    }
+
     if (proxy_hostname)
     {
-        error_code = net_open_socket(NULL, -1, proxy_hostname, proxy_port,
+        error_code = net_open_socket(NULL, NULL, -1, proxy_hostname, proxy_port,
                 source_ip, timeout, &fd, NULL, NULL, errstr);
         if (error_code != NET_EOK)
         {

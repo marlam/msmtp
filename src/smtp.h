@@ -4,7 +4,7 @@
  * This file is part of msmtp, an SMTP client.
  *
  * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2008, 2010, 2012, 2014, 2016,
- * 2018, 2019
+ * 2018, 2019, 2020
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -117,7 +117,7 @@ smtp_server_t smtp_new(FILE *debug, int protocol);
 /*
  * smtp_connect()
  *
- * Connect to a SMTP server.
+ * Connect to a SMTP server. See net_open_socket().
  * If 'server_canonical_name' is not NULL, a pointer to a string containing the
  * canonical hostname of the server will be stored in '*server_canonical_name',
  * or NULL if this information is not available.
@@ -128,7 +128,9 @@ smtp_server_t smtp_new(FILE *debug, int protocol);
  * Used error codes: NET_EHOSTNOTFOUND, NET_ESOCKET, NET_ECONNECT, NET_EPROXY
  * Success: NET_EOK
  */
-int smtp_connect(smtp_server_t *srv, const char *proxy_host, int proxy_port,
+int smtp_connect(smtp_server_t *srv,
+        const char *socketname,
+        const char *proxy_host, int proxy_port,
         const char *host, int port, const char *source_ip, int timeout,
         char **server_canonical_name, char **server_address,
         char **errstr);

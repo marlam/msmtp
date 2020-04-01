@@ -4,7 +4,7 @@
  * This file is part of msmtp, an SMTP client.
  *
  * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2010, 2011, 2014,
- * 2016, 2018, 2019
+ * 2016, 2018, 2019, 2020
  * Martin Lambers <marlam@marlam.de>
  * Martin Stenberg <martin@gnutiken.se> (passwordeval support)
  * Scott Shumate <sshumate@austin.rr.com> (aliases support)
@@ -80,6 +80,7 @@
 #define ACC_REMOVE_BCC_HEADERS          (1LL << 32LL)
 #define ACC_SOURCE_IP                   (1LL << 33LL)
 #define ACC_LOGFILE_TIME_FORMAT         (1LL << 34LL)
+#define ACC_SOCKET                      (1LL << 35LL)
 
 typedef struct
 {
@@ -136,6 +137,8 @@ typedef struct
     int remove_bcc_headers;     /* remove the Bcc headers from the mail? */
     /* source ip binding */
     char *source_ip;            /* Source IP to bind the connection to */
+    /* unix domain socket */
+    char *socketname;           /* File name of local socket to connect to */
 } account_t;
 
 

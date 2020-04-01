@@ -4,7 +4,7 @@
  * This file is part of msmtp, an SMTP client.
  *
  * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011,
- * 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019
+ * 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020
  * Martin Lambers <marlam@marlam.de>
  * Martin Stenberg <martin@gnutiken.se> (passwordeval support)
  * Scott Shumate <sshumate@austin.rr.com> (aliases support)
@@ -151,7 +151,7 @@ int msmtp_rmqs(account_t *acc, int debug, const char *rmqs_argument,
     srv = smtp_new(debug ? stdout : NULL, acc->protocol);
 
     /* connect */
-    if ((e = smtp_connect(&srv, acc->proxy_host, acc->proxy_port,
+    if ((e = smtp_connect(&srv, acc->socketname, acc->proxy_host, acc->proxy_port,
                     acc->host, acc->port, acc->source_ip, acc->timeout,
                     NULL, NULL, errstr)) != NET_EOK)
     {
@@ -336,7 +336,7 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
     srv = smtp_new(debug ? stdout : NULL, acc->protocol);
 
     /* connect */
-    if ((e = smtp_connect(&srv, acc->proxy_host, acc->proxy_port,
+    if ((e = smtp_connect(&srv, acc->socketname, acc->proxy_host, acc->proxy_port,
                     acc->host, acc->port, acc->source_ip, acc->timeout,
                     &server_canonical_name, &server_address, errstr))
             != NET_EOK)
@@ -1331,7 +1331,7 @@ int msmtp_sendmail(account_t *acc, list_t *recipients,
 #endif /* HAVE_TLS */
 
     /* connect */
-    if ((e = smtp_connect(&srv, acc->proxy_host, acc->proxy_port,
+    if ((e = smtp_connect(&srv, acc->socketname, acc->proxy_host, acc->proxy_port,
                     acc->host, acc->port, acc->source_ip, acc->timeout,
                     NULL, NULL, errstr)) != NET_EOK)
     {
@@ -2196,6 +2196,7 @@ void msmtp_print_help(void)
     printf(_("  --source-ip=[IP]             set/unset source ip address to bind the socket to\n"));
     printf(_("  --proxy-host=[IP|hostname]   set/unset proxy\n"));
     printf(_("  --proxy-port=[number]        set/unset proxy port\n"));
+    printf(_("  --socket=[socketname]        set/unset local socket to connect to\n"));
     printf(_("  --timeout=(off|seconds)      set/unset network timeout in seconds\n"));
     printf(_("  --protocol=(smtp|lmtp)       use the given sub protocol\n"));
     printf(_("  --domain=string              set the argument of EHLO or LHLO command\n"));
@@ -2305,6 +2306,7 @@ typedef struct
 #define LONGONLYOPT_SOURCE_IP                   (256 + 33)
 #define LONGONLYOPT_LOGFILE_TIME_FORMAT         (256 + 34)
 #define LONGONLYOPT_CONFIGURE                   (256 + 35)
+#define LONGONLYOPT_SOCKET                      (256 + 36)
 
 int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
 {
@@ -2363,6 +2365,7 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
         { "remove-bcc-headers", optional_argument, 0,
             LONGONLYOPT_REMOVE_BCC_HEADERS },
         { "source-ip", required_argument, 0, LONGONLYOPT_SOURCE_IP },
+        { "socket", required_argument, 0, LONGONLYOPT_SOCKET },
         { "keepbcc", optional_argument, 0, LONGONLYOPT_KEEPBCC },
         { "read-recipients", no_argument, 0, 't' },
         { "read-envelope-from", no_argument, 0,
@@ -3048,6 +3051,19 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
                 conf->cmdline_account->mask |= ACC_SOURCE_IP;
                 break;
 
+            case LONGONLYOPT_SOCKET:
+                free(conf->cmdline_account->socketname);
+                if (*optarg)
+                {
+                    conf->cmdline_account->socketname = xstrdup(optarg);
+                }
+                else
+                {
+                    conf->cmdline_account->socketname = NULL;
+                }
+                conf->cmdline_account->mask |= ACC_SOCKET;
+                break;
+
             case 't':
                 conf->read_recipients = 1;
                 break;
@@ -3374,6 +3390,8 @@ void msmtp_print_conf(msmtp_cmdline_conf_t conf, account_t *account)
     printf("proxy host = %s\n",
             account->proxy_host ? account->proxy_host : _("(not set)"));
     printf("proxy port = %d\n", account->proxy_port);
+    printf("socket = %s\n",
+            account->socketname ? account->socketname : _("(not set)"));
     printf("timeout = ");
     if (account->timeout <= 0)
     {

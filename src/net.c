@@ -4,7 +4,7 @@
  * This file is part of msmtp, an SMTP client, and of mpop, a POP3 client.
  *
  * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2012, 2014, 2015,
- * 2018, 2019
+ * 2018, 2019, 2020
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -671,7 +671,7 @@ int net_open_socket(
     if (proxy_hostname)
     {
         error_code = net_open_socket(NULL, -1, proxy_hostname, proxy_port,
-                NULL, timeout, &fd, NULL, NULL, errstr);
+                source_ip, timeout, &fd, NULL, NULL, errstr);
         if (error_code != NET_EOK)
         {
             return error_code;

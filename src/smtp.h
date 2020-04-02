@@ -199,8 +199,8 @@ int smtp_tls_init(smtp_server_t *srv,
  * Use this function after smtp_init(). The SMTP server must have the
  * SMTP_CAP_STARTTLS capability.
  * Call smtp_tls() afterwards. Finally, call smtp_init() again (the SMTP server
- * might advertise different capabilities when TLS is active, for example plain
- * text authentication mechanisms).
+ * might advertise different capabilities when TLS is active, for example
+ * cleartext authentication mechanisms).
  * 'error_msg' contains the error message from the SMTP server or NULL.
  * Used error codes: SMTP_EIO, SMTP_EPROTO, SMTP_EINVAL
  */
@@ -249,7 +249,7 @@ int smtp_server_supports_authmech(smtp_server_t *srv, const char *mech);
  * to find out which authentication mechanisms are available.
  * The special value "" for 'auth_mech' causes the function to choose the best
  * authentication method supported by the server, unless TLS is incative and the
- * method sends plain text passwords. In this case, the function fails with
+ * method sends cleartext passwords. In this case, the function fails with
  * SMTP_EINSECURE.
  * The hostname is the name of the SMTP server. It may be needed for
  * authentication.

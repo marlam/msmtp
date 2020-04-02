@@ -335,7 +335,7 @@ joe.smith with your user name.
 to specify a command to decrypt that file, e.g. using GnuPG. See EXAMPLES.
 .br
 3. Store the password in the configuration file using the \fBpassword\fP command.
-(Usually it is not considered a good idea to store passwords in plain text files.
+(Usually it is not considered a good idea to store passwords in cleartext files.
 If you do it anyway, you must make sure that the file can only be read by yourself.)
 .br
 4. Store the password in ~/.netrc. This method is probably obsolete.
@@ -349,17 +349,17 @@ Historically, sophisticated methods were developed to protect passwords from
 being sent unencrypted to the server, but nowadays everybody needs TLS anyway,
 so the simple methods suffice since the whole session is protected. A suitable
 authentication method is chosen automatically, and when TLS is disabled for
-some reason, only methods that avoid sending clear text passwords are
+some reason, only methods that avoid sending cleartext passwords are
 considered.
 .br
 The following user / password methods are supported: \fIplain\fP (a simple
-plain text method, with base64 encoding, supported by almost all servers),
-\fIscram\-sha\-1\fP (a method that avoids clear-text passwords),
-\fIcram\-md5\fP (an obsolete method that avoids clear-text passwords, but is not
+cleartext method, with base64 encoding, supported by almost all servers),
+\fIscram\-sha\-1\fP (a method that avoids cleartext passwords),
+\fIcram\-md5\fP (an obsolete method that avoids cleartext passwords, but is not
 considered secure anymore),
 \fIdigest\-md5\fP (an overcomplicated
-obsolete method that avoids clear-text passwords, but is not considered secure
-anymore), \fIlogin\fP (a non-standard clear-text method similar to but worse
+obsolete method that avoids cleartext passwords, but is not considered secure
+anymore), \fIlogin\fP (a non-standard cleartext method similar to but worse
 than the plain method), \fIntlm\fP (an obscure non-standard method that is now
 considered broken; it sometimes requires a special domain parameter passed via
 \fBntlmdomain\fP).
@@ -384,12 +384,12 @@ Set the user name for authentication. An empty argument unsets the user name.
 .IP "password \fIsecret\fP"
 Set the password for authentication. An empty argument unsets the password.
 Consider using the \fBpasswordeval\fP command or a key ring instead of this
-command, to avoid storing plain text passwords in the configuration file.
+command, to avoid storing cleartext passwords in the configuration file.
 .IP "passwordeval [\fIeval\fP]"
 Set the password for authentication to the output (stdout) of the command
 \fIeval\fP.
 This can be used e.g. to decrypt password files on the fly or to query key
-rings, and thus to avoid storing plain text passwords.
+rings, and thus to avoid storing cleartext passwords.
 .IP "ntlmdomain [\fIdomain\fP]"
 Set a domain for the \fBntlm\fP authentication method. This is obsolete.
 .IP "tls [(\fIon\fP|\fIoff\fP)]"
@@ -585,7 +585,7 @@ if available), exit code (from sysexits.h; EX_OK indicates success).
 .br
 .IP "aliases [\fIfile\fP]"
 Replace local recipients with addresses in the aliases file.  The aliases file
-is a plain text file containing mappings between a local address and a list of
+is a cleartext file containing mappings between a local address and a list of
 replacement addresses. The mappings are of the form:
 .br
     local: someone@example.com, person@domain.example
@@ -737,7 +737,7 @@ passwordeval gpg2 \-\-no\-tty \-q \-d ~/.msmtp\-password.gpg
 .br
 # Password method 3: Store the password directly in this file. Usually it is not
 .br
-# a good idea to store passwords in plain text files. If you do it anyway, at
+# a good idea to store passwords in cleartext files. If you do it anyway, at
 .br
 # least make sure that this file can only be read by yourself.
 .br

@@ -240,7 +240,7 @@ Authentication must be activated with the @samp{auth} command.
 @cmindex password
 Set the password for authentication. An empty argument unsets the password.
 Consider using the @samp{passwordeval} command or a key ring instead of this
-command, to avoid storing plain text passwords in the configuration file.
+command, to avoid storing cleartext passwords in the configuration file.
 @xref{Authentication}.
 @anchor{passwordeval}
 @item passwordeval [@var{eval}]
@@ -248,7 +248,7 @@ command, to avoid storing plain text passwords in the configuration file.
 Set the password for authentication to the output (stdout) of the command
 @var{eval}.
 This can be used e.g. to decrypt password files on the fly or to query key
-rings, and thus to avoid storing plain text passwords.
+rings, and thus to avoid storing cleartext passwords.
 @xref{Authentication}.
 @anchor{ntlmdomain}
 @item ntlmdomain [@var{ntlmdomain}]
@@ -412,7 +412,7 @@ The default is @samp{LOG_USER}. Syslog logging is disabled by default.
 @item aliases [@var{file}]
 @cmindex aliases
 Replace local recipients with addresses in the aliases file. The aliases file
-is a plain text file containing mappings between a local address and a list of
+is a cleartext file containing mappings between a local address and a list of
 replacement addresses. The mappings are of the form:
 @example
 local: someone@@example.com, person@@domain.example
@@ -899,7 +899,7 @@ joe.smith with your user name.
 @item Store the password in an encrypted files, and use @ref{passwordeval}
 to specify a command to decrypt that file, e.g. using GnuPG. @xref{Examples}.
 @item Store the password in the configuration file using the @ref{password} command.
-(Usually it is not considered a good idea to store passwords in plain text files.
+(Usually it is not considered a good idea to store passwords in cleartext files.
 If you do it anyway, you must make sure that the file can only be read by yourself.)
 @item Store the password in @file{~/.netrc}. This method is probably obsolete.
 @item Type the password into the terminal when it is required.
@@ -912,22 +912,22 @@ being sent unencrypted to the server, but nowadays everybody needs
 @ref{Transport Layer Security} anyway, so the simple methods suffice since the
 whole session is protected. A suitable authentication method is chosen
 automatically, and when TLS is disabled for some reason, only methods that avoid
-sending clear text passwords are considered.
+sending cleartext passwords are considered.
 
 The following user / password methods are supported:
 @itemize
 @item @samp{PLAIN}@*
-A simple plain text method supported by almost all servers.
+A simple cleartext method supported by almost all servers.
 @item @samp{SCRAM-SHA-1}@*
-A method that avoids clear-text passwords.
+A method that avoids cleartext passwords.
 @item @samp{CRAM-MD5}@*
-An obsolete method that avoids clear-text passwords, but is not considered
+An obsolete method that avoids cleartext passwords, but is not considered
 secure anymore.
 @item @samp{DIGEST-MD5}@*
-An overcomplicated obsolete method that avoids clear-text passwords, but is not
+An overcomplicated obsolete method that avoids cleartext passwords, but is not
 considered secure anymore.
 @item @samp{LOGIN}@*
-A non-standard clear-text method similar to (but worse than) PLAIN.
+A non-standard cleartext method similar to (but worse than) PLAIN.
 @item @samp{NTLM}@*
 An obscure non-standard method that is now considered broken. It sometimes requires
 a special domain parameter passed via @ref{ntlmdomain}. Do not use it.
@@ -1207,7 +1207,7 @@ user joe.smith
 passwordeval gpg2 --no-tty -q -d ~/.msmtp-password.gpg
 
 # Password method 3: Store the password directly in this file. Usually it is not
-# a good idea to store passwords in plain text files. If you do it anyway, at
+# a good idea to store passwords in cleartext files. If you do it anyway, at
 # least make sure that this file can only be read by yourself.
 #password secret123
 

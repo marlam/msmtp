@@ -99,8 +99,8 @@ account_t *account_new(const char *conffile, const char *id)
     a->aliases = NULL;
     a->proxy_host = NULL;
     a->proxy_port = 0;
-    a->add_missing_from_header = 1;
-    a->add_missing_date_header = 1;
+    a->set_from_header = 2;
+    a->set_date_header = 2;
     a->remove_bcc_headers = 1;
     a->source_ip = NULL;
     a->socketname = NULL;
@@ -186,8 +186,8 @@ account_t *account_copy(account_t *acc)
         a->aliases = acc->aliases ? xstrdup(acc->aliases) : NULL;
         a->proxy_host = acc->proxy_host ? xstrdup(acc->proxy_host) : NULL;
         a->proxy_port = acc->proxy_port;
-        a->add_missing_from_header = acc->add_missing_from_header;
-        a->add_missing_date_header = acc->add_missing_date_header;
+        a->set_from_header = acc->set_from_header;
+        a->set_date_header = acc->set_date_header;
         a->remove_bcc_headers = acc->remove_bcc_headers;
         a->source_ip = acc->source_ip ? xstrdup(acc->source_ip) : NULL;
         a->socketname = acc->socketname ? xstrdup(acc->socketname) : NULL;
@@ -293,19 +293,24 @@ account_t *find_account_by_envelope_from(list_t *acc_list, const char *from)
 
 
 /*
- * is_on(), is_off()
+ * is_on(), is_off(), is_auto()
  *
  * see conf.h
  */
 
-int is_on(char *s)
+int is_on(const char *s)
 {
     return (strcmp(s, "on") == 0);
 }
 
-int is_off(char *s)
+int is_off(const char *s)
 {
     return (strcmp(s, "off") == 0);
+}
+
+int is_auto(const char *s)
+{
+    return (strcmp(s, "auto") == 0);
 }
 
 
@@ -712,13 +717,13 @@ void override_account(account_t *acc1, account_t *acc2)
     {
         acc1->proxy_port = acc2->proxy_port;
     }
-    if (acc2->mask & ACC_ADD_MISSING_FROM_HEADER)
+    if (acc2->mask & ACC_SET_FROM_HEADER)
     {
-        acc1->add_missing_from_header = acc2->add_missing_from_header;
+        acc1->set_from_header = acc2->set_from_header;
     }
-    if (acc2->mask & ACC_ADD_MISSING_DATE_HEADER)
+    if (acc2->mask & ACC_SET_DATE_HEADER)
     {
-        acc1->add_missing_date_header = acc2->add_missing_date_header;
+        acc1->set_date_header = acc2->set_date_header;
     }
     if (acc2->mask & ACC_SOURCE_IP)
     {
@@ -1787,16 +1792,20 @@ int read_conffile(const char *conffile, FILE *f, list_t **acc_list,
                 }
             }
         }
-        else if (strcmp(cmd, "add_missing_from_header") == 0)
+        else if (strcmp(cmd, "set_from_header") == 0)
         {
-            acc->mask |= ACC_ADD_MISSING_FROM_HEADER;
-            if (*arg == '\0' || is_on(arg))
+            acc->mask |= ACC_SET_FROM_HEADER;
+            if (*arg == '\0' || is_auto(arg))
             {
-                acc->add_missing_from_header = 1;
+                acc->set_from_header = 2;
+            }
+            else if (is_on(arg))
+            {
+                acc->set_from_header = 1;
             }
             else if (is_off(arg))
             {
-                acc->add_missing_from_header = 0;
+                acc->set_from_header = 0;
             }
             else
             {
@@ -1807,16 +1816,16 @@ int read_conffile(const char *conffile, FILE *f, list_t **acc_list,
                 break;
             }
         }
-        else if (strcmp(cmd, "add_missing_date_header") == 0)
+        else if (strcmp(cmd, "set_date_header") == 0)
         {
-            acc->mask |= ACC_ADD_MISSING_DATE_HEADER;
-            if (*arg == '\0' || is_on(arg))
+            acc->mask |= ACC_SET_DATE_HEADER;
+            if (*arg == '\0' || is_auto(arg))
             {
-                acc->add_missing_date_header = 1;
+                acc->set_date_header = 2;
             }
             else if (is_off(arg))
             {
-                acc->add_missing_date_header = 0;
+                acc->set_date_header = 0;
             }
             else
             {
@@ -1871,6 +1880,48 @@ int read_conffile(const char *conffile, FILE *f, list_t **acc_list,
             else
             {
                 acc->socketname = xstrdup(arg);
+            }
+        }
+        else if (strcmp(cmd, "add_missing_from_header") == 0)
+        {
+            /* compatibility with < 1.8.8 */
+            acc->mask |= ACC_SET_FROM_HEADER;
+            if (*arg == '\0' || is_on(arg))
+            {
+                acc->set_from_header = 2;
+            }
+            else if (is_off(arg))
+            {
+                acc->set_from_header = 0;
+            }
+            else
+            {
+                *errstr = xasprintf(
+                        _("line %d: invalid argument %s for command %s"),
+                        line, arg, cmd);
+                e = CONF_ESYNTAX;
+                break;
+            }
+        }
+        else if (strcmp(cmd, "add_missing_date_header") == 0)
+        {
+            /* compatibility with < 1.8.8 */
+            acc->mask |= ACC_SET_DATE_HEADER;
+            if (*arg == '\0' || is_on(arg))
+            {
+                acc->set_date_header = 2;
+            }
+            else if (is_off(arg))
+            {
+                acc->set_date_header = 0;
+            }
+            else
+            {
+                *errstr = xasprintf(
+                        _("line %d: invalid argument %s for command %s"),
+                        line, arg, cmd);
+                e = CONF_ESYNTAX;
+                break;
             }
         }
         else if (strcmp(cmd, "auto_from") == 0)

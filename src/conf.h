@@ -75,8 +75,8 @@
 #define ACC_ALIASES                     (1LL << 27LL)
 #define ACC_PROXY_HOST                  (1LL << 28LL)
 #define ACC_PROXY_PORT                  (1LL << 29LL)
-#define ACC_ADD_MISSING_FROM_HEADER     (1LL << 30LL)
-#define ACC_ADD_MISSING_DATE_HEADER     (1LL << 31LL)
+#define ACC_SET_FROM_HEADER             (1LL << 30LL)
+#define ACC_SET_DATE_HEADER             (1LL << 31LL)
 #define ACC_REMOVE_BCC_HEADERS          (1LL << 32LL)
 #define ACC_SOURCE_IP                   (1LL << 33LL)
 #define ACC_LOGFILE_TIME_FORMAT         (1LL << 34LL)
@@ -132,8 +132,8 @@ typedef struct
     char *proxy_host;           /* NULL or proxy hostname */
     int proxy_port;             /* port number; 0 for default */
     /* header modifications */
-    int add_missing_from_header;/* add From header if it is missing? */
-    int add_missing_date_header;/* add Date header if it is missing? */
+    int set_from_header;        /* 0=off, 1=on, 2=auto */
+    int set_date_header;        /* 0=off,       2=auto */
     int remove_bcc_headers;     /* remove the Bcc headers from the mail? */
     /* source ip binding */
     char *source_ip;            /* Source IP to bind the connection to */
@@ -185,12 +185,13 @@ account_t *find_account(list_t *acc_list, const char *id);
 account_t *find_account_by_envelope_from(list_t *acc_list, const char *from);
 
 /*
- * is_on(), is_off()
+ * is_on(), is_off(), is_auto()
  *
- * Check whether the given string is "on" or "off"
+ * Check whether the given string is "on" or "off" or "auto"
  */
-int is_on(char *s);
-int is_off(char *s);
+int is_on(const char *s);
+int is_off(const char *s);
+int is_auto(const char *s);
 
 /*
  * get_pos_int()

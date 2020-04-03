@@ -305,6 +305,7 @@ int smtp_send_envelope(smtp_server_t *srv,
  * Sends a mail via the SMTP server 'srv'.
  * You can use this function more than once to send the mail in chunks.
  * When you're done, call smtp_end_mail().
+ * keep_from:   See keep_bcc below, but applies to the From header.
  * keep_bcc:    Set this flag in one of the following situation:
  *              1. The mail data contains a Bcc header that you want to keep
  *                 (highly unlikely)
@@ -321,7 +322,8 @@ int smtp_send_envelope(smtp_server_t *srv,
  *              message (or NULL)
  * Used error codes: SMTP_EIO
  */
-int smtp_send_mail(smtp_server_t *srv, FILE *mailf, int keep_bcc,
+int smtp_send_mail(smtp_server_t *srv, FILE *mailf,
+        int keep_from, int keep_bcc,
         long *mailsize, char **errstr);
 
 /*

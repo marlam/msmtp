@@ -32,8 +32,8 @@
 
 (defvar msmtp-config--keywords
   '("account"
-    "add_missing_date_header"
-    "add_missing_from_header"
+    "set_date_header"
+    "set_from_header"
     "aliases"
     "auth"
     "auto_from"

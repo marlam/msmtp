@@ -1679,7 +1679,8 @@ int smtp_send_envelope(smtp_server_t *srv,
  * see smtp.h
  */
 
-int smtp_send_mail(smtp_server_t *srv, FILE *mailf, int keep_bcc,
+int smtp_send_mail(smtp_server_t *srv, FILE *mailf,
+        int keep_from, int keep_bcc,
         long *mailsize, char **errstr)
 {
     char bigbuffer[MAIL_BUFSIZE + 3];   /* buffer + leading dot + ending CRLF */
@@ -1688,6 +1689,7 @@ int smtp_send_mail(smtp_server_t *srv, FILE *mailf, int keep_bcc,
     char *send_buf;
     size_t send_len;
     int in_header;
+    int in_from;
     int in_bcc;
     int line_starts;
     int line_continues;
@@ -1696,6 +1698,7 @@ int smtp_send_mail(smtp_server_t *srv, FILE *mailf, int keep_bcc,
     bigbuffer[0] = '.';
     buffer = bigbuffer + 1;
     in_header = 1;
+    in_from = 0;
     in_bcc = 0;
     line_continues = 0;
     e = SMTP_EOK;
@@ -1740,44 +1743,61 @@ int smtp_send_mail(smtp_server_t *srv, FILE *mailf, int keep_bcc,
              * character */
             line_continues = 0;
         }
-        if (!keep_bcc)
+        if (line_starts && in_header && buffer[0] == '\0')
         {
-            if (line_starts && in_header && buffer[0] == '\0')
+            in_header = 0;
+        }
+        if (in_header)
+        {
+            if (line_starts)
             {
-                in_header = 0;
-            }
-            if (in_header)
-            {
-                if (line_starts)
+                if (!keep_from && strncasecmp(buffer, "From:", 5) == 0)
                 {
-                    if (strncasecmp(buffer, "Bcc:", 4) == 0)
+                    in_from = 1;
+                    /* remove From header by ignoring this line */
+                    continue;
+                }
+                else if (!keep_from && in_from)
+                {
+                    /* continued header lines begin with "horizontal
+                     * whitespace" (RFC 2822, section 2.2.3) */
+                    if (buffer[0] == '\t' || buffer[0] == ' ')
                     {
-                        in_bcc = 1;
                         /* remove Bcc header by ignoring this line */
                         continue;
                     }
-                    else if (in_bcc)
+                    else
                     {
-                        /* continued header lines begin with "horizontal
-                         * whitespace" (RFC 2822, section 2.2.3) */
-                        if (buffer[0] == '\t' || buffer[0] == ' ')
-                        {
-                            /* remove Bcc header by ignoring this line */
-                            continue;
-                        }
-                        else
-                        {
-                            in_bcc = 0;
-                        }
+                        in_from = 0;
                     }
                 }
-                else
+                else if (!keep_bcc && strncasecmp(buffer, "Bcc:", 4) == 0)
                 {
-                    if (in_bcc)
+                    in_bcc = 1;
+                    /* remove Bcc header by ignoring this line */
+                    continue;
+                }
+                else if (!keep_bcc && in_bcc)
+                {
+                    /* continued header lines begin with "horizontal
+                     * whitespace" (RFC 2822, section 2.2.3) */
+                    if (buffer[0] == '\t' || buffer[0] == ' ')
                     {
                         /* remove Bcc header by ignoring this line */
                         continue;
                     }
+                    else
+                    {
+                        in_bcc = 0;
+                    }
+                }
+            }
+            else
+            {
+                if ((!keep_from && in_from) || (!keep_bcc && in_bcc))
+                {
+                    /* remove From or Bcc header by ignoring this line */
+                    continue;
                 }
             }
         }

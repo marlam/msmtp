@@ -1289,7 +1289,8 @@ error_exit:
  */
 
 int msmtp_sendmail(account_t *acc, list_t *recipients,
-        FILE *prepend_header_file, FILE *header_file, FILE *f,
+        FILE *prepend_header_file, int prepend_header_contains_from,
+        FILE *header_file, FILE *f,
         int debug, long *mailsize,
         list_t **lmtp_errstrs, list_t **lmtp_error_msgs,
         list_t **msg, char **errstr)
@@ -1479,7 +1480,7 @@ int msmtp_sendmail(account_t *acc, list_t *recipients,
     {
         /* first: prepended headers, if any */
         if ((e = smtp_send_mail(&srv, prepend_header_file,
-                        !acc->remove_bcc_headers, mailsize,
+                        1, 1, mailsize,
                         errstr)) != SMTP_EOK)
         {
             msmtp_endsession(&srv, 0);
@@ -1488,7 +1489,9 @@ int msmtp_sendmail(account_t *acc, list_t *recipients,
         }
     }
     /* next: original mail headers */
-    if ((e = smtp_send_mail(&srv, header_file, !acc->remove_bcc_headers,
+    if ((e = smtp_send_mail(&srv, header_file,
+                    !prepend_header_contains_from,
+                    !acc->remove_bcc_headers,
                     mailsize, errstr)) != SMTP_EOK)
     {
         msmtp_endsession(&srv, 0);
@@ -1496,7 +1499,7 @@ int msmtp_sendmail(account_t *acc, list_t *recipients,
         return e;
     }
     /* then: the body from the original file */
-    if ((e = smtp_send_mail(&srv, f, 1, mailsize, errstr)) != SMTP_EOK)
+    if ((e = smtp_send_mail(&srv, f, 1, 1, mailsize, errstr)) != SMTP_EOK)
     {
         msmtp_endsession(&srv, 0);
         e = smtp_exitcode(e);
@@ -2227,8 +2230,8 @@ void msmtp_print_help(void)
     printf(_("  -t, --read-recipients        read additional recipients from the mail\n"));
     printf(_("  --read-envelope-from         read envelope from address from the mail\n"));
     printf(_("  --aliases=[file]             set/unset aliases file\n"));
-    printf(_("  --add-missing-from-header[=(on|off)] enable/disable addition of From header\n"));
-    printf(_("  --add-missing-date-header[=(on|off)] enable/disable addition of Date header\n"));
+    printf(_("  --set-from-header[=(auto|on|off)] set From header handling\n"));
+    printf(_("  --set-date-header[=(auto|off)] set Date header handling\n"));
     printf(_("  --remove-bcc-headers[=(on|off)] enable/disable removal of Bcc headers\n"));
     printf(_("  --                           end of options\n"));
     printf(_("Accepted but ignored: -A, -B, -bm, -F, -G, -h, -i, -L, -m, -n, -O, -o, -v\n"));
@@ -2307,6 +2310,8 @@ typedef struct
 #define LONGONLYOPT_LOGFILE_TIME_FORMAT         (256 + 34)
 #define LONGONLYOPT_CONFIGURE                   (256 + 35)
 #define LONGONLYOPT_SOCKET                      (256 + 36)
+#define LONGONLYOPT_SET_FROM_HEADER             (256 + 37)
+#define LONGONLYOPT_SET_DATE_HEADER             (256 + 38)
 
 int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
 {
@@ -2362,6 +2367,10 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
             LONGONLYOPT_ADD_MISSING_FROM_HEADER },
         { "add-missing-date-header", optional_argument, 0,
             LONGONLYOPT_ADD_MISSING_DATE_HEADER },
+        { "set-from-header", optional_argument, 0,
+            LONGONLYOPT_SET_FROM_HEADER },
+        { "set-date-header", optional_argument, 0,
+            LONGONLYOPT_SET_DATE_HEADER },
         { "remove-bcc-headers", optional_argument, 0,
             LONGONLYOPT_REMOVE_BCC_HEADERS },
         { "source-ip", required_argument, 0, LONGONLYOPT_SOURCE_IP },
@@ -2984,14 +2993,55 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
                 conf->cmdline_account->mask |= ACC_PROXY_PORT;
                 break;
 
-            case LONGONLYOPT_ADD_MISSING_FROM_HEADER:
-                if (!optarg || is_on(optarg))
+            case LONGONLYOPT_SET_FROM_HEADER:
+                if (!optarg || is_auto(optarg))
                 {
-                    conf->cmdline_account->add_missing_from_header = 1;
+                    conf->cmdline_account->set_from_header = 2;
+                }
+                else if (is_on(optarg))
+                {
+                    conf->cmdline_account->set_from_header = 1;
                 }
                 else if (is_off(optarg))
                 {
-                    conf->cmdline_account->add_missing_from_header = 0;
+                    conf->cmdline_account->set_from_header = 0;
+                }
+                else
+                {
+                    print_error(_("invalid argument %s for %s"),
+                            optarg, "--set-from-header");
+                    error_code = 1;
+                }
+                conf->cmdline_account->mask |= ACC_SET_FROM_HEADER;
+                break;
+
+            case LONGONLYOPT_SET_DATE_HEADER:
+                if (!optarg || is_auto(optarg))
+                {
+                    conf->cmdline_account->set_date_header = 2;
+                }
+                else if (is_off(optarg))
+                {
+                    conf->cmdline_account->set_date_header = 0;
+                }
+                else
+                {
+                    print_error(_("invalid argument %s for %s"),
+                            optarg, "--set-date-header");
+                    error_code = 1;
+                }
+                conf->cmdline_account->mask |= ACC_SET_DATE_HEADER;
+                break;
+
+            case LONGONLYOPT_ADD_MISSING_FROM_HEADER:
+                /* compatibility with < 1.8.8 */
+                if (!optarg || is_on(optarg))
+                {
+                    conf->cmdline_account->set_from_header = 2;
+                }
+                else if (is_off(optarg))
+                {
+                    conf->cmdline_account->set_from_header = 0;
                 }
                 else
                 {
@@ -2999,17 +3049,18 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
                             optarg, "--add-missing-from-header");
                     error_code = 1;
                 }
-                conf->cmdline_account->mask |= ACC_ADD_MISSING_FROM_HEADER;
+                conf->cmdline_account->mask |= ACC_SET_FROM_HEADER;
                 break;
 
             case LONGONLYOPT_ADD_MISSING_DATE_HEADER:
+                /* compatibility with < 1.8.8 */
                 if (!optarg || is_on(optarg))
                 {
-                    conf->cmdline_account->add_missing_date_header = 1;
+                    conf->cmdline_account->set_date_header = 2;
                 }
                 else if (is_off(optarg))
                 {
-                    conf->cmdline_account->add_missing_date_header = 0;
+                    conf->cmdline_account->set_date_header = 0;
                 }
                 else
                 {
@@ -3017,7 +3068,7 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
                             optarg, "--add-missing-date-header");
                     error_code = 1;
                 }
-                conf->cmdline_account->mask |= ACC_ADD_MISSING_DATE_HEADER;
+                conf->cmdline_account->mask |= ACC_SET_DATE_HEADER;
                 break;
 
             case LONGONLYOPT_REMOVE_BCC_HEADERS:
@@ -3481,10 +3532,12 @@ void msmtp_print_conf(msmtp_cmdline_conf_t conf, account_t *account)
         printf("from = %s\n",
                 account->from ? account->from : conf.read_envelope_from
                 ? _("(read from mail)") : _("(not set)"));
-        printf("add_missing_from_header = %s\n",
-                account->add_missing_from_header ? _("on") : _("off"));
-        printf("add_missing_date_header = %s\n",
-                account->add_missing_date_header ? _("on") : _("off"));
+        printf("set_from_header = %s\n",
+                account->set_from_header == 2 ? _("auto")
+                : account->set_from_header == 1 ? _("on") : _("off"));
+        printf("set_date_header = %s\n",
+                account->set_date_header == 2 ? _("auto")
+                : _("off"));
         printf("remove_bcc_headers = %s\n",
                 account->remove_bcc_headers ? _("on") : _("off"));
         printf("dsn_notify = %s\n",
@@ -3919,8 +3972,10 @@ int main(int argc, char *argv[])
     /* do the work */
     if (conf.sendmail)
     {
-        if ((!have_from_header && account->add_missing_from_header)
-                || (!have_date_header && account->add_missing_date_header))
+        int prepend_header_contains_from = 0;
+        if (account->set_from_header == 1
+                || (!have_from_header && account->set_from_header == 2)
+                || (!have_date_header && account->set_date_header == 2))
         {
             if (!(prepend_header_tmpfile = tmpfile()))
             {
@@ -3930,7 +3985,8 @@ int main(int argc, char *argv[])
                 goto exit;
             }
         }
-        if (!have_from_header && account->add_missing_from_header)
+        if (account->set_from_header == 1
+                || (!have_from_header && account->set_from_header == 2))
         {
             if (conf.full_name)
             {
@@ -3941,8 +3997,9 @@ int main(int argc, char *argv[])
             {
                 fprintf(prepend_header_tmpfile, "From: %s\n", account->from);
             }
+            prepend_header_contains_from = 1;
         }
-        if (!have_date_header && account->add_missing_date_header)
+        if (!have_date_header && account->set_date_header == 2)
         {
             char rfc2822_timestamp[32];
             print_time_rfc2822(time(NULL), rfc2822_timestamp);
@@ -3957,7 +4014,8 @@ int main(int argc, char *argv[])
             goto exit;
         }
         if ((error_code = msmtp_sendmail(account, conf.recipients,
-                        prepend_header_tmpfile, header_tmpfile, stdin,
+                        prepend_header_tmpfile, prepend_header_contains_from,
+                        header_tmpfile, stdin,
                         conf.debug, &mailsize,
                         &lmtp_errstrs, &lmtp_error_msgs,
                         &errmsg, &errstr)) != EX_OK)

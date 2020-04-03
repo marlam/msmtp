@@ -3608,10 +3608,6 @@ int main(int argc, char *argv[])
     list_t *lp_lmtp_error_msgs;
     /* log information */
     char *log_info;
-    /* needed to get the default port */
-#if HAVE_GETSERVBYNAME
-    struct servent *se;
-#endif
     /* needed to read the headers and extract addresses */
     FILE *header_tmpfile = NULL;
     FILE *prepend_header_tmpfile = NULL;

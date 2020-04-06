@@ -70,17 +70,18 @@
 #define ACC_TLS_NOCERTCHECK             (1LL << 22LL)
 #define ACC_TLS_MIN_DH_PRIME_BITS       (1LL << 23LL)
 #define ACC_TLS_PRIORITIES              (1LL << 24LL)
-#define ACC_LOGFILE                     (1LL << 25LL)
-#define ACC_SYSLOG                      (1LL << 26LL)
-#define ACC_ALIASES                     (1LL << 27LL)
-#define ACC_PROXY_HOST                  (1LL << 28LL)
-#define ACC_PROXY_PORT                  (1LL << 29LL)
-#define ACC_SET_FROM_HEADER             (1LL << 30LL)
-#define ACC_SET_DATE_HEADER             (1LL << 31LL)
-#define ACC_REMOVE_BCC_HEADERS          (1LL << 32LL)
-#define ACC_SOURCE_IP                   (1LL << 33LL)
-#define ACC_LOGFILE_TIME_FORMAT         (1LL << 34LL)
-#define ACC_SOCKET                      (1LL << 35LL)
+#define ACC_TLS_HOST_OVERRIDE           (1LL << 25LL)
+#define ACC_LOGFILE                     (1LL << 26LL)
+#define ACC_SYSLOG                      (1LL << 27LL)
+#define ACC_ALIASES                     (1LL << 28LL)
+#define ACC_PROXY_HOST                  (1LL << 29LL)
+#define ACC_PROXY_PORT                  (1LL << 30LL)
+#define ACC_SET_FROM_HEADER             (1LL << 31LL)
+#define ACC_SET_DATE_HEADER             (1LL << 32LL)
+#define ACC_REMOVE_BCC_HEADERS          (1LL << 33LL)
+#define ACC_SOURCE_IP                   (1LL << 34LL)
+#define ACC_LOGFILE_TIME_FORMAT         (1LL << 35LL)
+#define ACC_SOCKET                      (1LL << 36LL)
 
 typedef struct
 {
@@ -123,6 +124,7 @@ typedef struct
     int tls_nocertcheck;        /* flag: do not check certificate? */
     int tls_min_dh_prime_bits;  /* parameter; -1 for default */
     char *tls_priorities;       /* parameter; NULL for default */
+    char *tls_host_override;    /* overrides 'host' for verification; or NULL */
     /* logging */
     char *logfile;              /* NULL or logfile */
     char *logfile_time_format;  /* NULL or format string for strftime() */

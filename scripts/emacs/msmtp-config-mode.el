@@ -65,6 +65,7 @@
     "tls_key_file"
     "tls_min_dh_prime_bits"
     "tls_priorities"
+    "tls_host_override"
     "tls_starttls"
     "tls_trust_file"
     "user"))

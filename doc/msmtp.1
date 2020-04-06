@@ -134,6 +134,8 @@ Set or unset minimum bit size of the Diffie-Hellman (DH) prime. See the
 \fBtls_min_dh_prime_bits\fP command.
 .IP "\-\-tls\-priorities=[\fIpriorities\fP]"
 Set or unset TLS priorities. See the \fBtls_priorities\fP command.
+.IP "\-\-tls\-host\-override=[\fIhost\fP]"
+Set or unset override for TLS host verification. See the \fBtls_host_override\fP command.
 .RE
 .IP "\fBOptions specific to sendmail mode\fP"
 .RS
@@ -501,6 +503,10 @@ Set the priorities for TLS sessions. The default is set by the TLS library and
 can be selected by using an empty argument to this command.
 See the GnuTLS documentation of the \fIgnutls_priority_init\fP function for a
 description of the priorities string.
+.IP "tls_host_override [\fIhost\fP]"
+By default, TLS host verification uses the host name given by the \fBhost\fP command.
+This command allows to use a different host name for verification. This is only
+useful in special cases.
 .IP "from \fIenvelope_from\fP"
 Set the envelope-from address. The following substitution patterns are supported:
 .br

@@ -327,6 +327,12 @@ Set the priorities for TLS sessions. The default is set by the TLS library and
 can be selected by using an empty argument to this command.
 See the GnuTLS documentation of the @samp{gnutls_priority_init} function for a
 description of the @var{priorities} string.
+@anchor{tls_host_override}
+@item tls_host_override [@var{host}]
+@cmindex tls_host_override
+By default, TLS host verification uses the host name given by the @samp{host} command.
+This command allows to use a different host name for verification. This is only
+useful in special cases.
 @end table
 
 @section Commands specific to sendmail mode
@@ -631,6 +637,10 @@ Set or unset minimum bit size of the Diffie-Hellman (DH) prime.
 @item --tls-priorities=[@var{priorities}]
 @opindex --tls-priorities
 Set or unset TLS priorities. @xref{tls_priorities}.
+@anchor{--tls-host-override}
+@item --tls-host-override=[@var{host}]
+@opindex --tls-host-override
+Set or unset override for TLS host verification. @xref{tls_host_override}.
 @end table
 
 @subsection Options specific to sendmail mode

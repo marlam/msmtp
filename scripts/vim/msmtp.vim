@@ -22,7 +22,7 @@ syntax match msmtpOption /\<\(defaults\|account\|host\|port\|source_ip\|proxy_ho
 " Authentication commands.
 syntax match msmtpOption /\<\(auth\|user\|password\|passwordeval\|ntlmdomain\)\>/
 " TLS commands.
-syntax match msmtpOption /\<\(tls\|tls_trust_file\|tls_crl_file\|tls_fingerprint\|tls_key_file\|tls_cert_file\|tls_certcheck\|tls_starttls\|tls_min_dh_prime_bits\|tls_priorities\)\>/
+syntax match msmtpOption /\<\(tls\|tls_trust_file\|tls_crl_file\|tls_fingerprint\|tls_key_file\|tls_cert_file\|tls_certcheck\|tls_starttls\|tls_min_dh_prime_bits\|tls_priorities\|tls_host_override\)\>/
 " Sendmail mode specific commands.
 syntax match msmtpOption /\<\(auto_from\|from\|maildomain\|dsn_notify\|dsn_return\|set_from_header\|set_date_header\|remove_bcc_headers\|logfile\|logfile_time_format\|syslog\|aliases\)\>/
 

@@ -169,7 +169,7 @@ int msmtp_rmqs(account_t *acc, int debug, const char *rmqs_argument,
                         acc->tls_sha1_fingerprint, acc->tls_md5_fingerprint,
                         acc->tls_min_dh_prime_bits,
                         acc->tls_priorities,
-                        acc->host,
+                        acc->tls_host_override ? acc->tls_host_override : acc->host,
                         acc->tls_nocertcheck,
                         errstr)) != TLS_EOK)
         {
@@ -357,7 +357,7 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
                         acc->tls_sha1_fingerprint, acc->tls_md5_fingerprint,
                         acc->tls_min_dh_prime_bits,
                         acc->tls_priorities,
-                        acc->host,
+                        acc->tls_host_override ? acc->tls_host_override : acc->host,
                         acc->tls_nocertcheck,
                         errstr)) != TLS_EOK)
         {
@@ -1321,7 +1321,7 @@ int msmtp_sendmail(account_t *acc, list_t *recipients,
                         acc->tls_sha1_fingerprint, acc->tls_md5_fingerprint,
                         acc->tls_min_dh_prime_bits,
                         acc->tls_priorities,
-                        acc->host,
+                        acc->tls_host_override ? acc->tls_host_override : acc->host,
                         acc->tls_nocertcheck,
                         errstr)) != TLS_EOK)
         {
@@ -2216,6 +2216,7 @@ void msmtp_print_help(void)
     printf(_("  --tls-key-file=[file]        set/unset private key file for TLS\n"));
     printf(_("  --tls-cert-file=[file]       set/unset private cert file for TLS\n"));
     printf(_("  --tls-priorities=[prios]     set/unset TLS priorities.\n"));
+    printf(_("  --tls-host-override=[host]   set/unset override for TLS host verification.\n"));
     printf(_("  --tls-min-dh-prime-bits=[b]  set/unset minimum bit size of DH prime\n"));
     printf(_("Options specific to sendmail mode:\n"));
     printf(_("  --auto-from[=(on|off)]       enable/disable automatic envelope-from addresses\n"));
@@ -2292,26 +2293,27 @@ typedef struct
 #define LONGONLYOPT_TLS_FORCE_SSLV3             (256 + 16)
 #define LONGONLYOPT_TLS_MIN_DH_PRIME_BITS       (256 + 17)
 #define LONGONLYOPT_TLS_PRIORITIES              (256 + 18)
-#define LONGONLYOPT_PROTOCOL                    (256 + 19)
-#define LONGONLYOPT_DOMAIN                      (256 + 20)
-#define LONGONLYOPT_KEEPBCC                     (256 + 21)
-#define LONGONLYOPT_RMQS                        (256 + 22)
-#define LONGONLYOPT_SYSLOG                      (256 + 23)
-#define LONGONLYOPT_MAILDOMAIN                  (256 + 24)
-#define LONGONLYOPT_AUTO_FROM                   (256 + 25)
-#define LONGONLYOPT_READ_ENVELOPE_FROM          (256 + 26)
-#define LONGONLYOPT_ALIASES                     (256 + 27)
-#define LONGONLYOPT_PROXY_HOST                  (256 + 28)
-#define LONGONLYOPT_PROXY_PORT                  (256 + 29)
-#define LONGONLYOPT_ADD_MISSING_FROM_HEADER     (256 + 30)
-#define LONGONLYOPT_ADD_MISSING_DATE_HEADER     (256 + 31)
-#define LONGONLYOPT_REMOVE_BCC_HEADERS          (256 + 32)
-#define LONGONLYOPT_SOURCE_IP                   (256 + 33)
-#define LONGONLYOPT_LOGFILE_TIME_FORMAT         (256 + 34)
-#define LONGONLYOPT_CONFIGURE                   (256 + 35)
-#define LONGONLYOPT_SOCKET                      (256 + 36)
-#define LONGONLYOPT_SET_FROM_HEADER             (256 + 37)
-#define LONGONLYOPT_SET_DATE_HEADER             (256 + 38)
+#define LONGONLYOPT_TLS_HOST_OVERRIDE           (256 + 19)
+#define LONGONLYOPT_PROTOCOL                    (256 + 20)
+#define LONGONLYOPT_DOMAIN                      (256 + 21)
+#define LONGONLYOPT_KEEPBCC                     (256 + 22)
+#define LONGONLYOPT_RMQS                        (256 + 23)
+#define LONGONLYOPT_SYSLOG                      (256 + 24)
+#define LONGONLYOPT_MAILDOMAIN                  (256 + 25)
+#define LONGONLYOPT_AUTO_FROM                   (256 + 26)
+#define LONGONLYOPT_READ_ENVELOPE_FROM          (256 + 27)
+#define LONGONLYOPT_ALIASES                     (256 + 28)
+#define LONGONLYOPT_PROXY_HOST                  (256 + 29)
+#define LONGONLYOPT_PROXY_PORT                  (256 + 30)
+#define LONGONLYOPT_ADD_MISSING_FROM_HEADER     (256 + 31)
+#define LONGONLYOPT_ADD_MISSING_DATE_HEADER     (256 + 32)
+#define LONGONLYOPT_REMOVE_BCC_HEADERS          (256 + 33)
+#define LONGONLYOPT_SOURCE_IP                   (256 + 34)
+#define LONGONLYOPT_LOGFILE_TIME_FORMAT         (256 + 35)
+#define LONGONLYOPT_CONFIGURE                   (256 + 36)
+#define LONGONLYOPT_SOCKET                      (256 + 37)
+#define LONGONLYOPT_SET_FROM_HEADER             (256 + 38)
+#define LONGONLYOPT_SET_DATE_HEADER             (256 + 39)
 
 int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
 {
@@ -2352,6 +2354,7 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
         { "tls-min-dh-prime-bits", required_argument, 0,
             LONGONLYOPT_TLS_MIN_DH_PRIME_BITS },
         { "tls-priorities", required_argument, 0, LONGONLYOPT_TLS_PRIORITIES },
+        { "tls-host-override", required_argument, 0, LONGONLYOPT_TLS_HOST_OVERRIDE },
         { "dsn-notify", required_argument, 0, 'N' },
         { "dsn-return", required_argument, 0, 'R' },
         { "protocol", required_argument, 0, LONGONLYOPT_PROTOCOL },
@@ -2825,6 +2828,19 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
                     conf->cmdline_account->tls_priorities = NULL;
                 }
                 conf->cmdline_account->mask |= ACC_TLS_PRIORITIES;
+                break;
+
+            case LONGONLYOPT_TLS_HOST_OVERRIDE:
+                free(conf->cmdline_account->tls_host_override);
+                if (*optarg)
+                {
+                    conf->cmdline_account->tls_host_override = xstrdup(optarg);
+                }
+                else
+                {
+                    conf->cmdline_account->tls_host_override = NULL;
+                }
+                conf->cmdline_account->mask |= ACC_TLS_HOST_OVERRIDE;
                 break;
 
             case 'N':
@@ -3524,6 +3540,8 @@ void msmtp_print_conf(msmtp_cmdline_conf_t conf, account_t *account)
     }
     printf("tls_priorities = %s\n",
             account->tls_priorities ? account->tls_priorities : _("(not set)"));
+    printf("tls_host_override = %s\n",
+            account->tls_host_override ? account->tls_host_override : _("(not set)"));
     if (conf.sendmail)
     {
         printf("auto_from = %s\n", account->auto_from ? _("on") : _("off"));

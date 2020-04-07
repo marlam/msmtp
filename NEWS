@@ -1,3 +1,27 @@
+Version 1.8.8:
+- Added a new socket command and --socket option to connect via local sockets.
+- Added a new tls_host_override command and --tls-host-override option to
+  override the host name used for TLS verification.
+- Added a new set_from_header command and --set-from-header option with three
+  settings:
+  - on: always set a From header, possibly replacing an existing one
+  - off: never set a From header
+  - auto: add a From header if there is none (this is the default).
+  This replaces the add_missing_from_header option (which remains supported).
+- Added a new set_date_header command and --set-date-header option with two
+  settings:
+  - off: never set a Date header
+  - auto: add a Date header if there is none (this is the default).
+  This replaces the add_missing_date_header option (which remains supported).
+- Fixed the handling of empty From headers with --read-recipients/-t.
+- Fixed the source_ip command for proxies.
+
+Version 1.8.7:
+- The from command now supports the patterns %U, %H, %C, %M that are replaced
+  with user name, host name, canonicalized host name, and the contents of
+  /etc/mailname. This replaces the old auto_from and maildomain commands (which
+  remain supported).
+
 Version 1.8.6:
 - Aliases are now expanded recursively
 - Minor bug fixes

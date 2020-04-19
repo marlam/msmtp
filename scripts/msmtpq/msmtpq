@@ -290,7 +290,7 @@ send_queued_mail() {   # <-- mail id
 
     if "$MSMTP" $(< "${FQP}.msmtp") < "${FQP}.mail" ; then     # this mail goes out the door
       log "mail [ $2 ] [ $1 ] from queue ; send was successful ; purged from queue"  # good news to user
-      'rm' -f "${FQP}.*"                                       # nuke both queue mail files
+      'rm' -f "${FQP}".*                                       # nuke both queue mail files
       ALT='t'                        # set queue changed flag
     else                             # send was unsuccessful
       RC=$?                          # take msmtp exit code

@@ -501,7 +501,7 @@ send_mail() {    # <-- all mail args ; mail text via TMP
 
   if $MSMTP "$@" < "${FQP}.mail" > /dev/null ; then      # send mail using queue .mail fil
     log "mail for [ $* ] : send was successful"          # log it
-    'rm' -f "${FQP}.*"               # remove all queue mail files .mail & .msmtp file
+    'rm' -f "${FQP}".*               # remove all queue mail files .mail & .msmtp file
     run_queue 'sm'                   # run/flush any other mails in queue
   else                               # send failed - the mail stays in the queue
     log "mail for [ $* ] : send was unsuccessful ; msmtp exit code was $?"\

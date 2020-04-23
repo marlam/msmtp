@@ -24,7 +24,7 @@ dnl Process this file with autoconf to produce a configure script.
 #
 
 dnl Autotools init stuff
-AC_INIT([msmtp], [1.8.9], [marlam@marlam.de], [msmtp], [https://marlam.de/msmtp])
+AC_INIT([msmtp], [1.8.10], [marlam@marlam.de], [msmtp], [https://marlam.de/msmtp])
 AC_CONFIG_SRCDIR([src/msmtp.c])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_HEADERS([config.h])

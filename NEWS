@@ -1,3 +1,6 @@
+Version 1.8.9:
+- The msmtpq script was fixed (it was accidently broken in 1.8.8)
+
 Version 1.8.8:
 - Added a new socket command and --socket option to connect via local sockets.
 - Added a new tls_host_override command and --tls-host-override option to

@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client, and of mpop, a POP3 client.
  *
- * Copyright (C) 2004, 2005, 2006, 2007, 2011, 2014, 2018, 2019
+ * Copyright (C) 2004, 2005, 2006, 2007, 2011, 2014, 2018, 2019, 2020
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -71,6 +71,14 @@
  * Return the name of a sysexits.h exitcode
  */
 const char *exitcode_to_string(int exitcode);
+
+/*
+ * tmpfile() - only for Windows systems where the native tmpfile() is broken
+ */
+#ifdef W32_NATIVE
+#define tmpfile() w32_tmpfile()
+FILE *w32_tmpfile(void);
+#endif
 
 /*
  * link() - only for systems that lack it

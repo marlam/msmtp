@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client, and of mpop, a POP3 client.
  *
- * Copyright (C) 2004, 2005, 2006, 2007, 2009, 2011, 2014, 2018, 2019
+ * Copyright (C) 2004, 2005, 2006, 2007, 2009, 2011, 2014, 2018, 2019, 2020
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -100,6 +100,38 @@ const char *exitcode_to_string(int exitcode)
     }
 }
 
+
+/*
+ * tmpfile() for Windows
+ *
+ * The native tmpfile() on Windows puts files in the root directory and
+ * therefore requires privileges. This is a replacement for that nonsense.
+ */
+#ifdef W32_NATIVE
+FILE *w32_tmpfile()
+{
+    /* First get a name. Unfortunately Windows tmpnam() is insane and might
+     * return a file name prepended with a backslash to mean the current
+     * directory. So we have to clean that up. */
+    const char *name = tmpnam(NULL);
+    if (!name)
+    {
+        errno = EEXIST;
+        return NULL;
+    }
+    if (name[0] == '\\' && !strchr(name + 1, '\\'))
+    {
+        name++;
+    }
+    /* Now create the file with O_EXCL to avoid race conditions. */
+    int fd = _open(name, _O_RDWR
+            | _O_CREAT | _O_TRUNC | _O_EXCL
+            | _O_TEMPORARY
+            | _O_BINARY,
+            _S_IREAD | _S_IWRITE);
+    return (fd >= 0 ? fdopen(fd, "w+b") : NULL);
+}
+#endif
 
 /*
  * link()

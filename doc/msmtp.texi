@@ -248,7 +248,10 @@ command, to avoid storing cleartext passwords in the configuration file.
 Set the password for authentication to the output (stdout) of the command
 @var{eval}.
 This can be used e.g. to decrypt password files on the fly or to query key
-rings, and thus to avoid storing cleartext passwords.
+rings, and thus to avoid storing cleartext passwords.@*
+Note that the @var{eval} command must not mess with standard input (stdin)
+because that is where msmtp reads the mail from. If in doubt, append
+@var{< /dev/null} to @var{eval}.@*
 @xref{Authentication}.
 @anchor{ntlmdomain}
 @item ntlmdomain [@var{ntlmdomain}]

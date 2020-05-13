@@ -388,6 +388,10 @@ Set the password for authentication to the output (stdout) of the command
 \fIeval\fP.
 This can be used e.g. to decrypt password files on the fly or to query key
 rings, and thus to avoid storing cleartext passwords.
+.br
+Note that the \fIeval\fP command must not mess with standard input (stdin)
+because that is where msmtp reads the mail from. If in doubt, append
+\fI</dev/null\fP to \fIeval\fP.
 .IP "ntlmdomain [\fIdomain\fP]"
 Set a domain for the \fBntlm\fP authentication method. This is obsolete.
 .IP "tls [(\fIon\fP|\fIoff\fP)]"

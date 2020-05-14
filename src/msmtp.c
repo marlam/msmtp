@@ -2389,11 +2389,11 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
     int i;
     int rcptc;
     char **rcptv;
-    FILE *tmpf;
+    FILE *tmpf = NULL;
     char *errstr;
 #ifdef HAVE_FMEMOPEN
     size_t rcptf_size;
-    void *rcptf_buf;
+    void *rcptf_buf = NULL;
 #endif
 
     /* the program name */
@@ -3212,62 +3212,66 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
     /* The list of recipients.
      * Write these to a temporary mail header so that msmtp_read_headers() can
      * parse them. */
+    conf->recipients = list_new();
     rcptc = argc - optind;
     rcptv = &(argv[optind]);
+    if (rcptc > 0)
+    {
 #ifdef HAVE_FMEMOPEN
-    rcptf_size = 2;     /* terminating "\n\0" */
-    for (i = 0; i < rcptc; i++)
-    {
-        rcptf_size += 4 + strlen(rcptv[i]) + 1;
-    }
-    rcptf_buf = xmalloc(rcptf_size);
-    tmpf = fmemopen(rcptf_buf, rcptf_size, "w+");
-#else
-    tmpf = tmpfile();
-#endif
-    if (!tmpf)
-    {
-        print_error(_("cannot create temporary file: %s"),
-                sanitize_string(strerror(errno)));
-        error_code = EX_IOERR;
-        goto error_exit;
-    }
-    for (i = 0; i < rcptc && error_code != EOF; i++)
-    {
-        error_code = fputs("To: ", tmpf);
-        if (error_code != EOF)
+        rcptf_size = 2;     /* terminating "\n\0" */
+        for (i = 0; i < rcptc; i++)
         {
-            error_code = fputs(rcptv[i], tmpf);
+            rcptf_size += 4 + strlen(rcptv[i]) + 1;
+        }
+        rcptf_buf = xmalloc(rcptf_size);
+        tmpf = fmemopen(rcptf_buf, rcptf_size, "w+");
+#else
+        tmpf = tmpfile();
+#endif
+        if (!tmpf)
+        {
+            print_error(_("cannot create temporary file: %s"),
+                    sanitize_string(strerror(errno)));
+            error_code = EX_IOERR;
+            goto error_exit;
+        }
+        for (i = 0; i < rcptc && error_code != EOF; i++)
+        {
+            error_code = fputs("To: ", tmpf);
+            if (error_code != EOF)
+            {
+                error_code = fputs(rcptv[i], tmpf);
+            }
+            if (error_code != EOF)
+            {
+                error_code = fputc('\n', tmpf);
+            }
         }
         if (error_code != EOF)
         {
             error_code = fputc('\n', tmpf);
         }
-    }
-    if (error_code != EOF)
-    {
-        error_code = fputc('\n', tmpf);
-    }
-    if (error_code == EOF)
-    {
-        print_error(_("cannot write mail headers to temporary "
-                    "file: output error"));
-        error_code = EX_IOERR;
-        goto error_exit;
-    }
-    if (fseeko(tmpf, 0, SEEK_SET) != 0)
-    {
-        print_error(_("cannot rewind temporary file: %s"),
-                sanitize_string(strerror(errno)));
-        error_code = EX_IOERR;
-        goto error_exit;
-    }
-    conf->recipients = list_new();
-    if ((error_code = msmtp_read_headers(tmpf, NULL,
-                    list_last(conf->recipients), NULL, NULL, &errstr)) != EX_OK)
-    {
-        print_error("%s", sanitize_string(errstr));
-        goto error_exit;
+        if (error_code == EOF)
+        {
+            print_error(_("cannot write mail headers to temporary "
+                        "file: output error"));
+            error_code = EX_IOERR;
+            goto error_exit;
+        }
+        if (fseeko(tmpf, 0, SEEK_SET) != 0)
+        {
+            print_error(_("cannot rewind temporary file: %s"),
+                    sanitize_string(strerror(errno)));
+            error_code = EX_IOERR;
+            goto error_exit;
+        }
+        if ((error_code = msmtp_read_headers(tmpf, NULL,
+                        list_last(conf->recipients), NULL, NULL, &errstr))
+                != EX_OK)
+        {
+            print_error("%s", sanitize_string(errstr));
+            goto error_exit;
+        }
     }
     error_code = EX_OK;
 

@@ -110,10 +110,14 @@ const char *exitcode_to_string(int exitcode)
 #ifdef W32_NATIVE
 FILE *w32_tmpfile()
 {
-    /* First get a name. Unfortunately Windows tmpnam() is insane and might
-     * return a file name prepended with a backslash to mean the current
-     * directory. So we have to clean that up. */
-    const char *name = tmpnam(NULL);
+    /* First get a name. Unfortunately Windows _tempnam() only looks at $TMP
+     * but not at system default destinations, thus we also have to use GetTempPathW().
+     * Furthermore, _tempnam() might return a file name prepended with a backslash to
+     * mean the current directory, so we have to clean that up. */
+    char dirname[MAX_PATH + 2];
+    DWORD r = GetTempPath(sizeof(dirname), dirname);
+    char *buf = _tempnam(r == 0 ? NULL : dirname, "tmp");
+    char *name = buf;
     if (!name)
     {
         errno = EEXIST;
@@ -129,6 +133,7 @@ FILE *w32_tmpfile()
             | _O_TEMPORARY
             | _O_BINARY,
             _S_IREAD | _S_IWRITE);
+    free(buf);
     return (fd >= 0 ? fdopen(fd, "w+b") : NULL);
 }
 #endif

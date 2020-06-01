@@ -161,6 +161,9 @@ Set Date header handling. See the \fBset_date_header\fP command.
 .IP "\-\-remove\-bcc\-headers[=(\fIon\fP|\fIoff\fP)]"
 Enable or disable the removal of Bcc headers. See the \fBremove_bcc_headers\fP
 command.
+.IP "\-\-undisclosed\-recipients[=(\fIon\fP|\fIoff\fP)]"
+Enable or disable the replacement of To/Cc/Bcc with "To: undisclosed-recipients:;".
+See the \fBundisclosed_recipients\fP command.
 .IP "\-X, \-\-logfile=[\fIfile\fP]"
 Set or unset the log file. See the \fBlogfile\fP command.
 .IP "\-\-logfile\-time\-format=[\fIfmt\fP]"
@@ -231,6 +234,9 @@ with the \fB\-F\fP option.
 .br
 - A Date header will be added if the mail does not have one. This can be changed
 with the \fBset_date_header\fP command and \fB\-\-set\-date\-header\fP option.
+.br
+- When \fBundisclosed_recipients\fP is set, the original To, Cc, and Bcc headers
+are removed and replaced with "To: undisclosed-recipients:;".
 .PP
 Skip to the EXAMPLES section for a quick start.
 .SH CONFIGURATION FILES
@@ -563,6 +569,9 @@ For compatibility with older versions, \fBadd_missing_date_header\fP [(\fIon\fP|
 is still supported and corresponds to the \fIauto\fP and \fIoff\fP settings.
 .IP "remove_bcc_headers [(\fIon\fP|\fIoff\fP)]"
 This command controls whether to remove Bcc headers. The default is to remove them.
+.IP "undisclosed_recipients [(\fIon\fP|\fIoff\fP)]"
+When set, the original To, Cc, and Bcc headers of the mail are removed and a single
+new header line "To: undisclosed-recipients:;" is added. The default setting is off.
 .IP "logfile [\fIfile\fP]"
 An empty argument disables logging (this is the default).
 .br

@@ -54,6 +54,7 @@
     "proxy_host"
     "proxy_port"
     "remove_bcc_headers"
+    "undisclosed_recipients"
     "source_ip"
     "syslog"
     "timeout"

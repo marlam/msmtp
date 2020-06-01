@@ -1480,7 +1480,7 @@ int msmtp_sendmail(account_t *acc, list_t *recipients,
     {
         /* first: prepended headers, if any */
         if ((e = smtp_send_mail(&srv, prepend_header_file,
-                        1, 1, mailsize,
+                        1, 1, 1, 1, mailsize,
                         errstr)) != SMTP_EOK)
         {
             msmtp_endsession(&srv, 0);
@@ -1490,8 +1490,11 @@ int msmtp_sendmail(account_t *acc, list_t *recipients,
     }
     /* next: original mail headers */
     if ((e = smtp_send_mail(&srv, header_file,
-                    !prepend_header_contains_from,
-                    !acc->remove_bcc_headers,
+                    !prepend_header_contains_from, /* keep_from */
+                    !acc->undisclosed_recipients,  /* keep_to */
+                    !acc->undisclosed_recipients,  /* keep_cc */
+                    !acc->undisclosed_recipients
+                    && !acc->remove_bcc_headers,   /* keep_bcc */
                     mailsize, errstr)) != SMTP_EOK)
     {
         msmtp_endsession(&srv, 0);
@@ -1499,7 +1502,7 @@ int msmtp_sendmail(account_t *acc, list_t *recipients,
         return e;
     }
     /* then: the body from the original file */
-    if ((e = smtp_send_mail(&srv, f, 1, 1, mailsize, errstr)) != SMTP_EOK)
+    if ((e = smtp_send_mail(&srv, f, 1, 1, 1, 1, mailsize, errstr)) != SMTP_EOK)
     {
         msmtp_endsession(&srv, 0);
         e = smtp_exitcode(e);
@@ -2234,6 +2237,8 @@ void msmtp_print_help(void)
     printf(_("  --set-from-header[=(auto|on|off)] set From header handling\n"));
     printf(_("  --set-date-header[=(auto|off)] set Date header handling\n"));
     printf(_("  --remove-bcc-headers[=(on|off)] enable/disable removal of Bcc headers\n"));
+    printf(_("  --undisclosed-recipients[=(on|off)] enable/disable replacement of To/Cc/Bcc\n"
+             "                               with To: undisclosed-recipients:;\n"));
     printf(_("  --                           end of options\n"));
     printf(_("Accepted but ignored: -A, -B, -bm, -F, -G, -h, -i, -L, -m, -n, -O, -o, -v\n"));
     printf(_("\nReport bugs to <%s>.\n"), PACKAGE_BUGREPORT);
@@ -2308,12 +2313,13 @@ typedef struct
 #define LONGONLYOPT_ADD_MISSING_FROM_HEADER     (256 + 31)
 #define LONGONLYOPT_ADD_MISSING_DATE_HEADER     (256 + 32)
 #define LONGONLYOPT_REMOVE_BCC_HEADERS          (256 + 33)
-#define LONGONLYOPT_SOURCE_IP                   (256 + 34)
-#define LONGONLYOPT_LOGFILE_TIME_FORMAT         (256 + 35)
-#define LONGONLYOPT_CONFIGURE                   (256 + 36)
-#define LONGONLYOPT_SOCKET                      (256 + 37)
-#define LONGONLYOPT_SET_FROM_HEADER             (256 + 38)
-#define LONGONLYOPT_SET_DATE_HEADER             (256 + 39)
+#define LONGONLYOPT_UNDISCLOSED_RECIPIENTS      (256 + 34)
+#define LONGONLYOPT_SOURCE_IP                   (256 + 35)
+#define LONGONLYOPT_LOGFILE_TIME_FORMAT         (256 + 36)
+#define LONGONLYOPT_CONFIGURE                   (256 + 37)
+#define LONGONLYOPT_SOCKET                      (256 + 38)
+#define LONGONLYOPT_SET_FROM_HEADER             (256 + 39)
+#define LONGONLYOPT_SET_DATE_HEADER             (256 + 40)
 
 int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
 {
@@ -2376,6 +2382,8 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
             LONGONLYOPT_SET_DATE_HEADER },
         { "remove-bcc-headers", optional_argument, 0,
             LONGONLYOPT_REMOVE_BCC_HEADERS },
+        { "undisclosed-recipients", optional_argument, 0,
+            LONGONLYOPT_UNDISCLOSED_RECIPIENTS },
         { "source-ip", required_argument, 0, LONGONLYOPT_SOURCE_IP },
         { "socket", required_argument, 0, LONGONLYOPT_SOCKET },
         { "keepbcc", optional_argument, 0, LONGONLYOPT_KEEPBCC },
@@ -3103,6 +3111,24 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
                     error_code = 1;
                 }
                 conf->cmdline_account->mask |= ACC_REMOVE_BCC_HEADERS;
+                break;
+
+            case LONGONLYOPT_UNDISCLOSED_RECIPIENTS:
+                if (!optarg || is_on(optarg))
+                {
+                    conf->cmdline_account->undisclosed_recipients = 1;
+                }
+                else if (is_off(optarg))
+                {
+                    conf->cmdline_account->undisclosed_recipients = 0;
+                }
+                else
+                {
+                    print_error(_("invalid argument %s for %s"),
+                            optarg, "--undisclosed-recipients");
+                    error_code = 1;
+                }
+                conf->cmdline_account->mask |= ACC_UNDISCLOSED_RECIPIENTS;
                 break;
 
             case LONGONLYOPT_SOURCE_IP:
@@ -3991,7 +4017,8 @@ int main(int argc, char *argv[])
     if (conf.sendmail)
     {
         int prepend_header_contains_from = 0;
-        if (account->set_from_header == 1
+        if (account->undisclosed_recipients
+                || account->set_from_header == 1
                 || (!have_from_header && account->set_from_header == 2)
                 || (!have_date_header && account->set_date_header == 2))
         {
@@ -4016,6 +4043,10 @@ int main(int argc, char *argv[])
                 fprintf(prepend_header_tmpfile, "From: %s\n", account->from);
             }
             prepend_header_contains_from = 1;
+        }
+        if (account->undisclosed_recipients)
+        {
+            fputs("To: undisclosed-recipients:;\n", prepend_header_tmpfile);
         }
         if (!have_date_header && account->set_date_header == 2)
         {

@@ -305,14 +305,11 @@ int smtp_send_envelope(smtp_server_t *srv,
  * Sends a mail via the SMTP server 'srv'.
  * You can use this function more than once to send the mail in chunks.
  * When you're done, call smtp_end_mail().
- * keep_from:   See keep_bcc below, but applies to the From header.
- * keep_bcc:    Set this flag in one of the following situation:
- *              1. The mail data contains a Bcc header that you want to keep
- *                 (highly unlikely)
- *              2. The mail data contains no headers at all. This prevents
- *                 accidental removal of mail body contents.
- *              The default (unset) is to expect headers in the mail data and
- *              remove the Bcc header.
+ * keep_from, keep_to, keep_cc, keep_bcc:
+ * These flags signal if the corresponding header should be kept or removed.
+ * You typically want to set keep_from, keep_to, keep_cc, but not keep_bcc.
+ * You should set all flags when sending mail data without preceding headers,
+ * to avoid accidental removal of mail body contents.
  * mailf:       The file containing the mail
  * mailsize:    This counter will be increased by the number of bytes
  *              of the mail (as transferred to the SMTP server) in case
@@ -323,7 +320,7 @@ int smtp_send_envelope(smtp_server_t *srv,
  * Used error codes: SMTP_EIO
  */
 int smtp_send_mail(smtp_server_t *srv, FILE *mailf,
-        int keep_from, int keep_bcc,
+        int keep_from, int keep_to, int keep_cc, int keep_bcc,
         long *mailsize, char **errstr);
 
 /*

@@ -1680,7 +1680,7 @@ int smtp_send_envelope(smtp_server_t *srv,
  */
 
 int smtp_send_mail(smtp_server_t *srv, FILE *mailf,
-        int keep_from, int keep_bcc,
+        int keep_from, int keep_to, int keep_cc, int keep_bcc,
         long *mailsize, char **errstr)
 {
     char bigbuffer[MAIL_BUFSIZE + 3];   /* buffer + leading dot + ending CRLF */
@@ -1690,6 +1690,8 @@ int smtp_send_mail(smtp_server_t *srv, FILE *mailf,
     size_t send_len;
     int in_header;
     int in_from;
+    int in_to;
+    int in_cc;
     int in_bcc;
     int line_starts;
     int line_continues;
@@ -1699,6 +1701,8 @@ int smtp_send_mail(smtp_server_t *srv, FILE *mailf,
     buffer = bigbuffer + 1;
     in_header = 1;
     in_from = 0;
+    in_to = 0;
+    in_cc = 0;
     in_bcc = 0;
     line_continues = 0;
     e = SMTP_EOK;
@@ -1754,7 +1758,7 @@ int smtp_send_mail(smtp_server_t *srv, FILE *mailf,
                 if (!keep_from && strncasecmp(buffer, "From:", 5) == 0)
                 {
                     in_from = 1;
-                    /* remove From header by ignoring this line */
+                    /* remove header by ignoring this line */
                     continue;
                 }
                 else if (!keep_from && in_from)
@@ -1763,7 +1767,7 @@ int smtp_send_mail(smtp_server_t *srv, FILE *mailf,
                      * whitespace" (RFC 2822, section 2.2.3) */
                     if (buffer[0] == '\t' || buffer[0] == ' ')
                     {
-                        /* remove Bcc header by ignoring this line */
+                        /* remove header by ignoring this line */
                         continue;
                     }
                     else
@@ -1771,10 +1775,50 @@ int smtp_send_mail(smtp_server_t *srv, FILE *mailf,
                         in_from = 0;
                     }
                 }
-                else if (!keep_bcc && strncasecmp(buffer, "Bcc:", 4) == 0)
+                if (!keep_to && strncasecmp(buffer, "To:", 3) == 0)
+                {
+                    in_to = 1;
+                    /* remove header by ignoring this line */
+                    continue;
+                }
+                else if (!keep_to && in_to)
+                {
+                    /* continued header lines begin with "horizontal
+                     * whitespace" (RFC 2822, section 2.2.3) */
+                    if (buffer[0] == '\t' || buffer[0] == ' ')
+                    {
+                        /* remove header by ignoring this line */
+                        continue;
+                    }
+                    else
+                    {
+                        in_to = 0;
+                    }
+                }
+                if (!keep_cc && strncasecmp(buffer, "Cc:", 3) == 0)
+                {
+                    in_cc = 1;
+                    /* remove header by ignoring this line */
+                    continue;
+                }
+                else if (!keep_cc && in_cc)
+                {
+                    /* continued header lines begin with "horizontal
+                     * whitespace" (RFC 2822, section 2.2.3) */
+                    if (buffer[0] == '\t' || buffer[0] == ' ')
+                    {
+                        /* remove header by ignoring this line */
+                        continue;
+                    }
+                    else
+                    {
+                        in_cc = 0;
+                    }
+                }
+                if (!keep_bcc && strncasecmp(buffer, "Bcc:", 4) == 0)
                 {
                     in_bcc = 1;
-                    /* remove Bcc header by ignoring this line */
+                    /* remove header by ignoring this line */
                     continue;
                 }
                 else if (!keep_bcc && in_bcc)
@@ -1783,7 +1827,7 @@ int smtp_send_mail(smtp_server_t *srv, FILE *mailf,
                      * whitespace" (RFC 2822, section 2.2.3) */
                     if (buffer[0] == '\t' || buffer[0] == ' ')
                     {
-                        /* remove Bcc header by ignoring this line */
+                        /* remove header by ignoring this line */
                         continue;
                     }
                     else
@@ -1794,9 +1838,10 @@ int smtp_send_mail(smtp_server_t *srv, FILE *mailf,
             }
             else
             {
-                if ((!keep_from && in_from) || (!keep_bcc && in_bcc))
+                if ((!keep_from && in_from) || (!keep_to && in_to)
+                        || (!keep_cc && in_cc) || (!keep_bcc && in_bcc))
                 {
-                    /* remove From or Bcc header by ignoring this line */
+                    /* remove header by ignoring this line */
                     continue;
                 }
             }

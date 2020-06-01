@@ -406,6 +406,11 @@ is still supported and corresponds to the @samp{auto} and @samp{off} settings.@*
 @item remove_bcc_headers [(on|off)]
 @cmindex remove_bcc_headers
 This command controls whether to remove Bcc headers. The default is to remove them.
+@anchor{undisclosed_recipients}
+@item undisclosed_recipients [(on|off)]
+@cmindex undisclosed_recipients
+When set, the original To, Cc, and Bcc headers of the mail are removed and a single
+new header line "To: undisclosed-recipients:;" is added. The default setting is off.
 @xref{Header handling}.
 @anchor{logfile}
 @item logfile [@var{file}]
@@ -685,6 +690,11 @@ Set Date header handling. @xref{set_date_header}.
 @item --remove-bcc-headers[=(on|off)]
 @opindex --remove-bcc-headers
 Enable or disable the removal of Bcc headers. @xref{remove_bcc_headers}.
+@anchor{--undisclosed-recipients}
+@item --undisclosed-recipients[=(on|off)]
+@opindex --undisclosed-recipients
+Enable or disable the replacement of To/Cc/Bcc with "To: undisclosed-recipients:;".
+@xref{undisclosed_recipients}.
 @anchor{--logfile}
 @item -X [@var{file}]
 @itemx --logfile=[@var{file}]
@@ -1073,6 +1083,8 @@ The header will use the envelope from address and optionally a full name set
 with the @samp{-F} option.
 @item A Date header will be added if the mail does not have one. This can be changed
 with the @ref{set_date_header} command.
+@item When @ref{undisclosed_recipients} is set, the original To, Cc, and Bcc headers
+are removed and replaced with "To: undisclosed-recipients:;".
 @end itemize
 
 

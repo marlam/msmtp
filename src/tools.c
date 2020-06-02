@@ -110,6 +110,17 @@ const char *exitcode_to_string(int exitcode)
 #ifdef W32_NATIVE
 FILE *w32_tmpfile()
 {
+    static char prefix[4] = { '\0', '\0', '\0', '\0' };
+    if (prefix[0] == '\0')
+    {
+        /* initialize the prefix once per process so that different processes use
+         * different prefixes, thus reducing the chances of file name collisions
+         * in the loop below */
+        DWORD pid = GetCurrentProcessId();
+        prefix[0] = 'a' + pid % 26;
+        prefix[1] = 'a' + (pid / 26) % 26;
+        prefix[2] = 'a' + (pid / (26 * 26)) % 26;
+    }
     /* First get a name. Unfortunately Windows _tempnam() only looks at $TMP
      * but not at system default destinations, thus we also have to use GetTempPathW().
      * Furthermore, _tempnam() might return a file name prepended with a backslash to
@@ -126,7 +137,7 @@ FILE *w32_tmpfile()
             return NULL;
         }
         DWORD r = GetTempPath(sizeof(dirname), dirname);
-        char *buf = _tempnam(r == 0 ? NULL : dirname, "tmp");
+        char *buf = _tempnam(r == 0 ? NULL : dirname, prefix);
         char *name = buf;
         if (!name)
         {

@@ -115,25 +115,37 @@ FILE *w32_tmpfile()
      * Furthermore, _tempnam() might return a file name prepended with a backslash to
      * mean the current directory, so we have to clean that up. */
     char dirname[MAX_PATH + 2];
-    DWORD r = GetTempPath(sizeof(dirname), dirname);
-    char *buf = _tempnam(r == 0 ? NULL : dirname, "tmp");
-    char *name = buf;
-    if (!name)
+    int fd = -1;
+    int i = 0;
+    do
     {
-        errno = EEXIST;
-        return NULL;
+        i++;
+        if (i > TMP_MAX)
+        {
+            errno = EEXIST;
+            return NULL;
+        }
+        DWORD r = GetTempPath(sizeof(dirname), dirname);
+        char *buf = _tempnam(r == 0 ? NULL : dirname, "tmp");
+        char *name = buf;
+        if (!name)
+        {
+            errno = EEXIST;
+            return NULL;
+        }
+        if (name[0] == '\\' && !strchr(name + 1, '\\'))
+        {
+            name++;
+        }
+        /* Now create the file with O_EXCL to avoid race conditions. */
+        fd = _open(name, _O_RDWR
+                | _O_CREAT | _O_TRUNC | _O_EXCL
+                | _O_TEMPORARY
+                | _O_BINARY,
+                _S_IREAD | _S_IWRITE);
+        free(buf);
     }
-    if (name[0] == '\\' && !strchr(name + 1, '\\'))
-    {
-        name++;
-    }
-    /* Now create the file with O_EXCL to avoid race conditions. */
-    int fd = _open(name, _O_RDWR
-            | _O_CREAT | _O_TRUNC | _O_EXCL
-            | _O_TEMPORARY
-            | _O_BINARY,
-            _S_IREAD | _S_IWRITE);
-    free(buf);
+    while (fd < 0);
     return (fd >= 0 ? fdopen(fd, "w+b") : NULL);
 }
 #endif

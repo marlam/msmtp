@@ -3588,6 +3588,8 @@ void msmtp_print_conf(msmtp_cmdline_conf_t conf, account_t *account)
                 : _("off"));
         printf("remove_bcc_headers = %s\n",
                 account->remove_bcc_headers ? _("on") : _("off"));
+        printf("undisclosed_recipients = %s\n",
+                account->undisclosed_recipients ? _("on") : _("off"));
         printf("dsn_notify = %s\n",
                 account->dsn_notify ? account->dsn_notify : _("(not set)"));
         printf("dsn_return = %s\n",

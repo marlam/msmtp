@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: msmtp 1.8.8rc2\n"
 "Report-Msgid-Bugs-To: marlam@marlam.de\n"
-"POT-Creation-Date: 2020-04-12 14:23+0200\n"
+"POT-Creation-Date: 2020-06-03 21:43+0200\n"
 "PO-Revision-Date: 2020-04-09 23:08+0200\n"
 "Last-Translator: Mario Blättermann <mario.blaettermann@gmail.com>\n"
 "Language-Team: German <translation-team-de@lists.sourceforge.net>\n"
@@ -123,7 +123,7 @@ msgstr ""
 "Dieser Server könnte mehr oder andere Leistungsmerkmale angeben,\n"
 "    wenn TLS-Verschlüsselung aktiviert ist.\n"
 
-#: src/msmtp.c:1146 src/msmtp.c:3253
+#: src/msmtp.c:1146 src/msmtp.c:3282
 #, c-format
 msgid "cannot write mail headers to temporary file: output error"
 msgstr ""
@@ -140,98 +140,98 @@ msgstr "Fehler beim Lesen der Mail"
 msgid "the server does not support DSN"
 msgstr "der Server unterstützt kein DSN"
 
-#: src/msmtp.c:1587 src/msmtp.c:1606 src/msmtp.c:1658
+#: src/msmtp.c:1590 src/msmtp.c:1609 src/msmtp.c:1661
 #, c-format
 msgid "automatic configuration based on SRV records failed: %s"
 msgstr ""
 "auf SRV-Datensätzen basierende automatische Konfiguration ist "
 "fehlgeschlagen: %s"
 
-#: src/msmtp.c:1588
+#: src/msmtp.c:1591
 msgid "invalid mail address"
 msgstr "ungültige E-Mail-Adresse"
 
-#: src/msmtp.c:1604
+#: src/msmtp.c:1607
 #, c-format
 msgid "no SRV records for %s or %s"
 msgstr "keine SRV-Datensätze für %s oder %s"
 
-#: src/msmtp.c:1621
+#: src/msmtp.c:1624
 #, c-format
 msgid "copy this to your configuration file %s"
 msgstr "dies zu Ihrer Konfigurationsdatei %s kopieren"
 
-#: src/msmtp.c:1625
+#: src/msmtp.c:1628
 msgid "warning: the host does not match the mail domain; please check"
 msgstr "Warnung: der Host passt nicht zur Mail-Domain; bitte prüfen"
 
-#: src/msmtp.c:1628 src/msmtp.c:1632
+#: src/msmtp.c:1631 src/msmtp.c:1635
 msgid "add your password to the key ring:"
 msgstr "Ihr Passwort zum Schlüsselbund hinzufügen:"
 
-#: src/msmtp.c:1635
+#: src/msmtp.c:1638
 msgid "encrypt your password:"
 msgstr "Ihr Passwort verschlüsseln:"
 
-#: src/msmtp.c:1659
+#: src/msmtp.c:1662
 msgid "this system lacks libresolv"
 msgstr "auf diesem System fehlt libresolv"
 
-#: src/msmtp.c:1886
+#: src/msmtp.c:1889
 #, c-format
 msgid "invalid logfile_time_format"
 msgstr "ungültiges logfile_time_format"
 
-#: src/msmtp.c:1899
+#: src/msmtp.c:1902
 #, c-format
 msgid "cannot open: %s"
 msgstr "kann nicht geöffnet werden: %s"
 
-#: src/msmtp.c:1907
+#: src/msmtp.c:1910
 #, c-format
 msgid "cannot lock (tried for %d seconds): %s"
 msgstr "kann nicht gesperrt werden (wurde %d Sekunden lang versucht): %s"
 
-#: src/msmtp.c:1912
+#: src/msmtp.c:1915
 #, c-format
 msgid "cannot lock: %s"
 msgstr "kann nicht gesperrt werden: %s"
 
-#: src/msmtp.c:1921
+#: src/msmtp.c:1924
 msgid "output error"
 msgstr "Ausgabefehler"
 
-#: src/msmtp.c:1938
+#: src/msmtp.c:1941
 #, c-format
 msgid "cannot log to %s: %s"
 msgstr "Protokollinformation kann nicht in %s geschrieben werden: %s"
 
-#: src/msmtp.c:1942
+#: src/msmtp.c:1945
 #, c-format
 msgid "log info was: %s"
 msgstr "Protokollinformation war: %s"
 
-#: src/msmtp.c:2051
+#: src/msmtp.c:2054
 #, c-format
 msgid "%s version %s\n"
 msgstr "%s Version %s\n"
 
-#: src/msmtp.c:2052
+#: src/msmtp.c:2055
 #, c-format
 msgid "Platform: %s\n"
 msgstr "Plattform: %s\n"
 
-#: src/msmtp.c:2054
+#: src/msmtp.c:2057
 #, c-format
 msgid "TLS/SSL library: %s\n"
 msgstr "TLS/SSL-Programmbibliothek: %s\n"
 
-#: src/msmtp.c:2060 src/msmtp.c:2130
+#: src/msmtp.c:2063 src/msmtp.c:2133
 #, c-format
 msgid "none"
 msgstr "keine"
 
-#: src/msmtp.c:2064
+#: src/msmtp.c:2067
 #, c-format
 msgid ""
 "Authentication library: %s\n"
@@ -240,65 +240,65 @@ msgstr ""
 "Authentifizierungsprogrammbibliothek: %s\n"
 "Unterstützte Authentifizierungsmethoden:\n"
 
-#: src/msmtp.c:2067
+#: src/msmtp.c:2070
 msgid "GNU SASL; oauthbearer: built-in"
 msgstr "GNU SASL; oauthbearer: eingebaut"
 
-#: src/msmtp.c:2069
+#: src/msmtp.c:2072
 msgid "built-in"
 msgstr "eingebaut"
 
-#: src/msmtp.c:2110
+#: src/msmtp.c:2113
 #, c-format
 msgid "IDN support: "
 msgstr "IDN-Unterstützung: "
 
-#: src/msmtp.c:2114 src/msmtp.c:2122
+#: src/msmtp.c:2117 src/msmtp.c:2125
 #, c-format
 msgid "enabled"
 msgstr "aktiviert"
 
-#: src/msmtp.c:2116 src/msmtp.c:2125
+#: src/msmtp.c:2119 src/msmtp.c:2128
 #, c-format
 msgid "disabled"
 msgstr "deaktiviert"
 
-#: src/msmtp.c:2120
+#: src/msmtp.c:2123
 #, c-format
 msgid "NLS: "
 msgstr "NLS: "
 
-#: src/msmtp.c:2123
+#: src/msmtp.c:2126
 #, c-format
 msgid ", LOCALEDIR is %s"
 msgstr ", LOCALEDIR ist %s"
 
-#: src/msmtp.c:2128
+#: src/msmtp.c:2131
 #, c-format
 msgid "Keyring support: "
 msgstr "Schlüsselbund-Unterstützung: "
 
-#: src/msmtp.c:2133
+#: src/msmtp.c:2136
 #, c-format
 msgid "Gnome "
 msgstr "Gnome "
 
-#: src/msmtp.c:2136
+#: src/msmtp.c:2139
 #, c-format
 msgid "MacOS "
 msgstr "MacOS "
 
-#: src/msmtp.c:2142
+#: src/msmtp.c:2145
 #, c-format
 msgid "System configuration file name: %s\n"
 msgstr "Systemweite Konfigurationsdatei: %s\n"
 
-#: src/msmtp.c:2146
+#: src/msmtp.c:2149
 #, c-format
 msgid "User configuration file name: %s\n"
 msgstr "Benutzerkonfigurationsdatei: %s\n"
 
-#: src/msmtp.c:2149
+#: src/msmtp.c:2152
 #, c-format
 msgid ""
 "Copyright (C) 2020 Martin Lambers and others.\n"
@@ -313,7 +313,7 @@ msgstr ""
 "der GNU General Public License <http://www.gnu.org/licenses/gpl.html>.\n"
 "Es gibt KEINERLEI GARANTIE, so weit das Gesetz es erlaubt.\n"
 
-#: src/msmtp.c:2166
+#: src/msmtp.c:2169
 #, c-format
 msgid ""
 "Usage:\n"
@@ -322,7 +322,7 @@ msgstr ""
 "Aufruf:\n"
 "\n"
 
-#: src/msmtp.c:2167
+#: src/msmtp.c:2170
 #, c-format
 msgid ""
 "Sendmail mode (default):\n"
@@ -337,7 +337,7 @@ msgstr ""
 "  Mail von Standardeingabe lesen und sie zu einem SMTP-\n"
 "  oder LMTP-Server übertragen.\n"
 
-#: src/msmtp.c:2172
+#: src/msmtp.c:2175
 #, c-format
 msgid ""
 "Configuration mode:\n"
@@ -348,7 +348,7 @@ msgstr ""
 "  %s --configure=E-Mail-Adresse\n"
 "  Konfiguration für die Adresse erstellen und ausgeben.\n"
 
-#: src/msmtp.c:2175
+#: src/msmtp.c:2178
 #, c-format
 msgid ""
 "Server information mode:\n"
@@ -359,7 +359,7 @@ msgstr ""
 "  %s [Option…] --serverinfo\n"
 "  Informationen zu einem Server anzeigen.\n"
 
-#: src/msmtp.c:2178
+#: src/msmtp.c:2181
 #, c-format
 msgid ""
 "Remote Message Queue Starting mode:\n"
@@ -372,66 +372,66 @@ msgstr ""
 "  Eine RMQS-Anfrage an einen Server senden.\n"
 "\n"
 
-#: src/msmtp.c:2182
+#: src/msmtp.c:2185
 #, c-format
 msgid "General options:\n"
 msgstr "Allgemeine Optionen:\n"
 
-#: src/msmtp.c:2183
+#: src/msmtp.c:2186
 #, c-format
 msgid "  --version                    print version\n"
 msgstr "  --version                    Version anzeigen\n"
 
-#: src/msmtp.c:2184
+#: src/msmtp.c:2187
 #, c-format
 msgid "  --help                       print help\n"
 msgstr "  --help                       Hilfetext anzeigen\n"
 
-#: src/msmtp.c:2185
+#: src/msmtp.c:2188
 #, c-format
 msgid "  -P, --pretend                print configuration info and exit\n"
 msgstr "  -P, --pretend                Konfiguration anzeigen und beenden\n"
 
-#: src/msmtp.c:2186
+#: src/msmtp.c:2189
 #, c-format
 msgid "  -d, --debug                  print debugging information\n"
 msgstr ""
 "  -d, --debug                  Debugging-Information anzeigen und beenden\n"
 
-#: src/msmtp.c:2187
+#: src/msmtp.c:2190
 #, c-format
 msgid "Changing the mode of operation:\n"
 msgstr "Operationsmodus wechseln:\n"
 
-#: src/msmtp.c:2188
+#: src/msmtp.c:2191
 #, c-format
 msgid ""
 "  --configure=mailaddress      generate and print configuration for address\n"
 msgstr "  -C, --file=Dateiname         Konfigurationsdatei festlegen\n"
 
-#: src/msmtp.c:2189
+#: src/msmtp.c:2192
 #, c-format
 msgid "  -S, --serverinfo             print information about the server\n"
 msgstr ""
 "  -S, --serverinfo             Informationen zu einem Server anzeigen\n"
 
-#: src/msmtp.c:2190
+#: src/msmtp.c:2193
 #, c-format
 msgid ""
 "  --rmqs=host|@domain|#queue   send a Remote Message Queue Starting request\n"
 msgstr "  --rmqs=host|@domain|#queue   eine RMQS-Anfrage senden\n"
 
-#: src/msmtp.c:2191
+#: src/msmtp.c:2194
 #, c-format
 msgid "Configuration options:\n"
 msgstr "Konfigurationsoptionen:\n"
 
-#: src/msmtp.c:2192
+#: src/msmtp.c:2195
 #, c-format
 msgid "  -C, --file=filename          set configuration file\n"
 msgstr "  -C, --file=Dateiname         Konfigurationsdatei festlegen\n"
 
-#: src/msmtp.c:2193
+#: src/msmtp.c:2196
 #, c-format
 msgid ""
 "  -a, --account=id             use the given account instead of the account\n"
@@ -444,7 +444,7 @@ msgstr ""
 "können\n"
 "                               über die Befehlszeile geändert werden\n"
 
-#: src/msmtp.c:2196
+#: src/msmtp.c:2199
 #, c-format
 msgid ""
 "  --host=hostname              set the server, use only command-line "
@@ -455,12 +455,12 @@ msgstr ""
 "nutzen;\n"
 "                               keine Konfigurationsdatei benutzen\n"
 
-#: src/msmtp.c:2198
+#: src/msmtp.c:2201
 #, c-format
 msgid "  --port=number                set port number\n"
 msgstr "  --port=Nummer                Portnummer festlegen\n"
 
-#: src/msmtp.c:2199
+#: src/msmtp.c:2202
 #, c-format
 msgid ""
 "  --source-ip=[IP]             set/unset source ip address to bind the "
@@ -469,36 +469,36 @@ msgstr ""
 "  --source-ip=[IP]             Quell-IP-Adresse für Verbindung setzen/"
 "löschen \n"
 
-#: src/msmtp.c:2200
+#: src/msmtp.c:2203
 #, c-format
 msgid "  --proxy-host=[IP|hostname]   set/unset proxy\n"
 msgstr "  --proxy-host=[IP|Hostname]   Proxy festlegen/löschen\n"
 
-#: src/msmtp.c:2201
+#: src/msmtp.c:2204
 #, c-format
 msgid "  --proxy-port=[number]        set/unset proxy port\n"
 msgstr "  --proxy-port=[Nummer]        Proxy-Port setzen/löschen\n"
 
-#: src/msmtp.c:2202
+#: src/msmtp.c:2205
 #, c-format
 msgid "  --socket=[socketname]        set/unset local socket to connect to\n"
 msgstr ""
 "  --socket=[Socket-Name]        Lokalen Socket für die Verbindung festlegen/"
 "löschen\n"
 
-#: src/msmtp.c:2203
+#: src/msmtp.c:2206
 #, c-format
 msgid "  --timeout=(off|seconds)      set/unset network timeout in seconds\n"
 msgstr ""
 "  --timeout=(off|Sekunden)     Zeitüberschreitung in Sekunden setzen/"
 "löschen \n"
 
-#: src/msmtp.c:2204
+#: src/msmtp.c:2207
 #, c-format
 msgid "  --protocol=(smtp|lmtp)       use the given sub protocol\n"
 msgstr "  --protocol=(smtp|lmtp)       Das angegebene Unterprotokoll nutzen\n"
 
-#: src/msmtp.c:2205
+#: src/msmtp.c:2208
 #, c-format
 msgid ""
 "  --domain=string              set the argument of EHLO or LHLO command\n"
@@ -506,7 +506,7 @@ msgstr ""
 "  --domain=Zeichenkette        Das Argument des EHLO- oder LHLO-Befehls\n"
 "                               angeben\n"
 
-#: src/msmtp.c:2206
+#: src/msmtp.c:2209
 #, c-format
 msgid ""
 "  --auth[=(on|off|method)]     enable/disable authentication and optionally\n"
@@ -515,44 +515,44 @@ msgstr ""
 "  --auth[=(on|off|Methode)]     Authentifizierung aktivieren/deaktivieren\n"
 "                                und optional die Methode festlegen\n"
 
-#: src/msmtp.c:2208
+#: src/msmtp.c:2211
 #, c-format
 msgid "  --user=[username]            set/unset user name for authentication\n"
 msgstr ""
 "  --user=[Benutzername]        Benutzername für Authentifizierung festlegen/"
 "löschen\n"
 
-#: src/msmtp.c:2209
+#: src/msmtp.c:2212
 #, c-format
 msgid "  --passwordeval=[eval]        evaluate password for authentication\n"
 msgstr ""
 "  --passwordeval=[eval]        Passwort für Authentifizierung bewerten\n"
 
-#: src/msmtp.c:2210
+#: src/msmtp.c:2213
 #, c-format
 msgid "  --tls[=(on|off)]             enable/disable TLS encryption\n"
 msgstr ""
 "  --tls[=(on|off)]             TLS-Verschlüsselung aktivieren/deaktivieren\n"
 
-#: src/msmtp.c:2211
+#: src/msmtp.c:2214
 #, c-format
 msgid "  --tls-starttls[=(on|off)]    enable/disable STARTTLS for TLS\n"
 msgstr ""
 "  --tls-starttls[=(on|off)]    STARTTLS für TLS aktivieren/deaktivieren\n"
 
-#: src/msmtp.c:2212
+#: src/msmtp.c:2215
 #, c-format
 msgid "  --tls-trust-file=[file]      set/unset trust file for TLS\n"
 msgstr ""
 "  --tls-trust-file=[Datei]     Vertrauensdatei für TLS festlegen/löschen\n"
 
-#: src/msmtp.c:2213
+#: src/msmtp.c:2216
 #, c-format
 msgid "  --tls-crl-file=[file]        set/unset revocation file for TLS\n"
 msgstr ""
 "  --tls-crl-file=[Datei]       Widerrufsdatei für TLS festlegen/löschen\n"
 
-#: src/msmtp.c:2214
+#: src/msmtp.c:2217
 #, c-format
 msgid ""
 "  --tls-fingerprint=[f]        set/unset trusted certificate fingerprint for "
@@ -561,7 +561,7 @@ msgstr ""
 "  --tls-fingerprint=[f]        Zertifikatsfingerabdruck für TLS festlegen/"
 "löschen\n"
 
-#: src/msmtp.c:2215
+#: src/msmtp.c:2218
 #, c-format
 msgid ""
 "  --tls-certcheck[=(on|off)]   enable/disable server certificate checks for "
@@ -570,26 +570,26 @@ msgstr ""
 "  --tls-certcheck[=(on|off)]   Server-Zertifikatsüberprüfungen für TLS\n"
 "                               aktivieren/deaktivieren\n"
 
-#: src/msmtp.c:2216
+#: src/msmtp.c:2219
 #, c-format
 msgid "  --tls-key-file=[file]        set/unset private key file for TLS\n"
 msgstr ""
 "  --tls-key-file=[Datei]       Private Schlüsseldatei für TLS setzen/"
 "löschen\n"
 
-#: src/msmtp.c:2217
+#: src/msmtp.c:2220
 #, c-format
 msgid "  --tls-cert-file=[file]       set/unset private cert file for TLS\n"
 msgstr ""
 "  --tls-cert-file=[Datei]      Private Zertifikatsdatei für TLS festlegen/"
 "löschen\n"
 
-#: src/msmtp.c:2218
+#: src/msmtp.c:2221
 #, c-format
 msgid "  --tls-priorities=[prios]     set/unset TLS priorities.\n"
 msgstr "  --tls-priorities=[prios]     TLS-Prioritäten setzen/löschen\n"
 
-#: src/msmtp.c:2219
+#: src/msmtp.c:2222
 #, c-format
 msgid ""
 "  --tls-host-override=[host]   set/unset override for TLS host "
@@ -598,19 +598,19 @@ msgstr ""
 "  --tls-host-override=[host]   Außerkraftsetzung für TLS-Host-Verifizierung\n"
 "                                 setzen/löschen\n"
 
-#: src/msmtp.c:2220
+#: src/msmtp.c:2223
 #, c-format
 msgid "  --tls-min-dh-prime-bits=[b]  set/unset minimum bit size of DH prime\n"
 msgstr ""
 "  --tls-min-dh-prime-bits=[b]  Minimale Bitzahl für DH-Primzahl\n"
 "                               festlegen/löschen\n"
 
-#: src/msmtp.c:2221
+#: src/msmtp.c:2224
 #, c-format
 msgid "Options specific to sendmail mode:\n"
 msgstr "Optionen für den Sendmail-Modus:\n"
 
-#: src/msmtp.c:2222
+#: src/msmtp.c:2225
 #, c-format
 msgid ""
 "  --auto-from[=(on|off)]       enable/disable automatic envelope-from "
@@ -619,12 +619,12 @@ msgstr ""
 "  --auto-from[=(on|off)]       Automatische Umschlags-Absenderadresse\n"
 "                               aktivieren/deaktivieren\n"
 
-#: src/msmtp.c:2223
+#: src/msmtp.c:2226
 #, c-format
 msgid "  -f, --from=address           set envelope from address\n"
 msgstr "  -f, --from=address           Umschlags-Absenderadresse festlegen\n"
 
-#: src/msmtp.c:2224
+#: src/msmtp.c:2227
 #, c-format
 msgid ""
 "  --maildomain=[domain]        set the domain for automatic envelope from\n"
@@ -633,22 +633,22 @@ msgstr ""
 "  --maildomain=[Domain]        Domain für automatische Umschlags-\n"
 "                               Absenderadresse festlegen\n"
 
-#: src/msmtp.c:2226
+#: src/msmtp.c:2229
 #, c-format
 msgid "  -N, --dsn-notify=(off|cond)  set/unset DSN conditions\n"
 msgstr "  -N, --dsn-notify=(off|Bed.)  DSN-Bedingungen festlegen/löschen\n"
 
-#: src/msmtp.c:2227
+#: src/msmtp.c:2230
 #, c-format
 msgid "  -R, --dsn-return=(off|ret)   set/unset DSN amount\n"
 msgstr "  -R, --dsn-return=(off|Ant.)  DSN-Anteil setzen/löschen\n"
 
-#: src/msmtp.c:2228
+#: src/msmtp.c:2231
 #, c-format
 msgid "  -X, --logfile=[file]         set/unset log file\n"
 msgstr "  -X, --logfile=[Datei]        Protokolldatei festlegen löschen\n"
 
-#: src/msmtp.c:2229
+#: src/msmtp.c:2232
 #, c-format
 msgid ""
 "  --logfile-time-format=[fmt]  set/unset log file time format for "
@@ -657,7 +657,7 @@ msgstr ""
 "  --logfile-time-format=[Fmt.]  Protokolldatei-Zeitformat für strftime()\n"
 "                                festlegen/löschen\n"
 
-#: src/msmtp.c:2230
+#: src/msmtp.c:2233
 #, c-format
 msgid ""
 "  --syslog[=(on|off|facility)] enable/disable/configure syslog logging\n"
@@ -665,36 +665,36 @@ msgstr ""
 "  --syslog[=(on|off|Leistung)] Systemprotokollierung aktivieren/\n"
 "                               deaktivieren oder konfigurieren\n"
 
-#: src/msmtp.c:2231
+#: src/msmtp.c:2234
 #, c-format
 msgid ""
 "  -t, --read-recipients        read additional recipients from the mail\n"
 msgstr "  -t, --read-recipients        Weitere Empfänger aus der Mail lesen\n"
 
-#: src/msmtp.c:2232
+#: src/msmtp.c:2235
 #, c-format
 msgid ""
 "  --read-envelope-from         read envelope from address from the mail\n"
 msgstr "  --read-envelope-from         Umschlags-Absender aus der Mail lesen\n"
 
-#: src/msmtp.c:2233
+#: src/msmtp.c:2236
 #, c-format
 msgid "  --aliases=[file]             set/unset aliases file\n"
 msgstr "  --aliases=[Datei]            Aliasdatei festlegen/löschen\n"
 
-#: src/msmtp.c:2234
+#: src/msmtp.c:2237
 #, c-format
 msgid "  --set-from-header[=(auto|on|off)] set From header handling\n"
 msgstr ""
 "  --set-from-header[=(auto|on|off)] Umgang mit »From:«-Feldern festlegen\n"
 
-#: src/msmtp.c:2235
+#: src/msmtp.c:2238
 #, c-format
 msgid "  --set-date-header[=(auto|off)] set Date header handling\n"
 msgstr ""
 "  --set-date-header[=(auto|off)] Umgang mit »Date:«-Feldern festlegen\n"
 
-#: src/msmtp.c:2236
+#: src/msmtp.c:2239
 #, c-format
 msgid ""
 "  --remove-bcc-headers[=(on|off)] enable/disable removal of Bcc headers\n"
@@ -702,12 +702,26 @@ msgstr ""
 "  --remove-bcc-headers[=(on|off)] Löschen von »Bcc:«\n"
 "                                  aktivieren/deaktivieren\n"
 
-#: src/msmtp.c:2237
+#: src/msmtp.c:2240
+#, fuzzy, c-format
+#| msgid ""
+#| "  --auth[=(on|off|method)]     enable/disable authentication and "
+#| "optionally\n"
+#| "                               choose the method\n"
+msgid ""
+"  --undisclosed-recipients[=(on|off)] enable/disable replacement of To/Cc/"
+"Bcc\n"
+"                               with To: undisclosed-recipients:;\n"
+msgstr ""
+"  --auth[=(on|off|Methode)]     Authentifizierung aktivieren/deaktivieren\n"
+"                                und optional die Methode festlegen\n"
+
+#: src/msmtp.c:2242
 #, c-format
 msgid "  --                           end of options\n"
 msgstr "  --                           Ende der Optionen\n"
 
-#: src/msmtp.c:2238
+#: src/msmtp.c:2243
 #, c-format
 msgid ""
 "Accepted but ignored: -A, -B, -bm, -F, -G, -h, -i, -L, -m, -n, -O, -o, -v\n"
@@ -715,7 +729,7 @@ msgstr ""
 "Akzeptiert, aber ignoriert: -A, -B, -bm, -F, -G, -h, -i, -L, -m, -n, -O, -o, "
 "-v\n"
 
-#: src/msmtp.c:2239
+#: src/msmtp.c:2244
 #, c-format
 msgid ""
 "\n"
@@ -724,265 +738,266 @@ msgstr ""
 "\n"
 "Melden Sie Fehler an <%s>.\n"
 
-#: src/msmtp.c:2478 src/msmtp.c:2492
+#: src/msmtp.c:2486 src/msmtp.c:2500
 msgid "cannot use both --serverinfo and --rmqs"
 msgstr "--serverinfo und --rmqs kann nicht gleichzeitig benutzt werden"
 
-#: src/msmtp.c:2512 src/msmtp.c:2524
+#: src/msmtp.c:2520 src/msmtp.c:2532
 msgid "cannot use both --host and --account"
 msgstr "--host und --account kann nicht gleichzeitig benutzt werden"
 
-#: src/msmtp.c:2540 src/msmtp.c:2558 src/msmtp.c:2577 src/msmtp.c:2632
-#: src/msmtp.c:2664 src/msmtp.c:2682 src/msmtp.c:2745 src/msmtp.c:2790
-#: src/msmtp.c:2812 src/msmtp.c:2858 src/msmtp.c:2883 src/msmtp.c:2902
-#: src/msmtp.c:2955 src/msmtp.c:3000 src/msmtp.c:3027 src/msmtp.c:3045
-#: src/msmtp.c:3064 src/msmtp.c:3083 src/msmtp.c:3101 src/msmtp.c:3178
+#: src/msmtp.c:2548 src/msmtp.c:2566 src/msmtp.c:2585 src/msmtp.c:2640
+#: src/msmtp.c:2672 src/msmtp.c:2690 src/msmtp.c:2753 src/msmtp.c:2798
+#: src/msmtp.c:2820 src/msmtp.c:2866 src/msmtp.c:2891 src/msmtp.c:2910
+#: src/msmtp.c:2963 src/msmtp.c:3008 src/msmtp.c:3035 src/msmtp.c:3053
+#: src/msmtp.c:3072 src/msmtp.c:3091 src/msmtp.c:3109 src/msmtp.c:3127
+#: src/msmtp.c:3204
 #, c-format
 msgid "invalid argument %s for %s"
 msgstr "ungültiges Argument %s für %s"
 
-#: src/msmtp.c:2587 src/msmtp.c:3141
+#: src/msmtp.c:2595 src/msmtp.c:3167
 msgid "cannot use both --from and --read-envelope-from"
 msgstr "--from und --read-envelope-from kann nicht gleichzeitig benutzt werden"
 
-#: src/msmtp.c:3156
+#: src/msmtp.c:3182
 #, c-format
 msgid "unsupported operation mode b%s"
 msgstr "Operationsmodus b%s nicht unterstützt"
 
-#: src/msmtp.c:3230 src/msmtp.c:3704 src/msmtp.c:3996
+#: src/msmtp.c:3259 src/msmtp.c:3736 src/msmtp.c:4029
 #, c-format
 msgid "cannot create temporary file: %s"
 msgstr "temporäre Datei kann nicht angelegt werden: %s"
 
-#: src/msmtp.c:3260 src/msmtp.c:3729 src/msmtp.c:4025
+#: src/msmtp.c:3289 src/msmtp.c:3761 src/msmtp.c:4062
 #, c-format
 msgid "cannot rewind temporary file: %s"
 msgstr "temporäre Datei kann nicht zurückgespult werden: %s"
 
-#: src/msmtp.c:3324
+#: src/msmtp.c:3354
 #, c-format
 msgid "ignoring system configuration file %s: %s\n"
 msgstr "Systemweite Konfigurationsdatei %s wird ignoriert: %s\n"
 
-#: src/msmtp.c:3339
+#: src/msmtp.c:3369
 #, c-format
 msgid "loaded system configuration file %s\n"
 msgstr "systemweite Konfigurationsdatei %s geladen\n"
 
-#: src/msmtp.c:3378
+#: src/msmtp.c:3408
 #, c-format
 msgid "ignoring user configuration file %s: %s\n"
 msgstr "Benutzerkonfigurationsdatei %s wird ignoriert: %s\n"
 
-#: src/msmtp.c:3393
+#: src/msmtp.c:3423
 #, c-format
 msgid "loaded user configuration file %s\n"
 msgstr "Benutzerkonfigurationsdatei %s geladen\n"
 
-#: src/msmtp.c:3450
+#: src/msmtp.c:3480
 #, c-format
 msgid "using account %s from %s\n"
 msgstr "Konto %s aus %s wird benutzt\n"
 
-#: src/msmtp.c:3456 src/msmtp.c:3458 src/msmtp.c:3461 src/msmtp.c:3495
-#: src/msmtp.c:3496 src/msmtp.c:3498 src/msmtp.c:3500 src/msmtp.c:3504
-#: src/msmtp.c:3506 src/msmtp.c:3525 src/msmtp.c:3527 src/msmtp.c:3529
-#: src/msmtp.c:3539 src/msmtp.c:3542 src/msmtp.c:3544 src/msmtp.c:3549
-#: src/msmtp.c:3552 src/msmtp.c:3562 src/msmtp.c:3564 src/msmtp.c:3566
-#: src/msmtp.c:3569 src/msmtp.c:3571 src/msmtp.c:3573
+#: src/msmtp.c:3486 src/msmtp.c:3488 src/msmtp.c:3491 src/msmtp.c:3525
+#: src/msmtp.c:3526 src/msmtp.c:3528 src/msmtp.c:3530 src/msmtp.c:3534
+#: src/msmtp.c:3536 src/msmtp.c:3555 src/msmtp.c:3557 src/msmtp.c:3559
+#: src/msmtp.c:3569 src/msmtp.c:3572 src/msmtp.c:3574 src/msmtp.c:3579
+#: src/msmtp.c:3582 src/msmtp.c:3594 src/msmtp.c:3596 src/msmtp.c:3598
+#: src/msmtp.c:3601 src/msmtp.c:3603 src/msmtp.c:3605
 msgid "(not set)"
 msgstr "(nicht festgelegt)"
 
-#: src/msmtp.c:3465
+#: src/msmtp.c:3495
 #, c-format
 msgid "off\n"
 msgstr "aus\n"
 
-#: src/msmtp.c:3471
+#: src/msmtp.c:3501
 #, c-format
 msgid "%d seconds\n"
 msgstr "%d Sekunden\n"
 
-#: src/msmtp.c:3475
+#: src/msmtp.c:3505
 #, c-format
 msgid "1 second\n"
 msgstr "1 Sekunde\n"
 
-#: src/msmtp.c:3484
+#: src/msmtp.c:3514
 #, c-format
 msgid "none\n"
 msgstr "keine\n"
 
-#: src/msmtp.c:3488
+#: src/msmtp.c:3518
 #, c-format
 msgid "choose\n"
 msgstr "wählen\n"
 
-#: src/msmtp.c:3501 src/msmtp.c:3502 src/msmtp.c:3531 src/msmtp.c:3547
-#: src/msmtp.c:3555 src/msmtp.c:3560
+#: src/msmtp.c:3531 src/msmtp.c:3532 src/msmtp.c:3561 src/msmtp.c:3577
+#: src/msmtp.c:3585 src/msmtp.c:3590 src/msmtp.c:3592
 msgid "on"
 msgstr "an"
 
-#: src/msmtp.c:3501 src/msmtp.c:3502 src/msmtp.c:3531 src/msmtp.c:3547
-#: src/msmtp.c:3555 src/msmtp.c:3558 src/msmtp.c:3560
+#: src/msmtp.c:3531 src/msmtp.c:3532 src/msmtp.c:3561 src/msmtp.c:3577
+#: src/msmtp.c:3585 src/msmtp.c:3588 src/msmtp.c:3590 src/msmtp.c:3592
 msgid "off"
 msgstr "aus"
 
-#: src/msmtp.c:3552
+#: src/msmtp.c:3582
 msgid "(read from mail)"
 msgstr "(aus Mail lesen)"
 
-#: src/msmtp.c:3554 src/msmtp.c:3557
+#: src/msmtp.c:3584 src/msmtp.c:3587
 msgid "auto"
 msgstr "automatisch"
 
-#: src/msmtp.c:3576
+#: src/msmtp.c:3608
 #, c-format
 msgid "reading recipients from the command line and the mail\n"
 msgstr "Empfängerliste aus Befehlszeile und Mail lesen\n"
 
-#: src/msmtp.c:3581
+#: src/msmtp.c:3613
 #, c-format
 msgid "reading recipients from the command line\n"
 msgstr "Empfängerliste aus Befehlszeile lesen\n"
 
-#: src/msmtp.c:3694
+#: src/msmtp.c:3726
 msgid "too many arguments"
 msgstr "zu viele Argumente"
 
-#: src/msmtp.c:3723
+#: src/msmtp.c:3755
 #, c-format
 msgid "envelope from address extracted from mail: %s\n"
 msgstr "Umschlagabsenderadresse aus Mail gelesen: %s\n"
 
-#: src/msmtp.c:3738
+#: src/msmtp.c:3770
 msgid "no recipients found"
 msgstr "keine Empfänger gefunden"
 
-#: src/msmtp.c:3768
+#: src/msmtp.c:3800
 #, c-format
 msgid "account chosen by envelope from address %s: %s\n"
 msgstr "Konto durch Umschlagabsenderadresse %s ausgewählt: %s\n"
 
-#: src/msmtp.c:3782
+#: src/msmtp.c:3814
 #, c-format
 msgid "falling back to default account\n"
 msgstr "Standardkonto wird benutzt\n"
 
-#: src/msmtp.c:3805
+#: src/msmtp.c:3837
 #, c-format
 msgid "using environment variables EMAIL and SMTPSERVER\n"
 msgstr "Umgebungsvariablen EMAIL und SMTPSERVER werden benutzt\n"
 
-#: src/msmtp.c:3813
+#: src/msmtp.c:3845
 #, c-format
 msgid "account %s not found in %s and %s"
 msgstr "Konto %s nicht in %s und %s gefunden"
 
-#: src/msmtp.c:3819 src/msmtp.c:3824
+#: src/msmtp.c:3851 src/msmtp.c:3856
 #, c-format
 msgid "account %s not found in %s"
 msgstr "Konto %s nicht in %s gefunden"
 
-#: src/msmtp.c:3829
+#: src/msmtp.c:3861
 #, c-format
 msgid "account %s not found: no configuration file available"
 msgstr "Konto %s nicht gefunden: Keine Konfigurationsdatei verfügbar"
 
-#: src/msmtp.c:3844
+#: src/msmtp.c:3876
 #, c-format
 msgid "using account specified on command line\n"
 msgstr "Konto von der Befehlszeile wird benutzt\n"
 
-#: src/msmtp.c:3904
+#: src/msmtp.c:3936
 #, c-format
 msgid "account %s from %s: %s"
 msgstr "Konto %s aus %s: %s"
 
-#: src/msmtp.c:3945
+#: src/msmtp.c:3977
 msgid "this platform does not support syslog logging"
 msgstr "diese Plattform unterstützt keine Syslog-Protokollierung"
 
-#: src/msmtp.c:3954
+#: src/msmtp.c:3986
 #, c-format
 msgid "support for authentication method %s is not compiled in"
 msgstr ""
 "Unterstützung für Authentifizierungsmethode %s ist nicht einkompiliert worden"
 
-#: src/msmtp.c:3962
+#: src/msmtp.c:3994
 #, c-format
 msgid "cannot initialize networking: %s"
 msgstr "Netzwerkprogrammbibliothek kann nicht initialisiert werden: %s"
 
-#: src/msmtp.c:3973
+#: src/msmtp.c:4005
 #, c-format
 msgid "cannot initialize TLS library: %s"
 msgstr "TLS-Programmbibliothek kann nicht initialisiert werden: %s"
 
-#: src/msmtp.c:3980
+#: src/msmtp.c:4012
 msgid "support for TLS is not compiled in"
 msgstr "Unterstützung für TLS ist nicht einkompiliert worden"
 
-#: src/msmtp.c:4054
+#: src/msmtp.c:4091
 #, c-format
 msgid "LMTP server message: %s"
 msgstr "Nachricht des LMTP-Servers: %s"
 
-#: src/msmtp.c:4065
+#: src/msmtp.c:4102
 #, c-format
 msgid "could not send mail to all recipients (account %s from %s)"
 msgstr "Mail konnte nicht an alle Empfänger geschickt werden (Konto %s aus %s)"
 
-#: src/msmtp.c:4071
+#: src/msmtp.c:4108
 msgid "could not send mail to all recipients"
 msgstr "Mail konnte nicht an alle Empfänger geschickt werden"
 
-#: src/msmtp.c:4086 src/msmtp.c:4141 src/msmtp.c:4162
+#: src/msmtp.c:4123 src/msmtp.c:4178 src/msmtp.c:4199
 #, c-format
 msgid "server message: %s"
 msgstr "Nachricht des Servers: %s"
 
-#: src/msmtp.c:4092
+#: src/msmtp.c:4129
 #, c-format
 msgid "could not send mail (account %s from %s)"
 msgstr "Mail konnte nicht verschickt werden (Konto %s aus %s)"
 
-#: src/msmtp.c:4097
+#: src/msmtp.c:4134
 msgid "could not send mail"
 msgstr "Mail konnte nicht verschickt werden"
 
-#: src/msmtp.c:4107
+#: src/msmtp.c:4144
 #, c-format
 msgid "delivery to one or more recipients failed"
 msgstr "Zustellung an einen oder mehrere Empfänger fehlgeschlagen"
 
-#: src/conf.c:762 src/conf.c:777
+#: src/conf.c:768 src/conf.c:783
 #, c-format
 msgid "host not set"
 msgstr "Host nicht angegeben"
 
-#: src/conf.c:767
+#: src/conf.c:773
 #, c-format
 msgid "port not set"
 msgstr "Port nicht angegeben"
 
-#: src/conf.c:772
+#: src/conf.c:778
 #, c-format
 msgid "envelope-from address is missing"
 msgstr "Umschlagabsenderadresse fehlt"
 
-#: src/conf.c:782
+#: src/conf.c:788
 #, c-format
 msgid "tls_key_file requires tls_cert_file"
 msgstr "tls_key_file benötigt tls_cert_file"
 
-#: src/conf.c:787
+#: src/conf.c:793
 #, c-format
 msgid "tls_cert_file requires tls_key_file"
 msgstr "tls_cert_file benötigt tls_key_file"
 
-#: src/conf.c:795
+#: src/conf.c:801
 #, c-format
 msgid ""
 "tls requires either tls_trust_file (highly recommended) or tls_fingerprint "
@@ -991,93 +1006,94 @@ msgstr ""
 "TLS benötigt entweder tls_trust_file (empfohlen) oder tls_fingerprint oder "
 "ein abgeschaltetes tls_certcheck"
 
-#: src/conf.c:801
+#: src/conf.c:807
 #, c-format
 msgid "tls_crl_file requires tls_trust_file"
 msgstr "tls_crl_file benötigt tls_trust_file"
 
-#: src/conf.c:831
+#: src/conf.c:837
 #, c-format
 msgid "cannot evaluate '%s': %s"
 msgstr "»%s« kann nicht ausgewertet werden: %s"
 
-#: src/conf.c:838
+#: src/conf.c:844
 #, c-format
 msgid "cannot read output of '%s'"
 msgstr "Ausgabe von »%s« kann nicht gelesen werden"
 
-#: src/conf.c:852
+#: src/conf.c:858
 #, c-format
 msgid "output of '%s' is longer than %d characters"
 msgstr "Ausgabe von »%s« ist länger als %d Zeichen"
 
-#: src/conf.c:898 src/conf.c:905 src/conf.c:918 src/tls.c:891
+#: src/conf.c:904 src/conf.c:911 src/conf.c:924 src/tls.c:891
 #, c-format
 msgid "%s: %s"
 msgstr "%s: %s"
 
-#: src/conf.c:1064 src/stream.c:63
+#: src/conf.c:1070 src/stream.c:63
 #, c-format
 msgid "input error"
 msgstr "Lesefehler"
 
-#: src/conf.c:1086
+#: src/conf.c:1092
 #, c-format
 msgid "line longer than %d characters"
 msgstr "Zeile länger als %d Zeichen"
 
-#: src/conf.c:1137 src/conf.c:1262
+#: src/conf.c:1143 src/conf.c:1268
 #, c-format
 msgid "line %d: missing account name"
 msgstr "Zeile %d: Kontenname fehlt"
 
-#: src/conf.c:1142
+#: src/conf.c:1148
 #, c-format
 msgid "line %d: account %s not (yet) defined"
 msgstr "Zeile %d: Konto %s ist (noch) nicht definiert"
 
-#: src/conf.c:1234 src/conf.c:2011 src/conf.c:2028
+#: src/conf.c:1240 src/conf.c:2037 src/conf.c:2054
 #, c-format
 msgid "line %d: command %s does not take an argument"
 msgstr "Zeile %d: Befehl %s akzeptiert kein Argument"
 
-#: src/conf.c:1270
+#: src/conf.c:1276
 #, c-format
 msgid "line %d: an account name must not contain colons or commas"
 msgstr ""
 "Zeile %d: Ein Kontenname darf keine Doppelpunkte oder Kommata enthalten"
 
-#: src/conf.c:1280
+#: src/conf.c:1286
 #, c-format
 msgid "line %d: account %s was already defined"
 msgstr "Zeile %d: Konto %s wurde bereits definiert"
 
-#: src/conf.c:1305 src/conf.c:1324 src/conf.c:1351 src/conf.c:1380
-#: src/conf.c:1666 src/conf.c:1701
+#: src/conf.c:1311 src/conf.c:1330 src/conf.c:1357 src/conf.c:1386
+#: src/conf.c:1672 src/conf.c:1707
 #, c-format
 msgid "line %d: command %s needs an argument"
 msgstr "Zeile %d: Befehl %s benötigt ein Argument"
 
-#: src/conf.c:1335 src/conf.c:1367 src/conf.c:1398 src/conf.c:1437
-#: src/conf.c:1482 src/conf.c:1502 src/conf.c:1587 src/conf.c:1608
-#: src/conf.c:1627 src/conf.c:1688 src/conf.c:1719 src/conf.c:1769
-#: src/conf.c:1816 src/conf.c:1841 src/conf.c:1861 src/conf.c:1881
-#: src/conf.c:1928 src/conf.c:1949 src/conf.c:1970 src/conf.c:1998
+#: src/conf.c:1341 src/conf.c:1373 src/conf.c:1404 src/conf.c:1443
+#: src/conf.c:1488 src/conf.c:1508 src/conf.c:1593 src/conf.c:1614
+#: src/conf.c:1633 src/conf.c:1694 src/conf.c:1725 src/conf.c:1775
+#: src/conf.c:1822 src/conf.c:1847 src/conf.c:1867 src/conf.c:1887
+#: src/conf.c:1907 src/conf.c:1954 src/conf.c:1975 src/conf.c:1996
+#: src/conf.c:2024
 #, c-format
 msgid "line %d: invalid argument %s for command %s"
 msgstr "Zeile %d: Ungültiges Argument %s für Befehl %s"
 
-#: src/conf.c:2044
+#: src/conf.c:2070
 #, c-format
 msgid "line %d: unknown command %s"
 msgstr "Zeile %d: Unbekannter Befehl %s"
 
-#: src/conf.c:2096
+#: src/conf.c:2122
 #, c-format
 msgid "contains secrets and therefore must be owned by you"
 msgstr "enthält Passwörter und muss daher Ihnen gehören"
 
-#: src/conf.c:2102
+#: src/conf.c:2128
 #, c-format
 msgid ""
 "contains secrets and therefore must have no more than user read/write "
@@ -1124,7 +1140,7 @@ msgid "SMTP server does not accept EHLO or HELO commands"
 msgstr "der SMTP-Server unterstützt weder EHLO noch HELO"
 
 #: src/smtp.c:441 src/smtp.c:591 src/smtp.c:596 src/smtp.c:669 src/smtp.c:717
-#: src/smtp.c:807 src/smtp.c:898 src/smtp.c:1998
+#: src/smtp.c:807 src/smtp.c:898 src/smtp.c:2043
 #, c-format
 msgid "command %s failed"
 msgstr "Befehl %s fehlgeschlagen"
@@ -1200,22 +1216,22 @@ msgstr "Empfängeradresse %s wird vom Server nicht akzeptiert"
 msgid "the server does not accept mail data"
 msgstr "der Server akzeptiert die Maildaten nicht"
 
-#: src/smtp.c:1856
+#: src/smtp.c:1901
 #, c-format
 msgid "the server did not accept the mail"
 msgstr "der Server hat die Mail nicht akzeptiert"
 
-#: src/smtp.c:1920
+#: src/smtp.c:1965
 #, c-format
 msgid "the server refuses to send the mail to %s"
 msgstr "der Server weigert sich, die Mail an %s zu schicken"
 
-#: src/smtp.c:1984
+#: src/smtp.c:2029
 #, c-format
 msgid "the server is unable to fulfill the request"
 msgstr "der Server kann die Anforderung nicht erfüllen"
 
-#: src/smtp.c:1992
+#: src/smtp.c:2037
 #, c-format
 msgid "invalid argument for Remote Message Queue Starting"
 msgstr "ungültiges Argument für »Remote Message Queue Starting«"

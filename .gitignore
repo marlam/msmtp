@@ -33,3 +33,4 @@ src/*.obj
 src/msmtp
 src/msmtp.exe
 stamp-h1
+result

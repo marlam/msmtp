@@ -1,3 +1,12 @@
+Version 1.8.11:
+- Add a new undisclosed_recipients command and --undisclosed-recipients option
+  to replace To, Cc, Bcc with a single "To: undisclosed-recipients:;" header.
+- Improved handling of temporary files on Windows systems.
+- Re-enabled support for systems lacking vasprintf(), such as IBM i PASE.
+
+Version 1.8.10:
+- The msmtpq script was fixed (the fix in 1.8.9 was incomplete)
+
 Version 1.8.9:
 - The msmtpq script was fixed (it was accidently broken in 1.8.8)
 

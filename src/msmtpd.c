@@ -307,11 +307,8 @@ int msmtpd_session(FILE* in, FILE* out, const char* command)
 
     fprintf(out, "250 Ok, mail was piped\r\n");
     if (read_smtp_cmd(in, buf, SMTP_BUFSIZE) != 0)
-        return 0; /* ignore missing QUIT */
-    if (strcmp(buf, "QUIT") == 0)
-        break;
+        break; /* ignore missing QUIT */
   }
-    fprintf(out, "221 Bye\r\n");
     return 0;
 }
 

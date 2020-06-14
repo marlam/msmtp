@@ -175,9 +175,9 @@ int msmtpd_session(FILE* in, FILE* out, const char* command)
     char* cmd;
     char* tmpcmd;
     size_t cmd_blocks;
-    size_t cmd_index = 0;
-    int envfrom_was_handled = 0;
-    int recipient_was_seen = 0;
+    size_t cmd_index;
+    int envfrom_was_handled;
+    int recipient_was_seen;
     FILE* pipe;
     int pipe_status;
     size_t i;
@@ -193,6 +193,12 @@ int msmtpd_session(FILE* in, FILE* out, const char* command)
     fprintf(out, "250 localhost\r\n");
     if (read_smtp_cmd(in, buf, SMTP_BUFSIZE) != 0)
         return 1;
+
+  for(;;) {
+    cmd_index = 0;
+    envfrom_was_handled = 0;
+    recipient_was_seen = 0;
+
     if (strncmp(buf, "MAIL FROM:", 10) != 0 && strcmp(buf, "QUIT") != 0) {
         fprintf(out, "500 Expected MAIL FROM:<addr> or QUIT\r\n");
         return 1;
@@ -302,10 +308,9 @@ int msmtpd_session(FILE* in, FILE* out, const char* command)
     fprintf(out, "250 Ok, mail was piped\r\n");
     if (read_smtp_cmd(in, buf, SMTP_BUFSIZE) != 0)
         return 0; /* ignore missing QUIT */
-    if (strcmp(buf, "QUIT") != 0) {
-        fprintf(out, "500 Expected QUIT\r\n");
-        return 1;
-    }
+    if (strcmp(buf, "QUIT") == 0)
+        break;
+  }
     fprintf(out, "221 Bye\r\n");
     return 0;
 }

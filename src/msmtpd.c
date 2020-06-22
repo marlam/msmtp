@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2018, 2019  Martin Lambers <marlam@marlam.de>
+ * Copyright (C) 2018, 2019, 2020  Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 #include <errno.h>
 #include <unistd.h>
 #include <signal.h>
@@ -186,7 +187,7 @@ int msmtpd_session(FILE* in, FILE* out, const char* command)
     fprintf(out, "220 localhost ESMTP msmtpd\r\n");
     if (read_smtp_cmd(in, buf, SMTP_BUFSIZE) != 0)
         return 1;
-    if (strncmp(buf, "EHLO ", 5) != 0 && strncmp(buf, "HELO ", 5) != 0) {
+    if (strncasecmp(buf, "EHLO ", 5) != 0 && strncasecmp(buf, "HELO ", 5) != 0) {
         fprintf(out, "500 Expected EHLO or HELO\r\n");
         return 1;
     }
@@ -199,11 +200,11 @@ int msmtpd_session(FILE* in, FILE* out, const char* command)
         envfrom_was_handled = 0;
         recipient_was_seen = 0;
 
-        if (strncmp(buf, "MAIL FROM:", 10) != 0 && strcmp(buf, "QUIT") != 0) {
+        if (strncasecmp(buf, "MAIL FROM:", 10) != 0 && strcasecmp(buf, "QUIT") != 0) {
             fprintf(out, "500 Expected MAIL FROM:<addr> or QUIT\r\n");
             return 1;
         }
-        if (strcmp(buf, "QUIT") == 0) {
+        if (strcasecmp(buf, "QUIT") == 0) {
             fprintf(out, "221 Bye\r\n");
             return 0;
         }
@@ -241,19 +242,19 @@ int msmtpd_session(FILE* in, FILE* out, const char* command)
                 return 1;
             }
             if (!recipient_was_seen) {
-                if (strncmp(buf, "RCPT TO:", 8) != 0) {
+                if (strncasecmp(buf, "RCPT TO:", 8) != 0) {
                     fprintf(out, "500 Expected RCPT TO:<addr>\r\n");
                     free(cmd);
                     return 1;
                 }
             } else {
-                if (strncmp(buf, "RCPT TO:", 8) != 0 && strcmp(buf, "DATA") != 0) {
+                if (strncasecmp(buf, "RCPT TO:", 8) != 0 && strcasecmp(buf, "DATA") != 0) {
                     fprintf(out, "500 Expected RCPT TO:<addr> or DATA\r\n");
                     free(cmd);
                     return 1;
                 }
             }
-            if (strcmp(buf, "DATA") == 0) {
+            if (strcasecmp(buf, "DATA") == 0) {
                 break;
             } else {
                 if (get_addr(buf + 8, addrbuf, 0, &addrlen) != 0) {
@@ -395,7 +396,7 @@ int main(int argc, char* argv[])
     }
     if (print_version) {
         printf("msmtpd version %s\n", VERSION);
-        printf("Copyright (C) 2018 Martin Lambers.\n"
+        printf("Copyright (C) 2020 Martin Lambers.\n"
                 "This is free software.  You may redistribute copies of it under the terms of\n"
                 "the GNU General Public License <http://www.gnu.org/licenses/gpl.html>.\n"
                 "There is NO WARRANTY, to the extent permitted by law.\n");

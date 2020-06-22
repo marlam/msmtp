@@ -218,6 +218,9 @@ data.
 Choose the first account from the system or user configuration file that has
 a matching envelope-from address as specified by a \fBfrom\fP command. This
 works only when neither \fB\-\-account\fP nor \fB\-\-host\fP is used.
+.br
+Subadresses are supported. For example, the envelope from address
+\fIuser+detail@example.com\fP will match the account for \fIuser@example.com\fP.
 .PP
 If none of the above options is used (or if no account has a matching
 \fBfrom\fP command), then the account "default" is used.

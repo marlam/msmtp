@@ -281,16 +281,42 @@ account_t *find_account(list_t *acc_list, const char *id)
 account_t *find_account_by_envelope_from(list_t *acc_list, const char *from)
 {
     account_t *a = NULL;
-    char *acc_from;
+    const char *from_detail = strchr(from, '+');
+    const char *from_domain = strchr(from, '@');
+    const char *acc_from, *acc_domain;
 
     while (!list_is_empty(acc_list))
     {
         acc_list = acc_list->next;
         acc_from = ((account_t *)(acc_list->data))->from;
-        if (acc_from && strcasecmp(from, acc_from) == 0)
+        if (!acc_from)
         {
-            a = acc_list->data;
-            break;
+            continue;
+        }
+        if (from_detail && from_domain && !strchr(acc_from, '+'))
+        {
+            /*
+             * Subaddressing matches the pattern /user+detail@domain/. Take `from` to
+             * match `acc_from` iff both user and domain match; i.e., ignore the detail.
+             */
+            acc_domain = strchr(acc_from, '@');
+            if (acc_domain
+                    && (acc_domain - acc_from == from_detail - from)
+                    && strncasecmp(from, acc_from, from_detail - from) == 0
+                    && strcasecmp(from_domain, acc_domain) == 0)
+            {
+                a = acc_list->data;
+                break;
+            }
+        }
+        else
+        {
+            /* simple matching */
+            if (strcasecmp(from, acc_from) == 0)
+            {
+                a = acc_list->data;
+                break;
+            }
         }
     }
 

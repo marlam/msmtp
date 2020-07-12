@@ -762,7 +762,7 @@ Choose the first account from the system or user configuration file that has
 a matching envelope-from address as specified by a @ref{from} command. This
 works only when neither @option{--account} nor @option{--host} is used.@*
 Subadresses are supported. For example, the envelope from address
-@var{user+detail@example.com} will match the account for @var{user@example.com}.
+@var{user+detail@@example.com} will match the account for @var{user@@example.com}.
 @end enumerate
 If none of the above options is used (or if no account has a matching
 @ref{from} command), then the account "default" is used.

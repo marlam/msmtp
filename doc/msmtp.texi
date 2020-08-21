@@ -334,7 +334,7 @@ description of the @var{priorities} string.
 @item tls_host_override [@var{host}]
 @cmindex tls_host_override
 By default, TLS host verification uses the host name given by the @samp{host} command.
-This command allows to use a different host name for verification. This is only
+This command allows one to use a different host name for verification. This is only
 useful in special cases.
 @end table
 

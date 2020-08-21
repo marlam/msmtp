@@ -1,89 +1,88 @@
-# Serbian translation for msmtp.
-# Copyright © 2020 Martin Lambers <marlam@marlam.de>
+# Esperanto translations for msmtp package.
+# Copyright (C) 2020 Martin Lambers <marlam@marlam.de>
 # This file is distributed under the same license as the msmtp package.
-# Мирослав Николић <miroslavnikolic@rocketmail.com>, 2020.
+# Keith Bowes <zooplah@gmail.com>, 2020.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: msmtp 1.8.11\n"
 "Report-Msgid-Bugs-To: marlam@marlam.de\n"
 "POT-Creation-Date: 2020-08-21 09:07+0200\n"
-"PO-Revision-Date: 2020-08-04 10:24+0200\n"
-"Last-Translator: Мирослав Николић <miroslavnikolic@rocketmail.com>\n"
-"Language-Team: Serbian <(nothing)>\n"
-"Language: sr\n"
+"PO-Revision-Date: 2020-07-16 12:39-0400\n"
+"Last-Translator: Keith Bowes <zooplah@gmail.com>\n"
+"Language-Team: Esperanto <translation-team-eo@lists.sourceforge.net>\n"
+"Language: eo\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Virtaal 0.7.1\n"
 "X-Bugs: Report translation errors to the Language-Team address.\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. TRANSLATORS: msmtp shares a lot of code and translatable strings with
 #. mpop <https://marlam.de/mpop>.
 #: src/msmtp.c:89
 #, c-format
 msgid "%s: FATAL: %s\n"
-msgstr "%s: КОБНО: %s\n"
+msgstr "%s: FATALA: %s\n"
 
 #: src/msmtp.c:229 src/msmtp.c:407 src/msmtp.c:1394
 #, c-format
 msgid "the server does not support TLS via the STARTTLS command"
-msgstr "сервер не подржава „TLS“ путем „STARTTLS“ наредбе"
+msgstr "la servilo ne regas TLS-on per la komando STLS"
 
 #: src/msmtp.c:271
 #, c-format
 msgid "the server does not support Remote Message Queue Starting"
-msgstr "сервер не подржава започињање реда удаљене поруке"
+msgstr "la servilo ne regas startigon de fora mesaĝatendovico (RMQS)"
 
 #: src/msmtp.c:283 src/msmtp.c:1452
 #, c-format
 msgid "the server does not support authentication"
-msgstr "сервер не подржава потврђивање идентитета"
+msgstr "la servilo ne regas aŭtentigon"
 
 #: src/msmtp.c:442
 #, c-format
 msgid "%s server at %s (%s [%s]), port %d:\n"
-msgstr "„%s“ сервер на „%s“ (%s [%s]), прикључник %d:\n"
+msgstr "%s-servilo ĉe %s (%s [%s]), pordo %d\n"
 
 #: src/msmtp.c:448
 #, c-format
 msgid "%s server at %s (%s), port %d:\n"
-msgstr "„%s“ сервер на „%s“ (%s), прикључник %d:\n"
+msgstr "%s-servilo ĉe %s (%s), pordo %d:\n"
 
 #: src/msmtp.c:454
 #, c-format
 msgid "%s server at %s ([%s]), port %d:\n"
-msgstr "„%s“ сервер на „%s“ ([%s]), прикључник %d:\n"
+msgstr "%s-servilo ĉe %s ([%s]), pordo %d:\n"
 
 #: src/msmtp.c:460
 #, c-format
 msgid "%s server at %s, port %d:\n"
-msgstr "„%s“ сервер на „%s“, прикључник %d:\n"
+msgstr "%s-servilo ĉe %s, pordo %d:\n"
 
 #: src/msmtp.c:480
 #, c-format
 msgid "No special capabilities.\n"
-msgstr "Нема нарочитих могућности.\n"
+msgstr "Neniuj specialaj kapabloj,\n"
 
 #: src/msmtp.c:484
 #, c-format
 msgid "Capabilities:\n"
-msgstr "Могућности:\n"
+msgstr "Kapabloj:\n"
 
 #: src/msmtp.c:488
 msgid "Maximum message size is "
-msgstr "Највећа величина поруке је "
+msgstr "Maksimuma mesaĝgrando estas "
 
 #: src/msmtp.c:491
 #, c-format
 msgid "unlimited\n"
-msgstr "неограничено\n"
+msgstr "nelimigita\n"
 
 #: src/msmtp.c:495
 #, c-format
 msgid "%ld bytes"
-msgstr "%ld бајта"
+msgstr "%ld bajtoj"
 
 #: src/msmtp.c:498
 #, c-format
@@ -97,135 +96,136 @@ msgstr " = %.2f KiB"
 
 #: src/msmtp.c:510
 msgid "Support for command grouping for faster transmission"
-msgstr "Подршка за груписање наредби ради бржег преноса"
+msgstr "Rego por grupigo de komandoj por pli rapida elsendado"
 
 #: src/msmtp.c:515
 msgid "Support for RMQS (Remote Message Queue Starting)"
-msgstr "Подршка за „RMQS“ (започињање реда удаљене поруке)"
+msgstr "Rego de RMQS (startigo de fora mesaĝatendovico)"
 
 #: src/msmtp.c:520
 msgid "Support for Delivery Status Notifications"
-msgstr "Подршка за обавештења стања испоруке"
+msgstr "Rego de DSN (sciigoj pri stato de liverado)"
 
 #: src/msmtp.c:530
 msgid "Support for TLS encryption via the STARTTLS command"
-msgstr "Подршка за „TLS“ шифровање путем наредбе „STARTTLS“"
+msgstr "Rego de TLS-ĉifrado per la komando STARTTLS"
 
 #: src/msmtp.c:536
 msgid "Supported authentication methods:"
-msgstr "Подржани начини потврђивања идентитета:"
+msgstr "Regataj aŭtentigaj metodoj:"
 
 #: src/msmtp.c:581
 #, c-format
 msgid ""
 "This server might advertise more or other capabilities when TLS is active.\n"
 msgstr ""
-"Овај сервер може обавестити о више или о другим могућностима када је „TLS“ "
-"активно.\n"
+"La servilo eble pretendus pliajn aŭ aliajn kapablojn\n"
+"    kiam TLS estas aktiva.\n"
 
 #: src/msmtp.c:1146 src/msmtp.c:3282
 #, c-format
 msgid "cannot write mail headers to temporary file: output error"
-msgstr "не могу да пишем заглавља поште у привремену датотеку: излазна грешка"
+msgstr "ne eblas skribi retpoŝtajn ĉapojn al provizora dosiero: eliga eraro"
 
 #: src/msmtp.c:1254
 #, c-format
 msgid "input error while reading the mail"
-msgstr "улазна грешка приликом читања поште"
+msgstr "eniga eraro dum legi la retpoŝtaĵon"
 
 #: src/msmtp.c:1441
 #, c-format
 msgid "the server does not support DSN"
-msgstr "сервер не подржава „DSN“"
+msgstr "la servilo ne regas DSN-on"
 
 #: src/msmtp.c:1590 src/msmtp.c:1609 src/msmtp.c:1661
 #, c-format
 msgid "automatic configuration based on SRV records failed: %s"
-msgstr "самоподешавање на основу „SRV“ снимака није успело: %s"
+msgstr "aŭtomata agordado bazita sur SRV-rikordoj malsukcesis: %s"
 
 #: src/msmtp.c:1591
 msgid "invalid mail address"
-msgstr "нетачна адреса е-поште"
+msgstr "nevalida retpoŝtadreso"
 
 #: src/msmtp.c:1607
 #, c-format
 msgid "no SRV records for %s or %s"
-msgstr "нема „SRV“ снимака за „%s“ или „%s“"
+msgstr "neniuj SRV-rikordoj por %s aŭ %s"
 
 #: src/msmtp.c:1624
 #, c-format
 msgid "copy this to your configuration file %s"
-msgstr "умножите ово у вашу датотеку подешавања „%s“"
+msgstr "kopiu la jenan en vian agordo-dosieron %s"
 
 #: src/msmtp.c:1628
 msgid "warning: the host does not match the mail domain; please check"
-msgstr "упозорење: домаћин не одговара домену поште; проверите то"
+msgstr ""
+"averto: la retnodo ne kongruas kun la retpoŝta domajno; bonvolu kontroli"
 
 #: src/msmtp.c:1631 src/msmtp.c:1635
 msgid "add your password to the key ring:"
-msgstr "додајте вашу лозинку у привезак кључева:"
+msgstr "aldoni vian pasvorton al la ŝlosilaro"
 
 #: src/msmtp.c:1638
 msgid "encrypt your password:"
-msgstr "шифрујте вашу лозинку:"
+msgstr "ĉifri vian pasvorton:"
 
 #: src/msmtp.c:1662
 msgid "this system lacks libresolv"
-msgstr "овом систему недостаје „libresolv“"
+msgstr "la sistemo malhavas la bibliotekon libresolv"
 
 #: src/msmtp.c:1889
 #, c-format
 msgid "invalid logfile_time_format"
-msgstr "неисправан запис_времена_дневника"
+msgstr "nevalida logfile_time_format"
 
 #: src/msmtp.c:1902
 #, c-format
 msgid "cannot open: %s"
-msgstr "не могу да отворим: %s"
+msgstr "ne eblas malfermi: %s"
 
 #: src/msmtp.c:1910
 #, c-format
 msgid "cannot lock (tried for %d seconds): %s"
-msgstr "не могу да закључам (покушах %d секунде): %s"
+msgstr "ne eblas fiksi (provis dum %d sekundoj): %s"
 
 #: src/msmtp.c:1915
 #, c-format
 msgid "cannot lock: %s"
-msgstr "не могу да закључам: %s"
+msgstr "ne eblas fiksi: %s"
 
 #: src/msmtp.c:1924
 msgid "output error"
-msgstr "излазна грешка"
+msgstr "eliga eraro"
 
 #: src/msmtp.c:1941
 #, c-format
 msgid "cannot log to %s: %s"
-msgstr "не могу да упишем дневник у „%s“: %s"
+msgstr "ne eblas protokoli al %s: %s"
 
 #: src/msmtp.c:1945
 #, c-format
 msgid "log info was: %s"
-msgstr "подаци дневника беху: %s"
+msgstr "protokola informo estis: %s"
 
 #: src/msmtp.c:2054
 #, c-format
 msgid "%s version %s\n"
-msgstr "%s издање %s\n"
+msgstr "%s eldono %s\n"
 
 #: src/msmtp.c:2055
 #, c-format
 msgid "Platform: %s\n"
-msgstr "Платформа: %s\n"
+msgstr "Platformo: %s\n"
 
 #: src/msmtp.c:2057
 #, c-format
 msgid "TLS/SSL library: %s\n"
-msgstr "„TLS/SSL“ библиотека: %s\n"
+msgstr "TLS/SSL-biblioteko: %s\n"
 
 #: src/msmtp.c:2063 src/msmtp.c:2133
 #, c-format
 msgid "none"
-msgstr "ништа"
+msgstr "nenio"
 
 #: src/msmtp.c:2067
 #, c-format
@@ -233,31 +233,31 @@ msgid ""
 "Authentication library: %s\n"
 "Supported authentication methods:\n"
 msgstr ""
-"Библиотека потврђивања идентитета: %s\n"
-"Подржани начини потврђивања идентитета:\n"
+"Aŭtentiga biblioteko: %s\n"
+"Regataj aŭtentaj metodoj:\n"
 
 #: src/msmtp.c:2070
 msgid "GNU SASL; oauthbearer: built-in"
-msgstr "GNU SASL; oauthbearer: уграђено"
+msgstr "GNU SASL; oauthbearer: apriora"
 
 #: src/msmtp.c:2072
 msgid "built-in"
-msgstr "уграђено"
+msgstr "apriora"
 
 #: src/msmtp.c:2113
 #, c-format
 msgid "IDN support: "
-msgstr "„IDN“ подршка: "
+msgstr "IDN-rego: "
 
 #: src/msmtp.c:2117 src/msmtp.c:2125
 #, c-format
 msgid "enabled"
-msgstr "омогућено"
+msgstr "aktiva"
 
 #: src/msmtp.c:2119 src/msmtp.c:2128
 #, c-format
 msgid "disabled"
-msgstr "онемогућено"
+msgstr "malaktiva"
 
 #: src/msmtp.c:2123
 #, c-format
@@ -267,17 +267,17 @@ msgstr "NLS: "
 #: src/msmtp.c:2126
 #, c-format
 msgid ", LOCALEDIR is %s"
-msgstr ", ДИРЈЕЗИКА ЈЕ „%s“"
+msgstr ", LOCALEDIR estas %s"
 
 #: src/msmtp.c:2131
 #, c-format
 msgid "Keyring support: "
-msgstr "Подршка привеска кључева: "
+msgstr "Regado de ŝlosilaro: "
 
 #: src/msmtp.c:2136
 #, c-format
 msgid "Gnome "
-msgstr "Гном "
+msgstr "Gnome "
 
 #: src/msmtp.c:2139
 #, c-format
@@ -287,12 +287,12 @@ msgstr "MacOS "
 #: src/msmtp.c:2145
 #, c-format
 msgid "System configuration file name: %s\n"
-msgstr "Датотека подешавања система: %s\n"
+msgstr "Sistema gordo-dosiernomo: %s\n"
 
 #: src/msmtp.c:2149
 #, c-format
 msgid "User configuration file name: %s\n"
-msgstr "Датотека подешавања корисника: %s\n"
+msgstr "agordo-dosiernomo de uzanto: %s\n"
 
 #: src/msmtp.c:2152
 #, c-format
@@ -303,11 +303,12 @@ msgid ""
 "the GNU General Public License <http://www.gnu.org/licenses/gpl.html>.\n"
 "There is NO WARRANTY, to the extent permitted by law.\n"
 msgstr ""
-"Ауторска права © 2020. Мартин Ламберс и други.\n"
-"Ово је слободан софтвер.  Можете да расподељујете његове умношке под "
-"условима\n"
-"Гнуове Опште Јавне Лиценце <http://www.gnu.org/licenses/gpl.html>.\n"
-"Не постоји НИКАКВА ГАРАНЦИЈА, у оквирима дозвољеним законом.\n"
+"Kopirajto (C) 20202 Martin Lambers kaj aliuloj.\n"
+"Ĉi tio estas libera programo. Vi rajtas distribui ekzemplojn de ĝi laŭ la "
+"kondiĉoj de\n"
+"la Ĝenerala Publika Permesilo de GNU <http://www.gnu.org/licenses/gpl."
+"html>.\n"
+"Ekzistas NENIU GARANTIO, escepte kiom postulata de la leĝaro.\n"
 
 #: src/msmtp.c:2169
 #, c-format
@@ -315,7 +316,7 @@ msgid ""
 "Usage:\n"
 "\n"
 msgstr ""
-"Употреба:\n"
+"Uzado:\n"
 "\n"
 
 #: src/msmtp.c:2170
@@ -327,11 +328,11 @@ msgid ""
 "  Read a mail from standard input and transmit it to an SMTP or LMTP "
 "server.\n"
 msgstr ""
-"Режим слања поште (основно):\n"
-"  %s [опција...] [--] прималац...\n"
-"  %s [опција...] -t [--] [прималац...]\n"
-"  Чита пошту са стандардног улаза и пребацује је на „SMTP“ или „LMTP“ "
-"сервер.\n"
+"Sendmail-reĝimo (apriora):\n"
+"  %s [elekteblo...] [--] ricevonto...\n"
+"  %s [elekteblo...] -t [--] [ricevonto...]\n"
+"  Legi retpoŝtaĵon el la ĉefenigujo kaj elsendi ĝin al SMTP- aŭ LMTP- "
+"servilo.\n"
 
 #: src/msmtp.c:2175
 #, c-format
@@ -340,9 +341,9 @@ msgid ""
 "  %s --configure=mailadress\n"
 "  Generate and print configuration for address.\n"
 msgstr ""
-"Режим подешавања:\n"
-"  %s --configure=адреса_поште\n"
-"  Ствара и исписује подешавање за адресу.\n"
+"Agorda reĝimo:\n"
+"  %s --configure=retpoŝtadreso\n"
+"  Generi kaj eligi agordon por la retpoŝtadreson.\n"
 
 #: src/msmtp.c:2178
 #, c-format
@@ -351,9 +352,9 @@ msgid ""
 "  %s [option...] --serverinfo\n"
 "  Print information about a server.\n"
 msgstr ""
-"Режим података сервера:\n"
-"  %s [опција...] --serverinfo\n"
-"  Исписује податке о серверу.\n"
+"Servilinforma reĝimo:\n"
+"  %s [elekteblo...] --serverinfo\n"
+"  Eligi informojn pri servilo.\n"
 
 #: src/msmtp.c:2181
 #, c-format
@@ -363,70 +364,71 @@ msgid ""
 "  Send a Remote Message Queue Starting request to a server.\n"
 "\n"
 msgstr ""
-"Режим започињања реда удаљене поруке:\n"
-"  %s [опција...] --rmqs=домаћин|@домен|#ред\n"
-"  Шаље серверу захтев започињања реда удаљене поруке.\n"
+"RMQS-reĝimo:\n"
+"  %s [elekteblo...] --rmqs=retnodo|@domajno|#atendovico\n"
+"  Peti al servilo startigi foran mesaĝatendovicon (RMQS-peto).\n"
 "\n"
 
 #: src/msmtp.c:2185
 #, c-format
 msgid "General options:\n"
-msgstr "Опште опције:\n"
+msgstr "Ĝeneralaj elektebloj:\n"
 
 #: src/msmtp.c:2186
 #, c-format
 msgid "  --version                    print version\n"
-msgstr "  --version                      исписује издање\n"
+msgstr "  --version                    eligi eldonon\n"
 
 #: src/msmtp.c:2187
 #, c-format
 msgid "  --help                       print help\n"
-msgstr "  --help                         исписује помоћ\n"
+msgstr "  --help                       eligi helpon\n"
 
 #: src/msmtp.c:2188
 #, c-format
 msgid "  -P, --pretend                print configuration info and exit\n"
-msgstr ""
-"  -P, --pretend                  исписује податке подешавања и излази\n"
+msgstr "  -P, --pretend                eligi agordajn informojn kaj fini\n"
 
 #: src/msmtp.c:2189
 #, c-format
 msgid "  -d, --debug                  print debugging information\n"
-msgstr "  -d, --debug                    исписује податке пречишћавања\n"
+msgstr "  -d, --debug                  eligi senerarigajn informojn\n"
 
 #: src/msmtp.c:2190
 #, c-format
 msgid "Changing the mode of operation:\n"
-msgstr "Промена режима рада:\n"
+msgstr "Por ŝanĝi la operacireĝimo:\n"
 
 #: src/msmtp.c:2191
 #, c-format
 msgid ""
 "  --configure=mailaddress      generate and print configuration for address\n"
 msgstr ""
-"  --configure=адреса_поште       ствара и исписује подешавање за адресу\n"
+"  --configure=retpoŝtadreson    generi kaj eligi agordon por retpoŝtadreso\n"
 
 #: src/msmtp.c:2192
 #, c-format
 msgid "  -S, --serverinfo             print information about the server\n"
-msgstr "  -S, --serverinfo               исписује податке о серверу\n"
+msgstr "  -S, --serverinfo             eligi informojn pri la servilo\n"
 
 #: src/msmtp.c:2193
 #, c-format
 msgid ""
 "  --rmqs=host|@domain|#queue   send a Remote Message Queue Starting request\n"
 msgstr ""
-"  --rmqs=домаћин|@домен|#ред     шаље захтев започињања реда удаљене поруке\n"
+"  --rmqs=retnodo|@domajno|#atendovico\n"
+"                                send a Remote Message Queue Starting "
+"request\n"
 
 #: src/msmtp.c:2194
 #, c-format
 msgid "Configuration options:\n"
-msgstr "Опције подешавања:\n"
+msgstr "Agordaj elektebloj:\n"
 
 #: src/msmtp.c:2195
 #, c-format
 msgid "  -C, --file=filename          set configuration file\n"
-msgstr "  -C, --file=датотека            поставља датотеку подешавања\n"
+msgstr "  -C, --file=filename          elekti agordo-dosieron\n"
 
 #: src/msmtp.c:2196
 #, c-format
@@ -436,10 +438,10 @@ msgid ""
 "changed\n"
 "                               with command-line options\n"
 msgstr ""
-"  -a, --account=иб               користи дати налог уместо налога\n"
-"                                 под називом „основни“; његова подешавања се "
-"могу изменити\n"
-"                                 опцијама линије наредби\n"
+"  -a, --account=id             uzi la donitan konton anstataŭ la konto\n"
+"                               nomata \"default\"; eblas ŝanĝi ĝian "
+"agordon \n"
+"                               per komandliniaj elektebloj\n"
 
 #: src/msmtp.c:2199
 #, c-format
@@ -448,15 +450,14 @@ msgid ""
 "settings;\n"
 "                               do not use any configuration file data\n"
 msgstr ""
-"  --host=домаћин                 подешава сервер, користи само подешавања "
-"линије наредби;\n"
-"                                 не користи никакве податке датотеке "
-"подешавања\n"
+"  --host=retrodnomo             elekti la servilon, uzi sole komandliniajn "
+"agordaĵojn\n"
+"                               ne uzi la agordo-dosieron\n"
 
 #: src/msmtp.c:2201
 #, c-format
 msgid "  --port=number                set port number\n"
-msgstr "  --port=број                    подешава број прикључника\n"
+msgstr "  --port=numero                elekti pordo-numeron\n"
 
 #: src/msmtp.c:2202
 #, c-format
@@ -464,46 +465,45 @@ msgid ""
 "  --source-ip=[IP]             set/unset source ip address to bind the "
 "socket to\n"
 msgstr ""
-"  --source-ip=[ИП]               подешава/расподешава ип адресу извора на "
-"коју ће свезати прикључницу\n"
+"  --source-ip=[IP]             elekti/malelekti la adreson al kiu bindi la  "
+"ŝtopilingon\n"
 
 #: src/msmtp.c:2203
 #, c-format
 msgid "  --proxy-host=[IP|hostname]   set/unset proxy\n"
-msgstr "  --proxy-host=[ИП|домаћин]      подешава/расподешава посредника\n"
+msgstr "  --proxy-host=[IP|retnodnomo] elekti/malelekti prokurilon\n"
 
 #: src/msmtp.c:2204
 #, c-format
 msgid "  --proxy-port=[number]        set/unset proxy port\n"
-msgstr ""
-"  --proxy-port=[број]            подешава/расподешава прикључник посредника\n"
+msgstr "  --proxy-port=[numero]        elekti/malelekti prokurilan pordon\n"
 
 #: src/msmtp.c:2205
 #, c-format
 msgid "  --socket=[socketname]        set/unset local socket to connect to\n"
 msgstr ""
-"  --socket=[прикључница]         подешава/расподешава локалну прикључницу на "
-"коју ће се повезати\n"
+"  --socket=[nomo]              elekti/malelekti la lokan ŝtopilingon al kiu "
+"konektiĝi\n"
 
 #: src/msmtp.c:2206
 #, c-format
 msgid "  --timeout=(off|seconds)      set/unset network timeout in seconds\n"
 msgstr ""
-"  --timeout=(искљ.|сек.)         подешава/расподешава време истека мреже у "
-"секундама\n"
+"--timeout=(off|sekundoj)       elekti la retan eksvalidiĝon laŭ sekundoj, aŭ "
+"malŝalti ĝin (per ŝlosilvorto off)\n"
 
 #: src/msmtp.c:2207
 #, c-format
 msgid "  --protocol=(smtp|lmtp)       use the given sub protocol\n"
-msgstr "  --protocol=(smtp|lmtp)         користи дати подпротокол\n"
+msgstr "  --protocol=(smtp|lmtp)       uzi la donatan subprotokolon\n"
 
 #: src/msmtp.c:2208
 #, c-format
 msgid ""
 "  --domain=string              set the argument of EHLO or LHLO command\n"
 msgstr ""
-"  --domain=ниска                 подешава аргумент „EHLO“ или „LHLO“ "
-"наредбе\n"
+"  --domain=ĉeno                 elekti la argumenton de la komando EHLO aŭ "
+"LHLO\n"
 
 #: src/msmtp.c:2209
 #, c-format
@@ -511,48 +511,42 @@ msgid ""
 "  --auth[=(on|off|method)]     enable/disable authentication and optionally\n"
 "                               choose the method\n"
 msgstr ""
-"  --auth[=(укљ|искљ|начин)]      омогућује/онемогућује потврђивање "
-"идентитета и\n"
-"                                 опционално бира начин\n"
+"  --auth[=(on|off|metodo)]      aktivigi/malaktivigi aŭtentigon (per la "
+"ŝlosilvortoj on/off)\n"
+"                                aŭ elekti la metodon\n"
 
 #: src/msmtp.c:2211
 #, c-format
 msgid "  --user=[username]            set/unset user name for authentication\n"
 msgstr ""
-"  --user=[корисник]              подешава/расподешава корисничко име за "
-"потврђивање идентитета\n"
+"  --user=[salutnomo]          elekti la salutnomon uzeblan por aŭtentigi\n"
 
 #: src/msmtp.c:2212
 #, c-format
 msgid "  --passwordeval=[eval]        evaluate password for authentication\n"
-msgstr ""
-"  --passwordeval=[оцењ]          оцењује лозинку за потврђивање идентитета\n"
+msgstr "  --passwordeval=[eval]        taksi pasvorton por aŭtentigi\n"
 
 #: src/msmtp.c:2213
 #, c-format
 msgid "  --tls[=(on|off)]             enable/disable TLS encryption\n"
-msgstr ""
-"  --tls[=(укљ|искљ)]             омогућује/онемогућује „TLS“ шифровање\n"
+msgstr "  --tls[=(on|off)]             aktivigi/malaktivigi TLS-ĉifradon\n"
 
 #: src/msmtp.c:2214
 #, c-format
 msgid "  --tls-starttls[=(on|off)]    enable/disable STARTTLS for TLS\n"
-msgstr ""
-"  --tls-starttls[=(укљ|искљ)]    омогућује/онемогућује „STARTTLS“ за „TLS“\n"
+msgstr "  --tls-starttls[=(on|off)]    aktivigi/malaktivigi STARTTLS por TLS\n"
 
 #: src/msmtp.c:2215
 #, c-format
 msgid "  --tls-trust-file=[file]      set/unset trust file for TLS\n"
 msgstr ""
-"  --tls-trust-file=[датотека]    подешава/расподешава датотеку поверења за "
-"„TLS“\n"
+"  --tls-trust-file=[dosiero]      elekti/malelekti fido-dosieron por TLS\n"
 
 #: src/msmtp.c:2216
 #, c-format
 msgid "  --tls-crl-file=[file]        set/unset revocation file for TLS\n"
 msgstr ""
-"  --tls-crl-file=[датотека]      подешава/расподешава датотеку опозивања за "
-"„TLS“\n"
+"  --tls-crl-file=[dosiero]     elekti/malelekti revokodosieron por TLS\n"
 
 #: src/msmtp.c:2217
 #, c-format
@@ -560,8 +554,8 @@ msgid ""
 "  --tls-fingerprint=[f]        set/unset trusted certificate fingerprint for "
 "TLS\n"
 msgstr ""
-"  --tls-fingerprint=[ф]          подешава/расподешава отисак поверљивог "
-"уверења за „TLS“\n"
+"  --tls-fingerprint=[f]        elekti/malelekti atestilan fingropremaĵon  "
+"por TLS\n"
 
 #: src/msmtp.c:2218
 #, c-format
@@ -569,28 +563,27 @@ msgid ""
 "  --tls-certcheck[=(on|off)]   enable/disable server certificate checks for "
 "TLS\n"
 msgstr ""
-"  --tls-certcheck[=(укљ|искљ)]   подешава/расподешава провере уверења "
-"сервера за „TLS“\n"
+"  --tls-certcheck[=(on|off)]   aktivigi/malaktivigi kontroladon de servilaj "
+"atestiloj por TLS\n"
 
 #: src/msmtp.c:2219
 #, c-format
 msgid "  --tls-key-file=[file]        set/unset private key file for TLS\n"
 msgstr ""
-"  --tls-key-file=[датотека]      подешава/расподешава датотеку личног кључа "
-"за „TLS“\n"
+"  --tls-key-file=[file]        elekti/malelekti dosieron privata ŝlosilo por "
+"TLS \n"
 
 #: src/msmtp.c:2220
 #, c-format
 msgid "  --tls-cert-file=[file]       set/unset private cert file for TLS\n"
 msgstr ""
-"  --tls-cert-file=[датотека]     подешава/расподешава датотеку личног "
-"уверења за „TLS“\n"
+"  --tls-cert-file=[file]       elekti/malelekti dosieron de privata atestilo "
+"por TLS\n"
 
 #: src/msmtp.c:2221
 #, c-format
 msgid "  --tls-priorities=[prios]     set/unset TLS priorities.\n"
-msgstr ""
-"  --tls-priorities=[приор]       подешава/расподешава „TLS“ приоритете.\n"
+msgstr "  --tls-priorities=[prio]      elekti/malelekti TLS-prioritatojn.\n"
 
 #: src/msmtp.c:2222
 #, c-format
@@ -598,20 +591,20 @@ msgid ""
 "  --tls-host-override=[host]   set/unset override for TLS host "
 "verification.\n"
 msgstr ""
-"  --tls-host-override=[домаћин]  подешава/расподешава прескок за проверу "
-"„TLS“ домаћина.\n"
+"  --tls-host-override=[retnodo] elekti/malelekti superregadon por aŭtentigo "
+"de TLS-retnodo.\n"
 
 #: src/msmtp.c:2223
 #, c-format
 msgid "  --tls-min-dh-prime-bits=[b]  set/unset minimum bit size of DH prime\n"
 msgstr ""
-"  --tls-min-dh-prime-bits=[б]    подешава/расподешава најмању величину бита "
-"„DH“ простог броја\n"
+"  --tls-min-dh-prime-bits=[b]  elekti/malelekti minimuman bitgrandon de DH-"
+"primo\n"
 
 #: src/msmtp.c:2224
 #, c-format
 msgid "Options specific to sendmail mode:\n"
-msgstr "Опције специфичне режиму слања поште:\n"
+msgstr "Elektebloj specifaj por sendmail-reĝimo:\n"
 
 #: src/msmtp.c:2225
 #, c-format
@@ -619,13 +612,13 @@ msgid ""
 "  --auto-from[=(on|off)]       enable/disable automatic envelope-from "
 "addresses\n"
 msgstr ""
-"  --auto-from[=(укљ|искљ)]       омогућује/онемогућује аутоматске адресе за "
-"„коверту-шаље“\n"
+"  --auto-from[=(on|off)]       aktivigi/malaktivig aŭtomatan uzon de "
+"envelope-from\n"
 
 #: src/msmtp.c:2226
 #, c-format
 msgid "  -f, --from=address           set envelope from address\n"
-msgstr "  -f, --from=адреса              подешава адресу за „коверту шаље“\n"
+msgstr "  -f, --from=address           elekti koverton de retpoŝtadreso\n"
 
 #: src/msmtp.c:2227
 #, c-format
@@ -633,80 +626,76 @@ msgid ""
 "  --maildomain=[domain]        set the domain for automatic envelope from\n"
 "                               addresses\n"
 msgstr ""
-"  --maildomain=[домен]           подешава домен за аутоматске адресе за\n"
-"                                 „коверту шаље“\n"
+"  --maildomain=[domajno]       elekti la domajnon por aŭtomata envelope-"
+"from\n"
 
 #: src/msmtp.c:2229
 #, c-format
 msgid "  -N, --dsn-notify=(off|cond)  set/unset DSN conditions\n"
-msgstr "  -N, --dsn-notify=(искљ|усл)    подешава/расподешава „DSN“ услове\n"
+msgstr "  -N, --dsn-notify=(off|kond)  elekti/malekti DSN-kondiĉojn\n"
 
 #: src/msmtp.c:2230
 #, c-format
 msgid "  -R, --dsn-return=(off|ret)   set/unset DSN amount\n"
-msgstr "  -R, --dsn-return=(искљ|врат)   подешава/расподешава „DSN“ износ\n"
+msgstr "  -R, --dsn-return=(off|rev)   elekti/malelekti DNS-kiomon\n"
 
 #: src/msmtp.c:2231
 #, c-format
 msgid "  -X, --logfile=[file]         set/unset log file\n"
-msgstr ""
-"  -X, --logfile=[датотека]       подешава/расподешава датотеку дневника\n"
+msgstr "  -X, --logfile=[dosiero]      elekti/malelekti protokolon\n"
 
 #: src/msmtp.c:2232
 #, c-format
 msgid ""
 "  --logfile-time-format=[fmt]  set/unset log file time format for "
 "strftime()\n"
-msgstr ""
-"  --logfile-time-format=[зпв]    подешава/расподешава запис времена датотеке "
-"дневника за „strftime()“\n"
+msgstr "  --logfile-time-format=[fmt]  tempoformato por protokoloj\n"
 
 #: src/msmtp.c:2233
 #, c-format
 msgid ""
 "  --syslog[=(on|off|facility)] enable/disable/configure syslog logging\n"
 msgstr ""
-"  --syslog[=(укљ|искљ|олакш)]    омогућава/онемогућава/подешава вођење "
-"сситемског дневника\n"
+"  --syslog[=(on|off|fako)]     aktivigi/malaktivigi/agordi syslog-"
+"protokoladon\n"
 
 #: src/msmtp.c:2234
 #, c-format
 msgid ""
 "  -t, --read-recipients        read additional recipients from the mail\n"
-msgstr "  -t, --read-recipients          чита додатне примаоце из поште\n"
+msgstr ""
+"  -t, --read-recipients        legi aldonajn ricevontojn de la retpoŝtaĵo\n"
 
 #: src/msmtp.c:2235
 #, c-format
 msgid ""
 "  --read-envelope-from         read envelope from address from the mail\n"
 msgstr ""
-"  --read-envelope-from           чита даресу за „коверту шаље“ из поште\n"
+"  --read-envelope-from         legi la envelope-from-adreson de la "
+"retpoŝtaĵo\n"
 
 #: src/msmtp.c:2236
 #, c-format
 msgid "  --aliases=[file]             set/unset aliases file\n"
-msgstr ""
-"  --aliases=[датотека]           подешава/расподешава датотеку алијаса\n"
+msgstr "  --aliases=[file]             elekti/malelekti alinomo-dosieron\n"
 
 #: src/msmtp.c:2237
 #, c-format
 msgid "  --set-from-header[=(auto|on|off)] set From header handling\n"
-msgstr ""
-"  --set-from-header[=(ауто|укљ|искљ)] подешава руковање заглављем пошиљаоца\n"
+msgstr "  --set-from-header[=(auto|on|off)] elekti traktadon de From-ĉapo\n"
 
 #: src/msmtp.c:2238
 #, c-format
 msgid "  --set-date-header[=(auto|off)] set Date header handling\n"
-msgstr ""
-"  --set-date-header[=(ауто|искљ)]  подешава руковање заглављем датума\n"
+msgstr "  --set-date-header[=(auto|off)] elekti traktadon de Date-ĉapon\n"
 
 #: src/msmtp.c:2239
 #, c-format
 msgid ""
 "  --remove-bcc-headers[=(on|off)] enable/disable removal of Bcc headers\n"
 msgstr ""
-"  --remove-bcc-headers[=(укљ|искљ)] омогућује/онемогућује уклањање заглавља "
-"угљених умножака\n"
+"  --remove-bcc-headers[=(on|off)] aktivigi/malaktivigi forigon de Bcc-"
+"ĉapojn\n"
 
 #: src/msmtp.c:2240
 #, c-format
@@ -715,22 +704,22 @@ msgid ""
 "Bcc\n"
 "                               with To: undisclosed-recipients:;\n"
 msgstr ""
-"  --undisclosed-recipients[=(укљ|искљ)] укључује/искључује замену за „Прима/"
-"Уу/Суу“\n"
-"                               са „Прима: необјављени-примаоци:“;\n"
+"  --undisclosed-recipients[=(on|off)] aktivigi/malaktivigi anstataŭigon de "
+"To/Cc/Bcc\n"
+"                               per To: undisclosed-recipients:;\n"
 
 #: src/msmtp.c:2242
 #, c-format
 msgid "  --                           end of options\n"
-msgstr "  --                             крај опција\n"
+msgstr "  --                           fino de elektebloj\n"
 
 #: src/msmtp.c:2243
 #, c-format
 msgid ""
 "Accepted but ignored: -A, -B, -bm, -F, -G, -h, -i, -L, -m, -n, -O, -o, -v\n"
 msgstr ""
-"Прихваћене али занемарене су: -A, -B, -bm, -F, -G, -h, -i, -L, -m, -n, -O, -"
-"o, -v\n"
+"Rekonataj sed ignorataj: -A, -B, -bm, -F, -G, -h, -i, -L, -m, -n, -O, -o, -"
+"v\n"
 
 #: src/msmtp.c:2244
 #, c-format
@@ -739,15 +728,15 @@ msgid ""
 "Report bugs to <%s>.\n"
 msgstr ""
 "\n"
-"Грешке пријавите на <%s>.\n"
+"Raportu programerarojn al <%s>.\n"
 
 #: src/msmtp.c:2486 src/msmtp.c:2500
 msgid "cannot use both --serverinfo and --rmqs"
-msgstr "не можете користити и „--serverinfo“ и „--rmqs“"
+msgstr "ne povas uzi kaj --serverinfo kaj --rmqs"
 
 #: src/msmtp.c:2520 src/msmtp.c:2532
 msgid "cannot use both --host and --account"
-msgstr "не можете користити и „--host“ и „--account“"
+msgstr "ne povas uzi kaj --host kaj --accounts"
 
 #: src/msmtp.c:2548 src/msmtp.c:2566 src/msmtp.c:2585 src/msmtp.c:2640
 #: src/msmtp.c:2672 src/msmtp.c:2690 src/msmtp.c:2753 src/msmtp.c:2798
@@ -757,51 +746,51 @@ msgstr "не можете користити и „--host“ и „--account“"
 #: src/msmtp.c:3204
 #, c-format
 msgid "invalid argument %s for %s"
-msgstr "неисправан аргумент „%s“ за „%s“"
+msgstr "nevalida argumento %s por %s"
 
 #: src/msmtp.c:2595 src/msmtp.c:3167
 msgid "cannot use both --from and --read-envelope-from"
-msgstr "не можете користити и „--from“ и „--read-envelope-from“"
+msgstr "ne povas uzi kaj --host kaj --read-envelope-from"
 
 #: src/msmtp.c:3182
 #, c-format
 msgid "unsupported operation mode b%s"
-msgstr "неподржан режим радње „b%s“"
+msgstr "neregata operacia reĝimo b%s"
 
 #: src/msmtp.c:3259 src/msmtp.c:3736 src/msmtp.c:4029
 #, c-format
 msgid "cannot create temporary file: %s"
-msgstr "не могу да направим привремену датотеку: %s"
+msgstr "ne eblas krei provizoran dosieron: %s"
 
 #: src/msmtp.c:3289 src/msmtp.c:3761 src/msmtp.c:4062
 #, c-format
 msgid "cannot rewind temporary file: %s"
-msgstr "не могу да премотам привремену датотеку: %s"
+msgstr "ne eblas malantaŭenigi provizoran dosieron: %s"
 
 #: src/msmtp.c:3354
 #, c-format
 msgid "ignoring system configuration file %s: %s\n"
-msgstr "занемарујем системску датотеку подешавања „%s“: %s\n"
+msgstr "ignoras sisteman agordo-dosieron %s: %s\n"
 
 #: src/msmtp.c:3369
 #, c-format
 msgid "loaded system configuration file %s\n"
-msgstr "учитах системску датотеку подешавања „%s“\n"
+msgstr "ŝargis sisteman agordo-dosieron %s\n"
 
 #: src/msmtp.c:3408
 #, c-format
 msgid "ignoring user configuration file %s: %s\n"
-msgstr "занемарујем корисничку датотеку подешавања „%s“: %s\n"
+msgstr "ignoras agordo-dosieron %s de uzanto: %s\n"
 
 #: src/msmtp.c:3423
 #, c-format
 msgid "loaded user configuration file %s\n"
-msgstr "учитах корисничку датотеку подешавања „%s“\n"
+msgstr "ŝargis agordo dosieron %s du uzanto\n"
 
 #: src/msmtp.c:3480
 #, c-format
 msgid "using account %s from %s\n"
-msgstr "користим налог „%s“ са „%s“\n"
+msgstr "uzas konton %s de %s\n"
 
 #: src/msmtp.c:3486 src/msmtp.c:3488 src/msmtp.c:3491 src/msmtp.c:3525
 #: src/msmtp.c:3526 src/msmtp.c:3528 src/msmtp.c:3530 src/msmtp.c:3534
@@ -810,194 +799,194 @@ msgstr "користим налог „%s“ са „%s“\n"
 #: src/msmtp.c:3582 src/msmtp.c:3594 src/msmtp.c:3596 src/msmtp.c:3598
 #: src/msmtp.c:3601 src/msmtp.c:3603 src/msmtp.c:3605
 msgid "(not set)"
-msgstr "(није подешено)"
+msgstr "(ne elektita)"
 
 #: src/msmtp.c:3495
 #, c-format
 msgid "off\n"
-msgstr "искљ\n"
+msgstr "malŝaltita\n"
 
 #: src/msmtp.c:3501
 #, c-format
 msgid "%d seconds\n"
-msgstr "%d секунде\n"
+msgstr "%d sekundoj\n"
 
 #: src/msmtp.c:3505
 #, c-format
 msgid "1 second\n"
-msgstr "1 секунда\n"
+msgstr "1 sekundo\n"
 
 #: src/msmtp.c:3514
 #, c-format
 msgid "none\n"
-msgstr "ништа\n"
+msgstr "nenio\n"
 
 #: src/msmtp.c:3518
 #, c-format
 msgid "choose\n"
-msgstr "изабери\n"
+msgstr "elekti\n"
 
 #: src/msmtp.c:3531 src/msmtp.c:3532 src/msmtp.c:3561 src/msmtp.c:3577
 #: src/msmtp.c:3585 src/msmtp.c:3590 src/msmtp.c:3592
 msgid "on"
-msgstr "укљ"
+msgstr "ŝaltita"
 
 #: src/msmtp.c:3531 src/msmtp.c:3532 src/msmtp.c:3561 src/msmtp.c:3577
 #: src/msmtp.c:3585 src/msmtp.c:3588 src/msmtp.c:3590 src/msmtp.c:3592
 msgid "off"
-msgstr "искљ"
+msgstr "malŝaltita"
 
 #: src/msmtp.c:3582
 msgid "(read from mail)"
-msgstr "(читам из поште)"
+msgstr "(legi de retpoŝtaĵo)"
 
 #: src/msmtp.c:3584 src/msmtp.c:3587
 msgid "auto"
-msgstr "самостално"
+msgstr "aŭtomata"
 
 #: src/msmtp.c:3608
 #, c-format
 msgid "reading recipients from the command line and the mail\n"
-msgstr "читам примаоце са линије наредби и из поште\n"
+msgstr "legas ricevontojn de la komandlinio kaj la retpoŝtaĵo\n"
 
 #: src/msmtp.c:3613
 #, c-format
 msgid "reading recipients from the command line\n"
-msgstr "читам примаоце са линије наредби\n"
+msgstr "legas ricevontoj de la komandlinio\n"
 
 #: src/msmtp.c:3726
 msgid "too many arguments"
-msgstr "превише аргумената"
+msgstr "tro da argumentoj"
 
 #: src/msmtp.c:3755
 #, c-format
 msgid "envelope from address extracted from mail: %s\n"
-msgstr "адреса за „коверту шаље“ извучена из поште: %s\n"
+msgstr "envelope-from-retpoŝtadreso eltirita el la retpoŝtaĵo: %s\n"
 
 #: src/msmtp.c:3770
 msgid "no recipients found"
-msgstr "нисам нашао примаоце"
+msgstr "neniuj ricevontoj trovitaj"
 
 #: src/msmtp.c:3800
 #, c-format
 msgid "account chosen by envelope from address %s: %s\n"
-msgstr "налог који је изабран адресом за „коверту шаље“ „%s“: %s\n"
+msgstr "konto elektita per envelope-from-retpoŝtadreso %s: %s\n"
 
 #: src/msmtp.c:3814
 #, c-format
 msgid "falling back to default account\n"
-msgstr "пребацујем се на основни налог\n"
+msgstr "anstataŭe uzas aprioran konton\n"
 
 #: src/msmtp.c:3837
 #, c-format
 msgid "using environment variables EMAIL and SMTPSERVER\n"
-msgstr "користим променљиве окружења „EMAIL“ и „SMTPSERVER“\n"
+msgstr "uzas la medivariablojn EMAIL kaj SMTPSERVER\n"
 
 #: src/msmtp.c:3845
 #, c-format
 msgid "account %s not found in %s and %s"
-msgstr "нисам нашао налог „%s“ у „%s“ и „%s“"
+msgstr "konto %s ne trovita en %s kaj %s"
 
 #: src/msmtp.c:3851 src/msmtp.c:3856
 #, c-format
 msgid "account %s not found in %s"
-msgstr "нисам нашао налог „%s“ у „%s“"
+msgstr "konto %s ne trovita en %s"
 
 #: src/msmtp.c:3861
 #, c-format
 msgid "account %s not found: no configuration file available"
-msgstr "нисам нашао налог „%s“: датотека подешавања није доступна"
+msgstr "konto %s ne trovita: neniu agordo-dosiero disponebla"
 
 #: src/msmtp.c:3876
 #, c-format
 msgid "using account specified on command line\n"
-msgstr "користим налог наведен на линији наредби\n"
+msgstr "uzas konton specifitan en la komandlinio\n"
 
 #: src/msmtp.c:3936
 #, c-format
 msgid "account %s from %s: %s"
-msgstr "налог „%s“ из „%s“: %s"
+msgstr "konto %s de %s: %s"
 
 #: src/msmtp.c:3977
 msgid "this platform does not support syslog logging"
-msgstr "ова платформа не подржава вођење системског дневника"
+msgstr "ĉi tiu platformo ne regas syslog-protokolado"
 
 #: src/msmtp.c:3986
 #, c-format
 msgid "support for authentication method %s is not compiled in"
-msgstr "подршка за начин потврђивања идентитета „%s“ није преведена"
+msgstr "rego de aŭtentiga metodo %s ne disponeblas"
 
 #: src/msmtp.c:3994
 #, c-format
 msgid "cannot initialize networking: %s"
-msgstr "не могу да покренем умрежавање: %s"
+msgstr "ne eblas startigi reton: %s"
 
 #: src/msmtp.c:4005
 #, c-format
 msgid "cannot initialize TLS library: %s"
-msgstr "не могу да покренем „TLS“ библиотеку: %s"
+msgstr "ne eblas startigi TLS-bibliotekon: %s"
 
 #: src/msmtp.c:4012
 msgid "support for TLS is not compiled in"
-msgstr "подршка за „TLS“ није преведена"
+msgstr "rego de TLS ne disponeblas"
 
 #: src/msmtp.c:4091
 #, c-format
 msgid "LMTP server message: %s"
-msgstr "порука „LMTP“ сервера: %s"
+msgstr "LMTP-servila mesaĝo: %s"
 
 #: src/msmtp.c:4102
 #, c-format
 msgid "could not send mail to all recipients (account %s from %s)"
-msgstr "не могу да пошаљем пошту свим примаоцима (налог „%s“ са „%s“)"
+msgstr "ne eblas sendi retpoŝtaĵon al ĉiuj ricevontoj (konto %s de %s)"
 
 #: src/msmtp.c:4108
 msgid "could not send mail to all recipients"
-msgstr "не могу да пошаљем пошту свим примаоцима"
+msgstr "ne eblas sendi retpoŝtaĵon al ĉiuj ricevontoj"
 
 #: src/msmtp.c:4123 src/msmtp.c:4178 src/msmtp.c:4199
 #, c-format
 msgid "server message: %s"
-msgstr "порука сервера: %s"
+msgstr "servila mesaĝo: %s"
 
 #: src/msmtp.c:4129
 #, c-format
 msgid "could not send mail (account %s from %s)"
-msgstr "не могу да пошаљем пошту (налог „%s“ са „%s“)"
+msgstr "ne eblas sendi retpoŝtaĵon (konto %s de %s)"
 
 #: src/msmtp.c:4134
 msgid "could not send mail"
-msgstr "не могу да пошаљем пошту"
+msgstr "ne eblas sendi retpoŝtaĵon"
 
 #: src/msmtp.c:4144
 #, c-format
 msgid "delivery to one or more recipients failed"
-msgstr "испорука примаоцу или примаоцима није успела"
+msgstr "liverado al unu aŭ pli da ricevontoj malsukcesis"
 
 #: src/conf.c:794 src/conf.c:809
 #, c-format
 msgid "host not set"
-msgstr "домаћин није подешен"
+msgstr "retnodo ne elektita"
 
 #: src/conf.c:799
 #, c-format
 msgid "port not set"
-msgstr "прикључник није подешен"
+msgstr "pordo ne elektita"
 
 #: src/conf.c:804
 #, c-format
 msgid "envelope-from address is missing"
-msgstr "недостаје адреса за „коверту шаље“"
+msgstr "envelope-from-retpoŝtadreso mankas"
 
 #: src/conf.c:814
 #, c-format
 msgid "tls_key_file requires tls_cert_file"
-msgstr "„tls_key_file“ захтева „tls_cert_file“"
+msgstr "tls_cert_file estas postulata de tls_key_file"
 
 #: src/conf.c:819
 #, c-format
 msgid "tls_cert_file requires tls_key_file"
-msgstr "„tls_cert_file“ захтева „tls_key_file“"
+msgstr "tls_key_file estas postulata de tls_cert_file"
 
 #: src/conf.c:827
 #, c-format
@@ -1005,28 +994,28 @@ msgid ""
 "tls requires either tls_trust_file (highly recommended) or tls_fingerprint "
 "or a disabled tls_certcheck"
 msgstr ""
-"тлс захтева или „tls_trust_file“ (веома препоручљиво) или „tls_fingerprint“ "
-"или искључено „tls_certcheck“"
+"aŭ tls_trust_file (ege rekomendinda) aŭ tls_fingerprint aŭ malaktivigita "
+"tls_certcheck estas postulata de TLS"
 
 #: src/conf.c:833
 #, c-format
 msgid "tls_crl_file requires tls_trust_file"
-msgstr "„tls_crl_file“ захтева „tls_trust_file“"
+msgstr "tls_trush_file estas postulata de tls_crl_dosiero"
 
 #: src/conf.c:863
 #, c-format
 msgid "cannot evaluate '%s': %s"
-msgstr "не могу да оценим „%s“: %s"
+msgstr "'%s' ne estas taksebla: %s"
 
 #: src/conf.c:870
 #, c-format
 msgid "cannot read output of '%s'"
-msgstr "не могу да читам излаз од „%s“"
+msgstr "ne eblas legi eligon de '%s'"
 
 #: src/conf.c:884
 #, c-format
 msgid "output of '%s' is longer than %d characters"
-msgstr "излаз „%s“ је дужи од %d знака"
+msgstr "eligo de '%s' estas pli longa ol %d signoj"
 
 #: src/conf.c:930 src/conf.c:937 src/conf.c:950 src/tls.c:891
 #, c-format
@@ -1036,43 +1025,43 @@ msgstr "%s: %s"
 #: src/conf.c:1096 src/stream.c:63
 #, c-format
 msgid "input error"
-msgstr "улазна грешка"
+msgstr "eniga eraro"
 
 #: src/conf.c:1118
 #, c-format
 msgid "line longer than %d characters"
-msgstr "ред је дужи од %d знака"
+msgstr "linio pli longa ol %d signoj"
 
 #: src/conf.c:1169 src/conf.c:1294
 #, c-format
 msgid "line %d: missing account name"
-msgstr "%d. ред: недостаје назив налога"
+msgstr "linio %d: mankas kontonomo"
 
 #: src/conf.c:1174
 #, c-format
 msgid "line %d: account %s not (yet) defined"
-msgstr "%d. ред: налог „%s“ није (још увек) дефинисан"
+msgstr "linio %d: konto %s (ankoraŭ) ne estas difinita"
 
 #: src/conf.c:1266 src/conf.c:2063 src/conf.c:2080
 #, c-format
 msgid "line %d: command %s does not take an argument"
-msgstr "%d. ред: наредба „%s“ не захтева аргумент"
+msgstr "linio %d: ne eblas doni al komando %s argumenton"
 
 #: src/conf.c:1302
 #, c-format
 msgid "line %d: an account name must not contain colons or commas"
-msgstr "%d. ред: назив налога не сме да садржи двотачке или зарезе"
+msgstr "linio %d: konto nomo devas ne havi dupunktojn aŭ komojn"
 
 #: src/conf.c:1312
 #, c-format
 msgid "line %d: account %s was already defined"
-msgstr "%d. ред: налог „%s“ је већ дефинисан"
+msgstr "linio %d: konto %s jam estis difinita"
 
 #: src/conf.c:1337 src/conf.c:1356 src/conf.c:1383 src/conf.c:1412
 #: src/conf.c:1698 src/conf.c:1733
 #, c-format
 msgid "line %d: command %s needs an argument"
-msgstr "%d. ред: наредба „%s“ захтева аргумент"
+msgstr "linio %d: komando %s postulas argumenton"
 
 #: src/conf.c:1367 src/conf.c:1399 src/conf.c:1430 src/conf.c:1469
 #: src/conf.c:1514 src/conf.c:1534 src/conf.c:1619 src/conf.c:1640
@@ -1082,17 +1071,17 @@ msgstr "%d. ред: наредба „%s“ захтева аргумент"
 #: src/conf.c:2050
 #, c-format
 msgid "line %d: invalid argument %s for command %s"
-msgstr "%d. ред: неисправан аргумент „%s“ за наредбу „%s“"
+msgstr "linio %d: nevalida argumento %s por komando %s"
 
 #: src/conf.c:2096
 #, c-format
 msgid "line %d: unknown command %s"
-msgstr "%d. ред: непозната наредба „%s“"
+msgstr "linio %d: nekonato komando %s"
 
 #: src/conf.c:2148
 #, c-format
 msgid "contains secrets and therefore must be owned by you"
-msgstr "садржи тајне и стога мора бити у вашем власништву"
+msgstr "enhavas sekretojn kaj tial devas esti estrata de vi"
 
 #: src/conf.c:2154
 #, c-format
@@ -1100,25 +1089,26 @@ msgid ""
 "contains secrets and therefore must have no more than user read/write "
 "permissions"
 msgstr ""
-"садржи тајне и стога не сме имати ништа сем корисникових овлашћења за читање/"
-"писање"
+"enhavas sekretojn kaj tial devas ne esti legebla/skribebla de iu ajn alia ol "
+"la estro"
 
 #: src/smtp.c:209
 #, c-format
 msgid "the server sent an empty reply"
-msgstr "сервер је послао празан одговор"
+msgstr "la servilo sendis malplenan respondon"
 
 #: src/smtp.c:213
 #, c-format
 msgid "the server sent an invalid reply"
-msgstr "сервер је послао неисправан одговор"
+msgstr "la servilo sendis nevalidan respondon"
 
 #: src/smtp.c:237
 #, c-format
 msgid ""
 "Rejecting server reply that is longer than %d lines. Increase SMTP_MAXLINES."
 msgstr ""
-"Одбацујем одговор сервера који је дужи од %d реда. Повећајте „SMTP_MAXLINES“."
+"Malakceptas servilan respondon, kiu estas pli longa ol %d linioj.Pliigu la "
+"valoron de SMTP_MAXLINES."
 
 #: src/smtp.c:324
 #, c-format
@@ -1126,41 +1116,40 @@ msgid ""
 "Cannot send command because it is longer than %d characters. Increase "
 "SMTP_MAXCMDLEN."
 msgstr ""
-"Не могу да пошаљем наредбу јер је дужа од %d знака. Повећајте "
-"„SMTP_MAXCMDLEN“."
+"Ne eblas sendi komandon ĉar ĝi estis pli longa ol %d signoj. Pliigu la "
+"valoron de SMTP_MAXCMDLEN"
 
 #: src/smtp.c:356
 #, c-format
 msgid "cannot get initial OK message from server"
-msgstr "не могу добити почетну потврдну поруку са сервера"
+msgstr "ne eblas akiri komencan mesaĝon OK de servilo"
 
 #: src/smtp.c:418
 #, c-format
 msgid "SMTP server does not accept EHLO or HELO commands"
-msgstr "„SMTP“ не прихвата „EHLO“ или „HELO“ наредбе"
+msgstr "SMTP servilo ne akceptas la komandojn EHLO kaj HELO"
 
 #: src/smtp.c:441 src/smtp.c:591 src/smtp.c:596 src/smtp.c:669 src/smtp.c:717
 #: src/smtp.c:807 src/smtp.c:898 src/smtp.c:2043
 #, c-format
 msgid "command %s failed"
-msgstr "наредба „%s“ није успела"
+msgstr "komando %s malsukcesis"
 
 #: src/smtp.c:674 src/smtp.c:738 src/smtp.c:759 src/smtp.c:856 src/smtp.c:919
 #: src/smtp.c:993 src/smtp.c:1319 src/smtp.c:1361 src/smtp.c:1398
 #, c-format
 msgid "authentication failed (method %s)"
-msgstr "потврђивање идентитета није успело (начин „%s“)"
+msgstr "aŭtentigo malsukcesis (metodo %s)"
 
 #: src/smtp.c:818
 #, c-format
 msgid "authentication method CRAM-MD5: server sent invalid challenge"
-msgstr ""
-"начин потврђивања идентитета „CRAM-MD5“: сервер је послао неисправан изазов"
+msgstr "aŭtentiga metodo CRAM-MD5; servo sendis nevalidan defion"
 
 #: src/smtp.c:1106 src/smtp.c:1419
 #, c-format
 msgid "the server does not support authentication method %s"
-msgstr "сервер не подржава „%s“ начин потврђивања идентитета"
+msgstr "la servilo ne regas aŭtentigan metodon %s"
 
 #: src/smtp.c:1112 src/smtp.c:1230 src/smtp.c:1273
 #, c-format
@@ -1170,628 +1159,624 @@ msgstr "GNU SASL: %s"
 #: src/smtp.c:1119
 #, c-format
 msgid "GNU SASL: authentication method %s not supported"
-msgstr "GNU SASL: „%s“ начин потврђивања идентитета није подржан"
+msgstr "GNU SASL: ne regas aŭtentigan metodon %s"
 
 #: src/smtp.c:1178 src/smtp.c:1450
 #, c-format
 msgid "cannot use a secure authentication method"
-msgstr "не могу да користим безбедни начин потврђивања идентитета"
+msgstr "ne eblas uzi sekuran aŭtentigan metodon"
 
 #: src/smtp.c:1184 src/smtp.c:1456
 #, c-format
 msgid "cannot find a usable authentication method"
-msgstr "не могу да нађем употребљив начин потврђивања идентитета"
+msgstr "ne eblas trovi uzeblan aŭtentigan metodon"
 
 #: src/smtp.c:1197 src/smtp.c:1468
 #, c-format
 msgid "authentication method %s needs a user name"
-msgstr "„%s“ начин потврђивања идентитета тражи корисничко име"
+msgstr "aŭtentiga metodo %s postulas salutnomon"
 
 #: src/smtp.c:1210 src/smtp.c:1478
 #, c-format
 msgid "authentication method %s needs a password"
-msgstr "„%s“ начин потврђивања идентитета тражи лозинку"
+msgstr "aŭtentiga metodo %s postulas pasvorton"
 
 #: src/smtp.c:1377
 #, c-format
 msgid "authentication failed: %s (method %s)"
-msgstr "потврђивање идентитета није успело: %s (начин „%s“)"
+msgstr "aŭtentigo malsukcesis: %s (metodo %s)"
 
 #: src/smtp.c:1509
 #, c-format
 msgid "authentication method %s not supported"
-msgstr "„%s“ начин потврђивања идентитета није подржан"
+msgstr "aŭtentiga metodo %s ne estas regata"
 
 #: src/smtp.c:1623
 #, c-format
 msgid "envelope from address %s not accepted by the server"
-msgstr "сервер није прихватио адресу за „коверту шаље“ „%s“"
+msgstr "envelope-from-retpoŝtadreso %s ne estas akceptata de la servilo"
 
 #: src/smtp.c:1642
 #, c-format
 msgid "recipient address %s not accepted by the server"
-msgstr "сервер није прихватио адресу примаоца „%s“"
+msgstr "ricevonto-retpoŝtadreso %s ne estas akceptata de la servilo"
 
 #: src/smtp.c:1661
 #, c-format
 msgid "the server does not accept mail data"
-msgstr "сервер не прихвата податке поште"
+msgstr "la servilo ne akceptas retpoŝtajn datumojn"
 
 #: src/smtp.c:1901
 #, c-format
 msgid "the server did not accept the mail"
-msgstr "сервер није прихватио пошту"
+msgstr "la servilo ne akceptis la retpoŝtaĵon"
 
 #: src/smtp.c:1965
 #, c-format
 msgid "the server refuses to send the mail to %s"
-msgstr "сервер одбија да пошаље поштуза „%s“"
+msgstr "la servilo rifuzas sendi la retpoŝtaĵon al %s"
 
 #: src/smtp.c:2029
 #, c-format
 msgid "the server is unable to fulfill the request"
-msgstr "сервер није у могућности да испуни захтев"
+msgstr "la servilo ne kapablas plenumi la peton"
 
 #: src/smtp.c:2037
 #, c-format
 msgid "invalid argument for Remote Message Queue Starting"
-msgstr "неисправан аргумент за започињање реда удаљене поруке"
+msgstr "nevalida argumento por RMQS"
 
 #: src/net.c:94
 msgid "not enough memory"
-msgstr "нема довољно меморије"
+msgstr "nesufiĉa memoro"
 
 #: src/net.c:97 src/net.c:208 src/net.c:255 src/net.c:767 src/net.c:894
 #: src/tls.c:1641 src/tls.c:1706 src/tls.c:1749 src/tls.c:1836 src/tls.c:1875
 #, c-format
 msgid "operation aborted"
-msgstr "радња је обустављена"
+msgstr "operacio ĉesigita"
 
 #: src/net.c:100 src/net.c:684
 msgid "invalid argument"
-msgstr "неисправан агргумент"
+msgstr "nevalida argumento"
 
 #: src/net.c:103
 msgid "class type not found"
-msgstr "нисам нашао врсту класе"
+msgstr "klastipo ne trovita"
 
 #: src/net.c:106
 msgid "the network subsystem has failed"
-msgstr "подсистем мреже није успео"
+msgstr "la reto-subsistemo malsukcesis"
 
 #: src/net.c:109
 msgid "host not found (authoritative)"
-msgstr "нисам нашао домаћина (званично)"
+msgstr "retnodo ne trovita (aŭtoritata)"
 
 #: src/net.c:112
 msgid "host not found (nonauthoritative) or server failure"
-msgstr "нисам нашао домаћина (незванично) или неуспех сервера"
+msgstr "retnodo ne trovita (neaŭtoritata) aŭ servila malsukceso"
 
 #: src/net.c:115
 msgid "nonrecoverable error"
-msgstr "непоправљива грешка"
+msgstr "neriparebla eraro"
 
 #: src/net.c:118
 msgid "valid name, but no data record of requested type"
-msgstr "исправан назив, али нема снимка података тражене врсте"
+msgstr "valida nomo, sed neniu datuma rikordo de petita tipo"
 
 #: src/net.c:121
 msgid "address family not supported"
-msgstr "скупина адреса није подржана"
+msgstr "adreso-familio ne regata"
 
 #: src/net.c:124
 msgid "no socket descriptors available"
-msgstr "описници прикључнице нису доступни"
+msgstr "neniuj ŝtopilingaj priskribiloj disponeblaj"
 
 #: src/net.c:127
 msgid "no buffer space available"
-msgstr "простор међумеморије није доступан"
+msgstr "neniu bufrospaco dispenebla"
 
 #: src/net.c:130
 msgid "protocol not supported"
-msgstr "протокол није подржан"
+msgstr "protokolo ne regata"
 
 #: src/net.c:133
 msgid "wrong protocol type for this socket"
-msgstr "погрешна врста протокола за ову прикључницу"
+msgstr "malĝusta protokolo-tipo por ĉi tiu ŝtopilingo"
 
 #: src/net.c:136
 msgid "socket type is not supported in this address family"
-msgstr "врста прикључнице није подржана у овој скупини адреса"
+msgstr "ŝtopilinga tipo ne estas regata en ĉi tiu adreso-familio"
 
 #: src/net.c:139
 msgid "remote address is not valid"
-msgstr "удаљена адреса није исправна"
+msgstr "fora adreso ne estas valida"
 
 #: src/net.c:142 src/net.c:636
 msgid "connection refused"
-msgstr "веза је одбијена"
+msgstr "konekto rifuzita"
 
 #: src/net.c:145 src/net.c:630
 msgid "network unreachable"
-msgstr "мрежа није доступна"
+msgstr "reto neatingebla"
 
 #: src/net.c:148
 msgid "timeout"
-msgstr "истекло је време"
+msgstr "eksvalidiĝo"
 
 #: src/net.c:151
 msgid "socket not connected"
-msgstr "прикључница није прикључена"
+msgstr "ŝtopilingo ne estas konektita"
 
 #: src/net.c:154
 msgid "the socket was shut down"
-msgstr "прикључница је угашена"
+msgstr "la ŝtopilingo estis ĉesigita"
 
 #: src/net.c:157 src/net.c:633
 msgid "host unreachable"
-msgstr "домаћин није доступан"
+msgstr "retnodo ne atingeblas"
 
 #: src/net.c:160
 msgid "connection reset by peer"
-msgstr "веза је прекинута на другом крају"
+msgstr "konekto restartigita de samtavolano"
 
 #: src/net.c:163
 msgid "the underlying network subsystem is not ready"
-msgstr "темељни мрежни подсистем није спреман"
+msgstr "la suba reto-subsistemo ne pretas"
 
 #: src/net.c:166
 msgid "the requested version is not available"
-msgstr "захтевано издање није доступно"
+msgstr "la petita eldono ne disponeblas"
 
 #: src/net.c:169
 msgid "a blocking operation is in progress"
-msgstr "радња блокирања је у току"
+msgstr "bloka operacio okazas"
 
 #: src/net.c:172
 msgid "limit on the number of tasks has been reached"
-msgstr "ограничење у броју задатака је достигнуто"
+msgstr "limigo de la nombro da taskoj estas atingita"
 
 #: src/net.c:175
 msgid "invalid request"
-msgstr "неисправан захтев"
+msgstr "nevalida peto"
 
 #: src/net.c:178 src/net.c:648 src/tls.c:1533 src/tls.c:1557 src/tls.c:1852
 msgid "unknown error"
-msgstr "непозната грешка"
+msgstr "nevalida eraro"
 
 #: src/net.c:197 src/net.c:202 src/net.c:212 src/net.c:217
 #, c-format
 msgid "network read error: %s"
-msgstr "грешка читања мреже: %s"
+msgstr "reta skriberaro: %s"
 
 #: src/net.c:198 src/net.c:213 src/net.c:245 src/net.c:260 src/tls.c:1552
 msgid "the operation timed out"
-msgstr "истекло је време за радњу"
+msgstr "la operacio esvalidiĝis"
 
 #: src/net.c:244 src/net.c:249 src/net.c:259 src/net.c:264
 #, c-format
 msgid "network write error: %s"
-msgstr "грешка писања мреже: %s"
+msgstr "reta skriberaro: %s"
 
 #: src/net.c:528 src/net.c:558 src/net.c:593 src/net.c:624 src/net.c:627
 #: src/net.c:630 src/net.c:633 src/net.c:636 src/net.c:639 src/net.c:642
 #: src/net.c:645 src/net.c:648
 #, c-format
 msgid "proxy failure: %s"
-msgstr "неуспех посредника: %s"
+msgstr "prokurila malsukceso: %s"
 
 #: src/net.c:528
 msgid "host name too long"
-msgstr "назив домаћина је предуг"
+msgstr "retnodnomo tro longas"
 
 #: src/net.c:542 src/net.c:576 src/net.c:1007
 #, c-format
 msgid "network write error"
-msgstr "грешка писања мреже"
+msgstr "reta skriberaro"
 
 #: src/net.c:552 src/net.c:586 src/net.c:615
 #, c-format
 msgid "network read error"
-msgstr "грешка читања мреже"
+msgstr "reta legeraro"
 
 #: src/net.c:558 src/net.c:593
 msgid "unexpected reply"
-msgstr "неочекиван одговор"
+msgstr "neatendita respondo"
 
 #: src/net.c:624
 msgid "general server failure"
-msgstr "општи неуспех сервера"
+msgstr "ĝenerala servila malsukceso"
 
 #: src/net.c:627
 msgid "connection not allowed"
-msgstr "веза није дозвољена"
+msgstr "konekto ne permesata"
 
 #: src/net.c:639
 msgid "time-to-live expired"
-msgstr "време трајања је истекло"
+msgstr "vivdaŭro eksvalidiĝis"
 
 #: src/net.c:642
 msgid "command not supported"
-msgstr "наредба није подржана"
+msgstr "komando ne regata"
 
 #: src/net.c:645
 msgid "address type not supported"
-msgstr "врста адресе није подржана"
+msgstr "adreso-tipo ne regata"
 
 #: src/net.c:676 src/net.c:683 src/net.c:698
 #, c-format
 msgid "cannot connect to %s: %s"
-msgstr "не могу да се повежем на „%s“: %s"
+msgstr "ne eblas konektiĝi al %s: %s"
 
 #: src/net.c:689 src/net.c:862
 #, c-format
 msgid "cannot create socket: %s"
-msgstr "не могу да направим прикључницу: %s"
+msgstr "ne eblas krei ŝtopilingon: %s"
 
 #: src/net.c:762 src/net.c:771
 #, c-format
 msgid "cannot locate host %s: %s"
-msgstr "не могу да нађем домаћина „%s“: %s"
+msgstr "ne eblas loki retnodon %s: %s"
 
 #: src/net.c:873
 #, c-format
 msgid "cannot bind source ip %s: %s"
-msgstr "не могу да свежем ип извора „%s“: %s"
+msgstr "ne eblas bindi fontan IP-on %s: %s"
 
 #: src/net.c:889 src/net.c:902
 #, c-format
 msgid "cannot connect to %s, port %d: %s"
-msgstr "не могу да се повежем на „%s“, прикључник %d: %s"
+msgstr "ne eblas konektiĝi al %s, pordo %d: %s"
 
 #: src/tls.c:110
 #, c-format
 msgid ""
 "no environment variables RANDFILE or HOME, or filename of rand file too long"
-msgstr ""
-"нема променљиве окружења „RANDFILE“ или „HOME“, или је назив датотеке предуг "
-"или је предуга насумична датотека"
+msgstr "neniu medivariablo RANDFILE aŭ HOME, aŭ dosiernomo tro longas"
 
 #: src/tls.c:116
 #, c-format
 msgid "%s: input error"
-msgstr "%s: улазна грешка"
+msgstr "%s: eniga eraro"
 
 #: src/tls.c:138
 #, c-format
 msgid "random file + time + pseudo randomness is not enough, giving up"
-msgstr ""
-"насумична датотека + време + псеудо насумичност није довољно, дижем руке од "
-"свега"
+msgstr "hazarda dosiero + tempo + pseŭdhazardeco ne sufiĉas, mi rezignas"
 
 #: src/tls.c:381 src/tls.c:495
 msgid "cannot get TLS certificate info"
-msgstr "не могу да добавим податке „TLS“ уверења"
+msgstr "ne eblas akiri informojn pri la TLS-atestilo"
 
 #: src/tls.c:386 src/tls.c:498 src/tls.c:770 src/tls.c:900
 #, c-format
 msgid "%s: no certificate was found"
-msgstr "%s: нисам нашао ниједно уверење"
+msgstr "%s: neniu atestilo troviĝis"
 
 #: src/tls.c:391 src/tls.c:776 src/tls.c:913
 #, c-format
 msgid "%s: cannot initialize certificate structure"
-msgstr "%s: не могу да покренем структуру уверења"
+msgstr "%s: ne eblas startigi atestilan strukturon"
 
 #: src/tls.c:397
 #, c-format
 msgid "%s: error parsing certificate"
-msgstr "%s: грешка обраде уверења"
+msgstr "%s: eraro dum analizo de atestilo"
 
 #: src/tls.c:407 src/tls.c:518 src/tls.c:793 src/tls.c:1022
 #, c-format
 msgid "%s: error getting SHA256 fingerprint"
-msgstr "%s: грешка добављања „SHA256“ отиска"
+msgstr "%s: eraro akiri SHA256-fingrpremaĵon"
 
 #: src/tls.c:415 src/tls.c:524 src/tls.c:812 src/tls.c:1040
 #, c-format
 msgid "%s: error getting SHA1 fingerprint"
-msgstr "%s: грешка добављања „SHA1“ отиска"
+msgstr "%s: eraro akiri SHA1-fingrpremaĵon"
 
 #: src/tls.c:421 src/tls.c:532
 #, c-format
 msgid "%s: cannot get activation time"
-msgstr "%s: не могу да добавим време активирања"
+msgstr "%s: ne eblas atingi aktivigo-tempon"
 
 #: src/tls.c:427 src/tls.c:542
 #, c-format
 msgid "%s: cannot get expiration time"
-msgstr "%s: не могу да добавим време истека"
+msgstr "%s: ne eblas atingi eksvalidiĝo-tempon"
 
 #: src/tls.c:503 src/tls.c:1131
 #, c-format
 msgid "%s: cannot get certificate subject"
-msgstr "%s: не могу да добавим субјекат уверења"
+msgstr "%s: ne eblas atingi atestilo-temon"
 
 #: src/tls.c:509
 #, c-format
 msgid "%s: cannot get certificate issuer"
-msgstr "%s: не могу да добавим издавача уверења"
+msgstr "%s: ne eblas atingi atestilo-eldoninton"
 
 #: src/tls.c:611
 msgid "Common Name"
-msgstr "Општи назив"
+msgstr "Komuna Nomo"
 
 #: src/tls.c:611
 msgid "Organization"
-msgstr "Организација"
+msgstr "Organizaĵo"
 
 #: src/tls.c:612
 msgid "Organizational unit"
-msgstr "Организациона јединица"
+msgstr "Organizaĵa sekcio"
 
 #: src/tls.c:612
 msgid "Locality"
-msgstr "Место"
+msgstr "Lokaĵo"
 
 #: src/tls.c:612
 msgid "State or Province"
-msgstr "Држава или Покрајина"
+msgstr "Subŝtato aŭ provinco"
 
 #: src/tls.c:613
 msgid "Country"
-msgstr "Земља"
+msgstr "Lando"
 
 #: src/tls.c:620
 #, c-format
 msgid "TLS session parameters:\n"
-msgstr "Параметри „TLS“ сесије:\n"
+msgstr "TLS-seancaj parametroj:\n"
 
 #: src/tls.c:622
 msgid "not available"
-msgstr "недоступно"
+msgstr "ne disponebla"
 
 #: src/tls.c:627
 #, c-format
 msgid "TLS certificate information:\n"
-msgstr "Подаци „TLS“ уверења:\n"
+msgstr "TLS-atestiloj informoj:\n"
 
 #: src/tls.c:628
 msgid "Owner"
-msgstr "Власник"
+msgstr "Estro"
 
 #: src/tls.c:639
 msgid "Issuer"
-msgstr "Издавач"
+msgstr "Eldoninto"
 
 #: src/tls.c:650
 msgid "Validity"
-msgstr "Исправност"
+msgstr "Valideco"
 
 #: src/tls.c:652
 msgid "Activation time"
-msgstr "Време активирања"
+msgstr "Aktivigo-tempo"
 
 #: src/tls.c:654
 msgid "Expiration time"
-msgstr "Време истека"
+msgstr "Eksvalidiĝo-tempo"
 
 #: src/tls.c:655
 msgid "Fingerprints"
-msgstr "Отисци"
+msgstr "Fingrospuroj"
 
 #: src/tls.c:755 src/tls.c:998
 msgid "TLS certificate verification failed"
-msgstr "Потврђивање „TLS“ уверења није успело"
+msgstr "TLS-atestila aŭtentigo malsukcesis"
 
 #: src/tls.c:759 src/tls.c:1002
 msgid "TLS certificate check failed"
-msgstr "Провера „TLS“ уверења није успела"
+msgstr "TLS-atestila kontrolo malsukcesis"
 
 #: src/tls.c:783 src/tls.c:920
 #, c-format
 msgid "%s: error parsing certificate %u of %u"
-msgstr "%s: грешка обраде уверења „%u“ од „%u“"
+msgstr "%s: eraro dum analizo de atestilo %u el %u"
 
 #: src/tls.c:800 src/tls.c:819 src/tls.c:838 src/tls.c:1029 src/tls.c:1047
 #: src/tls.c:1065
 #, c-format
 msgid "%s: the certificate fingerprint does not match"
-msgstr "%s: отисак уверења не одговара"
+msgstr "%s: la atestilo fingropremaĵo ne kongruas"
 
 #: src/tls.c:831 src/tls.c:1058
 #, c-format
 msgid "%s: error getting MD5 fingerprint"
-msgstr "%s: грешка добављања „MD5“ отиска"
+msgstr "%s: eraro akiri MD5-figropremaĵon"
 
 #: src/tls.c:859
 #, c-format
 msgid "%s: the certificate type is not X509"
-msgstr "%s: врста уверења није „X509“"
+msgstr "%s: la atestila tipo ne estas X509"
 
 #: src/tls.c:868
 #, c-format
 msgid "%s: the certificate has been revoked"
-msgstr "%s: уверење је опозвано"
+msgstr "%s: la atestilo estas revokita"
 
 #: src/tls.c:875
 #, c-format
 msgid "%s: the certificate hasn't got a known issuer"
-msgstr "%s: уверење није добило познатог издавача"
+msgstr "%s: la atestilo ne havas konatan eldoninton"
 
 #: src/tls.c:881
 #, c-format
 msgid "%s: the certificate is not trusted"
-msgstr "%s: уверење није поверљиво"
+msgstr "%s: la atestilo ne estas fidinda"
 
 #: src/tls.c:935 src/tls.c:1169
 #, c-format
 msgid "%s: the certificate owner does not match hostname %s"
-msgstr "%s: власник уверења не одговара домаћину „%s“"
+msgstr "%s: la atestila estro ne kongruas kun la retnodnomo: %s"
 
 #: src/tls.c:943
 #, c-format
 msgid "%s: cannot get activation time for certificate %u of %u"
-msgstr "%s: не могу да добавим време активирања за уверење „%u“ од „%u“"
+msgstr "%s: ne eblas atingi aktivigo-tempon por atestilon %u el %u"
 
 #: src/tls.c:951
 #, c-format
 msgid "%s: certificate %u of %u is not yet activated"
-msgstr "%s: уверење „%u“ од „%u“ још није активирано"
+msgstr "%s: atestilo %u el %u ankoraŭ ne estas aktivigita"
 
 #: src/tls.c:957
 #, c-format
 msgid "%s: cannot get expiration time for certificate %u of %u"
-msgstr "%s: не могу да добавим време истека за уверење „%u“ од „%u“"
+msgstr "%s: ne eblas akiri eksvalidiĝan tempon por atestilo %u el %u"
 
 #: src/tls.c:964
 #, c-format
 msgid "%s: certificate %u of %u has expired"
-msgstr "%s: уверење „%u“ од „%u“ је истекло"
+msgstr "%s: atestilo %u el %u estas eksvalidiĝinta"
 
 #: src/tls.c:1008
 #, c-format
 msgid "%s: no certificate was sent"
-msgstr "%s: није послато никакво уверење"
+msgstr "%s: neniu atestilo estis sendita"
 
 #: src/tls.c:1111
 #, c-format
 msgid "%s: certificate subject alternative name contains NUL"
-msgstr "%s: заменски назив субјекта уверења садржи „NUL“"
+msgstr "%s: alternativa nomo de la atestila temo enhavas NUL-on"
 
 #: src/tls.c:1143
 #, c-format
 msgid "%s: cannot get certificate common name"
-msgstr "%s: не могу да добавим уопштен назив уверења"
+msgstr "%s: ne eblas atingi komunan nomon de atestilo"
 
 #: src/tls.c:1152
 #, c-format
 msgid "%s: certificate common name contains NUL"
-msgstr "%s: уопштен назив уверења садржи „NUL“"
+msgstr "%s: komuna nomo de la atestilo enhavas NUL-on"
 
 #: src/tls.c:1229
 #, c-format
 msgid "cannot initialize TLS session: %s"
-msgstr "не могу да покренем „TLS“ сесију: %s"
+msgstr "ne eblas startigi TLS-seancon: %s"
 
 #: src/tls.c:1242
 #, c-format
 msgid "error in priority string at position %d"
-msgstr "грешка у нисци приоритета на положају %d"
+msgstr "eraro en prioritato-ĉeno, pozicio %d"
 
 #: src/tls.c:1245 src/tls.c:1252 src/tls.c:1388
 #, c-format
 msgid "cannot set priorities for TLS session: %s"
-msgstr "не могу да подесим приоритете за „TLS“ сесију: %s"
+msgstr "ne eblas elekti prioritatojn por TLS-seancon: %s"
 
 #: src/tls.c:1263
 #, c-format
 msgid "cannot set default priority for TLS session: %s"
-msgstr "не могу да подесим основни приоритет за „TLS“ сесију: %s"
+msgstr "ne eblas agordi aprioran prioritaton por TLS-seancon: %s"
 
 #: src/tls.c:1276
 #, c-format
 msgid "cannot allocate certificate for TLS session: %s"
-msgstr "не могу да доделим уверење за „TLS“ сесију: %s"
+msgstr "ne eblas generi atestilon por TLS-seancon: %s"
 
 #: src/tls.c:1287
 #, c-format
 msgid ""
 "cannot set X509 key file %s and/or X509 cert file %s for TLS session: %s"
 msgstr ""
-"не могу да подесим датотеку „%s“ „X509“ кључа и/или датотеку „%s“ „X509“ "
-"уверења за „TLS“ сесију: %s"
+"ne eblas elekti X509-ŝlosildosieron %s kajaŭ X509-atestildosieron %s por TLS-"
+"seanco: %s"
 
 #: src/tls.c:1307 src/tls.c:1444
 #, c-format
 msgid "cannot set X509 system trust for TLS session: %s"
-msgstr "не могу да подесим поверење „X509“ система за „TLS“ сесију: %s"
+msgstr "ne eblas elekti sisteman fidon de X509 por TLS seanco: %s"
 
 #: src/tls.c:1320
 #, c-format
 msgid "cannot set X509 trust file %s for TLS session: %s"
-msgstr "не могу да подесим датотеку „%s“ „X509“ поверења за „TLS“ сесију: %s"
+msgstr "ne eblas elekti fido-dosieron %s de X509 por TLS-seanco: %s"
 
 #: src/tls.c:1333
 #, c-format
 msgid "cannot set X509 CRL file %s for TLS session: %s"
-msgstr "не могу да подесим „X509 CRL“ датотеку „%s“ за „TLS“ сесију: %s"
+msgstr "ne eblas elekti CRL-dosieron %s de X509 por TLS-seanco: %s"
 
 #: src/tls.c:1360
 #, c-format
 msgid "cannot set credentials for TLS session: %s"
-msgstr "не могу да подесим поверења за „TLS“ сесију: %s"
+msgstr "ne eblas elekti atestilojn por TLS-seanco: %s"
 
 #: src/tls.c:1380
 #, c-format
 msgid "cannot set minimum number of DH prime bits for TLS: %s"
-msgstr "не могу да подесим најмањи број „DH“ простих битова за „TLS“: %s"
+msgstr "ne eblas agordi nombron da DH-ĉefbitoj por TLS: %s "
 
 #: src/tls.c:1381 src/tls.c:1389 src/tls.c:1397
 msgid "feature not yet implemented for OpenSSL"
-msgstr "функција још није примењена за „OpenSSL“"
+msgstr "eco ne jam disponebla per OpenSSL"
 
 #: src/tls.c:1396
 #, c-format
 msgid "cannot load CRL file: %s"
-msgstr "не могу да учитам „CRL“ датотеку: %s"
+msgstr "ne eblas ŝargi CRL-dosieron: %s"
 
 #: src/tls.c:1403
 #, c-format
 msgid "cannot set TLS method"
-msgstr "не могу да подесим „TLS“ начин"
+msgstr "ne eblas elekti TLS-metodon"
 
 #: src/tls.c:1408
 #, c-format
 msgid "cannot create TLS context: %s"
-msgstr "не могу да направим „TLS“ контекст: %s"
+msgstr "Ne eblas krei TLS-kuntekston: %s"
 
 #: src/tls.c:1419
 #, c-format
 msgid "cannot load key file %s: %s"
-msgstr "не могу да учитам датотеку кључа „%s“: %s"
+msgstr "ne eblas ŝargi ŝlosilo-dosieron %s: %s"
 
 #: src/tls.c:1427
 #, c-format
 msgid "cannot load certificate file %s: %s"
-msgstr "не могу да учитам датотеку уверења „%s“: %s"
+msgstr "ne eblas ŝargi atestilo-dosieron %s: %s"
 
 #: src/tls.c:1455
 #, c-format
 msgid "cannot load trust file %s: %s"
-msgstr "не могу да учитам датотеку поверења „%s“: %s"
+msgstr "ne eblas ŝargi fido-dosieron %s: %s"
 
 #: src/tls.c:1481
 #, c-format
 msgid "cannot create a TLS structure: %s"
-msgstr "не могу да направим „TLS“ структуру: %s"
+msgstr "ne eblas krei TLS-strukturon: %s"
 
 #: src/tls.c:1525
 msgid "a protocol violating EOF occurred"
-msgstr "догодио се протокол који је прекршио крај датотеке"
+msgstr "malobeanta protokolo okazis"
 
 #: src/tls.c:1543
 msgid "the connection was closed unexpectedly"
-msgstr "веза је неочекивано затворена"
+msgstr "la konekto estis neatendite fermita"
 
 #: src/tls.c:1591
 #, c-format
 msgid "TLS handshake failed: %s"
-msgstr "„TLS“ руковање није успело: %s"
+msgstr "TLS-manpremo malsukcesis: %s"
 
 #: src/tls.c:1628
 #, c-format
 msgid "cannot set the file descriptor for TLS: %s"
-msgstr "не могу да подесим описника датотеке за „TLS“: %s"
+msgstr "ne eblas agordi dosiero-prisklibilon por TLS: %s"
 
 #: src/tls.c:1647
 msgid "TLS handshake failed"
-msgstr "„TLS“ руковање није успело"
+msgstr "TLS-manpremo malsukcesis"
 
 #: src/tls.c:1710
 #, c-format
 msgid "cannot read from TLS connection: %s"
-msgstr "не могу да читам са „TLS“ везе: %s"
+msgstr "ne eblas legi de TLS-konekto: %s"
 
 #: src/tls.c:1754
 msgid "cannot read from TLS connection"
-msgstr "не могу да читам са „TLS“ везе"
+msgstr "ne eblas legi de TLS-konekto"
 
 #: src/tls.c:1840 src/tls.c:1851
 #, c-format
 msgid "cannot write to TLS connection: %s"
-msgstr "не могу да пишем на „TLS“ везу: %s"
+msgstr "ne eblas skribi al TLS-konekto: %s"
 
 #: src/tls.c:1881
 msgid "cannot write to TLS connection"
-msgstr "не могу да пишем на „TLS“ везу"
+msgstr "ne eblas skribi al TLS-konekto"

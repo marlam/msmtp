@@ -1,3 +1,8 @@
+Version 1.8.12:
+- msmtpd now supports session reuse and improves standards compliance
+- Automatic account matching now supports subaddresses. For example,
+  user+detail@example.com will match account user@example.com.
+
 Version 1.8.11:
 - Add a new undisclosed_recipients command and --undisclosed-recipients option
   to replace To, Cc, Bcc with a single "To: undisclosed-recipients:;" header.

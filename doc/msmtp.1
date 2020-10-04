@@ -10,7 +10,7 @@
 .\" under the terms of the GNU Free Documentation License, Version 1.2 or
 .\" any later version published by the Free Software Foundation; with no
 .\" Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
-.TH MSMTP 1 2020-08
+.TH MSMTP 1 2020-10
 .SH NAME
 msmtp \- An SMTP client
 .SH SYNOPSIS
@@ -372,7 +372,8 @@ considered broken; it sometimes requires a special domain parameter passed via
 \fBntlmdomain\fP).
 .br
 There are currently three authentication methods that are not based on user /
-password information and have to be chosen manually: \fIoauthbearer\fP (an OAuth2
+password information and have to be chosen manually: \fIoauthbearer\fP or its
+predecessor \fIxoauth2\fP (an OAuth2
 token from the mail provider is used as the password.
 See the documentation of your mail provider for details on how to get this
 token. The \fBpasswordeval\fP command can be used to pass the regularly changing

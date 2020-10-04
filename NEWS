@@ -1,3 +1,6 @@
+Version 1.8.13:
+- Added support for XOAUTH2, the predecessor of OAUTHBEARER.
+
 Version 1.8.12:
 - msmtpd now supports session reuse and improves standards compliance
 - Automatic account matching now supports subaddresses. For example,

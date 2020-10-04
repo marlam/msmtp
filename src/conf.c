@@ -443,7 +443,8 @@ int check_auth_arg(char *arg)
             || strcmp(arg, "external") == 0
             || strcmp(arg, "login") == 0
             || strcmp(arg, "ntlm") == 0
-            || strcmp(arg, "oauthbearer") == 0)
+            || strcmp(arg, "oauthbearer") == 0
+            || strcmp(arg, "xoauth2") == 0)
     {
         l = strlen(arg);
         for (i = 0; i < l; i++)

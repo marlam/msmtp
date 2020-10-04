@@ -570,6 +570,10 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
             {
                 printf("OAUTHBEARER ");
             }
+            if (srv.cap.flags & SMTP_CAP_AUTH_XOAUTH2)
+            {
+                printf("XOAUTH2 ");
+            }
             printf("\n");
         }
 #ifdef HAVE_TLS
@@ -2067,7 +2071,7 @@ void msmtp_print_version(void)
     printf(_("Authentication library: %s\n"
                 "Supported authentication methods:\n"),
 #ifdef HAVE_LIBGSASL
-            _("GNU SASL; oauthbearer: built-in")
+            _("GNU SASL; oauthbearer and xoauth2: built-in")
 #else
             _("built-in")
 #endif /* HAVE_LIBGSASL */
@@ -2107,6 +2111,10 @@ void msmtp_print_version(void)
     if (smtp_client_supports_authmech("OAUTHBEARER"))
     {
         printf("oauthbearer ");
+    }
+    if (smtp_client_supports_authmech("XOAUTH2"))
+    {
+        printf("xoauth2 ");
     }
     printf("\n");
     /* Internationalized Domain Names support */

@@ -525,6 +525,10 @@ int smtp_init(smtp_server_t *srv, const char *ehlo_domain, list_t **errmsg,
             {
                 srv->cap.flags |= SMTP_CAP_AUTH_OAUTHBEARER;
             }
+            if (strstr(s + 9, "XOAUTH2"))
+            {
+                srv->cap.flags |= SMTP_CAP_AUTH_XOAUTH2;
+            }
         }
         else if (strncmp(s + 4, "ETRN", 4) == 0)
         {
@@ -1000,6 +1004,74 @@ int smtp_auth_oauthbearer(smtp_server_t *srv,
 
 
 /*
+ * smtp_auth_xoauth2()
+ *
+ * Do SMTP authentication via AUTH XOAUTH2.
+ * The SMTP server must support SMTP_CAP_AUTH_XOAUTH2
+ * Used error codes: SMTP_EIO, SMTP_EAUTHFAIL, SMTP_EINVAL
+ */
+
+int smtp_auth_xoauth2(smtp_server_t *srv,
+        const char *user, const char *token,
+        list_t **error_msg, char **errstr)
+{
+    list_t *msg;
+    char *oauth;
+    size_t oa_len;
+    char *b64;
+    size_t b64_len;
+    int e;
+    int status;
+
+    *error_msg = NULL;
+
+    oa_len = 5 + /* "user=" */
+             strlen(user) +
+             13 + /* "^Aauth=Bearer " */
+             strlen(token) +
+             2 /* "^A^A" */;
+    oauth = xmalloc(oa_len + 1);
+    oa_len = snprintf(oauth, oa_len + 1,
+            "user=%s\001auth=Bearer %s\001\001", user, token);
+    b64_len = BASE64_LENGTH(oa_len) + 1;
+    b64 = xmalloc(b64_len);
+    base64_encode(oauth, oa_len, b64, b64_len);
+    e = smtp_send_cmd(srv, errstr, "AUTH XOAUTH2 %s", b64);
+    free(oauth);
+    free(b64);
+    if (e != SMTP_EOK)
+    {
+        return e;
+    }
+    if ((e = smtp_get_msg(srv, &msg, errstr)) != SMTP_EOK)
+    {
+        return e;
+    }
+    if ((status = smtp_msg_status(msg)) != 235)
+    {
+        if (status == 334)
+        {
+            list_xfree(msg, free);
+            if ((e = smtp_send_cmd(srv, errstr, "")) != SMTP_EOK)
+            {
+                return e;
+            }
+            if ((e = smtp_get_msg(srv, &msg, errstr)) != SMTP_EOK)
+            {
+                return e;
+            }
+        }
+        *error_msg = msg;
+        *errstr = xasprintf(_("authentication failed (method %s)"), "XOAUTH2");
+        return SMTP_EAUTHFAIL;
+    }
+    list_xfree(msg, free);
+
+    return SMTP_EOK;
+}
+
+
+/*
  * smtp_server_supports_authmech()
  *
  * see smtp.h
@@ -1024,7 +1096,9 @@ int smtp_server_supports_authmech(smtp_server_t *srv, const char *mech)
             || ((srv->cap.flags & SMTP_CAP_AUTH_NTLM)
                 && strcmp(mech, "NTLM") == 0)
             || ((srv->cap.flags & SMTP_CAP_AUTH_OAUTHBEARER)
-                && strcmp(mech, "OAUTHBEARER") == 0));
+                && strcmp(mech, "OAUTHBEARER") == 0)
+            || ((srv->cap.flags & SMTP_CAP_AUTH_XOAUTH2)
+                && strcmp(mech, "XOAUTH2") == 0));
 }
 
 
@@ -1062,7 +1136,8 @@ int smtp_client_supports_authmech(const char *mech)
             || strcmp(mech, "PLAIN") == 0
             || strcmp(mech, "EXTERNAL") == 0
             || strcmp(mech, "LOGIN") == 0
-            || strcmp(mech, "OAUTHBEARER") == 0);
+            || strcmp(mech, "OAUTHBEARER") == 0
+            || strcmp(mech, "XOAUTH2") == 0);
 
 #endif /* not HAVE_LIBGSASL */
 }
@@ -1198,7 +1273,7 @@ int smtp_auth(smtp_server_t *srv,
                     auth_mech);
             return SMTP_EUNAVAIL;
         }
-        /* SCRAM-SHA-1, DIGEST-MD5, CRAM-MD5, PLAIN, LOGIN, NTLM and OAUTHBEARER
+        /* SCRAM-SHA-1, DIGEST-MD5, CRAM-MD5, PLAIN, LOGIN, NTLM, OAUTHBEARER, XOAUTH2
          * all need a password */
         if (strcmp(auth_mech, "GSSAPI") != 0 && !password)
         {
@@ -1215,12 +1290,19 @@ int smtp_auth(smtp_server_t *srv,
         }
     }
 
-    /* OAUTHBEARER is built-in, all other methods are provided by GNU SASL */
+    /* OAUTHBEARER and XOAUTH2 are built-in, all other methods are provided by GNU SASL */
     if (strcmp(auth_mech, "OAUTHBEARER") == 0)
     {
         gsasl_done(ctx);
         e = smtp_auth_oauthbearer(srv, hostname, port, user, password,
                                   error_msg, errstr);
+        free(callback_password);
+        return e;
+    }
+    else if (strcmp(auth_mech, "XOAUTH2") == 0)
+    {
+        gsasl_done(ctx);
+        e = smtp_auth_xoauth2(srv, user, password, error_msg, errstr);
         free(callback_password);
         return e;
     }
@@ -1503,6 +1585,10 @@ int smtp_auth(smtp_server_t *srv,
     {
         e = smtp_auth_oauthbearer(srv, hostname, port, user, password,
                                   error_msg, errstr);
+    }
+    else if (strcmp(auth_mech, "XOAUTH2") == 0)
+    {
+        e = smtp_auth_xoauth2(srv, user, password, error_msg, errstr);
     }
     else
     {

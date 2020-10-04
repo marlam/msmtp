@@ -73,7 +73,8 @@
 #define SMTP_CAP_AUTH_EXTERNAL          (1 << 11)
 #define SMTP_CAP_AUTH_NTLM              (1 << 12)
 #define SMTP_CAP_AUTH_OAUTHBEARER       (1 << 13)
-#define SMTP_CAP_ETRN                   (1 << 14)
+#define SMTP_CAP_AUTH_XOAUTH2           (1 << 14)
+#define SMTP_CAP_ETRN                   (1 << 15)
 
 
 /*

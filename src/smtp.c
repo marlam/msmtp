@@ -1115,7 +1115,7 @@ int smtp_client_supports_authmech(const char *mech)
     int supported = 0;
     Gsasl *ctx;
 
-    if (strcmp(mech, "OAUTHBEARER") == 0)
+    if (strcmp(mech, "OAUTHBEARER") == 0 || strcmp(mech, "XOAUTH2") == 0)
     {
         supported = 1;
     }

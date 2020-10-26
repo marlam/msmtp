@@ -849,11 +849,11 @@ int get_password_eval(const char *arg, char **buf, char **errstr)
 {
     FILE *eval;
     size_t l;
-    int have_more_data;
 
     *buf = NULL;
     *errstr = NULL;
     errno = 0;
+    l = 1; /* Account for the null character. */
 
     if (!(eval = popen(arg, "r")))
     {
@@ -865,36 +865,29 @@ int get_password_eval(const char *arg, char **buf, char **errstr)
         return CONF_EIO;
     }
 
-    *buf = xmalloc(LINEBUFSIZE);
-    if (!fgets(*buf, LINEBUFSIZE, eval))
+    do
     {
-        *errstr = xasprintf(_("cannot read output of '%s'"), arg);
-        pclose(eval);
-        free(*buf);
-        *buf = NULL;
-        return CONF_EIO;
-    }
-    have_more_data = (fgetc(eval) != EOF);
-    pclose(eval);
-
-    l = strlen(*buf);
-    if (l > 0)
-    {
-        if ((*buf)[l - 1] != '\n' && have_more_data)
+        l += LINEBUFSIZE;
+        *buf = xrealloc(*buf, l);
+        if (!fgets(&(*buf)[l - LINEBUFSIZE - 1], LINEBUFSIZE + 1, eval))
         {
-            *errstr = xasprintf(_("output of '%s' is longer than %d characters"),
-                    arg, LINEBUFSIZE - 1);
+            *errstr = xasprintf(_("cannot read output of '%s'"), arg);
+            pclose(eval);
             free(*buf);
             *buf = NULL;
             return CONF_EIO;
         }
-        if ((*buf)[l - 1] == '\n')
+    }
+    while (!feof(eval));
+    pclose(eval);
+
+    l = strlen(*buf);
+    if (l > 0 && (*buf)[l - 1] == '\n')
+    {
+        (*buf)[l - 1] = '\0';
+        if (l - 1 > 0 && (*buf)[l - 2] == '\r')
         {
-            (*buf)[l - 1] = '\0';
-            if (l - 1 > 0 && (*buf)[l - 2] == '\r')
-            {
-                (*buf)[l - 2] = '\0';
-            }
+            (*buf)[l - 2] = '\0';
         }
     }
 

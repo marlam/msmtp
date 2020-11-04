@@ -848,12 +848,13 @@ int check_account(account_t *acc, int sendmail_mode, char **errstr)
 int get_password_eval(const char *arg, char **buf, char **errstr)
 {
     FILE *eval;
-    size_t l;
+    size_t bufsize;
+    size_t len;
 
     *buf = NULL;
     *errstr = NULL;
     errno = 0;
-    l = 1; /* Account for the null character. */
+    bufsize = 1; /* Account for the null character. */
 
     if (!(eval = popen(arg, "r")))
     {
@@ -867,9 +868,9 @@ int get_password_eval(const char *arg, char **buf, char **errstr)
 
     do
     {
-        l += LINEBUFSIZE;
-        *buf = xrealloc(*buf, l);
-        if (!fgets(&(*buf)[l - LINEBUFSIZE - 1], LINEBUFSIZE + 1, eval))
+        bufsize += LINEBUFSIZE;
+        *buf = xrealloc(*buf, bufsize);
+        if (!fgets(&(*buf)[bufsize - LINEBUFSIZE - 1], LINEBUFSIZE + 1, eval))
         {
             *errstr = xasprintf(_("cannot read output of '%s'"), arg);
             pclose(eval);
@@ -877,17 +878,22 @@ int get_password_eval(const char *arg, char **buf, char **errstr)
             *buf = NULL;
             return CONF_EIO;
         }
+        len = strlen(*buf);
+        if (len > 0 && (*buf)[len - 1] == '\n')
+        {
+            /* Read only the first line. */
+            break;
+        }
     }
     while (!feof(eval));
     pclose(eval);
 
-    l = strlen(*buf);
-    if (l > 0 && (*buf)[l - 1] == '\n')
+    if (len > 0 && (*buf)[len - 1] == '\n')
     {
-        (*buf)[l - 1] = '\0';
-        if (l - 1 > 0 && (*buf)[l - 2] == '\r')
+        (*buf)[len - 1] = '\0';
+        if (len - 1 > 0 && (*buf)[len - 2] == '\r')
         {
-            (*buf)[l - 2] = '\0';
+            (*buf)[len - 2] = '\0';
         }
     }
 

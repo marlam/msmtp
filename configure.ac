@@ -119,7 +119,7 @@ AC_ARG_WITH([tls], [AS_HELP_STRING([--with-tls=[gnutls|openssl|no]],
 	AC_MSG_ERROR([Use --with-tls=gnutls or --with-tls=openssl or --with-tls=no])
     fi)
 if test "$want_gnutls" = "yes"; then
-    PKG_CHECK_MODULES([libgnutls], [gnutls >= 0.0], [HAVE_LIBGNUTLS=1], [HAVE_LIBGNUTLS=0])
+    PKG_CHECK_MODULES([libgnutls], [gnutls >= 3.4], [HAVE_LIBGNUTLS=1], [HAVE_LIBGNUTLS=0])
     if test "$HAVE_LIBGNUTLS" != "1"; then
 	AC_MSG_WARN([library libgnutls not found:])
 	AC_MSG_WARN([$libgnutls_PKG_ERRORS])

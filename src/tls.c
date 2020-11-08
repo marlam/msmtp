@@ -4,7 +4,7 @@
  * This file is part of msmtp, an SMTP client.
  *
  * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011,
- * 2012, 2014, 2016, 2018, 2019
+ * 2012, 2014, 2016, 2018, 2019, 2020
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -157,14 +157,8 @@ int seed_prng(char **errstr)
 int tls_lib_init(char **errstr)
 {
 #ifdef HAVE_LIBGNUTLS
-    int error_code;
-
-    if ((error_code = gnutls_global_init()) != 0)
-    {
-        *errstr = xasprintf("%s", gnutls_strerror(error_code));
-        return TLS_ELIBFAILED;
-    }
-
+    /* Library initialization is implicit */
+    (void)errstr;
     return TLS_EOK;
 #endif /* HAVE_LIBGNUTLS */
 
@@ -745,7 +739,6 @@ int tls_check_cert(tls_t *tls, char **errstr)
     time_t t1, t2;
     size_t size;
     unsigned char fingerprint[32];
-    char *idn_hostname = NULL;
 
     if (tls->have_trust_file
             || tls->have_sha256_fingerprint
@@ -860,39 +853,14 @@ int tls_check_cert(tls_t *tls, char **errstr)
                 error_msg);
         return TLS_ECERT;
     }
-    if (tls->have_trust_file)
+    if (tls->have_trust_file && status)
     {
-#if GNUTLS_VERSION_NUMBER < 0x030200
-        if (status & GNUTLS_CERT_REVOKED)
-        {
-            *errstr = xasprintf(_("%s: the certificate has been revoked"),
-                    error_msg);
-            return TLS_ECERT;
-        }
-        if (status & GNUTLS_CERT_SIGNER_NOT_FOUND)
-        {
-            *errstr = xasprintf(
-                    _("%s: the certificate hasn't got a known issuer"),
-                    error_msg);
-            return TLS_ECERT;
-        }
-        if (status & GNUTLS_CERT_INVALID)
-        {
-            *errstr = xasprintf(_("%s: the certificate is not trusted"),
-                    error_msg);
-            return TLS_ECERT;
-        }
-#else
-        if (status)
-        {
-            gnutls_datum_t txt;
-            gnutls_certificate_verification_status_print(status,
-                    GNUTLS_CRT_X509, &txt, 0);
-            *errstr = xasprintf(_("%s: %s"), error_msg, txt.data);
-            free(txt.data);
-            return TLS_ECERT;
-        }
-#endif
+        gnutls_datum_t txt;
+        gnutls_certificate_verification_status_print(status,
+                GNUTLS_CRT_X509, &txt, 0);
+        *errstr = xasprintf(_("%s: %s"), error_msg, txt.data);
+        free(txt.data);
+        return TLS_ECERT;
     }
     if (!(cert_list = gnutls_certificate_get_peers(
                     tls->session, &cert_list_size)))
@@ -924,12 +892,7 @@ int tls_check_cert(tls_t *tls, char **errstr)
         /* Check hostname */
         if (i == 0)
         {
-#if GNUTLS_VERSION_NUMBER < 0x030400 && defined(HAVE_LIBIDN)
-            idn2_to_ascii_lz(tls->hostname, &idn_hostname, IDN2_NFC_INPUT | IDN2_NONTRANSITIONAL);
-#endif
-            error_code = gnutls_x509_crt_check_hostname(cert,
-                    idn_hostname ? idn_hostname : tls->hostname);
-            free(idn_hostname);
+            error_code = gnutls_x509_crt_check_hostname(cert, tls->hostname);
             if (error_code == 0)
             {
                 *errstr = xasprintf(_("%s: the certificate owner does not "
@@ -1575,11 +1538,7 @@ int tls_start(tls_t *tls, int fd,
     int error_code;
 
     gnutls_server_name_set(tls->session, GNUTLS_NAME_DNS, tls->hostname, strlen(tls->hostname));
-#if GNUTLS_VERSION_NUMBER < 0x030200
-    gnutls_transport_set_ptr(tls->session, (gnutls_transport_ptr_t)fd);
-#else
     gnutls_transport_set_int(tls->session, fd);
-#endif
     do
     {
         error_code = gnutls_handshake(tls->session);
@@ -1931,9 +1890,6 @@ void tls_close(tls_t *tls)
 
 void tls_lib_deinit(void)
 {
-#ifdef HAVE_LIBGNUTLS
-    gnutls_global_deinit();
-#endif /* HAVE_LIBGNUTLS */
 }
 
 

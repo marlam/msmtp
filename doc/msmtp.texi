@@ -284,8 +284,9 @@ If you select a file, it must be in PEM format, and you should also use
 @anchor{tls_crl_file}
 @item tls_crl_file [@var{file}]
 @cmindex tls_crl_file
-Set a certificate revocation list (CRL) file for TLS, to check for revoked
-certificates. An empty argument disables this.
+Deprecated. This sets a certificate revocation list (CRL) file for TLS, to check
+for revoked certificates (an empty argument, which is the default, disables this).
+Nowadays automatic OCSP checks replace CRL file checks.
 @anchor{tls_fingerprint}
 @item tls_fingerprint [@var{fingerprint}]
 @cmindex tls_fingerprint
@@ -616,7 +617,7 @@ Set or unset a trust file for TLS. @xref{tls_trust_file}.
 @anchor{--tls-crl-file}
 @item --tls-crl-file=[@var{file}]
 @opindex --tls-crl-file
-Set or unset a certificate revocation list (CRL) file for TLS.
+Deprecated. Set or unset a certificate revocation list (CRL) file for TLS.
 @xref{tls_crl_file}.
 @anchor{--tls-fingerprint}
 @item --tls-fingerprint=[@var{fingerprint}]
@@ -836,13 +837,7 @@ The list of trusted CAs is specified using the @ref{tls_trust_file} command.
 The default value ist @samp{system} and chooses the system-wide default, but you can
 also choose the trusted CAs yourself.
 
-One practical problem with this approach is that the client program should also
-check if the server certificate has been revoked for some reason, using a
-Certificate Revocation List (CRL). A CRL file can be specified using the
-@ref{tls_crl_file} command, but getting the relevant CRL files and keeping them
-up to date is not straightforward. You are basically on your own.
-
-A much more serious and fundamental problem is that you need to trust CAs.
+A fundamental problem with this is that you need to trust CAs.
 Like any other organization, a CA can be incompetent, malicious, subverted by
 bad people, or forced by government agencies to compromise end users without
 telling them. All of these things happened and continue to happen worldwide.
@@ -1205,10 +1200,6 @@ tls on
 # Set a list of trusted CAs for TLS. The default is to use system settings, but
 # you can select your own file.
 #tls_trust_file /etc/ssl/certs/ca-certificates.crt
-# If you select your own file, you should also use the tls_crl_file command to
-# check for revoked certificates, but unfortunately getting revocation lists and
-# keeping them up to date is not straightforward.
-#tls_crl_file ~/.tls-crls
 
 
 # A freemail service
@@ -1217,7 +1208,7 @@ account freemail
 # Host name of the SMTP server
 host smtp.freemail.example
 
-# As an alternative to tls_trust_file/tls_crl_file, you can use tls_fingerprint
+# As an alternative to tls_trust_file, you can use tls_fingerprint
 # to pin a single certificate. You have to update the fingerprint when the
 # server certificate changes, but an attacker cannot trick you into accepting
 # a fraudulent certificate. Get the fingerprint with

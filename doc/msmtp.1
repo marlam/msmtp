@@ -117,7 +117,7 @@ Enable or disable STARTTLS for TLS. See the \fBtls_starttls\fP command.
 .IP "\-\-tls\-trust\-file=[\fIfile\fP]"
 Set or unset a trust file for TLS. See the \fBtls_trust_file\fP command.
 .IP "\-\-tls\-crl\-file=[\fIfile\fP]"
-Set or unset a certificate revocation list (CRL) file for TLS. See the
+Deprecated. Set or unset a certificate revocation list (CRL) file for TLS. See the
 \fBtls_crl_file\fP command.
 .IP "\-\-tls\-fingerprint=[\fIfingerprint\fP]"
 Set or unset the fingerprint of a trusted TLS certificate. See the
@@ -429,13 +429,7 @@ The list of trusted CAs is specified using the \fBtls_trust_file\fP command.
 The default value ist "system" and chooses the system-wide default, but you can
 also choose the trusted CAs yourself.
 .br
-One practical problem with this approach is that the client program should also
-check if the server certificate has been revoked for some reason, using a
-Certificate Revocation List (CRL). A CRL file can be specified using the
-\fBtls_crl_file\fP command, but getting the relevant CRL files and keeping them
-up to date is not straightforward. You are basically on your own.
-.br
-A much more serious and fundamental problem is that you need to trust CAs.
+A fundamental problem with this is that you need to trust CAs.
 Like any other organization, a CA can be incompetent, malicious, subverted by
 bad people, or forced by government agencies to compromise end users without
 telling them. All of these things happened and continue to happen worldwide.
@@ -482,8 +476,9 @@ system default. An empty argument disables trust in CAs.
 If you select a file, it must be in PEM format, and you should also use
 \fBtls_crl_file\fP.
 .IP "tls_crl_file [\fIfile\fP]"
-Set a certificate revocation list (CRL) file for TLS, to check for revoked
-certificates. An empty argument disables this.
+Deprecated. This sets a certificate revocation list (CRL) file for TLS, to check
+for revoked certificates (an empty argument, which is the default, disables this).
+Nowadays automatic OCSP checks replace CRL file checks.
 .IP "tls_fingerprint [\fIfingerprint\fP]"
 Set the fingerprint of a single certificate to accept for TLS. This certificate
 will be trusted regardless of its contents (this overrides \fBtls_trust_file\fP).
@@ -691,16 +686,6 @@ tls on
 .br
 
 .br
-# If you select your own file, you should also use the tls_crl_file command to
-.br
-# check for revoked certificates, but unfortunately getting revocation lists and
-.br
-# keeping them up to date is not straightforward.
-.br
-#tls_crl_file ~/.tls\-crls
-.br
-
-.br
 # A freemail service
 .br
 account freemail
@@ -713,7 +698,7 @@ host smtp.freemail.example
 .br
 
 .br
-# As an alternative to tls_trust_file/tls_crl_file, you can use tls_fingerprint
+# As an alternative to tls_trust_file, you can use tls_fingerprint
 .br
 # to pin a single certificate. You have to update the fingerprint when the
 .br

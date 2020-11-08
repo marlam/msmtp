@@ -17,10 +17,6 @@ tls on
 # Set a list of trusted CAs for TLS. The default is to use system settings, but
 # you can select your own file.
 #tls_trust_file /etc/ssl/certs/ca-certificates.crt
-# If you select your own file, you should also use the tls_crl_file command to
-# check for revoked certificates, but unfortunately getting revocation lists and
-# keeping them up to date is not straightforward.
-#tls_crl_file ~/.tls-crls
 
 
 # A freemail service
@@ -29,7 +25,7 @@ account freemail
 # Host name of the SMTP server
 host smtp.freemail.example
 
-# As an alternative to tls_trust_file/tls_crl_file, you can use tls_fingerprint
+# As an alternative to tls_trust_file, you can use tls_fingerprint
 # to pin a single certificate. You have to update the fingerprint when the
 # server certificate changes, but an attacker cannot trick you into accepting
 # a fraudulent certificate. Get the fingerprint with

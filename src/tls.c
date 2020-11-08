@@ -730,31 +730,20 @@ int tls_check_cert(tls_t *tls, char **errstr)
 {
 #ifdef HAVE_LIBGNUTLS
     int error_code;
-    const char *error_msg;
     unsigned int status;
-    const gnutls_datum_t *cert_list;
-    unsigned int cert_list_size;
-    unsigned int i;
-    gnutls_x509_crt_t cert;
-    time_t t1, t2;
-    size_t size;
-    unsigned char fingerprint[32];
+    const char *error_msg = _("TLS certificate verification failed");
 
-    if (tls->have_trust_file
-            || tls->have_sha256_fingerprint
-            || tls->have_sha1_fingerprint
-            || tls->have_md5_fingerprint)
-    {
-        error_msg = _("TLS certificate verification failed");
-    }
-    else
-    {
-        error_msg = _("TLS certificate check failed");
-    }
-
+    /* The following fingerprint checking is deprecated and should be removed
+     * in the next major version. */
     if (tls->have_sha256_fingerprint
             || tls->have_sha1_fingerprint || tls->have_md5_fingerprint)
     {
+        const gnutls_datum_t *cert_list;
+        unsigned int cert_list_size;
+        gnutls_x509_crt_t cert;
+        unsigned char fingerprint[32];
+        size_t size;
+
         /* If one of these matches, we trust the peer and do not perform any
          * other checks. */
         if (!(cert_list = gnutls_certificate_get_peers(
@@ -838,19 +827,11 @@ int tls_check_cert(tls_t *tls, char **errstr)
         return TLS_EOK;
     }
 
-    /* If 'tls->have_trust_file' is true, this function uses the trusted CAs
-     * in the credentials structure. So you must have installed one or more CA
-     * certificates. */
-    if ((error_code = gnutls_certificate_verify_peers2(tls->session,
-                    &status)) != 0)
+    /* Verify the certificate(s). */
+    if ((error_code = gnutls_certificate_verify_peers3(tls->session,
+                    tls->hostname, &status)) != 0)
     {
         *errstr = xasprintf("%s: %s", error_msg, gnutls_strerror(error_code));
-        return TLS_ECERT;
-    }
-    if (gnutls_certificate_type_get(tls->session) != GNUTLS_CRT_X509)
-    {
-        *errstr = xasprintf(_("%s: the certificate type is not X509"),
-                error_msg);
         return TLS_ECERT;
     }
     if (tls->have_trust_file && status)
@@ -861,74 +842,6 @@ int tls_check_cert(tls_t *tls, char **errstr)
         *errstr = xasprintf(_("%s: %s"), error_msg, txt.data);
         free(txt.data);
         return TLS_ECERT;
-    }
-    if (!(cert_list = gnutls_certificate_get_peers(
-                    tls->session, &cert_list_size)))
-    {
-        *errstr = xasprintf(_("%s: no certificate was found"), error_msg);
-        return TLS_ECERT;
-    }
-    /* Needed to check times: */
-    t1 = time(NULL);
-    /* Check the certificate chain. All certificates in the chain must have
-     * valid activation/expiration times. The first certificate in the chain is
-     * the host's certificate; it must match the hostname. */
-    for (i = 0; i < cert_list_size; i++)
-    {
-        if (gnutls_x509_crt_init(&cert) < 0)
-        {
-            *errstr = xasprintf(
-                    _("%s: cannot initialize certificate structure"),
-                    error_msg);
-            return TLS_ECERT;
-        }
-        if (gnutls_x509_crt_import(cert, &cert_list[i], GNUTLS_X509_FMT_DER)
-                < 0)
-        {
-            *errstr = xasprintf(_("%s: error parsing certificate %u of %u"),
-                    error_msg, i + 1, cert_list_size);
-            return TLS_ECERT;
-        }
-        /* Check hostname */
-        if (i == 0)
-        {
-            error_code = gnutls_x509_crt_check_hostname(cert, tls->hostname);
-            if (error_code == 0)
-            {
-                *errstr = xasprintf(_("%s: the certificate owner does not "
-                            "match hostname %s"), error_msg, tls->hostname);
-                return TLS_ECERT;
-            }
-        }
-        /* Check certificate times */
-        if ((t2 = gnutls_x509_crt_get_activation_time(cert)) < 0)
-        {
-            *errstr = xasprintf(_("%s: cannot get activation time for "
-                        "certificate %u of %u"),
-                    error_msg, i + 1, cert_list_size);
-            return TLS_ECERT;
-        }
-        if (t2 > t1)
-        {
-            *errstr = xasprintf(
-                    _("%s: certificate %u of %u is not yet activated"),
-                    error_msg, i + 1, cert_list_size);
-            return TLS_ECERT;
-        }
-        if ((t2 = gnutls_x509_crt_get_expiration_time(cert)) < 0)
-        {
-            *errstr = xasprintf(_("%s: cannot get expiration time for "
-                        "certificate %u of %u"),
-                    error_msg, i + 1, cert_list_size);
-            return TLS_ECERT;
-        }
-        if (t2 < t1)
-        {
-            *errstr = xasprintf(_("%s: certificate %u of %u has expired"),
-                    error_msg, i + 1, cert_list_size);
-            return TLS_ECERT;
-        }
-        gnutls_x509_crt_deinit(cert);
     }
 
     return TLS_EOK;

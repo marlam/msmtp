@@ -232,19 +232,7 @@ fi
 dnl Check if the TLS library has IDN support
 have_tls_idn=no
 if test "$tls_lib" = "GnuTLS"; then
-    AC_MSG_CHECKING([whether GnuTLS has builtin IDN support])
-    CFLAGS_BAK="$CFLAGS"
-    CFLAGS="$CFLAGS $tls_CFLAGS"
-    AC_COMPILE_IFELSE(
-        [AC_LANG_PROGRAM([[
-         #include <gnutls/gnutls.h>
-         #if GNUTLS_VERSION_NUMBER < 0x030400
-          error: GnuTLS does not have builtin IDN support
-         #endif]],
-        [[int x = 0;]])],
-        [have_tls_idn="yes"], [])
-    CFLAGS="$CFLAGS_BAK"
-    AC_MSG_RESULT([$have_tls_idn])
+    have_tls_idn="yes"
 fi
 
 dnl Do we need libidn for IDN support?

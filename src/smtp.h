@@ -30,7 +30,7 @@
 #include "readbuf.h"
 #include "net.h"
 #ifdef HAVE_TLS
-# include "tls.h"
+# include "mtls.h"
 #endif /* HAVE_TLS */
 
 
@@ -96,7 +96,7 @@ typedef struct
 {
     int fd;
 #ifdef HAVE_TLS
-    tls_t tls;
+    mtls_t mtls;
 #endif /* HAVE_TLS */
     readbuf_t readbuf;
     int protocol;
@@ -223,7 +223,7 @@ int smtp_tls_starttls(smtp_server_t *srv, list_t **error_msg, char **errstr);
  */
 #ifdef HAVE_TLS
 int smtp_tls(smtp_server_t *srv,
-        tls_cert_info_t *tci, char **tls_parameter_description, char **errstr);
+        mtls_cert_info_t *tci, char **tls_parameter_description, char **errstr);
 #endif /* HAVE_TLS */
 
 /*

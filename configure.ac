@@ -141,7 +141,7 @@ if test "$want_openssl" = "yes" -a "$have_tls" = "no"; then
 	AC_MSG_WARN([libssl is provided by OpenSSL])
     else
 	have_tls="yes"
-	tls_lib="OpenSSL (discouraged)"
+	tls_lib="OpenSSL"
 	tls_CFLAGS="$libssl_CFLAGS"
 	tls_LIBS="$libssl_LIBS"
 	AC_DEFINE([HAVE_LIBSSL], [1], [Define to 1 if libssl is available])
@@ -153,6 +153,8 @@ elif test "$want_tls" = "yes"; then
     AC_MSG_WARN([Disabling TLS support, which is very bad. Consider using GnuTLS!])
 fi
 AM_CONDITIONAL([HAVE_TLS], [test "$have_tls" = "yes"])
+AM_CONDITIONAL([HAVE_GNUTLS], [test "$tls_lib" = "GnuTLS"])
+AM_CONDITIONAL([HAVE_OPENSSL], [test "$tls_lib" = "OpenSSL"])
 AC_SUBST([tls_CFLAGS])
 AC_SUBST([tls_LIBS])
 

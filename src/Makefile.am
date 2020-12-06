@@ -17,7 +17,13 @@ msmtp_SOURCES = \
         base64.c base64.h
 
 if HAVE_TLS
-msmtp_SOURCES += tls.c tls.h
+msmtp_SOURCES += mtls.c mtls.h
+endif
+if HAVE_GNUTLS
+msmtp_SOURCES += mtls-gnutls.c
+endif
+if HAVE_OPENSSL
+msmtp_SOURCES += mtls-openssl.c
 endif
 
 if HAVE_LIBGSASL

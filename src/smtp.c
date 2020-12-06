@@ -53,7 +53,7 @@
 #include "smtp.h"
 #include "stream.h"
 #ifdef HAVE_TLS
-#include "tls.h"
+#include "mtls.h"
 #endif /* HAVE_TLS */
 
 
@@ -111,7 +111,7 @@ smtp_server_t smtp_new(FILE *debug, int protocol)
 
     srv.fd = -1;
 #ifdef HAVE_TLS
-    tls_clear(&srv.tls);
+    mtls_clear(&srv.mtls);
 #endif /* HAVE_TLS */
     readbuf_init(&(srv.readbuf));
     srv.protocol = protocol;
@@ -171,9 +171,9 @@ int smtp_get_msg(smtp_server_t *srv, list_t **msg, char **errstr)
     do
     {
 #ifdef HAVE_TLS
-        if (tls_is_active(&srv->tls))
+        if (mtls_is_active(&srv->mtls))
         {
-            if (tls_gets(&srv->tls, &(srv->readbuf),
+            if (mtls_gets(&srv->mtls, &(srv->readbuf),
                         line, SMTP_BUFSIZE, &len, errstr) != TLS_EOK)
             {
                 list_xfree(l, free);
@@ -269,9 +269,9 @@ int smtp_put(smtp_server_t *srv, const char *s, size_t len, char **errstr)
     int e = 0;
 
 #ifdef HAVE_TLS
-    if (tls_is_active(&srv->tls))
+    if (mtls_is_active(&srv->mtls))
     {
-        e = (tls_puts(&srv->tls, s, len, errstr) != TLS_EOK);
+        e = (mtls_puts(&srv->mtls, s, len, errstr) != TLS_EOK);
     }
     else
     {
@@ -560,7 +560,7 @@ int smtp_tls_init(smtp_server_t *srv,
         int no_certcheck,
         char **errstr)
 {
-    return tls_init(&srv->tls, tls_key_file, tls_cert_file, pin,
+    return mtls_init(&srv->mtls, tls_key_file, tls_cert_file, pin,
             tls_trust_file, tls_crl_file,
             tls_sha256_fingerprint, tls_sha1_fingerprint, tls_md5_fingerprint,
             min_dh_prime_bits, priorities, hostname, no_certcheck, errstr);
@@ -614,10 +614,10 @@ int smtp_tls_starttls(smtp_server_t *srv, list_t **error_msg, char **errstr)
 
 #ifdef HAVE_TLS
 int smtp_tls(smtp_server_t *srv,
-        tls_cert_info_t *tci, char **tls_parameter_description, char **errstr)
+        mtls_cert_info_t *tci, char **mtls_parameter_description, char **errstr)
 {
-    return tls_start(&srv->tls, srv->fd, tci,
-            tls_parameter_description, errstr);
+    return mtls_start(&srv->mtls, srv->fd, tci,
+            mtls_parameter_description, errstr);
 }
 #endif /* HAVE_TLS */
 
@@ -1200,7 +1200,7 @@ int smtp_auth(smtp_server_t *srv,
         /* Choose "best" authentication mechanism. */
         /* TODO: use gsasl_client_suggest_mechanism()? */
 #ifdef HAVE_TLS
-        if (tls_is_active(&srv->tls))
+        if (mtls_is_active(&srv->mtls))
         {
             if (gsasl_client_support_p(ctx, "PLAIN")
                     && (srv->cap.flags & SMTP_CAP_AUTH_PLAIN))
@@ -1247,7 +1247,7 @@ int smtp_auth(smtp_server_t *srv,
     {
         gsasl_done(ctx);
 #ifdef HAVE_TLS
-        if (!tls_is_active(&srv->tls))
+        if (!mtls_is_active(&srv->mtls))
         {
 #endif /* HAVE_TLS */
             *errstr = xasprintf(_("cannot use a secure authentication method"));
@@ -1506,7 +1506,7 @@ int smtp_auth(smtp_server_t *srv,
     {
         /* Choose "best" authentication mechanism. */
 #ifdef HAVE_TLS
-        if (tls_is_active(&srv->tls))
+        if (mtls_is_active(&srv->mtls))
         {
             if (srv->cap.flags & SMTP_CAP_AUTH_PLAIN)
             {
@@ -1526,7 +1526,7 @@ int smtp_auth(smtp_server_t *srv,
     if (strcmp(auth_mech, "") == 0)
     {
 #ifdef HAVE_TLS
-        if (!tls_is_active(&srv->tls))
+        if (!mtls_is_active(&srv->mtls))
         {
 #endif /* HAVE_TLS */
             *errstr = xasprintf(_("cannot use a secure authentication method"));
@@ -2168,9 +2168,9 @@ int smtp_quit(smtp_server_t *srv, char **errstr)
 void smtp_close(smtp_server_t *srv)
 {
 #ifdef HAVE_TLS
-    if (tls_is_active(&srv->tls))
+    if (mtls_is_active(&srv->mtls))
     {
-        tls_close(&srv->tls);
+        mtls_close(&srv->mtls);
     }
 #endif /* HAVE_TLS */
     net_close_socket(srv->fd);

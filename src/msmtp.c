@@ -62,7 +62,7 @@ extern int optind;
 #include "aliases.h"
 #include "password.h"
 #ifdef HAVE_TLS
-# include "tls.h"
+# include "mtls.h"
 #endif /* HAVE_TLS */
 
 /* Default file names. */
@@ -140,8 +140,8 @@ int msmtp_rmqs(account_t *acc, int debug, const char *rmqs_argument,
     smtp_server_t srv;
     int e;
 #ifdef HAVE_TLS
-    tls_cert_info_t *tci = NULL;
-    char *tls_parameter_description = NULL;
+    mtls_cert_info_t *tci = NULL;
+    char *mtls_parameter_description = NULL;
 #endif /* HAVE_TLS */
 
     *errstr = NULL;
@@ -173,7 +173,7 @@ int msmtp_rmqs(account_t *acc, int debug, const char *rmqs_argument,
                         acc->tls_nocertcheck,
                         errstr)) != TLS_EOK)
         {
-            return tls_exitcode(e);
+            return mtls_exitcode(e);
         }
     }
 #endif /* HAVE_TLS */
@@ -184,24 +184,24 @@ int msmtp_rmqs(account_t *acc, int debug, const char *rmqs_argument,
     {
         if (debug)
         {
-            tci = tls_cert_info_new();
+            tci = mtls_cert_info_new();
         }
         if ((e = smtp_tls(&srv, tci,
-                        &tls_parameter_description, errstr)) != TLS_EOK)
+                        &mtls_parameter_description, errstr)) != TLS_EOK)
         {
             if (debug)
             {
-                tls_cert_info_free(tci);
-                free(tls_parameter_description);
+                mtls_cert_info_free(tci);
+                free(mtls_parameter_description);
             }
             msmtp_endsession(&srv, 0);
-            return tls_exitcode(e);
+            return mtls_exitcode(e);
         }
         if (debug)
         {
-            tls_print_info(tls_parameter_description, tci);
-            tls_cert_info_free(tci);
-            free(tls_parameter_description);
+            mtls_print_info(mtls_parameter_description, tci);
+            mtls_cert_info_free(tci);
+            free(mtls_parameter_description);
         }
     }
 #endif /* HAVE_TLS */
@@ -238,24 +238,24 @@ int msmtp_rmqs(account_t *acc, int debug, const char *rmqs_argument,
         }
         if (debug)
         {
-            tci = tls_cert_info_new();
+            tci = mtls_cert_info_new();
         }
         if ((e = smtp_tls(&srv, tci,
-                        &tls_parameter_description, errstr)) != TLS_EOK)
+                        &mtls_parameter_description, errstr)) != TLS_EOK)
         {
             if (debug)
             {
-                tls_cert_info_free(tci);
-                free(tls_parameter_description);
+                mtls_cert_info_free(tci);
+                free(mtls_parameter_description);
             }
             msmtp_endsession(&srv, 0);
-            return tls_exitcode(e);
+            return mtls_exitcode(e);
         }
         if (debug)
         {
-            tls_print_info(tls_parameter_description, tci);
-            tls_cert_info_free(tci);
-            free(tls_parameter_description);
+            mtls_print_info(mtls_parameter_description, tci);
+            mtls_cert_info_free(tci);
+            free(mtls_parameter_description);
         }
         /* initialize again */
         if ((e = smtp_init(&srv, acc->domain, msg, errstr)) != SMTP_EOK)
@@ -325,8 +325,8 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
     char *server_greeting = NULL;
     int e;
 #ifdef HAVE_TLS
-    tls_cert_info_t *tci = NULL;
-    char *tls_parameter_description = NULL;
+    mtls_cert_info_t *tci = NULL;
+    char *mtls_parameter_description = NULL;
 #endif /* HAVE_TLS */
 
     *errstr = NULL;
@@ -349,7 +349,7 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
 #ifdef HAVE_TLS
     if (acc->tls)
     {
-        tci = tls_cert_info_new();
+        tci = mtls_cert_info_new();
         if ((e = smtp_tls_init(&srv,
                         acc->tls_key_file, acc->tls_cert_file, acc->password,
                         acc->tls_trust_file, acc->tls_crl_file,
@@ -361,7 +361,7 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
                         acc->tls_nocertcheck,
                         errstr)) != TLS_EOK)
         {
-            e = tls_exitcode(e);
+            e = mtls_exitcode(e);
             goto error_exit;
         }
     }
@@ -372,10 +372,10 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
     if (acc->tls && acc->tls_nostarttls)
     {
         if ((e = smtp_tls(&srv, tci,
-                        &tls_parameter_description, errstr)) != TLS_EOK)
+                        &mtls_parameter_description, errstr)) != TLS_EOK)
         {
             msmtp_endsession(&srv, 0);
-            e = tls_exitcode(e);
+            e = mtls_exitcode(e);
             goto error_exit;
         }
     }
@@ -417,10 +417,10 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
             goto error_exit;
         }
         if ((e = smtp_tls(&srv, tci,
-                        &tls_parameter_description, errstr)) != TLS_EOK)
+                        &mtls_parameter_description, errstr)) != TLS_EOK)
         {
             msmtp_endsession(&srv, 0);
-            e = tls_exitcode(e);
+            e = mtls_exitcode(e);
             goto error_exit;
         }
         /* initialize again */
@@ -468,7 +468,7 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
 #ifdef HAVE_TLS
     if (acc->tls)
     {
-        tls_print_info(tls_parameter_description, tci);
+        mtls_print_info(mtls_parameter_description, tci);
     }
 #endif /* HAVE_TLS */
 #ifdef HAVE_TLS
@@ -595,9 +595,9 @@ error_exit:
 #ifdef HAVE_TLS
     if (tci)
     {
-        tls_cert_info_free(tci);
+        mtls_cert_info_free(tci);
     }
-    free(tls_parameter_description);
+    free(mtls_parameter_description);
 #endif /* HAVE_TLS */
     free(server_greeting);
     return e;
@@ -1302,8 +1302,8 @@ int msmtp_sendmail(account_t *acc, list_t *recipients,
     smtp_server_t srv;
     int e;
 #ifdef HAVE_TLS
-    tls_cert_info_t *tci = NULL;
-    char *tls_parameter_description = NULL;
+    mtls_cert_info_t *tci = NULL;
+    char *mtls_parameter_description = NULL;
 #endif /* HAVE_TLS */
 
     *errstr = NULL;
@@ -1329,7 +1329,7 @@ int msmtp_sendmail(account_t *acc, list_t *recipients,
                         acc->tls_nocertcheck,
                         errstr)) != TLS_EOK)
         {
-            e = tls_exitcode(e);
+            e = mtls_exitcode(e);
             return e;
         }
     }
@@ -1350,25 +1350,25 @@ int msmtp_sendmail(account_t *acc, list_t *recipients,
     {
         if (debug)
         {
-            tci = tls_cert_info_new();
+            tci = mtls_cert_info_new();
         }
         if ((e = smtp_tls(&srv, tci,
-                        &tls_parameter_description, errstr)) != TLS_EOK)
+                        &mtls_parameter_description, errstr)) != TLS_EOK)
         {
             if (debug)
             {
-                tls_cert_info_free(tci);
-                free(tls_parameter_description);
+                mtls_cert_info_free(tci);
+                free(mtls_parameter_description);
             }
             msmtp_endsession(&srv, 0);
-            e = tls_exitcode(e);
+            e = mtls_exitcode(e);
             return e;
         }
         if (debug)
         {
-            tls_print_info(tls_parameter_description, tci);
-            tls_cert_info_free(tci);
-            free(tls_parameter_description);
+            mtls_print_info(mtls_parameter_description, tci);
+            mtls_cert_info_free(tci);
+            free(mtls_parameter_description);
         }
     }
 #endif /* HAVE_TLS */
@@ -1409,25 +1409,25 @@ int msmtp_sendmail(account_t *acc, list_t *recipients,
         }
         if (debug)
         {
-            tci = tls_cert_info_new();
+            tci = mtls_cert_info_new();
         }
         if ((e = smtp_tls(&srv, tci,
-                        &tls_parameter_description, errstr)) != TLS_EOK)
+                        &mtls_parameter_description, errstr)) != TLS_EOK)
         {
             if (debug)
             {
-                tls_cert_info_free(tci);
-                free(tls_parameter_description);
+                mtls_cert_info_free(tci);
+                free(mtls_parameter_description);
             }
             msmtp_endsession(&srv, 0);
-            e = tls_exitcode(e);
+            e = mtls_exitcode(e);
             return e;
         }
         if (debug)
         {
-            tls_print_info(tls_parameter_description, tci);
-            tls_cert_info_free(tci);
-            free(tls_parameter_description);
+            mtls_print_info(mtls_parameter_description, tci);
+            mtls_cert_info_free(tci);
+            free(mtls_parameter_description);
         }
         /* initialize again */
         if ((e = smtp_init(&srv, acc->domain, msg, errstr)) != SMTP_EOK)
@@ -4008,7 +4008,7 @@ int main(int argc, char *argv[])
     if (account->tls)
     {
 #ifdef HAVE_TLS
-        if ((e = tls_lib_init(&errstr)) != TLS_EOK)
+        if ((e = mtls_lib_init(&errstr)) != TLS_EOK)
         {
             print_error(_("cannot initialize TLS library: %s"),
                     sanitize_string(errstr));
@@ -4228,7 +4228,7 @@ exit:
 #ifdef HAVE_TLS
     if (tls_lib_initialized)
     {
-        tls_lib_deinit();
+        mtls_lib_deinit();
     }
 #endif /* HAVE_TLS */
     if (net_lib_initialized)

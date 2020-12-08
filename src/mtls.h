@@ -24,8 +24,9 @@
 #ifndef MTLS_H
 #define MTLS_H
 
-#include "readbuf.h"
+#include <time.h>
 
+#include "readbuf.h"
 
 /*
  * If a function with an 'errstr' argument returns a value != TLS_EOK,

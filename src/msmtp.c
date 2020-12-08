@@ -2063,6 +2063,8 @@ void msmtp_print_version(void)
             "GnuTLS"
 #elif defined (HAVE_LIBSSL)
             "OpenSSL"
+#elif defined (HAVE_LIBTLS)
+            "libtls"
 #else
             _("none")
 #endif

@@ -25,6 +25,9 @@ endif
 if HAVE_OPENSSL
 msmtp_SOURCES += mtls-openssl.c
 endif
+if HAVE_LIBTLS
+msmtp_SOURCES += mtls-libtls.c
+endif
 
 if HAVE_LIBGSASL
 else

@@ -72,7 +72,7 @@ int mtls_lib_init(char **errstr)
  * type:fingerprint. This function simply decodes this into the standard
  * binary representation.
  */
-int decode_sha256(unsigned char *dest, char *src)
+int decode_sha256(unsigned char *dest, const char *src)
 {
     char prefix[] = "SHA256:";
     unsigned char msn, lsn;
@@ -107,11 +107,10 @@ int decode_sha256(unsigned char *dest, char *src)
 
 int mtls_cert_info_get(mtls_t *mtls, mtls_cert_info_t *mtci, char **errstr)
 {
-    unsigned char *sha256_fingerprint;
-    time_t notbefore, notafter;
+    const char *sha256_fingerprint;
 
     if ((sha256_fingerprint = 
-                (char *)tls_peer_cert_hash(mtls->internals->tls_ctx))
+                tls_peer_cert_hash(mtls->internals->tls_ctx))
                 == NULL)
     {
         *errstr = xasprintf(_("Could not get certificate fingerprint: %s"),
@@ -160,7 +159,7 @@ int mtls_cert_info_get(mtls_t *mtls, mtls_cert_info_t *mtci, char **errstr)
 static int mtls_check_cert(mtls_t *mtls, char **errstr)
 {
     char *sha256_fingerprint_raw;
-    char sha256_fingerprint[32];
+    unsigned char sha256_fingerprint[32];
 
     if (mtls->have_trust_file)
     {
@@ -222,16 +221,19 @@ int mtls_init(mtls_t *mtls,
     if (key_file && cert_file)
     {
         if (tls_config_set_key_file(config, key_file) == -1)
+        {
             *errstr = xasprintf(_("tls_config failed: %s"),
                     tls_config_error(config));
             tls_config_free(config);
             return TLS_ELIBFAILED;
-
+        }
         if (tls_config_set_cert_file(config, cert_file) == -1)
+        {
             *errstr = xasprintf(_("tls_config failed: %s"),
                     tls_config_error(config));
             tls_config_free(config);
             return TLS_ELIBFAILED;
+        }
     }
 
     /* TODO what if sha1 or md5 is given? */

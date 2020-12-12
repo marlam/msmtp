@@ -434,6 +434,7 @@ void mtls_close(mtls_t *mtls)
         mtls->internals->tls_ctx = NULL;
     }
     free(mtls->internals);
+    mtls->internals = NULL;
     if (mtls->hostname)
     {
         free(mtls->hostname);

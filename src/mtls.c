@@ -63,10 +63,6 @@ void mtls_clear(mtls_t *mtls)
     mtls->have_md5_fingerprint = 0;
     mtls->no_certcheck = 0;
     mtls->hostname = NULL;
-    if (mtls->internals != NULL)
-    {
-        free(mtls->internals);
-    }
     mtls->internals = NULL;
 }
 

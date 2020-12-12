@@ -1037,6 +1037,7 @@ void mtls_close(mtls_t *mtls)
         SSL_CTX_free(mtls->internals->ssl_ctx);
     }
     free(mtls->internals);
+    mtls->internals = NULL;
     if (mtls->hostname)
     {
         free(mtls->hostname);

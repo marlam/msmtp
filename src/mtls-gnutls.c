@@ -704,6 +704,7 @@ void mtls_close(mtls_t *mtls)
         gnutls_certificate_free_credentials(mtls->internals->cred);
     }
     free(mtls->internals);
+    mtls->internals = NULL;
     if (mtls->hostname)
     {
         free(mtls->hostname);

@@ -249,12 +249,16 @@ int mtls_init(mtls_t *mtls,
     }
     else if (trust_file && !no_certcheck)
     {
-        if (tls_config_set_ca_file(config, trust_file) == -1)
+        /* leaving ca_file unset makes libtls use system default trust */
+        if (strcmp(trust_file, "system") != 0)
         {
-            *errstr = xasprintf(_("tls_config failed: %s"),
-                    tls_config_error(config));
-            tls_config_free(config);
-            return TLS_ELIBFAILED;
+            if (tls_config_set_ca_file(config, trust_file) == -1)
+            {
+                *errstr = xasprintf(_("Failed to set trust file: %s"),
+                        tls_config_error(config));
+                tls_config_free(config);
+                return TLS_ELIBFAILED;
+            }
         }
 
         mtls->have_trust_file = 1;

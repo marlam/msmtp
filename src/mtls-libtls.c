@@ -65,7 +65,7 @@ int mtls_lib_init(char **errstr)
     return TLS_EOK;
 }
 
-/* 
+/*
  * libtls gives certificate fingerprints in a string formatted as
  * type:hex_fingerprint. This function decodes this into binary.
  */
@@ -84,12 +84,12 @@ int decode_sha256(unsigned char *dest, const char *src)
         return -1;
     }
 
-    for (int i = 0; i < 32; i++) 
+    for (int i = 0; i < 32; i++)
     {
         msn = src[2*i + sizeof(prefix)-1];
         lsn = src[2*i + sizeof(prefix)];
 
-        dest[i] = (isdigit(lsn) ? lsn - '0' : lsn - 'a' + 10) 
+        dest[i] = (isdigit(lsn) ? lsn - '0' : lsn - 'a' + 10)
             + ((isdigit(msn) ? (msn - '0') : (msn - 'a' + 10)) << 4);
     }
 
@@ -108,7 +108,7 @@ int mtls_cert_info_get(mtls_t *mtls, mtls_cert_info_t *mtci, char **errstr)
     const char *sha256_fingerprint;
     int i;
 
-    if ((sha256_fingerprint = 
+    if ((sha256_fingerprint =
                 tls_peer_cert_hash(mtls->internals->tls_ctx))
                 == NULL)
     {
@@ -157,7 +157,7 @@ int mtls_cert_info_get(mtls_t *mtls, mtls_cert_info_t *mtci, char **errstr)
  *
  * If 'mtls->have_sha256_fingerprint' flags is set, compare the
  * 'mtls->fingerprint' data with the peer certificate's fingerprint. If this
- * succeeds, the connection can be considered secure. 
+ * succeeds, the connection can be considered secure.
  *
  * Used error codes: TLS_ECERT
  */
@@ -175,7 +175,7 @@ static int mtls_check_cert(mtls_t *mtls, char **errstr)
 
     if (mtls->have_sha256_fingerprint)
     {
-        if ((sha256_fingerprint_raw = 
+        if ((sha256_fingerprint_raw =
                     (char *)tls_peer_cert_hash(mtls->internals->tls_ctx))
                     == NULL)
         {
@@ -278,7 +278,7 @@ int mtls_init(mtls_t *mtls,
 
     mtls->internals = xmalloc(sizeof(struct mtls_internals_t));
 
-    if ((mtls->internals->tls_ctx = tls_client()) == NULL) 
+    if ((mtls->internals->tls_ctx = tls_client()) == NULL)
     {
         *errstr = xasprintf(_("cannot create a TLS structure: %s"), strerror(ENOMEM));
         tls_config_free(config);
@@ -315,7 +315,7 @@ int mtls_start(mtls_t *mtls, int fd,
 {
     int error_code;
 
-    if (tls_connect_socket(mtls->internals->tls_ctx, fd, mtls->hostname) == -1) 
+    if (tls_connect_socket(mtls->internals->tls_ctx, fd, mtls->hostname) == -1)
     {
         *errstr = xasprintf(_("cannot set the file descriptor for TLS: %s"),
                 tls_error(mtls->internals->tls_ctx));
@@ -323,7 +323,7 @@ int mtls_start(mtls_t *mtls, int fd,
         return TLS_EHANDSHAKE;
     }
 
-    if (tls_handshake(mtls->internals->tls_ctx) == -1) 
+    if (tls_handshake(mtls->internals->tls_ctx) == -1)
     {
         tls_close(mtls->internals->tls_ctx);
         tls_free(mtls->internals->tls_ctx);
@@ -382,7 +382,7 @@ int mtls_readbuf_read(mtls_t *mtls, readbuf_t *readbuf, char *ptr,
         if (ret == TLS_WANT_POLLIN || ret == TLS_WANT_POLLOUT)
         {
             continue;
-        } 
+        }
         else if (ret == -1)
         {
             *errstr = xasprintf(_("cannot read from TLS connection: %s"),
@@ -406,7 +406,7 @@ int mtls_readbuf_read(mtls_t *mtls, readbuf_t *readbuf, char *ptr,
 
 int mtls_puts(mtls_t *mtls, const char *s, size_t len, char **errstr)
 {
-    while (len > 0) 
+    while (len > 0)
     {
         ssize_t ret;
         ret = tls_write(mtls->internals->tls_ctx, s, len);

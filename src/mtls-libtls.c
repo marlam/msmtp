@@ -59,7 +59,6 @@ int mtls_lib_init(char **errstr)
 {
     if (tls_init() == -1)
     {
-        *errstr = xasprintf("Failed to initialize libtls");
         return TLS_ELIBFAILED;
     }
 
@@ -105,35 +104,34 @@ int decode_sha256(unsigned char *dest, const char *src)
 
 int mtls_cert_info_get(mtls_t *mtls, mtls_cert_info_t *mtci, char **errstr)
 {
+    const char *errmsg = _("cannot get TLS certificate info");
     const char *sha256_fingerprint;
 
     if ((sha256_fingerprint = 
                 tls_peer_cert_hash(mtls->internals->tls_ctx))
                 == NULL)
     {
-        *errstr = xasprintf(_("Could not get certificate fingerprint: %s"),
-                tls_error(mtls->internals->tls_ctx));
+        *errstr = xasprintf(_("%s: error getting SHA256 fingerprint"), errmsg);
         return TLS_ECERT;
     }
 
     if (decode_sha256(mtci->sha256_fingerprint, sha256_fingerprint) != 0)
     {
+        *errstr = xasprintf("%s", errmsg);
         return TLS_ECERT;
     }
 
     if ((mtci->activation_time =
                 tls_peer_cert_notbefore(mtls->internals->tls_ctx)) == -1)
     {
-        *errstr = xasprintf(_("Could not get certificate activation: %s"),
-                tls_error(mtls->internals->tls_ctx));
+        *errstr = xasprintf(_("%s: cannot get activation time"), errmsg);
         return TLS_ECERT;
     }
 
     if ((mtci->expiration_time =
                 tls_peer_cert_notafter(mtls->internals->tls_ctx)) == -1)
     {
-        *errstr = xasprintf(_("Could not get certificate expiration: %s"),
-                tls_error(mtls->internals->tls_ctx));
+        *errstr = xasprintf(_("%s: cannot get expiration time"), errmsg);
         return TLS_ECERT;
     }
 
@@ -155,6 +153,7 @@ int mtls_cert_info_get(mtls_t *mtls, mtls_cert_info_t *mtci, char **errstr)
 
 static int mtls_check_cert(mtls_t *mtls, char **errstr)
 {
+    const char *error_msg = _("TLS certificate verification failed");
     char *sha256_fingerprint_raw;
     unsigned char sha256_fingerprint[32];
 
@@ -169,20 +168,20 @@ static int mtls_check_cert(mtls_t *mtls, char **errstr)
                     (char *)tls_peer_cert_hash(mtls->internals->tls_ctx))
                     == NULL)
         {
-            *errstr = xasprintf(_("Could not get certificate fingerprint: %s"),
-                    tls_error(mtls->internals->tls_ctx));
+            *errstr = xasprintf(_("%s: error getting SHA256 fingerprint"), error_msg);
             return TLS_ECERT;
         }
 
         if (decode_sha256(sha256_fingerprint, sha256_fingerprint_raw) == -1)
         {
-            *errstr = xasprintf(_("Could not decode certificate fingerprint"));
+            *errstr = xasprintf("%s", error_msg);
             return TLS_ECERT;
         }
 
         if (memcmp(sha256_fingerprint, mtls->fingerprint, 32) != 0)
         {
-            *errstr = xasprintf(_("Certificate fingerprints do not match"));
+            *errstr = xasprintf(_("%s: the certificate fingerprint "
+                        "does not match"), error_msg);
             return TLS_ECERT;
         }
     }
@@ -212,24 +211,20 @@ int mtls_init(mtls_t *mtls,
 
     if ((config = tls_config_new()) == NULL)
     {
+        *errstr = xasprintf(_("cannot initialize TLS session: %s"), strerror(ENOMEM));
         return TLS_ELIBFAILED;
     }
 
     if (key_file && cert_file)
     {
-        if (tls_config_set_key_file(config, key_file) == -1)
+        if (tls_config_set_key_file(config, key_file) == -1
+                || tls_config_set_cert_file(config, cert_file) == -1)
         {
-            *errstr = xasprintf(_("Failed to set key file: %s"),
-                    tls_config_error(config));
+            *errstr = xasprintf(_("cannot set X509 key file %s and/or "
+                        "X509 cert file %s for TLS session: %s"),
+                    key_file, cert_file, tls_config_error(config));
             tls_config_free(config);
-            return TLS_ELIBFAILED;
-        }
-        if (tls_config_set_cert_file(config, cert_file) == -1)
-        {
-            *errstr = xasprintf(_("Failed to set certificate file: %s"),
-                    tls_config_error(config));
-            tls_config_free(config);
-            return TLS_ELIBFAILED;
+            return TLS_EFILE;
         }
     }
 
@@ -250,10 +245,11 @@ int mtls_init(mtls_t *mtls,
         {
             if (tls_config_set_ca_file(config, trust_file) == -1)
             {
-                *errstr = xasprintf(_("Failed to set trust file: %s"),
-                        tls_config_error(config));
+                *errstr = xasprintf(
+                        _("cannot set X509 trust file %s for TLS session: %s"),
+                        trust_file, tls_config_error(config));
                 tls_config_free(config);
-                return TLS_ELIBFAILED;
+                return TLS_EFILE;
             }
         }
 
@@ -262,17 +258,18 @@ int mtls_init(mtls_t *mtls,
 
     if (crl_file && tls_config_set_crl_file(config, crl_file) == -1)
     {
-        *errstr = xasprintf(_("Failed to set crl file: %s"),
-                tls_config_error(config));
+        *errstr = xasprintf(
+                _("cannot set X509 CRL file %s for TLS session: %s"),
+                crl_file, tls_config_error(config));
         tls_config_free(config);
-        return TLS_ELIBFAILED;
+        return TLS_EFILE;
     }
 
     mtls->internals = xmalloc(sizeof(struct mtls_internals_t));
 
     if ((mtls->internals->tls_ctx = tls_client()) == NULL) 
     {
-        *errstr = xasprintf(_("Could not create TLS client"));
+        *errstr = xasprintf(_("cannot create a TLS structure: %s"), strerror(ENOMEM));
         tls_config_free(config);
         free(mtls->internals);
         mtls->internals = NULL;
@@ -281,7 +278,7 @@ int mtls_init(mtls_t *mtls,
 
     if (tls_configure(mtls->internals->tls_ctx, config) == -1)
     {
-        *errstr = xasprintf(_("Could not configure TLS client: %s"),
+        *errstr = xasprintf(_("cannot initialize TLS session: %s"),
                 tls_config_error(config));
         tls_free(mtls->internals->tls_ctx);
         tls_config_free(config);
@@ -309,7 +306,7 @@ int mtls_start(mtls_t *mtls, int fd,
 
     if (tls_connect_socket(mtls->internals->tls_ctx, fd, mtls->hostname) == -1) 
     {
-        *errstr = xasprintf(_("tls_connect failed: %s"),
+        *errstr = xasprintf(_("cannot set the file descriptor for TLS: %s"),
                 tls_error(mtls->internals->tls_ctx));
         tls_free(mtls->internals->tls_ctx);
         return TLS_EHANDSHAKE;
@@ -319,7 +316,7 @@ int mtls_start(mtls_t *mtls, int fd,
     {
         tls_close(mtls->internals->tls_ctx);
         tls_free(mtls->internals->tls_ctx);
-        *errstr = xasprintf(_("tls_handshake failed: %s"),
+        *errstr = xasprintf(_("TLS handshake failed: %s"),
                 tls_error(mtls->internals->tls_ctx));
         return TLS_EHANDSHAKE;
     }
@@ -343,7 +340,7 @@ int mtls_start(mtls_t *mtls, int fd,
     {
         if ((error_code = mtls_cert_info_get(mtls, mtci, errstr)) != TLS_EOK)
         {
-            *errstr = xasprintf(_("Could not get certificate info"));
+            /* mtls_cert_info_get() already sets *errstr */
             tls_close(mtls->internals->tls_ctx);
             tls_free(mtls->internals->tls_ctx);
             return error_code;
@@ -377,7 +374,7 @@ int mtls_readbuf_read(mtls_t *mtls, readbuf_t *readbuf, char *ptr,
         } 
         else if (ret == -1)
         {
-            *errstr = xasprintf(_("tls_read failed: %s"),
+            *errstr = xasprintf(_("cannot read from TLS connection: %s"),
                     tls_error(mtls->internals->tls_ctx));
             return TLS_EIO;
         }
@@ -409,7 +406,7 @@ int mtls_puts(mtls_t *mtls, const char *s, size_t len, char **errstr)
         }
         if (ret == -1)
         {
-            *errstr = xasprintf(_("tls_write failed: %s"),
+            *errstr = xasprintf(_("cannot write to TLS connection: %s"),
                     tls_error(mtls->internals->tls_ctx));
             return TLS_EIO;
         }

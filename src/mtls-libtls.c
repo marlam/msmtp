@@ -106,6 +106,7 @@ int mtls_cert_info_get(mtls_t *mtls, mtls_cert_info_t *mtci, char **errstr)
 {
     const char *errmsg = _("cannot get TLS certificate info");
     const char *sha256_fingerprint;
+    int i;
 
     if ((sha256_fingerprint = 
                 tls_peer_cert_hash(mtls->internals->tls_ctx))
@@ -121,6 +122,9 @@ int mtls_cert_info_get(mtls_t *mtls, mtls_cert_info_t *mtci, char **errstr)
         return TLS_ECERT;
     }
 
+    /* TODO: SHA1 is deprecated, the field should be removed. Until then, we zero it. */
+    memset(mtci->sha1_fingerprint, 0, sizeof(mtci->sha1_fingerprint));
+
     if ((mtci->activation_time =
                 tls_peer_cert_notbefore(mtls->internals->tls_ctx)) == -1)
     {
@@ -133,6 +137,13 @@ int mtls_cert_info_get(mtls_t *mtls, mtls_cert_info_t *mtci, char **errstr)
     {
         *errstr = xasprintf(_("%s: cannot get expiration time"), errmsg);
         return TLS_ECERT;
+    }
+
+    /* TODO: Extract owner and issuer information. For now we at least zero it. */
+    for (i = 0; i < 6; i++)
+    {
+        mtci->owner_info[i] = NULL;
+        mtci->issuer_info[i] = NULL;
     }
 
     return TLS_EOK;

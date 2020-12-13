@@ -1,7 +1,7 @@
 /*
- * mtls-openssl.c
+ * mtls-libtls.c
  *
- * This file is part of msmtp, an SMTP client.
+ * This file is part of msmtp, an SMTP client, and of mpop, a POP3 client.
  *
  * Copyright (C) 2020 Nihal Jere <nihal@nihaljere.xyz>
  *

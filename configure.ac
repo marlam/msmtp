@@ -50,7 +50,6 @@ AC_CHECK_HEADERS([sysexits.h netdb.h arpa/inet.h sys/socket.h sys/wait.h netinet
 AC_CHECK_FUNCS([fmemopen fseeko fseeko64 getpass link signal strndup syslog vasprintf])
 AC_SEARCH_LIBS([nanosleep], [rt posix4])
 AC_SEARCH_LIBS([socket], [socket])
-AC_CHECK_SIZEOF([long long])
 
 dnl Unfortunately AC_SEARCH_LIBS([res_query], [resolv]) does not work because we
 dnl apparently need to include the appropriate header files, so we use a double

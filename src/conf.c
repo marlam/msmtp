@@ -36,10 +36,6 @@
 #include <ctype.h>
 #include <errno.h>
 
-#if (SIZEOF_LONG_LONG * CHAR_BIT) < 64
-# error "long long has fewer than 64 bits"
-#endif
-
 #include "gettext.h"
 #define _(string) gettext(string)
 

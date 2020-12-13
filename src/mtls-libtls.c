@@ -3,9 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011,
- * 2012, 2014, 2016, 2018, 2019, 2020
- * Martin Lambers <marlam@marlam.de>
+ * Copyright (C) 2020 Nihal Jere <nihal@nihaljere.xyz>
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -68,9 +66,9 @@ int mtls_lib_init(char **errstr)
     return TLS_EOK;
 }
 
-/* libtls gives certificate fingerprints in a string formatted as
- * type:fingerprint. This function simply decodes this into the standard
- * binary representation.
+/* 
+ * libtls gives certificate fingerprints in a string formatted as
+ * type:hex_fingerprint. This function decodes this into binary.
  */
 int decode_sha256(unsigned char *dest, const char *src)
 {
@@ -145,14 +143,13 @@ int mtls_cert_info_get(mtls_t *mtls, mtls_cert_info_t *mtci, char **errstr)
 /*
  * mtls_check_cert()
  *
- * If the 'mtls->have_trust_file' flag is set, perform a real verification of
- * the peer's certificate. If this succeeds, the connection can be considered
- * secure.
- * If one of the 'mtls->have_*_fingerprint' flags is
- * set, compare the 'mtls->fingerprint' data with the peer certificate's
- * fingerprint. If this succeeds, the connection can be considered secure.
- * If none of these flags is set, perform only a few sanity checks of the
- * peer's certificate. You cannot trust the connection when this succeeds.
+ * If the 'mtls->have_trust_file' flag is set, nothing needs to be done, as
+ * libtls will perform a full certificate verification automatically.
+ *
+ * If 'mtls->have_sha256_fingerprint' flags is set, compare the
+ * 'mtls->fingerprint' data with the peer certificate's fingerprint. If this
+ * succeeds, the connection can be considered secure. 
+ *
  * Used error codes: TLS_ECERT
  */
 
@@ -236,7 +233,6 @@ int mtls_init(mtls_t *mtls,
         }
     }
 
-    /* TODO what if sha1 or md5 is given? */
     if (no_certcheck)
     {
         tls_config_insecure_noverifycert(config);

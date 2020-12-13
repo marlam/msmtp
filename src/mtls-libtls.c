@@ -59,7 +59,7 @@ int mtls_lib_init(char **errstr)
 {
     if (tls_init() == -1)
     {
-        *errstr = xasprintf("failed to initialize libtls");
+        *errstr = xasprintf("Failed to initialize libtls");
         return TLS_ELIBFAILED;
     }
 
@@ -219,14 +219,14 @@ int mtls_init(mtls_t *mtls,
     {
         if (tls_config_set_key_file(config, key_file) == -1)
         {
-            *errstr = xasprintf(_("tls_config failed: %s"),
+            *errstr = xasprintf(_("Failed to set key file: %s"),
                     tls_config_error(config));
             tls_config_free(config);
             return TLS_ELIBFAILED;
         }
         if (tls_config_set_cert_file(config, cert_file) == -1)
         {
-            *errstr = xasprintf(_("tls_config failed: %s"),
+            *errstr = xasprintf(_("Failed to set certificate file: %s"),
                     tls_config_error(config));
             tls_config_free(config);
             return TLS_ELIBFAILED;
@@ -262,7 +262,7 @@ int mtls_init(mtls_t *mtls,
 
     if (crl_file && tls_config_set_crl_file(config, crl_file) == -1)
     {
-        *errstr = xasprintf(_("tls_config failed: %s"),
+        *errstr = xasprintf(_("Failed to set crl file: %s"),
                 tls_config_error(config));
         tls_config_free(config);
         return TLS_ELIBFAILED;
@@ -272,7 +272,7 @@ int mtls_init(mtls_t *mtls,
 
     if ((mtls->internals->tls_ctx = tls_client()) == NULL) 
     {
-        *errstr = xasprintf(_("couldn't init tls_client"));
+        *errstr = xasprintf(_("Could not create TLS client"));
         tls_config_free(config);
         free(mtls->internals);
         mtls->internals = NULL;
@@ -343,7 +343,7 @@ int mtls_start(mtls_t *mtls, int fd,
     {
         if ((error_code = mtls_cert_info_get(mtls, mtci, errstr)) != TLS_EOK)
         {
-            *errstr = xasprintf(_("couldn't get cert info"));
+            *errstr = xasprintf(_("Could not get certificate info"));
             tls_close(mtls->internals->tls_ctx);
             tls_free(mtls->internals->tls_ctx);
             return error_code;
@@ -409,7 +409,7 @@ int mtls_puts(mtls_t *mtls, const char *s, size_t len, char **errstr)
         }
         if (ret == -1)
         {
-            *errstr = xasprintf(_("tls_write: %s"),
+            *errstr = xasprintf(_("tls_write failed: %s"),
                     tls_error(mtls->internals->tls_ctx));
             return TLS_EIO;
         }

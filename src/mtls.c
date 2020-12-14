@@ -89,11 +89,8 @@ mtls_cert_info_t *mtls_cert_info_new(void)
     int i;
 
     tci = xmalloc(sizeof(mtls_cert_info_t));
-    for (i = 0; i < 6; i++)
-    {
-        tci->owner_info[i] = NULL;
-        tci->issuer_info[i] = NULL;
-    }
+    tci->owner_info = NULL;
+    tci->issuer_info = NULL;
 
     return tci;
 }
@@ -109,11 +106,8 @@ void mtls_cert_info_free(mtls_cert_info_t *tci)
 
     if (tci)
     {
-        for (i = 0; i < 6; i++)
-        {
-            free(tci->owner_info[i]);
-            free(tci->issuer_info[i]);
-        }
+        free(tci->owner_info);
+        free(tci->issuer_info);
         free(tci);
     }
 }
@@ -144,9 +138,6 @@ static void mtls_time_to_string(const time_t *t, char *buf, size_t bufsize)
 void mtls_print_info(const char *mtls_parameter_description,
         const mtls_cert_info_t *tci)
 {
-    const char *info_fieldname[6] = { N_("Common Name"), N_("Organization"),
-        N_("Organizational unit"), N_("Locality"), N_("State or Province"),
-        N_("Country") };
     char sha256_fingerprint_string[96];
     char sha1_fingerprint_string[60];
     char timebuf[128];          /* should be long enough for every locale */
@@ -162,27 +153,9 @@ void mtls_print_info(const char *mtls_parameter_description,
 
     printf(_("TLS certificate information:\n"));
     printf("    %s:\n", _("Owner"));
-    for (i = 0; i < 6; i++)
-    {
-        if (tci->owner_info[i])
-        {
-            tmp = xstrdup(tci->owner_info[i]);
-            printf("        %s: %s\n", gettext(info_fieldname[i]),
-                    sanitize_string(tmp));
-            free(tmp);
-        }
-    }
+    printf("        %s\n", tci->owner_info);
     printf("    %s:\n", _("Issuer"));
-    for (i = 0; i < 6; i++)
-    {
-        if (tci->issuer_info[i])
-        {
-            tmp = xstrdup(tci->issuer_info[i]);
-            printf("        %s: %s\n", gettext(info_fieldname[i]),
-                    sanitize_string(tmp));
-            free(tmp);
-        }
-    }
+    printf("        %s\n", tci->issuer_info);
     printf("    %s:\n", _("Validity"));
     mtls_time_to_string(&tci->activation_time, timebuf, sizeof(timebuf));
     printf("        %s: %s\n", _("Activation time"), timebuf);

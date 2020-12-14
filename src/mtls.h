@@ -79,8 +79,8 @@ typedef struct
     unsigned char sha1_fingerprint[20];
     time_t activation_time;
     time_t expiration_time;
-    char *owner_info[6];
-    char *issuer_info[6];
+    char *owner_info;
+    char *issuer_info;
 } mtls_cert_info_t;
 
 /*

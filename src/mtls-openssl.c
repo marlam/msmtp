@@ -345,36 +345,10 @@ int mtls_cert_info_get(mtls_t *mtls, mtls_cert_info_t *mtci, char **errstr)
     }
 
     /* owner information */
-    for (i = 0; i < 6; i++)
-    {
-        size = X509_NAME_get_text_by_NID(x509_subject, nid[i], NULL, 0);
-        size++;
-        p = xmalloc((size_t)size);
-        if (X509_NAME_get_text_by_NID(x509_subject, nid[i], p, size) != -1)
-        {
-            mtci->owner_info[i] = p;
-        }
-        else
-        {
-            free(p);
-        }
-    }
+    mtci->owner_info = X509_NAME_oneline(x509_subject, NULL, 0);
 
     /* issuer information */
-    for (i = 0; i < 6; i++)
-    {
-        size = X509_NAME_get_text_by_NID(x509_issuer, nid[i], NULL, 0);
-        size++;
-        p = xmalloc((size_t)size);
-        if (X509_NAME_get_text_by_NID(x509_issuer, nid[i], p, size) != -1)
-        {
-            mtci->issuer_info[i] = p;
-        }
-        else
-        {
-            free(p);
-        }
-    }
+    mtci->issuer_info = X509_NAME_oneline(x509_issuer, NULL, 0);
 
     X509_free(x509cert);
     return TLS_EOK;

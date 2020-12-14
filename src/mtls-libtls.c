@@ -139,12 +139,20 @@ int mtls_cert_info_get(mtls_t *mtls, mtls_cert_info_t *mtci, char **errstr)
         return TLS_ECERT;
     }
 
-    /* TODO: Extract owner and issuer information. For now we at least zero it. */
-    for (i = 0; i < 6; i++)
+    if ((mtci->owner_info = 
+              (char *)tls_peer_cert_subject(mtls->internals->tls_ctx)) == NULL)
     {
-        mtci->owner_info[i] = NULL;
-        mtci->issuer_info[i] = NULL;
+        *errstr = xasprintf(_("%s: cannot get owner"), errmsg);
+        return TLS_ECERT;
     }
+
+    if ((mtci->issuer_info = 
+              (char *)tls_peer_cert_subject(mtls->internals->tls_ctx)) == NULL)
+    {
+        *errstr = xasprintf(_("%s: cannot get issuer"), errmsg);
+        return TLS_ECERT;
+    }
+
 
     return TLS_EOK;
 }

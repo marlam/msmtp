@@ -148,44 +148,34 @@ int mtls_cert_info_get(mtls_t *mtls, mtls_cert_info_t *tci, char **errstr)
     }
 
     /* owner information */
-    for (i = 0; i < 6; i++)
+    e = gnutls_x509_crt_get_dn(cert, NULL, &size);
+    if (e == GNUTLS_E_SHORT_MEMORY_BUFFER)
     {
-        size = 0;
-        e = gnutls_x509_crt_get_dn_by_oid(cert, oid[i], 0, 0, NULL, &size);
-        if (e == GNUTLS_E_SHORT_MEMORY_BUFFER)
+        p = xmalloc(size);
+        e = gnutls_x509_crt_get_dn(cert, p, &size);
+        if (e == 0)
         {
-            p = xmalloc(size);
-            e = gnutls_x509_crt_get_dn_by_oid(cert, oid[i], 0, 0, p, &size);
-            if (e == 0)
-            {
-                tci->owner_info[i] = p;
-            }
-            else
-            {
-                free(p);
-            }
+            tci->owner_info = p;
+        }
+        else
+        {
+            free(p);
         }
     }
 
     /* issuer information */
-    for (i = 0; i < 6; i++)
+    e = gnutls_x509_crt_get_issuer_dn(cert, NULL, &size);
+    if (e == GNUTLS_E_SHORT_MEMORY_BUFFER)
     {
-        size = 0;
-        e = gnutls_x509_crt_get_issuer_dn_by_oid(
-                cert, oid[i], 0, 0, NULL, &size);
-        if (e == GNUTLS_E_SHORT_MEMORY_BUFFER)
+        p = xmalloc(size);
+        e = gnutls_x509_crt_get_issuer_dn(cert, p, &size);
+        if (e == 0)
         {
-            p = xmalloc(size);
-            e = gnutls_x509_crt_get_issuer_dn_by_oid(
-                    cert, oid[i], 0, 0, p, &size);
-            if (e == 0)
-            {
-                tci->issuer_info[i] = p;
-            }
-            else
-            {
-                free(p);
-            }
+            tci->issuer_info = p;
+        }
+        else
+        {
+            free(p);
         }
     }
 

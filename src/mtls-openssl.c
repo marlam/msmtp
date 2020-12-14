@@ -279,16 +279,7 @@ int mtls_cert_info_get(mtls_t *mtls, mtls_cert_info_t *mtci, char **errstr)
     X509_NAME *x509_subject;
     X509_NAME *x509_issuer;
     const ASN1_TIME *asn1time;
-    int nid[6] = { NID_commonName,
-        NID_organizationName,
-        NID_organizationalUnitName,
-        NID_localityName,
-        NID_stateOrProvinceName,
-        NID_countryName };
-    int size;
     unsigned int usize;
-    char *p;
-    int i;
     const char *errmsg;
 
     errmsg = _("cannot get TLS certificate info");

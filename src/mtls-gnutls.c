@@ -85,13 +85,6 @@ int mtls_cert_info_get(mtls_t *mtls, mtls_cert_info_t *tci, char **errstr)
     unsigned int cert_list_size;
     gnutls_x509_crt_t cert;
     size_t size;
-    const char *oid[6] = { GNUTLS_OID_X520_COMMON_NAME,
-        GNUTLS_OID_X520_ORGANIZATION_NAME,
-        GNUTLS_OID_X520_ORGANIZATIONAL_UNIT_NAME,
-        GNUTLS_OID_X520_LOCALITY_NAME,
-        GNUTLS_OID_X520_STATE_OR_PROVINCE_NAME,
-        GNUTLS_OID_X520_COUNTRY_NAME };
-    int i;
     int e;
     char *p;
     const char *errmsg;

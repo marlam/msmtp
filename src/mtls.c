@@ -85,14 +85,7 @@ int mtls_is_active(mtls_t *mtls)
 
 mtls_cert_info_t *mtls_cert_info_new(void)
 {
-    mtls_cert_info_t *tci;
-    int i;
-
-    tci = xmalloc(sizeof(mtls_cert_info_t));
-    tci->owner_info = NULL;
-    tci->issuer_info = NULL;
-
-    return tci;
+    return xcalloc(1, sizeof(mtls_cert_info_t));
 }
 
 
@@ -102,8 +95,6 @@ mtls_cert_info_t *mtls_cert_info_new(void)
 
 void mtls_cert_info_free(mtls_cert_info_t *tci)
 {
-    int i;
-
     if (tci)
     {
         free(tci->owner_info);
@@ -141,15 +132,27 @@ void mtls_print_info(const char *mtls_parameter_description,
     char sha256_fingerprint_string[96];
     char sha1_fingerprint_string[60];
     char timebuf[128];          /* should be long enough for every locale */
-    char *tmp;
     int i;
+    int have_sha1_fingerprint = 0;
+
+    for (i = 0; i < 20; i++)
+    {
+        if (tci->sha1_fingerprint[i])
+        {
+            have_sha1_fingerprint = 1;
+            break;
+        }
+    }
 
     printf(_("TLS session parameters:\n"));
     printf("    %s\n", mtls_parameter_description
             ? mtls_parameter_description : _("not available"));
 
     print_fingerprint(sha256_fingerprint_string, tci->sha256_fingerprint, 32);
-    print_fingerprint(sha1_fingerprint_string, tci->sha1_fingerprint, 20);
+    if (have_sha1_fingerprint)
+    {
+        print_fingerprint(sha1_fingerprint_string, tci->sha1_fingerprint, 20);
+    }
 
     printf(_("TLS certificate information:\n"));
     printf("    %s:\n", _("Owner"));
@@ -163,7 +166,10 @@ void mtls_print_info(const char *mtls_parameter_description,
     printf("        %s: %s\n", _("Expiration time"), timebuf);
     printf("    %s:\n", _("Fingerprints"));
     printf("        SHA256: %s\n", sha256_fingerprint_string);
-    printf("        SHA1 (deprecated): %s\n", sha1_fingerprint_string);
+    if (have_sha1_fingerprint)
+    {
+        printf("        SHA1 (deprecated): %s\n", sha1_fingerprint_string);
+    }
 }
 
 

@@ -106,7 +106,7 @@ int mtls_cert_info_get(mtls_t *mtls, mtls_cert_info_t *mtci, char **errstr)
 {
     const char *errmsg = _("cannot get TLS certificate info");
     const char *sha256_fingerprint;
-    int i;
+    const char *s;
 
     if ((sha256_fingerprint =
                 tls_peer_cert_hash(mtls->internals->tls_ctx))
@@ -122,9 +122,6 @@ int mtls_cert_info_get(mtls_t *mtls, mtls_cert_info_t *mtci, char **errstr)
         return TLS_ECERT;
     }
 
-    /* TODO: SHA1 is deprecated, the field should be removed. Until then, we zero it. */
-    memset(mtci->sha1_fingerprint, 0, sizeof(mtci->sha1_fingerprint));
-
     if ((mtci->activation_time =
                 tls_peer_cert_notbefore(mtls->internals->tls_ctx)) == -1)
     {
@@ -139,20 +136,16 @@ int mtls_cert_info_get(mtls_t *mtls, mtls_cert_info_t *mtci, char **errstr)
         return TLS_ECERT;
     }
 
-    if ((mtci->owner_info = 
-              (char *)tls_peer_cert_subject(mtls->internals->tls_ctx)) == NULL)
+    s = tls_peer_cert_subject(mtls->internals->tls_ctx);
+    if (s)
     {
-        *errstr = xasprintf(_("%s: cannot get owner"), errmsg);
-        return TLS_ECERT;
+        mtci->owner_info = xstrdup(s);
     }
-
-    if ((mtci->issuer_info = 
-              (char *)tls_peer_cert_subject(mtls->internals->tls_ctx)) == NULL)
+    s = tls_peer_cert_issuer(mtls->internals->tls_ctx);
+    if (s)
     {
-        *errstr = xasprintf(_("%s: cannot get issuer"), errmsg);
-        return TLS_ECERT;
+        mtci->issuer_info = xstrdup(s);
     }
-
 
     return TLS_EOK;
 }

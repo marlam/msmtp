@@ -64,13 +64,6 @@ typedef struct
 
 /*
  * Information about a X509 certificate.
- * The 6 owner_info and issuer_info fields are:
- *   Common Name
- *   Organization
- *   Organizational unit
- *   Locality
- *   State/Province
- *   Country
  * Each of these entries may be NULL if it was not provided.
  */
 typedef struct

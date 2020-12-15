@@ -345,7 +345,34 @@ int mtls_start(mtls_t *mtls, int fd,
 
     if (mtls_parameter_description)
     {
-        *mtls_parameter_description = NULL; /* TODO */
+        const char *cv = tls_conn_version(mtls->internals->tls_ctx);
+        const char *cc = tls_conn_cipher(mtls->internals->tls_ctx);
+        size_t cvl = (cv ? strlen(cv) : 0);
+        size_t ccl = (cc ? strlen(cc) : 0);
+        if (cvl > 0 || ccl > 0)
+        {
+            size_t pdl = cvl + ccl;
+            if (cvl > 0 && ccl > 0)
+                pdl++; /* for ' ' between them */
+            *mtls_parameter_description = xmalloc(pdl + 1);
+            (*mtls_parameter_description)[0] = '\0';
+            if (cvl > 0)
+            {
+                strcpy(*mtls_parameter_description, cv);
+            }
+            if (ccl > 0)
+            {
+                if (cvl > 0)
+                {
+                    strcat(*mtls_parameter_description, " ");
+                }
+                strcat(*mtls_parameter_description, cc);
+            }
+        }
+        else
+        {
+            *mtls_parameter_description = NULL;
+        }
     }
 
     if (mtci)

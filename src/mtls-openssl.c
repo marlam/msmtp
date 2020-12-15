@@ -335,8 +335,8 @@ int mtls_cert_info_get(mtls_t *mtls, mtls_cert_info_t *mtci, char **errstr)
         return TLS_ECERT;
     }
 
-    /* owner information */
-    mtci->owner_info = X509_NAME_oneline(x509_subject, NULL, 0);
+    /* subject information */
+    mtci->subject_info = X509_NAME_oneline(x509_subject, NULL, 0);
 
     /* issuer information */
     mtci->issuer_info = X509_NAME_oneline(x509_issuer, NULL, 0);

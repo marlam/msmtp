@@ -97,7 +97,7 @@ void mtls_cert_info_free(mtls_cert_info_t *tci)
 {
     if (tci)
     {
-        free(tci->owner_info);
+        free(tci->subject_info);
         free(tci->issuer_info);
         free(tci);
     }
@@ -155,8 +155,8 @@ void mtls_print_info(const char *mtls_parameter_description,
     }
 
     printf(_("TLS certificate information:\n"));
-    printf("    %s:\n", _("Owner"));
-    printf("        %s\n", tci->owner_info);
+    printf("    %s:\n", _("Subject"));
+    printf("        %s\n", tci->subject_info);
     printf("    %s:\n", _("Issuer"));
     printf("        %s\n", tci->issuer_info);
     printf("    %s:\n", _("Validity"));

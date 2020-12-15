@@ -139,7 +139,7 @@ int mtls_cert_info_get(mtls_t *mtls, mtls_cert_info_t *mtci, char **errstr)
     s = tls_peer_cert_subject(mtls->internals->tls_ctx);
     if (s)
     {
-        mtci->owner_info = xstrdup(s);
+        mtci->subject_info = xstrdup(s);
     }
     s = tls_peer_cert_issuer(mtls->internals->tls_ctx);
     if (s)

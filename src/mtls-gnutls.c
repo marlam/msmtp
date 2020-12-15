@@ -140,7 +140,7 @@ int mtls_cert_info_get(mtls_t *mtls, mtls_cert_info_t *tci, char **errstr)
         return TLS_ECERT;
     }
 
-    /* owner information */
+    /* subject information */
     e = gnutls_x509_crt_get_dn(cert, NULL, &size);
     if (e == GNUTLS_E_SHORT_MEMORY_BUFFER)
     {
@@ -148,7 +148,7 @@ int mtls_cert_info_get(mtls_t *mtls, mtls_cert_info_t *tci, char **errstr)
         e = gnutls_x509_crt_get_dn(cert, p, &size);
         if (e == 0)
         {
-            tci->owner_info = p;
+            tci->subject_info = p;
         }
         else
         {

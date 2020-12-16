@@ -56,6 +56,7 @@ int mtls_lib_init(char **errstr)
 {
     if (tls_init() == -1)
     {
+        *errstr = xasprintf(_("cannot initialize libtls"));
         return TLS_ELIBFAILED;
     }
 

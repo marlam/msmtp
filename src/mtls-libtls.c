@@ -166,7 +166,7 @@ int mtls_cert_info_get(mtls_t *mtls, mtls_cert_info_t *mtci, char **errstr)
 static int mtls_check_cert(mtls_t *mtls, char **errstr)
 {
     const char *error_msg = _("TLS certificate verification failed");
-    char *sha256_fingerprint_raw;
+    const char *sha256_fingerprint_raw;
     unsigned char sha256_fingerprint[32];
 
     if (mtls->have_trust_file)
@@ -176,9 +176,7 @@ static int mtls_check_cert(mtls_t *mtls, char **errstr)
 
     if (mtls->have_sha256_fingerprint)
     {
-        if ((sha256_fingerprint_raw =
-                    (char *)tls_peer_cert_hash(mtls->internals->tls_ctx))
-                    == NULL)
+        if (!(sha256_fingerprint_raw = tls_peer_cert_hash(mtls->internals->tls_ctx)))
         {
             *errstr = xasprintf(_("%s: error getting SHA256 fingerprint"), error_msg);
             return TLS_ECERT;

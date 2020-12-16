@@ -26,13 +26,8 @@
 #endif
 
 #include <stdio.h>
-#include <string.h>
-#include <strings.h>
-#include <ctype.h>
 #include <stdlib.h>
-#include <limits.h>
 #include <time.h>
-#include <errno.h>
 
 #ifdef HAVE_LIBIDN
 # include <idn2.h>

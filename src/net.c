@@ -33,7 +33,6 @@
 # include <ws2tcpip.h>
 #endif
 #include <stdlib.h>
-#include <stdio.h>
 #include <stdint.h>
 #include <string.h>
 #include <limits.h>
@@ -41,7 +40,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <sys/time.h>
-#include <sys/types.h>
+#include <sys/select.h>
 #ifdef HAVE_SYS_SOCKET_H
 # include <sys/socket.h>
 # include <sys/un.h>
@@ -61,7 +60,6 @@
 #endif
 
 #ifdef HAVE_LIBRESOLV
-# include <netinet/in.h>
 # include <arpa/nameser.h>
 # include <resolv.h>
 #endif

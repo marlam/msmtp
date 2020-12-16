@@ -23,6 +23,7 @@
 #ifndef TOOLS_H
 #define TOOLS_H
 
+#include <stdio.h>
 #include <time.h> /* time_t */
 
 #ifdef HAVE_SYSEXITS_H

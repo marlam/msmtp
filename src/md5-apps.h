@@ -24,6 +24,8 @@
 #ifndef MD5_APPS_H
 #define MD5_APPS_H
 
+#include <stddef.h>
+
 /*
  * md5_hmac() -- RFC 2104
  *

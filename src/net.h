@@ -24,6 +24,8 @@
 #ifndef NET_H
 #define NET_H
 
+#include <stddef.h>
+
 #include "readbuf.h"
 
 

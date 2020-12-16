@@ -25,11 +25,8 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <strings.h>
 #include <ctype.h>
 #include <stdlib.h>
-#include <limits.h>
-#include <time.h>
 #include <errno.h>
 
 #include <tls.h>

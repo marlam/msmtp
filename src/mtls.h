@@ -24,6 +24,12 @@
 #ifndef MTLS_H
 #define MTLS_H
 
+/*
+ * TODO: the following updates should be made for the next stable series:
+ * - remove SHA1 and MD5 fingerprints, support only SHA256
+ * - remove tls_min_dh_prime_bits support; tls_priorities should be used instead
+ */
+
 #include <time.h>
 
 #include "readbuf.h"

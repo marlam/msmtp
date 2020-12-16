@@ -216,6 +216,32 @@ int mtls_init(mtls_t *mtls,
 {
     struct tls_config *config;
 
+    if (sha1_fingerprint || md5_fingerprint)
+    {
+        *errstr = xasprintf(
+                _("cannot use deprecated fingerprints, please update to SHA256"));
+        return TLS_ELIBFAILED;
+    }
+    if (min_dh_prime_bits >= 0)
+    {
+        /* This will never need to be implemented because it is deprecated.
+         * But we should report it and not just silently ignore it. */
+        *errstr = xasprintf(
+                _("cannot set minimum number of DH prime bits for TLS: %s"),
+                _("feature not yet implemented for libtls"));
+        return TLS_ELIBFAILED;
+    }
+    if (priorities)
+    {
+        /* FIXME: Implement support for 'priorities'. This can use a libtls or OpenSSL
+         * specific string format; it does not have to be compatible with GnuTLS.
+         * Maybe use tls_config_set_ciphers()? I'm not sure if that is really what we want here. */
+        *errstr = xasprintf(
+                _("cannot set priorities for TLS session: %s"),
+                _("feature not yet implemented for libtls"));
+        return TLS_ELIBFAILED;
+    }
+
     if ((config = tls_config_new()) == NULL)
     {
         *errstr = xasprintf(_("cannot initialize TLS session: %s"), strerror(ENOMEM));

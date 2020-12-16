@@ -28,7 +28,6 @@
 
 #include "list.h"
 #include "readbuf.h"
-#include "net.h"
 #ifdef HAVE_TLS
 # include "mtls.h"
 #endif /* HAVE_TLS */

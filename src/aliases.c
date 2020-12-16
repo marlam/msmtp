@@ -35,7 +35,6 @@
 
 #include "aliases.h"
 #include "list.h"
-#include "tools.h"
 #include "xalloc.h"
 
 

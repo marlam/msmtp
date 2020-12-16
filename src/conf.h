@@ -26,6 +26,8 @@
 #ifndef CONF_H
 #define CONF_H
 
+#include <stddef.h>
+
 #include "list.h"
 
 /*

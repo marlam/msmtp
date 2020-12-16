@@ -33,7 +33,6 @@
 #include <strings.h>
 #include <ctype.h>
 #include <errno.h>
-#include <unistd.h>
 
 #ifdef HAVE_LIBGSASL
 # include <gsasl.h>

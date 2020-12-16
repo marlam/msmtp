@@ -38,7 +38,6 @@
 extern char *optarg;
 extern int optind;
 #include <unistd.h>
-#include <signal.h>
 #include <fcntl.h>
 #ifdef ENABLE_NLS
 # include <locale.h>

@@ -27,7 +27,6 @@
 # include "config.h"
 #endif
 
-#include <unistd.h>
 #include <stdlib.h>
 #include <limits.h>
 #include <stdio.h>
@@ -42,6 +41,7 @@
 #include "list.h"
 #include "smtp.h"
 #include "tools.h"
+#include "net.h"
 #include "xalloc.h"
 #include "conf.h"
 

@@ -216,6 +216,8 @@ int mtls_init(mtls_t *mtls,
         char **errstr)
 {
     struct tls_config *config;
+    char *key, *value;
+    uint32_t protocol_flags;
 
     if (sha1_fingerprint || md5_fingerprint)
     {
@@ -232,21 +234,63 @@ int mtls_init(mtls_t *mtls,
                 _("feature not yet implemented for libtls"));
         return TLS_ELIBFAILED;
     }
-    if (priorities)
-    {
-        /* FIXME: Implement support for 'priorities'. This can use a libtls or OpenSSL
-         * specific string format; it does not have to be compatible with GnuTLS.
-         * Maybe use tls_config_set_ciphers()? I'm not sure if that is really what we want here. */
-        *errstr = xasprintf(
-                _("cannot set priorities for TLS session: %s"),
-                _("feature not yet implemented for libtls"));
-        return TLS_ELIBFAILED;
-    }
 
     if ((config = tls_config_new()) == NULL)
     {
         *errstr = xasprintf(_("cannot initialize TLS session: %s"), strerror(ENOMEM));
         return TLS_ELIBFAILED;
+    }
+
+    if (priorities)
+    {
+        if ((key = strstr(priorities, "ECDHECURVES=")) != NULL)
+        {
+            value = key + strlen("ECDHECURVES=");
+            strtok(value, " ");
+
+            if (tls_config_set_ecdhecurves(config, value) == -1)
+            {
+                *errstr = xasprintf(
+                        _("cannot set priorities for TLS session: %s, %s"),
+                        _("could not set ECDHE curves"),
+                        value);
+                return TLS_ELIBFAILED;
+            }
+        }
+        if ((key = strstr(priorities, "CIPHERS=")) != NULL)
+        {
+            value = key + strlen("CIPHERS=");
+            strtok(value, " ");
+
+            if (tls_config_set_ciphers(config, value) == -1)
+            {
+                *errstr = xasprintf(
+                        _("cannot set priorities for TLS session: %s"),
+                        _("could not set ciphers"));
+                return TLS_ELIBFAILED;
+            }
+        }
+        if ((key = strstr(priorities, "PROTOCOLS=")) != NULL)
+        {
+            value = key + strlen("PROTOCOLS=");
+            strtok(value, " ");
+
+            if (tls_config_parse_protocols(&protocol_flags, value) == -1)
+            {
+                *errstr = xasprintf(
+                        _("cannot set priorities for TLS session: %s"),
+                        _("could not parse protocols"));
+                return TLS_ELIBFAILED;
+            }
+
+            if (tls_config_set_protocols(config, protocol_flags) == -1)
+            {
+                *errstr = xasprintf(
+                        _("cannot set priorities for TLS session: %s"),
+                        _("could not set protocols"));
+                return TLS_ELIBFAILED;
+            }
+        }
     }
 
     if (key_file && cert_file)

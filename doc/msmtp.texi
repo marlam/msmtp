@@ -645,12 +645,6 @@ Set or unset a cert file for TLS. @xref{tls_cert_file}.
 @opindex --tls-certcheck
 Enable or disable server certificate checks for TLS.
 @xref{tls_certcheck}.
-@anchor{--tls-min-dh-prime-bits}
-@item --tls-min-dh-prime-bits=[@var{bits}]
-@opindex --tls-min-dh-prime-bits
-Deprecated, use @samp{--tls-priorities} instead.
-Set or unset minimum bit size of the Diffie-Hellman (DH) prime.
-@xref{tls_min_dh_prime_bits}.
 @anchor{--tls-priorities}
 @item --tls-priorities=[@var{priorities}]
 @opindex --tls-priorities
@@ -659,6 +653,12 @@ Set or unset TLS priorities. @xref{tls_priorities}.
 @item --tls-host-override=[@var{host}]
 @opindex --tls-host-override
 Set or unset override for TLS host verification. @xref{tls_host_override}.
+@anchor{--tls-min-dh-prime-bits}
+@item --tls-min-dh-prime-bits=[@var{bits}]
+@opindex --tls-min-dh-prime-bits
+Deprecated, use @samp{--tls-priorities} instead.
+Set or unset minimum bit size of the Diffie-Hellman (DH) prime.
+@xref{tls_min_dh_prime_bits}.
 @end table
 
 @subsection Options specific to sendmail mode

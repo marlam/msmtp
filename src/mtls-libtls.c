@@ -252,9 +252,8 @@ int mtls_init(mtls_t *mtls,
             if (tls_config_set_ecdhecurves(config, value) == -1)
             {
                 *errstr = xasprintf(
-                        _("cannot set priorities for TLS session: %s, %s"),
-                        _("could not set ECDHE curves"),
-                        value);
+                        _("cannot set priorities for TLS session: %s"),
+                        tls_config_error(config));
                 return TLS_ELIBFAILED;
             }
         }
@@ -267,7 +266,7 @@ int mtls_init(mtls_t *mtls,
             {
                 *errstr = xasprintf(
                         _("cannot set priorities for TLS session: %s"),
-                        _("could not set ciphers"));
+                        tls_config_error(config));
                 return TLS_ELIBFAILED;
             }
         }
@@ -288,7 +287,7 @@ int mtls_init(mtls_t *mtls,
             {
                 *errstr = xasprintf(
                         _("cannot set priorities for TLS session: %s"),
-                        _("could not set protocols"));
+                        tls_config_error(config));
                 return TLS_ELIBFAILED;
             }
         }

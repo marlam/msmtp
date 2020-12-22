@@ -216,8 +216,6 @@ int mtls_init(mtls_t *mtls,
         char **errstr)
 {
     struct tls_config *config;
-    char *key, *value;
-    uint32_t protocol_flags;
 
     if (sha1_fingerprint || md5_fingerprint)
     {
@@ -243,6 +241,9 @@ int mtls_init(mtls_t *mtls,
 
     if (priorities)
     {
+        char *key, *value;
+        uint32_t protocol_flags;
+
         if ((key = strstr(priorities, "ECDHECURVES=")) != NULL)
         {
             value = key + strlen("ECDHECURVES=");

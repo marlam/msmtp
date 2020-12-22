@@ -392,10 +392,10 @@ int mtls_start(mtls_t *mtls, int fd,
 
     if (tls_handshake(mtls->internals->tls_ctx) == -1)
     {
-        tls_close(mtls->internals->tls_ctx);
-        tls_free(mtls->internals->tls_ctx);
         *errstr = xasprintf(_("TLS handshake failed: %s"),
                 tls_error(mtls->internals->tls_ctx));
+        tls_close(mtls->internals->tls_ctx);
+        tls_free(mtls->internals->tls_ctx);
         return TLS_EHANDSHAKE;
     }
 

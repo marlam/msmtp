@@ -328,10 +328,17 @@ using an empty argument to this command. Only lower the default (for example to
 @anchor{tls_priorities}
 @item tls_priorities [@var{priorities}]
 @cmindex tls_priorities
-Set the priorities for TLS sessions. The default is set by the TLS library and
-can be selected by using an empty argument to this command.
-See the GnuTLS documentation of the @samp{gnutls_priority_init} function for a
-description of the @var{priorities} string.
+Set priorities for TLS session parameters. The default is set by the TLS library and
+can be selected by using an empty argument to this command. The interpretation of the
+@var{priorities} string depends on the TLS library. Use @samp{--version} to find out
+which TLS library you use.@*
+For GnuTLS, see the section on Priority Strings in the manual.@*
+For libtls, the @var{priorites} string is a space-separated list of parameter strings
+prefixed with either @code{PROTOCOLS=}, @code{CIPHERS=}, or @code{ECDHECURVES=}.
+These parameter strings will be passed to the functions @samp{tls_config_parse_protocols},
+@samp{tls_config_set_ciphers}, and @samp{tls_config_set_ecdhecurves}.
+Unrecognized parts of the @var{priorities} string will be ignored. Example:
+@code{PROTOCOLS=TLSv1.3 CIPHERS=ECDHE-RSA-AES128-SHA256 ECDHECURVES=P-384}.
 @anchor{tls_host_override}
 @item tls_host_override [@var{host}]
 @cmindex tls_host_override

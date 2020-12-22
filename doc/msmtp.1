@@ -509,10 +509,18 @@ TLS sessions. The default is set by the TLS library and can be selected by
 using an empty argument to this command. Only lower the default (for example to
 512 bits) if there is no other way to make TLS work with the remote server.
 .IP "tls_priorities [\fIpriorities\fP]"
-Set the priorities for TLS sessions. The default is set by the TLS library and
-can be selected by using an empty argument to this command.
-See the GnuTLS documentation of the \fIgnutls_priority_init\fP function for a
-description of the priorities string.
+Set priorities for TLS session parameters. The default is set by the TLS library and
+can be selected by using an empty argument to this command. The interpretation of the
+\fIpriorities\fP string depends on the TLS library. Use \fI\-\-version\fP to find out
+which TLS library you use.
+.br
+For GnuTLS, see the section on Priority Strings in the manual.
+.br
+For libtls, the \fIpriorites\fP string is a space-separated list of parameter strings
+prefixed with either PROTOCOLS=, CIPHERS=, or ECDHECURVES=. These parameter strings
+will be passed to the functions \fItls_config_parse_protocols\fP, \fItls_config_set_ciphers\fP,
+and \fItls_config_set_ecdhecurves\fP. Unrecognized parts of the \fIpriorities\fP string
+will be ignored. Example: "PROTOCOLS=TLSv1.3 CIPHERS=ECDHE-RSA-AES128-SHA256 ECDHECURVES=P-384". 
 .IP "tls_host_override [\fIhost\fP]"
 By default, TLS host verification uses the host name given by the \fBhost\fP command.
 This command allows one to use a different host name for verification. This is only

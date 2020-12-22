@@ -317,14 +317,6 @@ this feature.
 Enable or disable checks of the server certificate. They are enabled by default.@*
 Disabling them will override @samp{tls_trust_file} and @samp{tls_fingerprint}.
 WARNING: When the checks are disabled, TLS sessions will not be secure!
-@anchor{tls_min_dh_prime_bits}
-@item tls_min_dh_prime_bits [@var{bits}]
-@cmindex tls_min_dh_prime_bits
-Deprecated, use @samp{tls_priorities} instead.
-Set or unset the minimum number of Diffie-Hellman (DH) prime bits accepted for
-TLS sessions. The default is set by the TLS library and can be selected by
-using an empty argument to this command. Only lower the default (for example to
-512 bits) if there is no other way to make TLS work with the remote server.
 @anchor{tls_priorities}
 @item tls_priorities [@var{priorities}]
 @cmindex tls_priorities
@@ -345,6 +337,14 @@ Unrecognized parts of the @var{priorities} string will be ignored. Example:
 By default, TLS host verification uses the host name given by the @samp{host} command.
 This command allows one to use a different host name for verification. This is only
 useful in special cases.
+@anchor{tls_min_dh_prime_bits}
+@item tls_min_dh_prime_bits [@var{bits}]
+@cmindex tls_min_dh_prime_bits
+Deprecated, use @samp{tls_priorities} instead.
+Set or unset the minimum number of Diffie-Hellman (DH) prime bits accepted for
+TLS sessions. The default is set by the TLS library and can be selected by
+using an empty argument to this command. Only lower the default (for example to
+512 bits) if there is no other way to make TLS work with the remote server.
 @end table
 
 @section Commands specific to sendmail mode

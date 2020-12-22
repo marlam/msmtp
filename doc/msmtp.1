@@ -502,12 +502,6 @@ this feature.
 Enable or disable checks of the server certificate. They are enabled by default.
 Disabling them will override \fBtls_trust_file\fP and \fBtls_fingerprint\fP.
 WARNING: When the checks are disabled, TLS sessions will not be secure!
-.IP "tls_min_dh_prime_bits [\fIbits\fP]"
-Deprecated, use \fBtls_priorities\fP instead.
-Set or unset the minimum number of Diffie-Hellman (DH) prime bits accepted for
-TLS sessions. The default is set by the TLS library and can be selected by
-using an empty argument to this command. Only lower the default (for example to
-512 bits) if there is no other way to make TLS work with the remote server.
 .IP "tls_priorities [\fIpriorities\fP]"
 Set priorities for TLS session parameters. The default is set by the TLS library and
 can be selected by using an empty argument to this command. The interpretation of the
@@ -525,6 +519,12 @@ will be ignored. Example: "PROTOCOLS=TLSv1.3 CIPHERS=ECDHE-RSA-AES128-SHA256 ECD
 By default, TLS host verification uses the host name given by the \fBhost\fP command.
 This command allows one to use a different host name for verification. This is only
 useful in special cases.
+.IP "tls_min_dh_prime_bits [\fIbits\fP]"
+Deprecated, use \fBtls_priorities\fP instead.
+Set or unset the minimum number of Diffie-Hellman (DH) prime bits accepted for
+TLS sessions. The default is set by the TLS library and can be selected by
+using an empty argument to this command. Only lower the default (for example to
+512 bits) if there is no other way to make TLS work with the remote server.
 .IP "from \fIenvelope_from\fP"
 Set the envelope-from address. The following substitution patterns are supported:
 .br

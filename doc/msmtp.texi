@@ -99,7 +99,7 @@ Supported features include:
 @item TLS secured connections (including server certificate verification and
 the possibility to send a client certificate)
 @item Authentication methods PLAIN, LOGIN, CRAM-MD5 and EXTERNAL
-(and GSSAPI, SCRAM-SHA-1, DIGEST-MD5, and NTLM when compiled with GNU SASL
+(and GSSAPI, SCRAM-SHA-1, SCRAM-SHA-256, DIGEST-MD5, and NTLM when compiled with GNU SASL
 support)
 @item Internationalized Domain Names (IDN)
 @item DSN (Delivery Status Notification) support
@@ -226,7 +226,7 @@ are the domain part of your mail address (@code{provider.example} for
 @cmindex auth
 Enable or disable authentication and optionally choose a method to use. The
 argument @samp{on} chooses a method automatically.
-Accepted methods are @samp{plain}, @samp{scram-sha-1}, @samp{oauthbearer}, @samp{xoauth2}, @samp{cram-md5},
+Accepted methods are @samp{plain}, @samp{scram-sha-1}, @samp{scram-sha-256}, @samp{oauthbearer}, @samp{xoauth2}, @samp{cram-md5},
 @samp{gssapi}, @samp{external}, @samp{digest-md5}, @samp{login}, and
 @samp{ntlm}.
 @xref{Authentication}.@*
@@ -959,6 +959,9 @@ The following user / password methods are supported:
 A simple cleartext method supported by almost all servers.
 @item @samp{SCRAM-SHA-1}@*
 A method that avoids cleartext passwords.
+@item @samp{SCRAM-SHA-256}@*
+A method that avoids cleartext passwords.  Same family as SCRAM-SHA-1
+but with stronger hash function.
 @item @samp{CRAM-MD5}@*
 An obsolete method that avoids cleartext passwords, but is not considered
 secure anymore.

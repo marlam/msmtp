@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: msmtp 1.8.8rc2\n"
 "Report-Msgid-Bugs-To: marlam@marlam.de\n"
-"POT-Creation-Date: 2020-11-13 16:07+0100\n"
+"POT-Creation-Date: 2020-12-23 15:12+0100\n"
 "PO-Revision-Date: 2020-04-07 18:54+0530\n"
 "Last-Translator: Arun Isaac <arunisaac@systemreboot.net>\n"
 "Language-Team: Tamil <tamil@systemreboot.net>\n"
@@ -19,276 +19,276 @@ msgstr ""
 
 #. TRANSLATORS: msmtp shares a lot of code and translatable strings with
 #. mpop <https://marlam.de/mpop>.
-#: src/msmtp.c:89
+#: src/msmtp.c:88
 #, c-format
 msgid "%s: FATAL: %s\n"
 msgstr "%s: முறிவுப்பிழை: %s\n"
 
-#: src/msmtp.c:229 src/msmtp.c:407 src/msmtp.c:1398
+#: src/msmtp.c:228 src/msmtp.c:406 src/msmtp.c:1397
 #, c-format
 msgid "the server does not support TLS via the STARTTLS command"
 msgstr ""
 
-#: src/msmtp.c:271
+#: src/msmtp.c:270
 #, c-format
 msgid "the server does not support Remote Message Queue Starting"
 msgstr ""
 
-#: src/msmtp.c:283 src/msmtp.c:1456
+#: src/msmtp.c:282 src/msmtp.c:1455
 #, c-format
 msgid "the server does not support authentication"
 msgstr ""
 
-#: src/msmtp.c:442
+#: src/msmtp.c:441
 #, c-format
 msgid "%s server at %s (%s [%s]), port %d:\n"
 msgstr "%2$s (%3$s [%4$s]) வாயில் %5$d யிலுள்ள %1$s வழங்கி\n"
 
-#: src/msmtp.c:448
+#: src/msmtp.c:447
 #, c-format
 msgid "%s server at %s (%s), port %d:\n"
 msgstr "%2$s (%3$s) வாயில் %4$d யிலுள்ள %1$s வழங்கி\n"
 
-#: src/msmtp.c:454
+#: src/msmtp.c:453
 #, c-format
 msgid "%s server at %s ([%s]), port %d:\n"
 msgstr "%2$s ([%3$s]) வாயில் %4$d யிலுள்ள %1$s வழங்கி\n"
 
-#: src/msmtp.c:460
+#: src/msmtp.c:459
 #, c-format
 msgid "%s server at %s, port %d:\n"
 msgstr "%2$s வாயில் %3$d யிலுள்ள %1$s வழங்கி\n"
 
-#: src/msmtp.c:480
+#: src/msmtp.c:479
 #, c-format
 msgid "No special capabilities.\n"
 msgstr "சிறப்புச் செயல்வல்லமைகள் எதுவுமில்லை.\n"
 
-#: src/msmtp.c:484
+#: src/msmtp.c:483
 #, c-format
 msgid "Capabilities:\n"
 msgstr "செயல்வல்லமைகள்:\n"
 
-#: src/msmtp.c:488
+#: src/msmtp.c:487
 msgid "Maximum message size is "
 msgstr ""
 
-#: src/msmtp.c:491
+#: src/msmtp.c:490
 #, c-format
 msgid "unlimited\n"
 msgstr ""
 
-#: src/msmtp.c:495
+#: src/msmtp.c:494
 #, c-format
 msgid "%ld bytes"
 msgstr "%ld எண்ணுண்மிகள்"
 
-#: src/msmtp.c:498
+#: src/msmtp.c:497
 #, c-format
 msgid " = %.2f MiB"
 msgstr " = %.2f MiB"
 
-#: src/msmtp.c:503
+#: src/msmtp.c:502
 #, c-format
 msgid " = %.2f KiB"
 msgstr " = %.2f KiB"
 
-#: src/msmtp.c:510
+#: src/msmtp.c:509
 msgid "Support for command grouping for faster transmission"
 msgstr ""
 
-#: src/msmtp.c:515
+#: src/msmtp.c:514
 msgid "Support for RMQS (Remote Message Queue Starting)"
 msgstr ""
 
-#: src/msmtp.c:520
+#: src/msmtp.c:519
 msgid "Support for Delivery Status Notifications"
 msgstr ""
 
-#: src/msmtp.c:530
+#: src/msmtp.c:529
 msgid "Support for TLS encryption via the STARTTLS command"
 msgstr ""
 
-#: src/msmtp.c:536
+#: src/msmtp.c:535
 msgid "Supported authentication methods:"
 msgstr ""
 
-#: src/msmtp.c:585
+#: src/msmtp.c:584
 #, c-format
 msgid ""
 "This server might advertise more or other capabilities when TLS is active.\n"
 msgstr "இவ்வழங்கி TLS இருந்தால் பிறச் செயல்வல்லமைகளை வெளிப்படுத்தலாம்.\n"
 
-#: src/msmtp.c:1150 src/msmtp.c:3290
+#: src/msmtp.c:1149 src/msmtp.c:3291
 #, c-format
 msgid "cannot write mail headers to temporary file: output error"
 msgstr ""
 
-#: src/msmtp.c:1258
+#: src/msmtp.c:1257
 #, c-format
 msgid "input error while reading the mail"
 msgstr ""
 
-#: src/msmtp.c:1445
+#: src/msmtp.c:1444
 #, c-format
 msgid "the server does not support DSN"
 msgstr ""
 
-#: src/msmtp.c:1594 src/msmtp.c:1613 src/msmtp.c:1665
+#: src/msmtp.c:1593 src/msmtp.c:1612 src/msmtp.c:1664
 #, c-format
 msgid "automatic configuration based on SRV records failed: %s"
 msgstr ""
 
-#: src/msmtp.c:1595
+#: src/msmtp.c:1594
 msgid "invalid mail address"
 msgstr "ஏற்கத்தகா அஞ்சல் முகவரி"
 
-#: src/msmtp.c:1611
+#: src/msmtp.c:1610
 #, c-format
 msgid "no SRV records for %s or %s"
 msgstr ""
 
-#: src/msmtp.c:1628
+#: src/msmtp.c:1627
 #, c-format
 msgid "copy this to your configuration file %s"
 msgstr ""
 
-#: src/msmtp.c:1632
+#: src/msmtp.c:1631
 msgid "warning: the host does not match the mail domain; please check"
 msgstr ""
 
-#: src/msmtp.c:1635 src/msmtp.c:1639
+#: src/msmtp.c:1634 src/msmtp.c:1638
 msgid "add your password to the key ring:"
 msgstr ""
 
-#: src/msmtp.c:1642
+#: src/msmtp.c:1641
 msgid "encrypt your password:"
 msgstr ""
 
-#: src/msmtp.c:1666
+#: src/msmtp.c:1665
 msgid "this system lacks libresolv"
 msgstr ""
 
-#: src/msmtp.c:1893
+#: src/msmtp.c:1892
 #, c-format
 msgid "invalid logfile_time_format"
 msgstr ""
 
-#: src/msmtp.c:1906
+#: src/msmtp.c:1905
 #, c-format
 msgid "cannot open: %s"
 msgstr "திறக்க இயலவில்லை: %s"
 
-#: src/msmtp.c:1914
+#: src/msmtp.c:1913
 #, c-format
 msgid "cannot lock (tried for %d seconds): %s"
 msgstr "பூட்ட இயலவில்லை (%d நொடிகளுக்கு முயலப்பட்டது): %s"
 
-#: src/msmtp.c:1919
+#: src/msmtp.c:1918
 #, c-format
 msgid "cannot lock: %s"
 msgstr "பூட்ட இயலவில்லை: %s"
 
-#: src/msmtp.c:1928
+#: src/msmtp.c:1927
 msgid "output error"
 msgstr "வெளியீட்டுப் பிழை"
 
-#: src/msmtp.c:1945
+#: src/msmtp.c:1944
 #, c-format
 msgid "cannot log to %s: %s"
 msgstr "%s யில் குறிக்க இயலவில்லை: %s"
 
-#: src/msmtp.c:1949
+#: src/msmtp.c:1948
 #, c-format
 msgid "log info was: %s"
 msgstr ""
 
-#: src/msmtp.c:2058
+#: src/msmtp.c:2057
 #, c-format
 msgid "%s version %s\n"
 msgstr "%s பதிப்பெண் %s\n"
 
-#: src/msmtp.c:2059
+#: src/msmtp.c:2058
 #, c-format
 msgid "Platform: %s\n"
 msgstr "இயங்குதளம்: %s\n"
 
-#: src/msmtp.c:2061
+#: src/msmtp.c:2060
 #, c-format
 msgid "TLS/SSL library: %s\n"
 msgstr "TLS/SSL நிரலகம்: %s\n"
 
-#: src/msmtp.c:2067 src/msmtp.c:2141
+#: src/msmtp.c:2068 src/msmtp.c:2142
 #, c-format
 msgid "none"
 msgstr "இல்லை"
 
-#: src/msmtp.c:2071
+#: src/msmtp.c:2072
 #, c-format
 msgid ""
 "Authentication library: %s\n"
 "Supported authentication methods:\n"
 msgstr ""
 
-#: src/msmtp.c:2074
+#: src/msmtp.c:2075
 msgid "GNU SASL; oauthbearer and xoauth2: built-in"
 msgstr ""
 
-#: src/msmtp.c:2076
+#: src/msmtp.c:2077
 msgid "built-in"
 msgstr ""
 
-#: src/msmtp.c:2121
+#: src/msmtp.c:2122
 #, c-format
 msgid "IDN support: "
 msgstr ""
 
-#: src/msmtp.c:2125 src/msmtp.c:2133
+#: src/msmtp.c:2126 src/msmtp.c:2134
 #, c-format
 msgid "enabled"
 msgstr ""
 
-#: src/msmtp.c:2127 src/msmtp.c:2136
+#: src/msmtp.c:2128 src/msmtp.c:2137
 #, c-format
 msgid "disabled"
 msgstr ""
 
-#: src/msmtp.c:2131
+#: src/msmtp.c:2132
 #, c-format
 msgid "NLS: "
 msgstr ""
 
-#: src/msmtp.c:2134
+#: src/msmtp.c:2135
 #, c-format
 msgid ", LOCALEDIR is %s"
 msgstr ""
 
-#: src/msmtp.c:2139
+#: src/msmtp.c:2140
 #, c-format
 msgid "Keyring support: "
 msgstr ""
 
-#: src/msmtp.c:2144
+#: src/msmtp.c:2145
 #, c-format
 msgid "Gnome "
 msgstr ""
 
-#: src/msmtp.c:2147
+#: src/msmtp.c:2148
 #, c-format
 msgid "MacOS "
 msgstr ""
 
-#: src/msmtp.c:2153
+#: src/msmtp.c:2154
 #, c-format
 msgid "System configuration file name: %s\n"
 msgstr "பொது அமைவடிவக்கோப்பு: %s\n"
 
-#: src/msmtp.c:2157
+#: src/msmtp.c:2158
 #, c-format
 msgid "User configuration file name: %s\n"
 msgstr "பயனர் அமைவடிவக்கோப்பு: %s\n"
 
-#: src/msmtp.c:2160
+#: src/msmtp.c:2161
 #, c-format
 msgid ""
 "Copyright (C) 2020 Martin Lambers and others.\n"
@@ -302,7 +302,7 @@ msgstr ""
 "<http://gnu.org/licenses/gpl.html> என்னும் உரிமத்தின் கீழ் மறுவிநியோகம் செய்யலாம்.\n"
 "சட்டத்தால் அனுமதிக்கப்பட்ட அளவிற்கு எந்த உத்தரவாதமும் இல்லை.\n"
 
-#: src/msmtp.c:2177
+#: src/msmtp.c:2178
 #, c-format
 msgid ""
 "Usage:\n"
@@ -311,7 +311,7 @@ msgstr ""
 "பயன்பாடு:\n"
 "\n"
 
-#: src/msmtp.c:2178
+#: src/msmtp.c:2179
 #, c-format
 msgid ""
 "Sendmail mode (default):\n"
@@ -321,7 +321,7 @@ msgid ""
 "server.\n"
 msgstr ""
 
-#: src/msmtp.c:2183
+#: src/msmtp.c:2184
 #, c-format
 msgid ""
 "Configuration mode:\n"
@@ -329,7 +329,7 @@ msgid ""
 "  Generate and print configuration for address.\n"
 msgstr ""
 
-#: src/msmtp.c:2186
+#: src/msmtp.c:2187
 #, c-format
 msgid ""
 "Server information mode:\n"
@@ -340,7 +340,7 @@ msgstr ""
 "  %s [செயல்மாற்றி...] --serverinfo\n"
 "  வழங்கி விவரத்தைக் காட்டு\n"
 
-#: src/msmtp.c:2189
+#: src/msmtp.c:2190
 #, c-format
 msgid ""
 "Remote Message Queue Starting mode:\n"
@@ -349,64 +349,64 @@ msgid ""
 "\n"
 msgstr ""
 
-#: src/msmtp.c:2193
+#: src/msmtp.c:2194
 #, c-format
 msgid "General options:\n"
 msgstr "பொதுவான செயல்மாற்றிகள்:\n"
 
-#: src/msmtp.c:2194
+#: src/msmtp.c:2195
 #, c-format
 msgid "  --version                    print version\n"
 msgstr "  --version                   பதிப்பு விவரத்தைக் காட்டு\n"
 
-#: src/msmtp.c:2195
+#: src/msmtp.c:2196
 #, c-format
 msgid "  --help                       print help\n"
 msgstr "  --help                      உதவிச் செய்தியைக் காட்டு\n"
 
-#: src/msmtp.c:2196
+#: src/msmtp.c:2197
 #, c-format
 msgid "  -P, --pretend                print configuration info and exit\n"
 msgstr "  -P, --pretend               அமைவடிவ விவரத்தைக் காட்டி வெளியேறு\n"
 
-#: src/msmtp.c:2197
+#: src/msmtp.c:2198
 #, c-format
 msgid "  -d, --debug                  print debugging information\n"
 msgstr ""
 
-#: src/msmtp.c:2198
+#: src/msmtp.c:2199
 #, c-format
 msgid "Changing the mode of operation:\n"
 msgstr "செய்பணி பாங்கை மாற்றுவது:\n"
 
-#: src/msmtp.c:2199
+#: src/msmtp.c:2200
 #, c-format
 msgid ""
 "  --configure=mailaddress      generate and print configuration for address\n"
 msgstr ""
 
-#: src/msmtp.c:2200
+#: src/msmtp.c:2201
 #, c-format
 msgid "  -S, --serverinfo             print information about the server\n"
 msgstr "  -S, --serverinfo            வழங்கி விவரத்தைக் காட்டு\n"
 
-#: src/msmtp.c:2201
+#: src/msmtp.c:2202
 #, c-format
 msgid ""
 "  --rmqs=host|@domain|#queue   send a Remote Message Queue Starting request\n"
 msgstr ""
 
-#: src/msmtp.c:2202
+#: src/msmtp.c:2203
 #, c-format
 msgid "Configuration options:\n"
 msgstr "அமைவடிவ செயல்மாற்றிகள்:\n"
 
-#: src/msmtp.c:2203
+#: src/msmtp.c:2204
 #, c-format
 msgid "  -C, --file=filename          set configuration file\n"
 msgstr "  -C, --file=கோப்புப்பெயர்      அமைவடிவக்கோப்பைக் குறிப்பிடு\n"
 
-#: src/msmtp.c:2204
+#: src/msmtp.c:2205
 #, c-format
 msgid ""
 "  -a, --account=id             use the given account instead of the account\n"
@@ -415,7 +415,7 @@ msgid ""
 "                               with command-line options\n"
 msgstr ""
 
-#: src/msmtp.c:2207
+#: src/msmtp.c:2208
 #, c-format
 msgid ""
 "  --host=hostname              set the server, use only command-line "
@@ -423,213 +423,213 @@ msgid ""
 "                               do not use any configuration file data\n"
 msgstr ""
 
-#: src/msmtp.c:2209
+#: src/msmtp.c:2210
 #, c-format
 msgid "  --port=number                set port number\n"
 msgstr "  --port=எண்                 வாயில் எண்ணைக் குறிப்பிடு\n"
 
-#: src/msmtp.c:2210
+#: src/msmtp.c:2211
 #, c-format
 msgid ""
 "  --source-ip=[IP]             set/unset source ip address to bind the "
 "socket to\n"
 msgstr ""
 
-#: src/msmtp.c:2211
+#: src/msmtp.c:2212
 #, c-format
 msgid "  --proxy-host=[IP|hostname]   set/unset proxy\n"
 msgstr ""
 
-#: src/msmtp.c:2212
+#: src/msmtp.c:2213
 #, c-format
 msgid "  --proxy-port=[number]        set/unset proxy port\n"
 msgstr ""
 
-#: src/msmtp.c:2213
+#: src/msmtp.c:2214
 #, c-format
 msgid "  --socket=[socketname]        set/unset local socket to connect to\n"
 msgstr ""
 
-#: src/msmtp.c:2214
+#: src/msmtp.c:2215
 #, c-format
 msgid "  --timeout=(off|seconds)      set/unset network timeout in seconds\n"
 msgstr ""
 
-#: src/msmtp.c:2215
+#: src/msmtp.c:2216
 #, c-format
 msgid "  --protocol=(smtp|lmtp)       use the given sub protocol\n"
 msgstr ""
 
-#: src/msmtp.c:2216
+#: src/msmtp.c:2217
 #, c-format
 msgid ""
 "  --domain=string              set the argument of EHLO or LHLO command\n"
 msgstr ""
 
-#: src/msmtp.c:2217
+#: src/msmtp.c:2218
 #, c-format
 msgid ""
 "  --auth[=(on|off|method)]     enable/disable authentication and optionally\n"
 "                               choose the method\n"
 msgstr ""
 
-#: src/msmtp.c:2219
+#: src/msmtp.c:2220
 #, c-format
 msgid "  --user=[username]            set/unset user name for authentication\n"
 msgstr ""
 
-#: src/msmtp.c:2220
+#: src/msmtp.c:2221
 #, c-format
 msgid "  --passwordeval=[eval]        evaluate password for authentication\n"
 msgstr ""
 
-#: src/msmtp.c:2221
+#: src/msmtp.c:2222
 #, c-format
 msgid "  --tls[=(on|off)]             enable/disable TLS encryption\n"
 msgstr ""
 
-#: src/msmtp.c:2222
+#: src/msmtp.c:2223
 #, c-format
 msgid "  --tls-starttls[=(on|off)]    enable/disable STARTTLS for TLS\n"
 msgstr ""
 
-#: src/msmtp.c:2223
+#: src/msmtp.c:2224
 #, c-format
 msgid "  --tls-trust-file=[file]      set/unset trust file for TLS\n"
 msgstr ""
 
-#: src/msmtp.c:2224
+#: src/msmtp.c:2225
 #, c-format
 msgid "  --tls-crl-file=[file]        set/unset revocation file for TLS\n"
 msgstr ""
 
-#: src/msmtp.c:2225
+#: src/msmtp.c:2226
 #, c-format
 msgid ""
 "  --tls-fingerprint=[f]        set/unset trusted certificate fingerprint for "
 "TLS\n"
 msgstr ""
 
-#: src/msmtp.c:2226
+#: src/msmtp.c:2227
 #, c-format
 msgid ""
 "  --tls-certcheck[=(on|off)]   enable/disable server certificate checks for "
 "TLS\n"
 msgstr ""
 
-#: src/msmtp.c:2227
+#: src/msmtp.c:2228
 #, c-format
 msgid "  --tls-key-file=[file]        set/unset private key file for TLS\n"
 msgstr ""
 
-#: src/msmtp.c:2228
+#: src/msmtp.c:2229
 #, c-format
 msgid "  --tls-cert-file=[file]       set/unset private cert file for TLS\n"
 msgstr ""
 
-#: src/msmtp.c:2229
+#: src/msmtp.c:2230
 #, c-format
 msgid "  --tls-priorities=[prios]     set/unset TLS priorities.\n"
 msgstr ""
 
-#: src/msmtp.c:2230
+#: src/msmtp.c:2231
 #, c-format
 msgid ""
 "  --tls-host-override=[host]   set/unset override for TLS host "
 "verification.\n"
 msgstr ""
 
-#: src/msmtp.c:2231
+#: src/msmtp.c:2232
 #, c-format
 msgid "  --tls-min-dh-prime-bits=[b]  set/unset minimum bit size of DH prime\n"
 msgstr ""
 
-#: src/msmtp.c:2232
+#: src/msmtp.c:2233
 #, c-format
 msgid "Options specific to sendmail mode:\n"
 msgstr ""
 
-#: src/msmtp.c:2233
+#: src/msmtp.c:2234
 #, c-format
 msgid ""
 "  --auto-from[=(on|off)]       enable/disable automatic envelope-from "
 "addresses\n"
 msgstr ""
 
-#: src/msmtp.c:2234
+#: src/msmtp.c:2235
 #, c-format
 msgid "  -f, --from=address           set envelope from address\n"
 msgstr ""
 
-#: src/msmtp.c:2235
+#: src/msmtp.c:2236
 #, c-format
 msgid ""
 "  --maildomain=[domain]        set the domain for automatic envelope from\n"
 "                               addresses\n"
 msgstr ""
 
-#: src/msmtp.c:2237
+#: src/msmtp.c:2238
 #, c-format
 msgid "  -N, --dsn-notify=(off|cond)  set/unset DSN conditions\n"
 msgstr ""
 
-#: src/msmtp.c:2238
+#: src/msmtp.c:2239
 #, c-format
 msgid "  -R, --dsn-return=(off|ret)   set/unset DSN amount\n"
 msgstr ""
 
-#: src/msmtp.c:2239
+#: src/msmtp.c:2240
 #, c-format
 msgid "  -X, --logfile=[file]         set/unset log file\n"
 msgstr "  -X, --logfile=கோப்பு         குறிப்பேடைக் குறிப்பிடு\n"
 
-#: src/msmtp.c:2240
+#: src/msmtp.c:2241
 #, c-format
 msgid ""
 "  --logfile-time-format=[fmt]  set/unset log file time format for "
 "strftime()\n"
 msgstr ""
 
-#: src/msmtp.c:2241
+#: src/msmtp.c:2242
 #, c-format
 msgid ""
 "  --syslog[=(on|off|facility)] enable/disable/configure syslog logging\n"
 msgstr ""
 
-#: src/msmtp.c:2242
+#: src/msmtp.c:2243
 #, c-format
 msgid ""
 "  -t, --read-recipients        read additional recipients from the mail\n"
 msgstr ""
 
-#: src/msmtp.c:2243
+#: src/msmtp.c:2244
 #, c-format
 msgid ""
 "  --read-envelope-from         read envelope from address from the mail\n"
 msgstr ""
 
-#: src/msmtp.c:2244
+#: src/msmtp.c:2245
 #, c-format
 msgid "  --aliases=[file]             set/unset aliases file\n"
 msgstr ""
 
-#: src/msmtp.c:2245
+#: src/msmtp.c:2246
 #, c-format
 msgid "  --set-from-header[=(auto|on|off)] set From header handling\n"
 msgstr ""
 
-#: src/msmtp.c:2246
+#: src/msmtp.c:2247
 #, c-format
 msgid "  --set-date-header[=(auto|off)] set Date header handling\n"
 msgstr ""
 
-#: src/msmtp.c:2247
+#: src/msmtp.c:2248
 #, c-format
 msgid ""
 "  --remove-bcc-headers[=(on|off)] enable/disable removal of Bcc headers\n"
 msgstr ""
 
-#: src/msmtp.c:2248
+#: src/msmtp.c:2249
 #, c-format
 msgid ""
 "  --undisclosed-recipients[=(on|off)] enable/disable replacement of To/Cc/"
@@ -637,18 +637,18 @@ msgid ""
 "                               with To: undisclosed-recipients:;\n"
 msgstr ""
 
-#: src/msmtp.c:2250
+#: src/msmtp.c:2251
 #, c-format
 msgid "  --                           end of options\n"
 msgstr "  --                          செயல்மாற்றிகளின் முடிவு\n"
 
-#: src/msmtp.c:2251
+#: src/msmtp.c:2252
 #, c-format
 msgid ""
 "Accepted but ignored: -A, -B, -bm, -F, -G, -h, -i, -L, -m, -n, -O, -o, -v\n"
 msgstr ""
 
-#: src/msmtp.c:2252
+#: src/msmtp.c:2253
 #, c-format
 msgid ""
 "\n"
@@ -659,376 +659,376 @@ msgstr ""
 "வழுக்களை <%s> யிடம் தெரிவிக்க.\n"
 "தமிழாக்க வழுக்களை <tamil@systemreboot.net> யிடம் தெரிவிக்க.\n"
 
-#: src/msmtp.c:2494 src/msmtp.c:2508
+#: src/msmtp.c:2495 src/msmtp.c:2509
 msgid "cannot use both --serverinfo and --rmqs"
 msgstr "--serverinfo, --rmqs இரண்டையும் ஒரே நேரத்தில் குறிப்பிடக்கூடாது"
 
-#: src/msmtp.c:2528 src/msmtp.c:2540
+#: src/msmtp.c:2529 src/msmtp.c:2541
 msgid "cannot use both --host and --account"
 msgstr "--host, --account இரண்டையும் ஒரே நேரத்தில் குறிப்பிடக்கூடாது"
 
-#: src/msmtp.c:2556 src/msmtp.c:2574 src/msmtp.c:2593 src/msmtp.c:2648
-#: src/msmtp.c:2680 src/msmtp.c:2698 src/msmtp.c:2761 src/msmtp.c:2806
-#: src/msmtp.c:2828 src/msmtp.c:2874 src/msmtp.c:2899 src/msmtp.c:2918
-#: src/msmtp.c:2971 src/msmtp.c:3016 src/msmtp.c:3043 src/msmtp.c:3061
-#: src/msmtp.c:3080 src/msmtp.c:3099 src/msmtp.c:3117 src/msmtp.c:3135
-#: src/msmtp.c:3212
+#: src/msmtp.c:2557 src/msmtp.c:2575 src/msmtp.c:2594 src/msmtp.c:2649
+#: src/msmtp.c:2681 src/msmtp.c:2699 src/msmtp.c:2762 src/msmtp.c:2807
+#: src/msmtp.c:2829 src/msmtp.c:2875 src/msmtp.c:2900 src/msmtp.c:2919
+#: src/msmtp.c:2972 src/msmtp.c:3017 src/msmtp.c:3044 src/msmtp.c:3062
+#: src/msmtp.c:3081 src/msmtp.c:3100 src/msmtp.c:3118 src/msmtp.c:3136
+#: src/msmtp.c:3213
 #, c-format
 msgid "invalid argument %s for %s"
 msgstr ""
 
-#: src/msmtp.c:2603 src/msmtp.c:3175
+#: src/msmtp.c:2604 src/msmtp.c:3176
 msgid "cannot use both --from and --read-envelope-from"
 msgstr "--host, --read-envelope-from இரண்டையும் ஒரே நேரத்தில் குறிப்பிடக்கூடாது"
 
-#: src/msmtp.c:3190
+#: src/msmtp.c:3191
 #, c-format
 msgid "unsupported operation mode b%s"
 msgstr ""
 
-#: src/msmtp.c:3267 src/msmtp.c:3744 src/msmtp.c:4037
+#: src/msmtp.c:3268 src/msmtp.c:3745 src/msmtp.c:4038
 #, c-format
 msgid "cannot create temporary file: %s"
 msgstr "தற்காலிகக் கோப்பை உருவாக்க இயலவில்லை: %s"
 
-#: src/msmtp.c:3297 src/msmtp.c:3769 src/msmtp.c:4070
+#: src/msmtp.c:3298 src/msmtp.c:3770 src/msmtp.c:4071
 #, c-format
 msgid "cannot rewind temporary file: %s"
 msgstr ""
 
-#: src/msmtp.c:3362
+#: src/msmtp.c:3363
 #, c-format
 msgid "ignoring system configuration file %s: %s\n"
 msgstr "பொது அமைவடிவக்கொப்பு %s ஒதுக்கப்படுகிறது: %s\n"
 
-#: src/msmtp.c:3377
+#: src/msmtp.c:3378
 #, c-format
 msgid "loaded system configuration file %s\n"
 msgstr "பொது அமைவடிவக்கோப்பு %s ஏற்றப்படுகிறது\n"
 
-#: src/msmtp.c:3416
+#: src/msmtp.c:3417
 #, c-format
 msgid "ignoring user configuration file %s: %s\n"
 msgstr "பயனர் அமைவடிவக்கோப்பு %s ஒதுக்கப்படுகிறது: %s\n"
 
-#: src/msmtp.c:3431
+#: src/msmtp.c:3432
 #, c-format
 msgid "loaded user configuration file %s\n"
 msgstr "பயனர் அமைவடிவக்கோப்பு %s ஏற்றப்படுகிறது\n"
 
-#: src/msmtp.c:3488
+#: src/msmtp.c:3489
 #, c-format
 msgid "using account %s from %s\n"
 msgstr ""
 
-#: src/msmtp.c:3494 src/msmtp.c:3496 src/msmtp.c:3499 src/msmtp.c:3533
-#: src/msmtp.c:3534 src/msmtp.c:3536 src/msmtp.c:3538 src/msmtp.c:3542
-#: src/msmtp.c:3544 src/msmtp.c:3563 src/msmtp.c:3565 src/msmtp.c:3567
-#: src/msmtp.c:3577 src/msmtp.c:3580 src/msmtp.c:3582 src/msmtp.c:3587
-#: src/msmtp.c:3590 src/msmtp.c:3602 src/msmtp.c:3604 src/msmtp.c:3606
-#: src/msmtp.c:3609 src/msmtp.c:3611 src/msmtp.c:3613
+#: src/msmtp.c:3495 src/msmtp.c:3497 src/msmtp.c:3500 src/msmtp.c:3534
+#: src/msmtp.c:3535 src/msmtp.c:3537 src/msmtp.c:3539 src/msmtp.c:3543
+#: src/msmtp.c:3545 src/msmtp.c:3564 src/msmtp.c:3566 src/msmtp.c:3568
+#: src/msmtp.c:3578 src/msmtp.c:3581 src/msmtp.c:3583 src/msmtp.c:3588
+#: src/msmtp.c:3591 src/msmtp.c:3603 src/msmtp.c:3605 src/msmtp.c:3607
+#: src/msmtp.c:3610 src/msmtp.c:3612 src/msmtp.c:3614
 msgid "(not set)"
 msgstr ""
 
-#: src/msmtp.c:3503
+#: src/msmtp.c:3504
 #, c-format
 msgid "off\n"
 msgstr ""
 
-#: src/msmtp.c:3509
+#: src/msmtp.c:3510
 #, c-format
 msgid "%d seconds\n"
 msgstr "%d நொடிகள்\n"
 
-#: src/msmtp.c:3513
+#: src/msmtp.c:3514
 #, c-format
 msgid "1 second\n"
 msgstr "1 நொடி\n"
 
-#: src/msmtp.c:3522
+#: src/msmtp.c:3523
 #, c-format
 msgid "none\n"
 msgstr "இல்லை\n"
 
-#: src/msmtp.c:3526
+#: src/msmtp.c:3527
 #, c-format
 msgid "choose\n"
 msgstr "தேர்ந்தெடு\n"
 
-#: src/msmtp.c:3539 src/msmtp.c:3540 src/msmtp.c:3569 src/msmtp.c:3585
-#: src/msmtp.c:3593 src/msmtp.c:3598 src/msmtp.c:3600
+#: src/msmtp.c:3540 src/msmtp.c:3541 src/msmtp.c:3570 src/msmtp.c:3586
+#: src/msmtp.c:3594 src/msmtp.c:3599 src/msmtp.c:3601
 msgid "on"
 msgstr ""
 
-#: src/msmtp.c:3539 src/msmtp.c:3540 src/msmtp.c:3569 src/msmtp.c:3585
-#: src/msmtp.c:3593 src/msmtp.c:3596 src/msmtp.c:3598 src/msmtp.c:3600
+#: src/msmtp.c:3540 src/msmtp.c:3541 src/msmtp.c:3570 src/msmtp.c:3586
+#: src/msmtp.c:3594 src/msmtp.c:3597 src/msmtp.c:3599 src/msmtp.c:3601
 msgid "off"
 msgstr ""
 
-#: src/msmtp.c:3590
+#: src/msmtp.c:3591
 msgid "(read from mail)"
 msgstr ""
 
-#: src/msmtp.c:3592 src/msmtp.c:3595
+#: src/msmtp.c:3593 src/msmtp.c:3596
 msgid "auto"
 msgstr ""
 
-#: src/msmtp.c:3616
+#: src/msmtp.c:3617
 #, c-format
 msgid "reading recipients from the command line and the mail\n"
 msgstr ""
 
-#: src/msmtp.c:3621
+#: src/msmtp.c:3622
 #, c-format
 msgid "reading recipients from the command line\n"
 msgstr ""
 
-#: src/msmtp.c:3734
+#: src/msmtp.c:3735
 msgid "too many arguments"
 msgstr ""
 
-#: src/msmtp.c:3763
+#: src/msmtp.c:3764
 #, c-format
 msgid "envelope from address extracted from mail: %s\n"
 msgstr ""
 
-#: src/msmtp.c:3778
+#: src/msmtp.c:3779
 msgid "no recipients found"
 msgstr ""
 
-#: src/msmtp.c:3808
+#: src/msmtp.c:3809
 #, c-format
 msgid "account chosen by envelope from address %s: %s\n"
 msgstr ""
 
-#: src/msmtp.c:3822
+#: src/msmtp.c:3823
 #, c-format
 msgid "falling back to default account\n"
 msgstr ""
 
-#: src/msmtp.c:3845
+#: src/msmtp.c:3846
 #, c-format
 msgid "using environment variables EMAIL and SMTPSERVER\n"
 msgstr ""
 
-#: src/msmtp.c:3853
+#: src/msmtp.c:3854
 #, c-format
 msgid "account %s not found in %s and %s"
 msgstr ""
 
-#: src/msmtp.c:3859 src/msmtp.c:3864
+#: src/msmtp.c:3860 src/msmtp.c:3865
 #, c-format
 msgid "account %s not found in %s"
 msgstr ""
 
-#: src/msmtp.c:3869
+#: src/msmtp.c:3870
 #, c-format
 msgid "account %s not found: no configuration file available"
 msgstr ""
 
-#: src/msmtp.c:3884
+#: src/msmtp.c:3885
 #, c-format
 msgid "using account specified on command line\n"
 msgstr ""
 
-#: src/msmtp.c:3944
+#: src/msmtp.c:3945
 #, c-format
 msgid "account %s from %s: %s"
 msgstr ""
 
-#: src/msmtp.c:3985
+#: src/msmtp.c:3986
 msgid "this platform does not support syslog logging"
 msgstr ""
 
-#: src/msmtp.c:3994
+#: src/msmtp.c:3995
 #, c-format
 msgid "support for authentication method %s is not compiled in"
 msgstr ""
 
-#: src/msmtp.c:4002
+#: src/msmtp.c:4003
 #, c-format
 msgid "cannot initialize networking: %s"
 msgstr "வலையத்தைத் தொடங்க இயலவில்லை: %s"
 
-#: src/msmtp.c:4013
+#: src/msmtp.c:4014
 #, c-format
 msgid "cannot initialize TLS library: %s"
 msgstr ""
 
-#: src/msmtp.c:4020
+#: src/msmtp.c:4021
 msgid "support for TLS is not compiled in"
 msgstr ""
 
-#: src/msmtp.c:4099
+#: src/msmtp.c:4100
 #, c-format
 msgid "LMTP server message: %s"
 msgstr "LMTP வழங்கிச் செய்தி: %s"
 
-#: src/msmtp.c:4110
+#: src/msmtp.c:4111
 #, c-format
 msgid "could not send mail to all recipients (account %s from %s)"
 msgstr ""
 
-#: src/msmtp.c:4116
+#: src/msmtp.c:4117
 msgid "could not send mail to all recipients"
 msgstr ""
 
-#: src/msmtp.c:4131 src/msmtp.c:4186 src/msmtp.c:4207
+#: src/msmtp.c:4132 src/msmtp.c:4187 src/msmtp.c:4208
 #, c-format
 msgid "server message: %s"
 msgstr "வழங்கிச் செய்தி: %s"
 
-#: src/msmtp.c:4137
+#: src/msmtp.c:4138
 #, c-format
 msgid "could not send mail (account %s from %s)"
 msgstr "மடல் அனுப்ப இயலவில்லை (%s யிலுள்ள %s கணக்கு)"
 
-#: src/msmtp.c:4142
+#: src/msmtp.c:4143
 msgid "could not send mail"
 msgstr "மடல் அனுப்ப இயலவில்லை"
 
-#: src/msmtp.c:4152
+#: src/msmtp.c:4153
 #, c-format
 msgid "delivery to one or more recipients failed"
 msgstr ""
 
-#: src/conf.c:795 src/conf.c:810
+#: src/conf.c:791 src/conf.c:806
 #, c-format
 msgid "host not set"
 msgstr ""
 
-#: src/conf.c:800
+#: src/conf.c:796
 #, c-format
 msgid "port not set"
 msgstr "வாயில் குறிப்பிடப்படவில்லை"
 
-#: src/conf.c:805
+#: src/conf.c:801
 #, c-format
 msgid "envelope-from address is missing"
 msgstr ""
 
-#: src/conf.c:815
+#: src/conf.c:811
 #, c-format
 msgid "tls_key_file requires tls_cert_file"
 msgstr "tls_key_file க்கு tls_cert_file தேவை"
 
-#: src/conf.c:820
+#: src/conf.c:816
 #, c-format
 msgid "tls_cert_file requires tls_key_file"
 msgstr "tls_cert_file க்கு tls_key_file தேவை"
 
-#: src/conf.c:828
+#: src/conf.c:824
 #, c-format
 msgid ""
 "tls requires either tls_trust_file (highly recommended) or tls_fingerprint "
 "or a disabled tls_certcheck"
 msgstr ""
 
-#: src/conf.c:834
+#: src/conf.c:830
 #, c-format
 msgid "tls_crl_file requires tls_trust_file"
 msgstr "tls_crl_file க்கு tls_trust_file தேவை"
 
-#: src/conf.c:865
+#: src/conf.c:861
 #, c-format
 msgid "cannot evaluate '%s': %s"
 msgstr "'%s' யைக் கணிக்க முடியவில்லை: %s"
 
-#: src/conf.c:875
+#: src/conf.c:871
 #, c-format
 msgid "cannot read output of '%s'"
 msgstr "'%s' வின் வெளியீட்டைப் படிக்க முடியவில்லை"
 
-#: src/conf.c:930 src/conf.c:937 src/conf.c:950 src/tls.c:842
+#: src/conf.c:926 src/conf.c:933 src/conf.c:946 src/mtls-gnutls.c:301
 #, c-format
 msgid "%s: %s"
 msgstr "%s: %s"
 
-#: src/conf.c:1096 src/stream.c:63
+#: src/conf.c:1092 src/stream.c:63
 #, c-format
 msgid "input error"
 msgstr "உள்ளீட்டுப் பிழை"
 
-#: src/conf.c:1118
+#: src/conf.c:1114
 #, c-format
 msgid "line longer than %d characters"
 msgstr "வரியில் %d வரியுருகளுக்கு அதிமாக உள்ளன"
 
-#: src/conf.c:1169 src/conf.c:1294
+#: src/conf.c:1165 src/conf.c:1290
 #, c-format
 msgid "line %d: missing account name"
 msgstr "வரி %d: கணக்குப் பெயர் இல்லை"
 
-#: src/conf.c:1174
+#: src/conf.c:1170
 #, c-format
 msgid "line %d: account %s not (yet) defined"
 msgstr ""
 
-#: src/conf.c:1266 src/conf.c:2063 src/conf.c:2080
+#: src/conf.c:1262 src/conf.c:2059 src/conf.c:2076
 #, c-format
 msgid "line %d: command %s does not take an argument"
 msgstr "வரி %d: %s கட்டளைக்குச் செயலுருபு கிடையாது"
 
-#: src/conf.c:1302
+#: src/conf.c:1298
 #, c-format
 msgid "line %d: an account name must not contain colons or commas"
 msgstr "வரி %d: கணக்குப் பெயரில் விளக்கிசைக்குறிகளோ உறுப்பிசைக்குறிகளோ இடம்பெறக்கூடாது"
 
-#: src/conf.c:1312
+#: src/conf.c:1308
 #, c-format
 msgid "line %d: account %s was already defined"
 msgstr "வரி %d: %s என்னும் கணக்கு ஏற்கனவே வரையறுக்கப்பட்டது"
 
-#: src/conf.c:1337 src/conf.c:1356 src/conf.c:1383 src/conf.c:1412
-#: src/conf.c:1698 src/conf.c:1733
+#: src/conf.c:1333 src/conf.c:1352 src/conf.c:1379 src/conf.c:1408
+#: src/conf.c:1694 src/conf.c:1729
 #, c-format
 msgid "line %d: command %s needs an argument"
 msgstr "வரி %d: %s கட்டளைக்குச் செயலுருபு தேவை"
 
-#: src/conf.c:1367 src/conf.c:1399 src/conf.c:1430 src/conf.c:1469
-#: src/conf.c:1514 src/conf.c:1534 src/conf.c:1619 src/conf.c:1640
-#: src/conf.c:1659 src/conf.c:1720 src/conf.c:1751 src/conf.c:1801
-#: src/conf.c:1848 src/conf.c:1873 src/conf.c:1893 src/conf.c:1913
-#: src/conf.c:1933 src/conf.c:1980 src/conf.c:2001 src/conf.c:2022
-#: src/conf.c:2050
+#: src/conf.c:1363 src/conf.c:1395 src/conf.c:1426 src/conf.c:1465
+#: src/conf.c:1510 src/conf.c:1530 src/conf.c:1615 src/conf.c:1636
+#: src/conf.c:1655 src/conf.c:1716 src/conf.c:1747 src/conf.c:1797
+#: src/conf.c:1844 src/conf.c:1869 src/conf.c:1889 src/conf.c:1909
+#: src/conf.c:1929 src/conf.c:1976 src/conf.c:1997 src/conf.c:2018
+#: src/conf.c:2046
 #, c-format
 msgid "line %d: invalid argument %s for command %s"
 msgstr ""
 
-#: src/conf.c:2096
+#: src/conf.c:2092
 #, c-format
 msgid "line %d: unknown command %s"
 msgstr "வரி %d: அறியப்படாக் கட்டளை %s"
 
-#: src/conf.c:2148
+#: src/conf.c:2144
 #, c-format
 msgid "contains secrets and therefore must be owned by you"
 msgstr ""
 
-#: src/conf.c:2154
+#: src/conf.c:2150
 #, c-format
 msgid ""
 "contains secrets and therefore must have no more than user read/write "
 "permissions"
 msgstr ""
 
-#: src/smtp.c:209
+#: src/smtp.c:208
 #, c-format
 msgid "the server sent an empty reply"
 msgstr "வழங்கி வெற்று மறுமொழி அளித்தது"
 
-#: src/smtp.c:213
+#: src/smtp.c:212
 #, c-format
 msgid "the server sent an invalid reply"
 msgstr "வழங்கி ஏற்கத்தகா மறுமொழி அளித்தது"
 
-#: src/smtp.c:237
+#: src/smtp.c:236
 #, c-format
 msgid ""
 "Rejecting server reply that is longer than %d lines. Increase SMTP_MAXLINES."
 msgstr ""
 
-#: src/smtp.c:324
+#: src/smtp.c:323
 #, c-format
 msgid ""
 "Cannot send command because it is longer than %d characters. Increase "
@@ -1037,110 +1037,110 @@ msgstr ""
 "கட்டளை %d வரியுருக்களுக்கு மேல் இருப்பதால் அதை அனுப்ப இயலாது.\n"
 "SMTP_MAXCMDLEN யை உயர்த்தவும்."
 
-#: src/smtp.c:356
+#: src/smtp.c:355
 #, c-format
 msgid "cannot get initial OK message from server"
 msgstr "வழங்கியிடமிருந்து முதல் OK செய்தியைப் பெற இயலவில்லை"
 
-#: src/smtp.c:418
+#: src/smtp.c:417
 #, c-format
 msgid "SMTP server does not accept EHLO or HELO commands"
 msgstr ""
 
-#: src/smtp.c:441 src/smtp.c:595 src/smtp.c:600 src/smtp.c:673 src/smtp.c:721
-#: src/smtp.c:811 src/smtp.c:902 src/smtp.c:2129
+#: src/smtp.c:440 src/smtp.c:594 src/smtp.c:599 src/smtp.c:672 src/smtp.c:720
+#: src/smtp.c:810 src/smtp.c:901 src/smtp.c:2128
 #, c-format
 msgid "command %s failed"
 msgstr "%s கட்டளை தோல்வியுற்றது"
 
-#: src/smtp.c:678 src/smtp.c:742 src/smtp.c:763 src/smtp.c:860 src/smtp.c:923
-#: src/smtp.c:997 src/smtp.c:1065 src/smtp.c:1401 src/smtp.c:1443
-#: src/smtp.c:1480
+#: src/smtp.c:677 src/smtp.c:741 src/smtp.c:762 src/smtp.c:859 src/smtp.c:922
+#: src/smtp.c:996 src/smtp.c:1064 src/smtp.c:1400 src/smtp.c:1442
+#: src/smtp.c:1479
 #, c-format
 msgid "authentication failed (method %s)"
 msgstr ""
 
-#: src/smtp.c:822
+#: src/smtp.c:821
 #, c-format
 msgid "authentication method CRAM-MD5: server sent invalid challenge"
 msgstr ""
 
-#: src/smtp.c:1181 src/smtp.c:1501
+#: src/smtp.c:1180 src/smtp.c:1500
 #, c-format
 msgid "the server does not support authentication method %s"
 msgstr ""
 
-#: src/smtp.c:1187 src/smtp.c:1312 src/smtp.c:1355
+#: src/smtp.c:1186 src/smtp.c:1311 src/smtp.c:1354
 #, c-format
 msgid "GNU SASL: %s"
 msgstr ""
 
-#: src/smtp.c:1194
+#: src/smtp.c:1193
 #, c-format
 msgid "GNU SASL: authentication method %s not supported"
 msgstr ""
 
-#: src/smtp.c:1253 src/smtp.c:1532
+#: src/smtp.c:1252 src/smtp.c:1531
 #, c-format
 msgid "cannot use a secure authentication method"
 msgstr ""
 
-#: src/smtp.c:1259 src/smtp.c:1538
+#: src/smtp.c:1258 src/smtp.c:1537
 #, c-format
 msgid "cannot find a usable authentication method"
 msgstr ""
 
-#: src/smtp.c:1272 src/smtp.c:1550
+#: src/smtp.c:1271 src/smtp.c:1549
 #, c-format
 msgid "authentication method %s needs a user name"
 msgstr ""
 
-#: src/smtp.c:1285 src/smtp.c:1560
+#: src/smtp.c:1284 src/smtp.c:1559
 #, c-format
 msgid "authentication method %s needs a password"
 msgstr ""
 
-#: src/smtp.c:1459
+#: src/smtp.c:1458
 #, c-format
 msgid "authentication failed: %s (method %s)"
 msgstr ""
 
-#: src/smtp.c:1595
+#: src/smtp.c:1594
 #, c-format
 msgid "authentication method %s not supported"
 msgstr ""
 
-#: src/smtp.c:1709
+#: src/smtp.c:1708
 #, c-format
 msgid "envelope from address %s not accepted by the server"
 msgstr ""
 
-#: src/smtp.c:1728
+#: src/smtp.c:1727
 #, c-format
 msgid "recipient address %s not accepted by the server"
 msgstr ""
 
-#: src/smtp.c:1747
+#: src/smtp.c:1746
 #, c-format
 msgid "the server does not accept mail data"
 msgstr ""
 
-#: src/smtp.c:1987
+#: src/smtp.c:1986
 #, c-format
 msgid "the server did not accept the mail"
 msgstr ""
 
-#: src/smtp.c:2051
+#: src/smtp.c:2050
 #, c-format
 msgid "the server refuses to send the mail to %s"
 msgstr "வழங்கி மடலை %s க்கு அனுப்ப மறுக்கிறது"
 
-#: src/smtp.c:2115
+#: src/smtp.c:2114
 #, c-format
 msgid "the server is unable to fulfill the request"
 msgstr ""
 
-#: src/smtp.c:2123
+#: src/smtp.c:2122
 #, c-format
 msgid "invalid argument for Remote Message Queue Starting"
 msgstr ""
@@ -1150,7 +1150,8 @@ msgid "not enough memory"
 msgstr ""
 
 #: src/net.c:97 src/net.c:208 src/net.c:255 src/net.c:767 src/net.c:894
-#: src/tls.c:1513 src/tls.c:1578 src/tls.c:1621 src/tls.c:1708 src/tls.c:1747
+#: src/mtls-gnutls.c:596 src/mtls-gnutls.c:643 src/mtls-openssl.c:866
+#: src/mtls-openssl.c:933 src/mtls-openssl.c:975
 #, c-format
 msgid "operation aborted"
 msgstr "செய்பணி நிறுத்தப்பட்டது"
@@ -1259,7 +1260,8 @@ msgstr ""
 msgid "invalid request"
 msgstr "ஏற்கத்தகா வேண்டுகோள்"
 
-#: src/net.c:178 src/net.c:648 src/tls.c:1409 src/tls.c:1433 src/tls.c:1724
+#: src/net.c:178 src/net.c:648 src/mtls-gnutls.c:659 src/mtls-openssl.c:809
+#: src/mtls-openssl.c:833
 msgid "unknown error"
 msgstr "அறியப்படாப் பிழை"
 
@@ -1268,7 +1270,8 @@ msgstr "அறியப்படாப் பிழை"
 msgid "network read error: %s"
 msgstr ""
 
-#: src/net.c:198 src/net.c:213 src/net.c:245 src/net.c:260 src/tls.c:1428
+#: src/net.c:198 src/net.c:213 src/net.c:245 src/net.c:260
+#: src/mtls-openssl.c:828
 msgid "the operation timed out"
 msgstr ""
 
@@ -1347,319 +1350,340 @@ msgstr ""
 msgid "cannot connect to %s, port %d: %s"
 msgstr ""
 
-#: src/tls.c:110
-#, c-format
-msgid ""
-"no environment variables RANDFILE or HOME, or filename of rand file too long"
-msgstr ""
-
-#: src/tls.c:116
-#, c-format
-msgid "%s: input error"
-msgstr "%s: உள்ளீட்டுப் பிழை"
-
-#: src/tls.c:138
-#, c-format
-msgid "random file + time + pseudo randomness is not enough, giving up"
-msgstr ""
-
-#: src/tls.c:375 src/tls.c:489
-msgid "cannot get TLS certificate info"
-msgstr ""
-
-#: src/tls.c:380 src/tls.c:492 src/tls.c:752
-#, c-format
-msgid "%s: no certificate was found"
-msgstr ""
-
-#: src/tls.c:385 src/tls.c:758
-#, c-format
-msgid "%s: cannot initialize certificate structure"
-msgstr ""
-
-#: src/tls.c:391
-#, c-format
-msgid "%s: error parsing certificate"
-msgstr ""
-
-#: src/tls.c:401 src/tls.c:512 src/tls.c:775 src/tls.c:898
-#, c-format
-msgid "%s: error getting SHA256 fingerprint"
-msgstr ""
-
-#: src/tls.c:409 src/tls.c:518 src/tls.c:794 src/tls.c:916
-#, c-format
-msgid "%s: error getting SHA1 fingerprint"
-msgstr ""
-
-#: src/tls.c:415 src/tls.c:526
-#, c-format
-msgid "%s: cannot get activation time"
-msgstr ""
-
-#: src/tls.c:421 src/tls.c:536
-#, c-format
-msgid "%s: cannot get expiration time"
-msgstr ""
-
-#: src/tls.c:497 src/tls.c:1007
-#, c-format
-msgid "%s: cannot get certificate subject"
-msgstr ""
-
-#: src/tls.c:503
-#, c-format
-msgid "%s: cannot get certificate issuer"
-msgstr ""
-
-#: src/tls.c:605
-msgid "Common Name"
-msgstr "பொதுப் பெயர்"
-
-#: src/tls.c:605
-msgid "Organization"
-msgstr "அமைப்பு"
-
-#: src/tls.c:606
-msgid "Organizational unit"
-msgstr "அமைப்புப் பிரிவு"
-
-#: src/tls.c:606
-msgid "Locality"
-msgstr "வட்டாரம்"
-
-#: src/tls.c:606
-msgid "State or Province"
-msgstr "மாநிலம்"
-
-#: src/tls.c:607
-msgid "Country"
-msgstr "நாடு"
-
-#: src/tls.c:614
+#: src/mtls.c:142
 #, c-format
 msgid "TLS session parameters:\n"
 msgstr ""
 
-#: src/tls.c:616
+#: src/mtls.c:144
 msgid "not available"
 msgstr ""
 
-#: src/tls.c:621
+#: src/mtls.c:152
 #, c-format
 msgid "TLS certificate information:\n"
 msgstr "TLS சான்றிதழ் பற்றிய தகவல்:\n"
 
-#: src/tls.c:622
-msgid "Owner"
-msgstr "உரிமையாளர்"
+#: src/mtls.c:153
+msgid "Subject"
+msgstr ""
 
-#: src/tls.c:633
+#: src/mtls.c:155
 msgid "Issuer"
 msgstr "வழங்குநர்"
 
-#: src/tls.c:644
+#: src/mtls.c:157
 msgid "Validity"
 msgstr "செல்லுபடி"
 
-#: src/tls.c:646
+#: src/mtls.c:159
 msgid "Activation time"
 msgstr "செல்லுபடி தொடங்கும் நேரம்"
 
-#: src/tls.c:648
+#: src/mtls.c:161
 msgid "Expiration time"
 msgstr "செல்லுபடி முடியும் நேரம்"
 
-#: src/tls.c:649
+#: src/mtls.c:162
 msgid "Fingerprints"
 msgstr "கைவரைகள்"
 
-#: src/tls.c:734 src/tls.c:874
+#: src/mtls-gnutls.c:87 src/mtls-openssl.c:285 src/mtls-libtls.c:105
+msgid "cannot get TLS certificate info"
+msgstr ""
+
+#: src/mtls-gnutls.c:92 src/mtls-gnutls.c:211 src/mtls-openssl.c:288
+#, c-format
+msgid "%s: no certificate was found"
+msgstr ""
+
+#: src/mtls-gnutls.c:97 src/mtls-gnutls.c:217
+#, c-format
+msgid "%s: cannot initialize certificate structure"
+msgstr ""
+
+#: src/mtls-gnutls.c:103
+#, c-format
+msgid "%s: error parsing certificate"
+msgstr ""
+
+#: src/mtls-gnutls.c:113 src/mtls-gnutls.c:234 src/mtls-openssl.c:308
+#: src/mtls-openssl.c:470 src/mtls-libtls.c:113 src/mtls-libtls.c:179
+#, c-format
+msgid "%s: error getting SHA256 fingerprint"
+msgstr ""
+
+#: src/mtls-gnutls.c:121 src/mtls-gnutls.c:253 src/mtls-openssl.c:314
+#: src/mtls-openssl.c:488
+#, c-format
+msgid "%s: error getting SHA1 fingerprint"
+msgstr ""
+
+#: src/mtls-gnutls.c:127 src/mtls-openssl.c:322 src/mtls-libtls.c:126
+#, c-format
+msgid "%s: cannot get activation time"
+msgstr ""
+
+#: src/mtls-gnutls.c:133 src/mtls-openssl.c:332 src/mtls-libtls.c:133
+#, c-format
+msgid "%s: cannot get expiration time"
+msgstr ""
+
+#: src/mtls-gnutls.c:193 src/mtls-openssl.c:446 src/mtls-libtls.c:166
 msgid "TLS certificate verification failed"
 msgstr ""
 
-#: src/tls.c:765
+#: src/mtls-gnutls.c:224
 #, c-format
 msgid "%s: error parsing certificate %u of %u"
 msgstr ""
 
-#: src/tls.c:782 src/tls.c:801 src/tls.c:820 src/tls.c:905 src/tls.c:923
-#: src/tls.c:941
+#: src/mtls-gnutls.c:241 src/mtls-gnutls.c:260 src/mtls-gnutls.c:279
+#: src/mtls-openssl.c:477 src/mtls-openssl.c:495 src/mtls-openssl.c:513
+#: src/mtls-libtls.c:191
 #, c-format
 msgid "%s: the certificate fingerprint does not match"
 msgstr ""
 
-#: src/tls.c:813 src/tls.c:934
+#: src/mtls-gnutls.c:272 src/mtls-openssl.c:506
 #, c-format
 msgid "%s: error getting MD5 fingerprint"
 msgstr ""
 
-#: src/tls.c:878
-msgid "TLS certificate check failed"
-msgstr ""
-
-#: src/tls.c:884
-#, c-format
-msgid "%s: no certificate was sent"
-msgstr ""
-
-#: src/tls.c:987
-#, c-format
-msgid "%s: certificate subject alternative name contains NUL"
-msgstr ""
-
-#: src/tls.c:1019
-#, c-format
-msgid "%s: cannot get certificate common name"
-msgstr ""
-
-#: src/tls.c:1028
-#, c-format
-msgid "%s: certificate common name contains NUL"
-msgstr ""
-
-#: src/tls.c:1045
-#, c-format
-msgid "%s: the certificate owner does not match hostname %s"
-msgstr ""
-
-#: src/tls.c:1105
+#: src/mtls-gnutls.c:360 src/mtls-libtls.c:238 src/mtls-libtls.c:370
 #, c-format
 msgid "cannot initialize TLS session: %s"
 msgstr ""
 
-#: src/tls.c:1118
+#: src/mtls-gnutls.c:373
 #, c-format
 msgid "error in priority string at position %d"
 msgstr ""
 
-#: src/tls.c:1121 src/tls.c:1128 src/tls.c:1264
+#: src/mtls-gnutls.c:376 src/mtls-gnutls.c:383 src/mtls-openssl.c:657
+#: src/mtls-libtls.c:257 src/mtls-libtls.c:272 src/mtls-libtls.c:287
+#: src/mtls-libtls.c:297
 #, c-format
 msgid "cannot set priorities for TLS session: %s"
 msgstr ""
 
-#: src/tls.c:1139
+#: src/mtls-gnutls.c:396
 #, c-format
 msgid "cannot set default priority for TLS session: %s"
 msgstr ""
 
-#: src/tls.c:1152
+#: src/mtls-gnutls.c:411
 #, c-format
 msgid "cannot allocate certificate for TLS session: %s"
 msgstr ""
 
-#: src/tls.c:1163
+#: src/mtls-gnutls.c:424 src/mtls-libtls.c:312
 #, c-format
 msgid ""
 "cannot set X509 key file %s and/or X509 cert file %s for TLS session: %s"
 msgstr ""
 
-#: src/tls.c:1183 src/tls.c:1320
+#: src/mtls-gnutls.c:446 src/mtls-openssl.c:720
 #, c-format
 msgid "cannot set X509 system trust for TLS session: %s"
 msgstr ""
 
-#: src/tls.c:1196
+#: src/mtls-gnutls.c:461 src/mtls-libtls.c:338
 #, c-format
 msgid "cannot set X509 trust file %s for TLS session: %s"
 msgstr ""
 
-#: src/tls.c:1209
+#: src/mtls-gnutls.c:476 src/mtls-libtls.c:351
 #, c-format
 msgid "cannot set X509 CRL file %s for TLS session: %s"
 msgstr ""
 
-#: src/tls.c:1236
+#: src/mtls-gnutls.c:505
 #, c-format
 msgid "cannot set credentials for TLS session: %s"
 msgstr ""
 
-#: src/tls.c:1256
-#, c-format
-msgid "cannot set minimum number of DH prime bits for TLS: %s"
-msgstr ""
-
-#: src/tls.c:1257 src/tls.c:1265 src/tls.c:1273
-msgid "feature not yet implemented for OpenSSL"
-msgstr ""
-
-#: src/tls.c:1272
-#, c-format
-msgid "cannot load CRL file: %s"
-msgstr ""
-
-#: src/tls.c:1279
-#, c-format
-msgid "cannot set TLS method"
-msgstr ""
-
-#: src/tls.c:1284
-#, c-format
-msgid "cannot create TLS context: %s"
-msgstr ""
-
-#: src/tls.c:1295
-#, c-format
-msgid "cannot load key file %s: %s"
-msgstr ""
-
-#: src/tls.c:1303
-#, c-format
-msgid "cannot load certificate file %s: %s"
-msgstr ""
-
-#: src/tls.c:1331
-#, c-format
-msgid "cannot load trust file %s: %s"
-msgstr ""
-
-#: src/tls.c:1357
-#, c-format
-msgid "cannot create a TLS structure: %s"
-msgstr ""
-
-#: src/tls.c:1401
-msgid "a protocol violating EOF occurred"
-msgstr ""
-
-#: src/tls.c:1419
-msgid "the connection was closed unexpectedly"
-msgstr ""
-
-#: src/tls.c:1463
+#: src/mtls-gnutls.c:540 src/mtls-libtls.c:406
 #, c-format
 msgid "TLS handshake failed: %s"
 msgstr ""
 
-#: src/tls.c:1500
-#, c-format
-msgid "cannot set the file descriptor for TLS: %s"
-msgstr ""
-
-#: src/tls.c:1519
-msgid "TLS handshake failed"
-msgstr "TLS கைகுலுக்கல் தோல்வியுற்றது"
-
-#: src/tls.c:1582
+#: src/mtls-gnutls.c:600 src/mtls-libtls.c:493
 #, c-format
 msgid "cannot read from TLS connection: %s"
 msgstr "TLS இணைப்பிலிருந்து படிக்க இயலவில்லை: %s"
 
-#: src/tls.c:1626
-msgid "cannot read from TLS connection"
-msgstr "TLS இணைப்பிலிருந்து படிக்க இயலவில்லை"
-
-#: src/tls.c:1712 src/tls.c:1723
+#: src/mtls-gnutls.c:647 src/mtls-gnutls.c:658 src/mtls-libtls.c:525
 #, c-format
 msgid "cannot write to TLS connection: %s"
 msgstr "TLS இணைப்பிற்கு எழுத இயலவில்லை: %s"
 
-#: src/tls.c:1753
+#: src/mtls-openssl.c:92
+#, c-format
+msgid ""
+"no environment variables RANDFILE or HOME, or filename of rand file too long"
+msgstr ""
+
+#: src/mtls-openssl.c:98
+#, c-format
+msgid "%s: input error"
+msgstr "%s: உள்ளீட்டுப் பிழை"
+
+#: src/mtls-openssl.c:120
+#, c-format
+msgid "random file + time + pseudo randomness is not enough, giving up"
+msgstr ""
+
+#: src/mtls-openssl.c:293 src/mtls-openssl.c:579
+#, c-format
+msgid "%s: cannot get certificate subject"
+msgstr ""
+
+#: src/mtls-openssl.c:299
+#, c-format
+msgid "%s: cannot get certificate issuer"
+msgstr ""
+
+#: src/mtls-openssl.c:450
+msgid "TLS certificate check failed"
+msgstr ""
+
+#: src/mtls-openssl.c:456
+#, c-format
+msgid "%s: no certificate was sent"
+msgstr ""
+
+#: src/mtls-openssl.c:559
+#, c-format
+msgid "%s: certificate subject alternative name contains NUL"
+msgstr ""
+
+#: src/mtls-openssl.c:591
+#, c-format
+msgid "%s: cannot get certificate common name"
+msgstr ""
+
+#: src/mtls-openssl.c:600
+#, c-format
+msgid "%s: certificate common name contains NUL"
+msgstr ""
+
+#: src/mtls-openssl.c:617
+#, c-format
+msgid "%s: the certificate owner does not match hostname %s"
+msgstr ""
+
+#: src/mtls-openssl.c:649 src/mtls-libtls.c:231
+#, c-format
+msgid "cannot set minimum number of DH prime bits for TLS: %s"
+msgstr ""
+
+#: src/mtls-openssl.c:650 src/mtls-openssl.c:658 src/mtls-openssl.c:666
+msgid "feature not yet implemented for OpenSSL"
+msgstr ""
+
+#: src/mtls-openssl.c:665
+#, c-format
+msgid "cannot load CRL file: %s"
+msgstr ""
+
+#: src/mtls-openssl.c:672
+#, c-format
+msgid "cannot set TLS method"
+msgstr ""
+
+#: src/mtls-openssl.c:680
+#, c-format
+msgid "cannot create TLS context: %s"
+msgstr ""
+
+#: src/mtls-openssl.c:693
+#, c-format
+msgid "cannot load key file %s: %s"
+msgstr ""
+
+#: src/mtls-openssl.c:702
+#, c-format
+msgid "cannot load certificate file %s: %s"
+msgstr ""
+
+#: src/mtls-openssl.c:732
+#, c-format
+msgid "cannot load trust file %s: %s"
+msgstr ""
+
+#: src/mtls-openssl.c:759 src/mtls-libtls.c:361
+#, c-format
+msgid "cannot create a TLS structure: %s"
+msgstr ""
+
+#: src/mtls-openssl.c:801
+msgid "a protocol violating EOF occurred"
+msgstr ""
+
+#: src/mtls-openssl.c:819
+msgid "the connection was closed unexpectedly"
+msgstr ""
+
+#: src/mtls-openssl.c:853 src/mtls-libtls.c:398
+#, c-format
+msgid "cannot set the file descriptor for TLS: %s"
+msgstr ""
+
+#: src/mtls-openssl.c:872
+msgid "TLS handshake failed"
+msgstr "TLS கைகுலுக்கல் தோல்வியுற்றது"
+
+#: src/mtls-openssl.c:938
+msgid "cannot read from TLS connection"
+msgstr "TLS இணைப்பிலிருந்து படிக்க இயலவில்லை"
+
+#: src/mtls-openssl.c:981
 msgid "cannot write to TLS connection"
 msgstr "TLS இணைப்பிற்கு எழுத இயலவில்லை"
 
+#: src/mtls-libtls.c:59
+#, fuzzy, c-format
+msgid "cannot initialize libtls"
+msgstr "வலையத்தைத் தொடங்க இயலவில்லை: %s"
+
+#: src/mtls-libtls.c:223
+#, c-format
+msgid "cannot use deprecated fingerprints, please update to SHA256"
+msgstr ""
+
+#: src/mtls-libtls.c:232
+msgid "feature not yet implemented for libtls"
+msgstr ""
+
+#: src/mtls-libtls.c:288
+#, fuzzy
+msgid "could not parse protocols"
+msgstr "மடல் அனுப்ப இயலவில்லை"
+
 #~ msgid "output of '%s' is longer than %d characters"
 #~ msgstr "'%s' யின் வெளியீட்டில் %d வரியுருகளுக்கு அதிகமாக உள்ளன"
+
+#~ msgid "Common Name"
+#~ msgstr "பொதுப் பெயர்"
+
+#~ msgid "Organization"
+#~ msgstr "அமைப்பு"
+
+#~ msgid "Organizational unit"
+#~ msgstr "அமைப்புப் பிரிவு"
+
+#~ msgid "Locality"
+#~ msgstr "வட்டாரம்"
+
+#~ msgid "State or Province"
+#~ msgstr "மாநிலம்"
+
+#~ msgid "Country"
+#~ msgstr "நாடு"
+
+#~ msgid "Owner"
+#~ msgstr "உரிமையாளர்"
 
 #~ msgid "minimum time between logins is %ld seconds"
 #~ msgstr "புகுபதிகைகளுக்கிடையே குறைந்தபட்சம் %ld நொடிகள் இருக்கவேண்டும்"

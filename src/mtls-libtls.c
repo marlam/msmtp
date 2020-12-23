@@ -241,12 +241,14 @@ int mtls_init(mtls_t *mtls,
 
     if (priorities)
     {
-        char *key, *value;
+        char *prio_copy = xstrdup(priorities); /* for modification by strtok() */
+        const char *key;
+        char *value;
         uint32_t protocol_flags;
 
         if ((key = strstr(priorities, "ECDHECURVES=")) != NULL)
         {
-            value = key + strlen("ECDHECURVES=");
+            value = prio_copy + (key + strlen("ECDHECURVES=") - priorities);
             strtok(value, " ");
 
             if (tls_config_set_ecdhecurves(config, value) == -1)
@@ -254,12 +256,14 @@ int mtls_init(mtls_t *mtls,
                 *errstr = xasprintf(
                         _("cannot set priorities for TLS session: %s"),
                         tls_config_error(config));
+                tls_config_free(config);
+                free(prio_copy);
                 return TLS_ELIBFAILED;
             }
         }
         if ((key = strstr(priorities, "CIPHERS=")) != NULL)
         {
-            value = key + strlen("CIPHERS=");
+            value = prio_copy + (key + strlen("CIPHERS=") - priorities);
             strtok(value, " ");
 
             if (tls_config_set_ciphers(config, value) == -1)
@@ -267,12 +271,14 @@ int mtls_init(mtls_t *mtls,
                 *errstr = xasprintf(
                         _("cannot set priorities for TLS session: %s"),
                         tls_config_error(config));
+                tls_config_free(config);
+                free(prio_copy);
                 return TLS_ELIBFAILED;
             }
         }
         if ((key = strstr(priorities, "PROTOCOLS=")) != NULL)
         {
-            value = key + strlen("PROTOCOLS=");
+            value = prio_copy + (key + strlen("PROTOCOLS=") - priorities);
             strtok(value, " ");
 
             if (tls_config_parse_protocols(&protocol_flags, value) == -1)
@@ -280,6 +286,8 @@ int mtls_init(mtls_t *mtls,
                 *errstr = xasprintf(
                         _("cannot set priorities for TLS session: %s"),
                         _("could not parse protocols"));
+                tls_config_free(config);
+                free(prio_copy);
                 return TLS_ELIBFAILED;
             }
 
@@ -288,9 +296,12 @@ int mtls_init(mtls_t *mtls,
                 *errstr = xasprintf(
                         _("cannot set priorities for TLS session: %s"),
                         tls_config_error(config));
+                tls_config_free(config);
+                free(prio_copy);
                 return TLS_ELIBFAILED;
             }
         }
+        free(prio_copy);
     }
 
     if (key_file && cert_file)

@@ -504,6 +504,10 @@ int smtp_init(smtp_server_t *srv, const char *ehlo_domain, list_t **errmsg,
             {
                 srv->cap.flags |= SMTP_CAP_AUTH_SCRAM_SHA_1;
             }
+            if (strstr(s + 9, "SCRAM-SHA-256"))
+            {
+                srv->cap.flags |= SMTP_CAP_AUTH_SCRAM_SHA_256;
+            }
             if (strstr(s + 9, "GSSAPI"))
             {
                 srv->cap.flags |= SMTP_CAP_AUTH_GSSAPI;
@@ -1086,6 +1090,8 @@ int smtp_server_supports_authmech(smtp_server_t *srv, const char *mech)
                 && strcmp(mech, "DIGEST-MD5") == 0)
             || ((srv->cap.flags & SMTP_CAP_AUTH_SCRAM_SHA_1)
                 && strcmp(mech, "SCRAM-SHA-1") == 0)
+            || ((srv->cap.flags & SMTP_CAP_AUTH_SCRAM_SHA_256)
+                && strcmp(mech, "SCRAM-SHA-256") == 0)
             || ((srv->cap.flags & SMTP_CAP_AUTH_EXTERNAL)
                 && strcmp(mech, "EXTERNAL") == 0)
             || ((srv->cap.flags & SMTP_CAP_AUTH_GSSAPI)
@@ -1206,6 +1212,11 @@ int smtp_auth(smtp_server_t *srv,
             {
                 auth_mech = "PLAIN";
             }
+            else if (gsasl_client_support_p(ctx, "SCRAM-SHA-256")
+                    && (srv->cap.flags & SMTP_CAP_AUTH_SCRAM_SHA_256))
+            {
+                auth_mech = "SCRAM-SHA-256";
+            }
             else if (gsasl_client_support_p(ctx, "SCRAM-SHA-1")
                     && (srv->cap.flags & SMTP_CAP_AUTH_SCRAM_SHA_1))
             {
@@ -1235,7 +1246,12 @@ int smtp_auth(smtp_server_t *srv,
         else
 #endif /* HAVE_TLS */
         {
-            if (gsasl_client_support_p(ctx, "SCRAM-SHA-1")
+            if (gsasl_client_support_p(ctx, "SCRAM-SHA-256")
+                    && (srv->cap.flags & SMTP_CAP_AUTH_SCRAM_SHA_256))
+            {
+                auth_mech = "SCRAM-SHA-256";
+            }
+	    else if (gsasl_client_support_p(ctx, "SCRAM-SHA-1")
                     && (srv->cap.flags & SMTP_CAP_AUTH_SCRAM_SHA_1))
             {
                 auth_mech = "SCRAM-SHA-1";
@@ -1272,7 +1288,7 @@ int smtp_auth(smtp_server_t *srv,
                     auth_mech);
             return SMTP_EUNAVAIL;
         }
-        /* SCRAM-SHA-1, DIGEST-MD5, CRAM-MD5, PLAIN, LOGIN, NTLM, OAUTHBEARER, XOAUTH2
+        /* SCRAM-SHA-256, SCRAM-SHA-1, DIGEST-MD5, CRAM-MD5, PLAIN, LOGIN, NTLM, OAUTHBEARER, XOAUTH2
          * all need a password */
         if (strcmp(auth_mech, "GSSAPI") != 0 && !password)
         {
@@ -1329,7 +1345,7 @@ int smtp_auth(smtp_server_t *srv,
         gsasl_property_set(sctx, GSASL_PASSWORD, password);
     }
     free(callback_password);
-    /* For DIGEST-MD5 and GSSAPI (and SCRAM-SHA-1?) */
+    /* For DIGEST-MD5 and GSSAPI */
     gsasl_property_set(sctx, GSASL_SERVICE, "smtp");
     if (hostname)
     {
@@ -1416,6 +1432,7 @@ int smtp_auth(smtp_server_t *srv,
          * with mpop on 2011-01-17 with one POP3 server and the methods CRAM-MD5
          * and SCRAM-SHA-1. */
         if (outbuf[0]
+                || strcmp(auth_mech, "SCRAM-SHA-256") == 0
                 || strcmp(auth_mech, "SCRAM-SHA-1") == 0
                 || strcmp(auth_mech, "GSSAPI") == 0)
         {

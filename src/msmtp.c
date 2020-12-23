@@ -541,6 +541,10 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
             {
                 printf("SCRAM-SHA-1 ");
             }
+            if (srv.cap.flags & SMTP_CAP_AUTH_SCRAM_SHA_256)
+            {
+                printf("SCRAM-SHA-256 ");
+            }
             if (srv.cap.flags & SMTP_CAP_AUTH_EXTERNAL)
             {
                 printf("EXTERNAL ");
@@ -2084,6 +2088,10 @@ void msmtp_print_version(void)
     if (smtp_client_supports_authmech("SCRAM-SHA-1"))
     {
         printf("scram-sha-1 ");
+    }
+    if (smtp_client_supports_authmech("SCRAM-SHA-256"))
+    {
+        printf("scram-sha-256 ");
     }
     if (smtp_client_supports_authmech("EXTERNAL"))
     {

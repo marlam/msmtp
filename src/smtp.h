@@ -74,6 +74,7 @@
 #define SMTP_CAP_AUTH_OAUTHBEARER       (1 << 13)
 #define SMTP_CAP_AUTH_XOAUTH2           (1 << 14)
 #define SMTP_CAP_ETRN                   (1 << 15)
+#define SMTP_CAP_AUTH_SCRAM_SHA_256     (1 << 16)
 
 
 /*

@@ -1,3 +1,6 @@
+Version 1.8.14:
+- Added support for libtls as an alternative to GnuTLS
+
 Version 1.8.13:
 - Added support for XOAUTH2, the predecessor of OAUTHBEARER.
 - The passwordeval command can now handle very long input, which can be

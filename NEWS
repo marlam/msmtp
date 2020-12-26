@@ -1,3 +1,6 @@
+Version 1.8.15:
+- Added support for SCRAM-SHA-256 authentication via GNU SASL
+
 Version 1.8.14:
 - Added support for libtls as an alternative to GnuTLS
 

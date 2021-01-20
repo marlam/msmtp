@@ -948,7 +948,6 @@ int expand_from(char **from, char **errstr)
             free(filename);
             return CONF_EPARSE;
         }
-        fclose(f);
         free(filename);
         M = xstrdup(buf);
         sanitize_string(M);

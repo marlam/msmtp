@@ -339,9 +339,15 @@ int parse_command_line(int argc, char* argv[],
     };
 
     for (;;) {
-        int c = getopt_long(argc, argv, "", options, NULL);
+        int option_index = -1;
+        int c = getopt_long(argc, argv, "", options, &option_index);
         if (c == -1)
             break;
+        if (optarg && optarg[0] == '\0') {
+            fprintf(stderr, "%s: option '--%s' requires non-empty argument\n", argv[0],
+                    options[option_index].name);
+            return 1;
+        }
         switch (c) {
         case msmtpd_option_version:
             *print_version = 1;

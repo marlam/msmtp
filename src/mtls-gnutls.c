@@ -67,6 +67,39 @@ int mtls_lib_init(char **errstr)
     return TLS_EOK;
 }
 
+/* Helper function to get a certificate fingerprint because in the long run
+ * it is probably unwise to expect the size requirements of
+ * gnutls_x509_crt_get_fingerprint() to be what one would reasonably expect
+ * them to be. So we have to use a temporary buffer. */
+static int mtls_gnutls_get_fingerprint(gnutls_x509_crt_t cert,
+        gnutls_digest_algorithm_t algo, unsigned char* dest)
+{
+    int e = 0;
+    size_t size = 0;
+    size_t real_size = 0;
+    unsigned char* p = NULL;
+
+    gnutls_x509_crt_get_fingerprint(cert, algo, NULL, &size);
+    p = xmalloc(size);
+    if ((e = gnutls_x509_crt_get_fingerprint(cert, algo, p, &size)) != 0) {
+        free(p);
+        return e;
+    }
+    if (algo == GNUTLS_DIG_SHA256) {
+        real_size = 32;
+    } else if (algo == GNUTLS_DIG_SHA) {
+        real_size = 20;
+    } else if (algo == GNUTLS_DIG_MD5) {
+        real_size = 16;
+    } else {
+        free(p);
+        return GNUTLS_E_INTERNAL_ERROR;
+    }
+    memcpy(dest, p, real_size);
+    free(p);
+    return 0;
+}
+
 
 /*
  * mtls_cert_info_get()
@@ -106,17 +139,15 @@ int mtls_cert_info_get(mtls_t *mtls, mtls_cert_info_t *tci, char **errstr)
     }
 
     /* certificate information */
-    size = 32;
-    if (gnutls_x509_crt_get_fingerprint(cert, GNUTLS_DIG_SHA256,
-                tci->sha256_fingerprint, &size) != 0)
+    if (mtls_gnutls_get_fingerprint(cert, GNUTLS_DIG_SHA256,
+                tci->sha256_fingerprint) != 0)
     {
         *errstr = xasprintf(_("%s: error getting SHA256 fingerprint"), errmsg);
         gnutls_x509_crt_deinit(cert);
         return TLS_ECERT;
     }
-    size = 20;
-    if (gnutls_x509_crt_get_fingerprint(cert, GNUTLS_DIG_SHA,
-                tci->sha1_fingerprint, &size) != 0)
+    if (mtls_gnutls_get_fingerprint(cert, GNUTLS_DIG_SHA,
+                tci->sha1_fingerprint) != 0)
     {
         *errstr = xasprintf(_("%s: error getting SHA1 fingerprint"), errmsg);
         gnutls_x509_crt_deinit(cert);
@@ -201,7 +232,6 @@ static int mtls_check_cert(mtls_t *mtls, char **errstr)
         unsigned int cert_list_size;
         gnutls_x509_crt_t cert;
         unsigned char fingerprint[32];
-        size_t size;
 
         /* If one of these matches, we trust the peer and do not perform any
          * other checks. */
@@ -227,9 +257,8 @@ static int mtls_check_cert(mtls_t *mtls, char **errstr)
         }
         if (mtls->have_sha256_fingerprint)
         {
-            size = 32;
-            if (gnutls_x509_crt_get_fingerprint(cert, GNUTLS_DIG_SHA256,
-                        fingerprint, &size) != 0)
+            if (mtls_gnutls_get_fingerprint(cert, GNUTLS_DIG_SHA256,
+                        fingerprint) != 0)
             {
                 *errstr = xasprintf(_("%s: error getting SHA256 fingerprint"),
                         error_msg);
@@ -246,9 +275,8 @@ static int mtls_check_cert(mtls_t *mtls, char **errstr)
         }
         else if (mtls->have_sha1_fingerprint)
         {
-            size = 20;
-            if (gnutls_x509_crt_get_fingerprint(cert, GNUTLS_DIG_SHA,
-                        fingerprint, &size) != 0)
+            if (mtls_gnutls_get_fingerprint(cert, GNUTLS_DIG_SHA,
+                        fingerprint) != 0)
             {
                 *errstr = xasprintf(_("%s: error getting SHA1 fingerprint"),
                         error_msg);
@@ -265,9 +293,8 @@ static int mtls_check_cert(mtls_t *mtls, char **errstr)
         }
         else
         {
-            size = 16;
-            if (gnutls_x509_crt_get_fingerprint(cert, GNUTLS_DIG_MD5,
-                        fingerprint, &size) != 0)
+            if (mtls_gnutls_get_fingerprint(cert, GNUTLS_DIG_MD5,
+                        fingerprint) != 0)
             {
                 *errstr = xasprintf(_("%s: error getting MD5 fingerprint"),
                         error_msg);

@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2018, 2019, 2020  Martin Lambers <marlam@marlam.de>
+ * Copyright (C) 2018, 2019, 2020, 2021  Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -401,7 +401,7 @@ int main(int argc, char* argv[])
     }
     if (print_version) {
         printf("msmtpd version %s\n", VERSION);
-        printf("Copyright (C) 2020 Martin Lambers.\n"
+        printf("Copyright (C) 2021 Martin Lambers.\n"
                 "This is free software.  You may redistribute copies of it under the terms of\n"
                 "the GNU General Public License <http://www.gnu.org/licenses/gpl.html>.\n"
                 "There is NO WARRANTY, to the extent permitted by law.\n");

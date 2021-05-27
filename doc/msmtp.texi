@@ -213,7 +213,15 @@ default is @samp{localhost}, which is stupid but usually works. Try to change
 the default if mails get rejected due to anti-SPAM measures. Possible choices
 are the domain part of your mail address (@code{provider.example} for
 @code{joe@@provider.example}) or the fully qualified domain name of your host
-(if available).
+(if available).@*
+The following substitution patterns are supported:
+@itemize
+@item @code{%H} will be replaced by @code{$HOSTNAME}, or if that fails by the host name of the system.
+@item @code{%C} will be replaced by the canonical name of @code{%H}.
+@item @code{%M} will be replaced by the contents of @code{/etc/mailname} (potentially a different
+directory is used depending on the build configuration; see the output of
+@samp{msmtp --version} and look for the location of the system configuration file).
+@end itemize
 @end table
 
 @section Authentication commands

@@ -296,6 +296,17 @@ int get_password_eval(const char *arg, char **buf, char **errstr);
 int expand_from(char **from, char **errstr);
 
 /*
+ * expand_domain()
+ *
+ * Expands the argument of the 'domain' command: replaces the substitution
+ * patterns with appropriate values. The 'domain' string must be allocated,
+ * and the returned string replaces it. This function returns CONF_EOK
+ * or, if an error occured, one of the CONF_E* error codes, in which case
+ * *errstr will contain an error string.
+ */
+int expand_domain(char **domain, char **errstr);
+
+/*
  * get_conf()
  *
  * Read 'conffile' and store all account data in 'acc_list'.

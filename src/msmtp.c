@@ -3931,6 +3931,12 @@ int main(int argc, char *argv[])
     {
         account->proxy_port = 1080;
     }
+    if (expand_domain(&(account->domain), &errstr) != CONF_EOK)
+    {
+        print_error("%s", sanitize_string(errstr));
+        error_code = EX_CONFIG;
+        goto exit;
+    }
     if (conf.sendmail && account->from)
     {
         if (expand_from(&(account->from), &errstr) != CONF_EOK)

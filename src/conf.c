@@ -899,19 +899,17 @@ int get_password_eval(const char *arg, char **buf, char **errstr)
 
 
 /*
- * expand_from()
- *
- * see conf.h
+ * helper function for expand_from() and expand_domain()
  */
 
-int expand_from(char **from, char **errstr)
+static int expand_from_or_domain(char **str, int expand_U, char **errstr)
 {
     char* M = NULL;
     char* U = NULL;
     char* H = NULL;
     char* C = NULL;
 
-    if (strstr(*from, "%M"))
+    if (strstr(*str, "%M"))
     {
         char *sysconfdir;
         char *filename;
@@ -952,43 +950,67 @@ int expand_from(char **from, char **errstr)
         M = xstrdup(buf);
         sanitize_string(M);
     }
-    if (strstr(*from, "%U"))
+    if (expand_U && strstr(*str, "%U"))
     {
         U = get_username();
         sanitize_string(U);
     }
-    if (strstr(*from, "%H") || strstr(*from, "%C"))
+    if (strstr(*str, "%H") || strstr(*str, "%C"))
     {
         H = get_hostname();
         sanitize_string(H);
     }
-    if (strstr(*from, "%C"))
+    if (strstr(*str, "%C"))
     {
         C = net_get_canonical_hostname(H);
     }
 
     if (M)
     {
-        *from = string_replace(*from, "%M", M);
+        *str = string_replace(*str, "%M", M);
         free(M);
     }
     if (U)
     {
-        *from = string_replace(*from, "%U", U);
+        *str = string_replace(*str, "%U", U);
         free(U);
     }
     if (H)
     {
-        *from = string_replace(*from, "%H", H);
+        *str = string_replace(*str, "%H", H);
         free(H);
     }
     if (C)
     {
-        *from = string_replace(*from, "%C", C);
+        *str = string_replace(*str, "%C", C);
         free(C);
     }
 
     return CONF_EOK;
+}
+
+
+/*
+ * expand_from()
+ *
+ * see conf.h
+ */
+
+int expand_from(char **from, char **errstr)
+{
+    return expand_from_or_domain(from, 1, errstr);
+}
+
+
+/*
+ * expand_domain()
+ *
+ * see conf.h
+ */
+
+int expand_domain(char **domain, char **errstr)
+{
+    return expand_from_or_domain(domain, 0, errstr);
 }
 
 

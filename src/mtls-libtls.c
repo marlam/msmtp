@@ -320,6 +320,8 @@ int mtls_init(mtls_t *mtls,
     if (no_certcheck)
     {
         tls_config_insecure_noverifycert(config);
+        tls_config_insecure_noverifyname(config);
+        tls_config_insecure_noverifytime(config);
     }
     else if (sha256_fingerprint && !no_certcheck)
     {

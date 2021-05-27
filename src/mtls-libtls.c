@@ -326,6 +326,8 @@ int mtls_init(mtls_t *mtls,
     else if (sha256_fingerprint && !no_certcheck)
     {
         tls_config_insecure_noverifycert(config);
+        tls_config_insecure_noverifyname(config);
+        tls_config_insecure_noverifytime(config);
         memcpy(mtls->fingerprint, sha256_fingerprint, 32);
         mtls->have_sha256_fingerprint = 1;
     }

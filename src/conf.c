@@ -936,6 +936,10 @@ static int expand_from_or_domain(char **str, int expand_U, char **errstr)
         }
         fclose(f);
         buflen = strlen(buf);
+        if (buflen > 0 && buf[buflen - 1] == '\n')
+        {
+            buf[--buflen] = '\0';
+        }
         if (buflen > 0 && buf[buflen - 1] == '\r')
         {
             buf[--buflen] = '\0';

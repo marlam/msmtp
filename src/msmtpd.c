@@ -4,6 +4,7 @@
  * This file is part of msmtp, an SMTP client.
  *
  * Copyright (C) 2018, 2019  Martin Lambers <marlam@marlam.de>
+ * Copyright (C) 2021 Informatyka Boguslawski sp. z o.o. sp.k., http://www.ib.pl/
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -46,6 +47,7 @@ static const char* DEFAULT_COMMAND = BINDIR "/msmtp -f %F";
 static const size_t SMTP_BUFSIZE = 1024; /* must be at least 512 according to RFC2821 */
 static const size_t CMD_BLOCK_SIZE = 4096; /* initial buffer size for command */
 static const size_t CMD_MAX_BLOCKS = 16; /* limit memory allocation */
+static const int DEFAULT_CMD_ERR_CODE = 554;
 
 /* Read SMTP command from client */
 int read_smtp_cmd(FILE* in, char* buf, int bufsize)
@@ -167,7 +169,7 @@ int smtp_pipe(FILE* in, FILE* pipe, char* buf, size_t bufsize)
  * Mails are piped to the given command, where the first occurrence of %F
  * will be replaced with the envelope-from address, and all recipient addresses
  * will be appended as arguments. */
-int msmtpd_session(FILE* in, FILE* out, const char* command)
+int msmtpd_session(FILE* in, FILE* out, const char* command, int* cmd_err_code)
 {
     char buf[SMTP_BUFSIZE];
     char addrbuf[SMTP_BUFSIZE];
@@ -282,20 +284,20 @@ int msmtpd_session(FILE* in, FILE* out, const char* command)
     pipe = popen(cmd, "w");
     free(cmd);
     if (!pipe) {
-        fprintf(out, "554 Cannot start pipe command\r\n");
+        fprintf(out, "%d Cannot start pipe command\r\n", *cmd_err_code);
         return 1;
     }
     fprintf(out, "354 Send data\r\n");
     if (smtp_pipe(in, pipe, buf, SMTP_BUFSIZE) != 0) {
-        fprintf(out, "554 Cannot pipe mail to command\r\n");
+        fprintf(out, "%d Cannot pipe mail to command\r\n", *cmd_err_code);
         return 1;
     }
     pipe_status = pclose(pipe);
     if (pipe_status == -1 || !WIFEXITED(pipe_status)) {
-        fprintf(out, "554 Pipe command failed to execute\r\n");
+        fprintf(out, "%d Pipe command failed to execute\r\n", *cmd_err_code);
         return 1;
     } else if (WEXITSTATUS(pipe_status) != 0) {
-        fprintf(out, "554 Pipe command reported error %d\r\n", WEXITSTATUS(pipe_status));
+        fprintf(out, "%d Pipe command reported error %d\r\n", *cmd_err_code, WEXITSTATUS(pipe_status));
         return 1;
     }
 
@@ -315,7 +317,8 @@ int parse_command_line(int argc, char* argv[],
         int* print_version, int* print_help,
         int* inetd,
         const char** interface, int* port,
-        const char** command)
+        const char** command,
+        int* cmd_err_code)
 {
     enum {
         msmtpd_option_version,
@@ -323,7 +326,8 @@ int parse_command_line(int argc, char* argv[],
         msmtpd_option_inetd,
         msmtpd_option_port,
         msmtpd_option_interface,
-        msmtpd_option_command
+        msmtpd_option_command,
+        msmtpd_option_cmd_err_code
     };
 
     struct option options[] = {
@@ -333,6 +337,7 @@ int parse_command_line(int argc, char* argv[],
         { "port", required_argument, 0, msmtpd_option_port },
         { "interface", required_argument, 0, msmtpd_option_interface },
         { "command", required_argument, 0, msmtpd_option_command },
+        { "cmd-err-code", required_argument, 0, msmtpd_option_cmd_err_code },
         { 0, 0, 0, 0 }
     };
 
@@ -359,6 +364,9 @@ int parse_command_line(int argc, char* argv[],
         case msmtpd_option_command:
             *command = optarg;
             break;
+        case msmtpd_option_cmd_err_code:
+            *cmd_err_code = atoi(optarg);
+            break;
         default:
             return 1;
             break;
@@ -384,11 +392,12 @@ int main(int argc, char* argv[])
     const char* interface = DEFAULT_INTERFACE;
     int port = DEFAULT_PORT;
     const char* command = DEFAULT_COMMAND;
+    int cmd_err_code = DEFAULT_CMD_ERR_CODE;
 
     /* Command line */
     if (parse_command_line(argc, argv,
                 &print_version, &print_help,
-                &inetd, &interface, &port, &command) != 0) {
+                &inetd, &interface, &port, &command, &cmd_err_code) != 0) {
         return exit_not_running;
     }
     if (print_version) {
@@ -402,12 +411,13 @@ int main(int argc, char* argv[])
     if (print_help) {
         printf("Usage: msmtpd [option...]\n");
         printf("Options:\n");
-        printf("  --version       print version\n");
-        printf("  --help          print help\n");
-        printf("  --inetd         start single SMTP session on stdin/stdout\n");
-        printf("  --interface=ip  listen on ip instead of %s\n", DEFAULT_INTERFACE);
-        printf("  --port=number   listen on port number instead of %d\n", DEFAULT_PORT);
-        printf("  --command=cmd   pipe mails to cmd instead of %s\n", DEFAULT_COMMAND);
+        printf("  --version              print version\n");
+        printf("  --help                 print help\n");
+        printf("  --inetd                start single SMTP session on stdin/stdout\n");
+        printf("  --interface=ip         listen on ip instead of %s\n", DEFAULT_INTERFACE);
+        printf("  --port=number          listen on port number instead of %d\n", DEFAULT_PORT);
+        printf("  --command=cmd          pipe mails to cmd instead of %s\n", DEFAULT_COMMAND);
+        printf("  --cmd-err-code=number  use SMTP code number if command not executed successfully instead of %d\n", DEFAULT_CMD_ERR_CODE);
         return exit_ok;
     }
 
@@ -415,7 +425,7 @@ int main(int argc, char* argv[])
     signal(SIGPIPE, SIG_IGN); /* Do not terminate when piping fails; we want to handle that error */
     if (inetd) {
         /* We are no daemon, so we can just signal error with exit status 1 and success with 0 */
-        return msmtpd_session(stdin, stdout, command);
+        return msmtpd_session(stdin, stdout, command, &cmd_err_code);
     } else {
         int ipv6;
         struct sockaddr_in6 sa6;
@@ -481,7 +491,7 @@ int main(int argc, char* argv[])
                 signal(SIGTERM, SIG_IGN); /* A running session should not be terminated */
                 signal(SIGCHLD, SIG_DFL); /* Make popen()/pclose() work again */
                 conn = fdopen(conn_fd, "rb+");
-                ret = msmtpd_session(conn, conn, command);
+                ret = msmtpd_session(conn, conn, command, &cmd_err_code);
                 fclose(conn);
                 exit(ret); /* exit status does not really matter since nobody checks it, but still... */
             } else {

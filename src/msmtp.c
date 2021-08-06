@@ -4,7 +4,7 @@
  * This file is part of msmtp, an SMTP client.
  *
  * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011,
- * 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019
+ * 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021
  * Martin Lambers <marlam@marlam.de>
  * Martin Stenberg <martin@gnutiken.se> (passwordeval support)
  * Scott Shumate <sshumate@austin.rr.com> (aliases support)
@@ -38,7 +38,6 @@
 extern char *optarg;
 extern int optind;
 #include <unistd.h>
-#include <signal.h>
 #include <fcntl.h>
 #ifdef ENABLE_NLS
 # include <locale.h>
@@ -62,7 +61,7 @@ extern int optind;
 #include "aliases.h"
 #include "password.h"
 #ifdef HAVE_TLS
-# include "tls.h"
+# include "mtls.h"
 #endif /* HAVE_TLS */
 
 /* Default file names. */
@@ -140,8 +139,8 @@ int msmtp_rmqs(account_t *acc, int debug, const char *rmqs_argument,
     smtp_server_t srv;
     int e;
 #ifdef HAVE_TLS
-    tls_cert_info_t *tci = NULL;
-    char *tls_parameter_description = NULL;
+    mtls_cert_info_t *tci = NULL;
+    char *mtls_parameter_description = NULL;
 #endif /* HAVE_TLS */
 
     *errstr = NULL;
@@ -151,7 +150,7 @@ int msmtp_rmqs(account_t *acc, int debug, const char *rmqs_argument,
     srv = smtp_new(debug ? stdout : NULL, acc->protocol);
 
     /* connect */
-    if ((e = smtp_connect(&srv, acc->proxy_host, acc->proxy_port,
+    if ((e = smtp_connect(&srv, acc->socketname, acc->proxy_host, acc->proxy_port,
                     acc->host, acc->port, acc->source_ip, acc->timeout,
                     NULL, NULL, errstr)) != NET_EOK)
     {
@@ -162,14 +161,18 @@ int msmtp_rmqs(account_t *acc, int debug, const char *rmqs_argument,
 #ifdef HAVE_TLS
     if (acc->tls)
     {
-        if ((e = smtp_tls_init(&srv, acc->tls_key_file, acc->tls_cert_file,
+        if ((e = smtp_tls_init(&srv,
+                        acc->tls_key_file, acc->tls_cert_file, acc->password,
                         acc->tls_trust_file, acc->tls_crl_file,
                         acc->tls_sha256_fingerprint,
                         acc->tls_sha1_fingerprint, acc->tls_md5_fingerprint,
                         acc->tls_min_dh_prime_bits,
-                        acc->tls_priorities, errstr)) != TLS_EOK)
+                        acc->tls_priorities,
+                        acc->tls_host_override ? acc->tls_host_override : acc->host,
+                        acc->tls_nocertcheck,
+                        errstr)) != TLS_EOK)
         {
-            return tls_exitcode(e);
+            return mtls_exitcode(e);
         }
     }
 #endif /* HAVE_TLS */
@@ -180,24 +183,24 @@ int msmtp_rmqs(account_t *acc, int debug, const char *rmqs_argument,
     {
         if (debug)
         {
-            tci = tls_cert_info_new();
+            tci = mtls_cert_info_new();
         }
-        if ((e = smtp_tls(&srv, acc->host, acc->tls_nocertcheck, tci,
-                        &tls_parameter_description, errstr)) != TLS_EOK)
+        if ((e = smtp_tls(&srv, tci,
+                        &mtls_parameter_description, errstr)) != TLS_EOK)
         {
             if (debug)
             {
-                tls_cert_info_free(tci);
-                free(tls_parameter_description);
+                mtls_cert_info_free(tci);
+                free(mtls_parameter_description);
             }
             msmtp_endsession(&srv, 0);
-            return tls_exitcode(e);
+            return mtls_exitcode(e);
         }
         if (debug)
         {
-            tls_print_info(tls_parameter_description, tci);
-            tls_cert_info_free(tci);
-            free(tls_parameter_description);
+            mtls_print_info(mtls_parameter_description, tci);
+            mtls_cert_info_free(tci);
+            free(mtls_parameter_description);
         }
     }
 #endif /* HAVE_TLS */
@@ -234,24 +237,24 @@ int msmtp_rmqs(account_t *acc, int debug, const char *rmqs_argument,
         }
         if (debug)
         {
-            tci = tls_cert_info_new();
+            tci = mtls_cert_info_new();
         }
-        if ((e = smtp_tls(&srv, acc->host, acc->tls_nocertcheck, tci,
-                        &tls_parameter_description, errstr)) != TLS_EOK)
+        if ((e = smtp_tls(&srv, tci,
+                        &mtls_parameter_description, errstr)) != TLS_EOK)
         {
             if (debug)
             {
-                tls_cert_info_free(tci);
-                free(tls_parameter_description);
+                mtls_cert_info_free(tci);
+                free(mtls_parameter_description);
             }
             msmtp_endsession(&srv, 0);
-            return tls_exitcode(e);
+            return mtls_exitcode(e);
         }
         if (debug)
         {
-            tls_print_info(tls_parameter_description, tci);
-            tls_cert_info_free(tci);
-            free(tls_parameter_description);
+            mtls_print_info(mtls_parameter_description, tci);
+            mtls_cert_info_free(tci);
+            free(mtls_parameter_description);
         }
         /* initialize again */
         if ((e = smtp_init(&srv, acc->domain, msg, errstr)) != SMTP_EOK)
@@ -280,7 +283,8 @@ int msmtp_rmqs(account_t *acc, int debug, const char *rmqs_argument,
             msmtp_endsession(&srv, 1);
             return EX_UNAVAILABLE;
         }
-        if ((e = smtp_auth(&srv, acc->host, acc->username, acc->password,
+        if ((e = smtp_auth(&srv, acc->host, acc->port,
+                        acc->username, acc->password,
                         acc->ntlmdomain, acc->auth_mech,
                         msmtp_password_callback, msg, errstr))
                 != SMTP_EOK)
@@ -320,8 +324,8 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
     char *server_greeting = NULL;
     int e;
 #ifdef HAVE_TLS
-    tls_cert_info_t *tci = NULL;
-    char *tls_parameter_description = NULL;
+    mtls_cert_info_t *tci = NULL;
+    char *mtls_parameter_description = NULL;
 #endif /* HAVE_TLS */
 
     *errstr = NULL;
@@ -331,7 +335,7 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
     srv = smtp_new(debug ? stdout : NULL, acc->protocol);
 
     /* connect */
-    if ((e = smtp_connect(&srv, acc->proxy_host, acc->proxy_port,
+    if ((e = smtp_connect(&srv, acc->socketname, acc->proxy_host, acc->proxy_port,
                     acc->host, acc->port, acc->source_ip, acc->timeout,
                     &server_canonical_name, &server_address, errstr))
             != NET_EOK)
@@ -344,15 +348,19 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
 #ifdef HAVE_TLS
     if (acc->tls)
     {
-        tci = tls_cert_info_new();
-        if ((e = smtp_tls_init(&srv, acc->tls_key_file, acc->tls_cert_file,
+        tci = mtls_cert_info_new();
+        if ((e = smtp_tls_init(&srv,
+                        acc->tls_key_file, acc->tls_cert_file, acc->password,
                         acc->tls_trust_file, acc->tls_crl_file,
                         acc->tls_sha256_fingerprint,
                         acc->tls_sha1_fingerprint, acc->tls_md5_fingerprint,
                         acc->tls_min_dh_prime_bits,
-                        acc->tls_priorities, errstr)) != TLS_EOK)
+                        acc->tls_priorities,
+                        acc->tls_host_override ? acc->tls_host_override : acc->host,
+                        acc->tls_nocertcheck,
+                        errstr)) != TLS_EOK)
         {
-            e = tls_exitcode(e);
+            e = mtls_exitcode(e);
             goto error_exit;
         }
     }
@@ -362,11 +370,11 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
 #ifdef HAVE_TLS
     if (acc->tls && acc->tls_nostarttls)
     {
-        if ((e = smtp_tls(&srv, acc->host, acc->tls_nocertcheck, tci,
-                        &tls_parameter_description, errstr)) != TLS_EOK)
+        if ((e = smtp_tls(&srv, tci,
+                        &mtls_parameter_description, errstr)) != TLS_EOK)
         {
             msmtp_endsession(&srv, 0);
-            e = tls_exitcode(e);
+            e = mtls_exitcode(e);
             goto error_exit;
         }
     }
@@ -407,11 +415,11 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
             e = smtp_exitcode(e);
             goto error_exit;
         }
-        if ((e = smtp_tls(&srv, acc->host, acc->tls_nocertcheck, tci,
-                        &tls_parameter_description, errstr)) != TLS_EOK)
+        if ((e = smtp_tls(&srv, tci,
+                        &mtls_parameter_description, errstr)) != TLS_EOK)
         {
             msmtp_endsession(&srv, 0);
-            e = tls_exitcode(e);
+            e = mtls_exitcode(e);
             goto error_exit;
         }
         /* initialize again */
@@ -459,7 +467,7 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
 #ifdef HAVE_TLS
     if (acc->tls)
     {
-        tls_print_info(tls_parameter_description, tci);
+        mtls_print_info(mtls_parameter_description, tci);
     }
 #endif /* HAVE_TLS */
 #ifdef HAVE_TLS
@@ -533,6 +541,10 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
             {
                 printf("SCRAM-SHA-1 ");
             }
+            if (srv.cap.flags & SMTP_CAP_AUTH_SCRAM_SHA_256)
+            {
+                printf("SCRAM-SHA-256 ");
+            }
             if (srv.cap.flags & SMTP_CAP_AUTH_EXTERNAL)
             {
                 printf("EXTERNAL ");
@@ -557,6 +569,14 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
             {
                 printf("NTLM ");
             }
+            if (srv.cap.flags & SMTP_CAP_AUTH_OAUTHBEARER)
+            {
+                printf("OAUTHBEARER ");
+            }
+            if (srv.cap.flags & SMTP_CAP_AUTH_XOAUTH2)
+            {
+                printf("XOAUTH2 ");
+            }
             printf("\n");
         }
 #ifdef HAVE_TLS
@@ -578,9 +598,9 @@ error_exit:
 #ifdef HAVE_TLS
     if (tci)
     {
-        tls_cert_info_free(tci);
+        mtls_cert_info_free(tci);
     }
-    free(tls_parameter_description);
+    free(mtls_parameter_description);
 #endif /* HAVE_TLS */
     free(server_greeting);
     return e;
@@ -744,8 +764,13 @@ int msmtp_read_headers(FILE *mailf, FILE *tmpf,
 
                 case STATE_LINESTART_AFTER_ADDRHDR:
                     resent_index = -1;
-                    if (c != ' ' && c != '\t' && current_recipient)
-                        finish_current_recipient = 1;
+                    if (c != ' ' && c != '\t')
+                    {
+                        if (current_recipient)
+                            finish_current_recipient = 1;
+                        else if (from_hdr == 0)
+                            from_hdr = -1; /* the preceding From: header was empty */
+                    }
                     if (c == ' ' || c == '\t')
                         state = folded_rcpthdr_savestate;
                     else if (have_date && (c == 'd' || c == 'D'))
@@ -1195,6 +1220,12 @@ int msmtp_read_headers(FILE *mailf, FILE *tmpf,
         }
     }
 
+    /* Corner case: we saw a "From: " header without a recipient. */
+    if (from_hdr == 0)
+    {
+        *from = xstrdup("");
+    }
+
     if (recipients)
     {
         if (resent_block >= 0)
@@ -1265,7 +1296,8 @@ error_exit:
  */
 
 int msmtp_sendmail(account_t *acc, list_t *recipients,
-        FILE *prepend_header_file, FILE *header_file, FILE *f,
+        FILE *prepend_header_file, int prepend_header_contains_from,
+        FILE *header_file, FILE *f,
         int debug, long *mailsize,
         list_t **lmtp_errstrs, list_t **lmtp_error_msgs,
         list_t **msg, char **errstr)
@@ -1273,8 +1305,8 @@ int msmtp_sendmail(account_t *acc, list_t *recipients,
     smtp_server_t srv;
     int e;
 #ifdef HAVE_TLS
-    tls_cert_info_t *tci = NULL;
-    char *tls_parameter_description = NULL;
+    mtls_cert_info_t *tci = NULL;
+    char *mtls_parameter_description = NULL;
 #endif /* HAVE_TLS */
 
     *errstr = NULL;
@@ -1289,21 +1321,25 @@ int msmtp_sendmail(account_t *acc, list_t *recipients,
 #ifdef HAVE_TLS
     if (acc->tls)
     {
-        if ((e = smtp_tls_init(&srv, acc->tls_key_file, acc->tls_cert_file,
+        if ((e = smtp_tls_init(&srv,
+                        acc->tls_key_file, acc->tls_cert_file, acc->password,
                         acc->tls_trust_file, acc->tls_crl_file,
                         acc->tls_sha256_fingerprint,
                         acc->tls_sha1_fingerprint, acc->tls_md5_fingerprint,
                         acc->tls_min_dh_prime_bits,
-                        acc->tls_priorities, errstr)) != TLS_EOK)
+                        acc->tls_priorities,
+                        acc->tls_host_override ? acc->tls_host_override : acc->host,
+                        acc->tls_nocertcheck,
+                        errstr)) != TLS_EOK)
         {
-            e = tls_exitcode(e);
+            e = mtls_exitcode(e);
             return e;
         }
     }
 #endif /* HAVE_TLS */
 
     /* connect */
-    if ((e = smtp_connect(&srv, acc->proxy_host, acc->proxy_port,
+    if ((e = smtp_connect(&srv, acc->socketname, acc->proxy_host, acc->proxy_port,
                     acc->host, acc->port, acc->source_ip, acc->timeout,
                     NULL, NULL, errstr)) != NET_EOK)
     {
@@ -1317,25 +1353,25 @@ int msmtp_sendmail(account_t *acc, list_t *recipients,
     {
         if (debug)
         {
-            tci = tls_cert_info_new();
+            tci = mtls_cert_info_new();
         }
-        if ((e = smtp_tls(&srv, acc->host, acc->tls_nocertcheck, tci,
-                        &tls_parameter_description, errstr)) != TLS_EOK)
+        if ((e = smtp_tls(&srv, tci,
+                        &mtls_parameter_description, errstr)) != TLS_EOK)
         {
             if (debug)
             {
-                tls_cert_info_free(tci);
-                free(tls_parameter_description);
+                mtls_cert_info_free(tci);
+                free(mtls_parameter_description);
             }
             msmtp_endsession(&srv, 0);
-            e = tls_exitcode(e);
+            e = mtls_exitcode(e);
             return e;
         }
         if (debug)
         {
-            tls_print_info(tls_parameter_description, tci);
-            tls_cert_info_free(tci);
-            free(tls_parameter_description);
+            mtls_print_info(mtls_parameter_description, tci);
+            mtls_cert_info_free(tci);
+            free(mtls_parameter_description);
         }
     }
 #endif /* HAVE_TLS */
@@ -1376,25 +1412,25 @@ int msmtp_sendmail(account_t *acc, list_t *recipients,
         }
         if (debug)
         {
-            tci = tls_cert_info_new();
+            tci = mtls_cert_info_new();
         }
-        if ((e = smtp_tls(&srv, acc->host, acc->tls_nocertcheck, tci,
-                        &tls_parameter_description, errstr)) != TLS_EOK)
+        if ((e = smtp_tls(&srv, tci,
+                        &mtls_parameter_description, errstr)) != TLS_EOK)
         {
             if (debug)
             {
-                tls_cert_info_free(tci);
-                free(tls_parameter_description);
+                mtls_cert_info_free(tci);
+                free(mtls_parameter_description);
             }
             msmtp_endsession(&srv, 0);
-            e = tls_exitcode(e);
+            e = mtls_exitcode(e);
             return e;
         }
         if (debug)
         {
-            tls_print_info(tls_parameter_description, tci);
-            tls_cert_info_free(tci);
-            free(tls_parameter_description);
+            mtls_print_info(mtls_parameter_description, tci);
+            mtls_cert_info_free(tci);
+            free(mtls_parameter_description);
         }
         /* initialize again */
         if ((e = smtp_init(&srv, acc->domain, msg, errstr)) != SMTP_EOK)
@@ -1425,7 +1461,8 @@ int msmtp_sendmail(account_t *acc, list_t *recipients,
             e = EX_UNAVAILABLE;
             return e;
         }
-        if ((e = smtp_auth(&srv, acc->host, acc->username, acc->password,
+        if ((e = smtp_auth(&srv, acc->host, acc->port,
+                        acc->username, acc->password,
                         acc->ntlmdomain, acc->auth_mech,
                         msmtp_password_callback, msg, errstr))
                 != SMTP_EOK)
@@ -1450,7 +1487,7 @@ int msmtp_sendmail(account_t *acc, list_t *recipients,
     {
         /* first: prepended headers, if any */
         if ((e = smtp_send_mail(&srv, prepend_header_file,
-                        !acc->remove_bcc_headers, mailsize,
+                        1, 1, 1, 1, mailsize,
                         errstr)) != SMTP_EOK)
         {
             msmtp_endsession(&srv, 0);
@@ -1459,7 +1496,12 @@ int msmtp_sendmail(account_t *acc, list_t *recipients,
         }
     }
     /* next: original mail headers */
-    if ((e = smtp_send_mail(&srv, header_file, !acc->remove_bcc_headers,
+    if ((e = smtp_send_mail(&srv, header_file,
+                    !prepend_header_contains_from, /* keep_from */
+                    !acc->undisclosed_recipients,  /* keep_to */
+                    !acc->undisclosed_recipients,  /* keep_cc */
+                    !acc->undisclosed_recipients
+                    && !acc->remove_bcc_headers,   /* keep_bcc */
                     mailsize, errstr)) != SMTP_EOK)
     {
         msmtp_endsession(&srv, 0);
@@ -1467,7 +1509,7 @@ int msmtp_sendmail(account_t *acc, list_t *recipients,
         return e;
     }
     /* then: the body from the original file */
-    if ((e = smtp_send_mail(&srv, f, 1, mailsize, errstr)) != SMTP_EOK)
+    if ((e = smtp_send_mail(&srv, f, 1, 1, 1, 1, mailsize, errstr)) != SMTP_EOK)
     {
         msmtp_endsession(&srv, 0);
         e = smtp_exitcode(e);
@@ -1978,6 +2020,9 @@ void msmtp_log_to_syslog(const char *facility_str,
 /*
  * msmtp_construct_env_from()
  *
+ * OBSOLETE: triggered by auto_from, uses maildomain. both are replaced
+ * with substitution patterns supported in from.
+ *
  * Build an envelope from address for the current user.
  * If maildomain is not NULL and not the empty string, it will be the domain
  * part of the address. Otherwise, the address won't have a domain part.
@@ -2021,6 +2066,8 @@ void msmtp_print_version(void)
             "GnuTLS"
 #elif defined (HAVE_LIBSSL)
             "OpenSSL"
+#elif defined (HAVE_LIBTLS)
+            "libtls"
 #else
             _("none")
 #endif
@@ -2029,7 +2076,7 @@ void msmtp_print_version(void)
     printf(_("Authentication library: %s\n"
                 "Supported authentication methods:\n"),
 #ifdef HAVE_LIBGSASL
-            "GNU SASL"
+            _("GNU SASL; oauthbearer and xoauth2: built-in")
 #else
             _("built-in")
 #endif /* HAVE_LIBGSASL */
@@ -2041,6 +2088,10 @@ void msmtp_print_version(void)
     if (smtp_client_supports_authmech("SCRAM-SHA-1"))
     {
         printf("scram-sha-1 ");
+    }
+    if (smtp_client_supports_authmech("SCRAM-SHA-256"))
+    {
+        printf("scram-sha-256 ");
     }
     if (smtp_client_supports_authmech("EXTERNAL"))
     {
@@ -2065,6 +2116,14 @@ void msmtp_print_version(void)
     if (smtp_client_supports_authmech("NTLM"))
     {
         printf("ntlm ");
+    }
+    if (smtp_client_supports_authmech("OAUTHBEARER"))
+    {
+        printf("oauthbearer ");
+    }
+    if (smtp_client_supports_authmech("XOAUTH2"))
+    {
+        printf("xoauth2 ");
     }
     printf("\n");
     /* Internationalized Domain Names support */
@@ -2107,7 +2166,7 @@ void msmtp_print_version(void)
     printf(_("User configuration file name: %s\n"), userconffile);
     free(userconffile);
     printf("\n");
-    printf(_("Copyright (C) 2019 Martin Lambers and others.\n"
+    printf(_("Copyright (C) 2021 Martin Lambers and others.\n"
                 "This is free software.  You may redistribute copies of "
                     "it under the terms of\n"
                 "the GNU General Public License "
@@ -2160,6 +2219,7 @@ void msmtp_print_help(void)
     printf(_("  --source-ip=[IP]             set/unset source ip address to bind the socket to\n"));
     printf(_("  --proxy-host=[IP|hostname]   set/unset proxy\n"));
     printf(_("  --proxy-port=[number]        set/unset proxy port\n"));
+    printf(_("  --socket=[socketname]        set/unset local socket to connect to\n"));
     printf(_("  --timeout=(off|seconds)      set/unset network timeout in seconds\n"));
     printf(_("  --protocol=(smtp|lmtp)       use the given sub protocol\n"));
     printf(_("  --domain=string              set the argument of EHLO or LHLO command\n"));
@@ -2176,6 +2236,7 @@ void msmtp_print_help(void)
     printf(_("  --tls-key-file=[file]        set/unset private key file for TLS\n"));
     printf(_("  --tls-cert-file=[file]       set/unset private cert file for TLS\n"));
     printf(_("  --tls-priorities=[prios]     set/unset TLS priorities.\n"));
+    printf(_("  --tls-host-override=[host]   set/unset override for TLS host verification.\n"));
     printf(_("  --tls-min-dh-prime-bits=[b]  set/unset minimum bit size of DH prime\n"));
     printf(_("Options specific to sendmail mode:\n"));
     printf(_("  --auto-from[=(on|off)]       enable/disable automatic envelope-from addresses\n"));
@@ -2190,9 +2251,11 @@ void msmtp_print_help(void)
     printf(_("  -t, --read-recipients        read additional recipients from the mail\n"));
     printf(_("  --read-envelope-from         read envelope from address from the mail\n"));
     printf(_("  --aliases=[file]             set/unset aliases file\n"));
-    printf(_("  --add-missing-from-header[=(on|off)] enable/disable addition of From header\n"));
-    printf(_("  --add-missing-date-header[=(on|off)] enable/disable addition of Date header\n"));
+    printf(_("  --set-from-header[=(auto|on|off)] set From header handling\n"));
+    printf(_("  --set-date-header[=(auto|off)] set Date header handling\n"));
     printf(_("  --remove-bcc-headers[=(on|off)] enable/disable removal of Bcc headers\n"));
+    printf(_("  --undisclosed-recipients[=(on|off)] enable/disable replacement of To/Cc/Bcc\n"
+             "                               with To: undisclosed-recipients:;\n"));
     printf(_("  --                           end of options\n"));
     printf(_("Accepted but ignored: -A, -B, -bm, -F, -G, -h, -i, -L, -m, -n, -O, -o, -v\n"));
     printf(_("\nReport bugs to <%s>.\n"), PACKAGE_BUGREPORT);
@@ -2252,23 +2315,28 @@ typedef struct
 #define LONGONLYOPT_TLS_FORCE_SSLV3             (256 + 16)
 #define LONGONLYOPT_TLS_MIN_DH_PRIME_BITS       (256 + 17)
 #define LONGONLYOPT_TLS_PRIORITIES              (256 + 18)
-#define LONGONLYOPT_PROTOCOL                    (256 + 19)
-#define LONGONLYOPT_DOMAIN                      (256 + 20)
-#define LONGONLYOPT_KEEPBCC                     (256 + 21)
-#define LONGONLYOPT_RMQS                        (256 + 22)
-#define LONGONLYOPT_SYSLOG                      (256 + 23)
-#define LONGONLYOPT_MAILDOMAIN                  (256 + 24)
-#define LONGONLYOPT_AUTO_FROM                   (256 + 25)
-#define LONGONLYOPT_READ_ENVELOPE_FROM          (256 + 26)
-#define LONGONLYOPT_ALIASES                     (256 + 27)
-#define LONGONLYOPT_PROXY_HOST                  (256 + 28)
-#define LONGONLYOPT_PROXY_PORT                  (256 + 29)
-#define LONGONLYOPT_ADD_MISSING_FROM_HEADER     (256 + 30)
-#define LONGONLYOPT_ADD_MISSING_DATE_HEADER     (256 + 31)
-#define LONGONLYOPT_REMOVE_BCC_HEADERS          (256 + 32)
-#define LONGONLYOPT_SOURCE_IP                   (256 + 33)
-#define LONGONLYOPT_LOGFILE_TIME_FORMAT         (256 + 34)
-#define LONGONLYOPT_CONFIGURE                   (256 + 35)
+#define LONGONLYOPT_TLS_HOST_OVERRIDE           (256 + 19)
+#define LONGONLYOPT_PROTOCOL                    (256 + 20)
+#define LONGONLYOPT_DOMAIN                      (256 + 21)
+#define LONGONLYOPT_KEEPBCC                     (256 + 22)
+#define LONGONLYOPT_RMQS                        (256 + 23)
+#define LONGONLYOPT_SYSLOG                      (256 + 24)
+#define LONGONLYOPT_MAILDOMAIN                  (256 + 25)
+#define LONGONLYOPT_AUTO_FROM                   (256 + 26)
+#define LONGONLYOPT_READ_ENVELOPE_FROM          (256 + 27)
+#define LONGONLYOPT_ALIASES                     (256 + 28)
+#define LONGONLYOPT_PROXY_HOST                  (256 + 29)
+#define LONGONLYOPT_PROXY_PORT                  (256 + 30)
+#define LONGONLYOPT_ADD_MISSING_FROM_HEADER     (256 + 31)
+#define LONGONLYOPT_ADD_MISSING_DATE_HEADER     (256 + 32)
+#define LONGONLYOPT_REMOVE_BCC_HEADERS          (256 + 33)
+#define LONGONLYOPT_UNDISCLOSED_RECIPIENTS      (256 + 34)
+#define LONGONLYOPT_SOURCE_IP                   (256 + 35)
+#define LONGONLYOPT_LOGFILE_TIME_FORMAT         (256 + 36)
+#define LONGONLYOPT_CONFIGURE                   (256 + 37)
+#define LONGONLYOPT_SOCKET                      (256 + 38)
+#define LONGONLYOPT_SET_FROM_HEADER             (256 + 39)
+#define LONGONLYOPT_SET_DATE_HEADER             (256 + 40)
 
 int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
 {
@@ -2309,6 +2377,7 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
         { "tls-min-dh-prime-bits", required_argument, 0,
             LONGONLYOPT_TLS_MIN_DH_PRIME_BITS },
         { "tls-priorities", required_argument, 0, LONGONLYOPT_TLS_PRIORITIES },
+        { "tls-host-override", required_argument, 0, LONGONLYOPT_TLS_HOST_OVERRIDE },
         { "dsn-notify", required_argument, 0, 'N' },
         { "dsn-return", required_argument, 0, 'R' },
         { "protocol", required_argument, 0, LONGONLYOPT_PROTOCOL },
@@ -2324,9 +2393,16 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
             LONGONLYOPT_ADD_MISSING_FROM_HEADER },
         { "add-missing-date-header", optional_argument, 0,
             LONGONLYOPT_ADD_MISSING_DATE_HEADER },
+        { "set-from-header", optional_argument, 0,
+            LONGONLYOPT_SET_FROM_HEADER },
+        { "set-date-header", optional_argument, 0,
+            LONGONLYOPT_SET_DATE_HEADER },
         { "remove-bcc-headers", optional_argument, 0,
             LONGONLYOPT_REMOVE_BCC_HEADERS },
+        { "undisclosed-recipients", optional_argument, 0,
+            LONGONLYOPT_UNDISCLOSED_RECIPIENTS },
         { "source-ip", required_argument, 0, LONGONLYOPT_SOURCE_IP },
+        { "socket", required_argument, 0, LONGONLYOPT_SOCKET },
         { "keepbcc", optional_argument, 0, LONGONLYOPT_KEEPBCC },
         { "read-recipients", no_argument, 0, 't' },
         { "read-envelope-from", no_argument, 0,
@@ -2338,11 +2414,11 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
     int i;
     int rcptc;
     char **rcptv;
-    FILE *tmpf;
+    FILE *tmpf = NULL;
     char *errstr;
 #ifdef HAVE_FMEMOPEN
     size_t rcptf_size;
-    void *rcptf_buf;
+    void *rcptf_buf = NULL;
 #endif
 
     /* the program name */
@@ -2779,6 +2855,19 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
                 conf->cmdline_account->mask |= ACC_TLS_PRIORITIES;
                 break;
 
+            case LONGONLYOPT_TLS_HOST_OVERRIDE:
+                free(conf->cmdline_account->tls_host_override);
+                if (*optarg)
+                {
+                    conf->cmdline_account->tls_host_override = xstrdup(optarg);
+                }
+                else
+                {
+                    conf->cmdline_account->tls_host_override = NULL;
+                }
+                conf->cmdline_account->mask |= ACC_TLS_HOST_OVERRIDE;
+                break;
+
             case 'N':
                 free(conf->cmdline_account->dsn_notify);
                 if (is_off(optarg))
@@ -2945,14 +3034,55 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
                 conf->cmdline_account->mask |= ACC_PROXY_PORT;
                 break;
 
-            case LONGONLYOPT_ADD_MISSING_FROM_HEADER:
-                if (!optarg || is_on(optarg))
+            case LONGONLYOPT_SET_FROM_HEADER:
+                if (!optarg || is_auto(optarg))
                 {
-                    conf->cmdline_account->add_missing_from_header = 1;
+                    conf->cmdline_account->set_from_header = 2;
+                }
+                else if (is_on(optarg))
+                {
+                    conf->cmdline_account->set_from_header = 1;
                 }
                 else if (is_off(optarg))
                 {
-                    conf->cmdline_account->add_missing_from_header = 0;
+                    conf->cmdline_account->set_from_header = 0;
+                }
+                else
+                {
+                    print_error(_("invalid argument %s for %s"),
+                            optarg, "--set-from-header");
+                    error_code = 1;
+                }
+                conf->cmdline_account->mask |= ACC_SET_FROM_HEADER;
+                break;
+
+            case LONGONLYOPT_SET_DATE_HEADER:
+                if (!optarg || is_auto(optarg))
+                {
+                    conf->cmdline_account->set_date_header = 2;
+                }
+                else if (is_off(optarg))
+                {
+                    conf->cmdline_account->set_date_header = 0;
+                }
+                else
+                {
+                    print_error(_("invalid argument %s for %s"),
+                            optarg, "--set-date-header");
+                    error_code = 1;
+                }
+                conf->cmdline_account->mask |= ACC_SET_DATE_HEADER;
+                break;
+
+            case LONGONLYOPT_ADD_MISSING_FROM_HEADER:
+                /* compatibility with < 1.8.8 */
+                if (!optarg || is_on(optarg))
+                {
+                    conf->cmdline_account->set_from_header = 2;
+                }
+                else if (is_off(optarg))
+                {
+                    conf->cmdline_account->set_from_header = 0;
                 }
                 else
                 {
@@ -2960,17 +3090,18 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
                             optarg, "--add-missing-from-header");
                     error_code = 1;
                 }
-                conf->cmdline_account->mask |= ACC_ADD_MISSING_FROM_HEADER;
+                conf->cmdline_account->mask |= ACC_SET_FROM_HEADER;
                 break;
 
             case LONGONLYOPT_ADD_MISSING_DATE_HEADER:
+                /* compatibility with < 1.8.8 */
                 if (!optarg || is_on(optarg))
                 {
-                    conf->cmdline_account->add_missing_date_header = 1;
+                    conf->cmdline_account->set_date_header = 2;
                 }
                 else if (is_off(optarg))
                 {
-                    conf->cmdline_account->add_missing_date_header = 0;
+                    conf->cmdline_account->set_date_header = 0;
                 }
                 else
                 {
@@ -2978,7 +3109,7 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
                             optarg, "--add-missing-date-header");
                     error_code = 1;
                 }
-                conf->cmdline_account->mask |= ACC_ADD_MISSING_DATE_HEADER;
+                conf->cmdline_account->mask |= ACC_SET_DATE_HEADER;
                 break;
 
             case LONGONLYOPT_REMOVE_BCC_HEADERS:
@@ -2999,6 +3130,24 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
                 conf->cmdline_account->mask |= ACC_REMOVE_BCC_HEADERS;
                 break;
 
+            case LONGONLYOPT_UNDISCLOSED_RECIPIENTS:
+                if (!optarg || is_on(optarg))
+                {
+                    conf->cmdline_account->undisclosed_recipients = 1;
+                }
+                else if (is_off(optarg))
+                {
+                    conf->cmdline_account->undisclosed_recipients = 0;
+                }
+                else
+                {
+                    print_error(_("invalid argument %s for %s"),
+                            optarg, "--undisclosed-recipients");
+                    error_code = 1;
+                }
+                conf->cmdline_account->mask |= ACC_UNDISCLOSED_RECIPIENTS;
+                break;
+
             case LONGONLYOPT_SOURCE_IP:
                 free(conf->cmdline_account->source_ip);
                 if (*optarg)
@@ -3010,6 +3159,19 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
                     conf->cmdline_account->source_ip = NULL;
                 }
                 conf->cmdline_account->mask |= ACC_SOURCE_IP;
+                break;
+
+            case LONGONLYOPT_SOCKET:
+                free(conf->cmdline_account->socketname);
+                if (*optarg)
+                {
+                    conf->cmdline_account->socketname = xstrdup(optarg);
+                }
+                else
+                {
+                    conf->cmdline_account->socketname = NULL;
+                }
+                conf->cmdline_account->mask |= ACC_SOCKET;
                 break;
 
             case 't':
@@ -3093,62 +3255,66 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
     /* The list of recipients.
      * Write these to a temporary mail header so that msmtp_read_headers() can
      * parse them. */
+    conf->recipients = list_new();
     rcptc = argc - optind;
     rcptv = &(argv[optind]);
+    if (rcptc > 0)
+    {
 #ifdef HAVE_FMEMOPEN
-    rcptf_size = 2;     /* terminating "\n\0" */
-    for (i = 0; i < rcptc; i++)
-    {
-        rcptf_size += 4 + strlen(rcptv[i]) + 1;
-    }
-    rcptf_buf = xmalloc(rcptf_size);
-    tmpf = fmemopen(rcptf_buf, rcptf_size, "w+");
-#else
-    tmpf = tmpfile();
-#endif
-    if (!tmpf)
-    {
-        print_error(_("cannot create temporary file: %s"),
-                sanitize_string(strerror(errno)));
-        error_code = EX_IOERR;
-        goto error_exit;
-    }
-    for (i = 0; i < rcptc && error_code != EOF; i++)
-    {
-        error_code = fputs("To: ", tmpf);
-        if (error_code != EOF)
+        rcptf_size = 2;     /* terminating "\n\0" */
+        for (i = 0; i < rcptc; i++)
         {
-            error_code = fputs(rcptv[i], tmpf);
+            rcptf_size += 4 + strlen(rcptv[i]) + 1;
+        }
+        rcptf_buf = xmalloc(rcptf_size);
+        tmpf = fmemopen(rcptf_buf, rcptf_size, "w+");
+#else
+        tmpf = tmpfile();
+#endif
+        if (!tmpf)
+        {
+            print_error(_("cannot create temporary file: %s"),
+                    sanitize_string(strerror(errno)));
+            error_code = EX_IOERR;
+            goto error_exit;
+        }
+        for (i = 0; i < rcptc && error_code != EOF; i++)
+        {
+            error_code = fputs("To: ", tmpf);
+            if (error_code != EOF)
+            {
+                error_code = fputs(rcptv[i], tmpf);
+            }
+            if (error_code != EOF)
+            {
+                error_code = fputc('\n', tmpf);
+            }
         }
         if (error_code != EOF)
         {
             error_code = fputc('\n', tmpf);
         }
-    }
-    if (error_code != EOF)
-    {
-        error_code = fputc('\n', tmpf);
-    }
-    if (error_code == EOF)
-    {
-        print_error(_("cannot write mail headers to temporary "
-                    "file: output error"));
-        error_code = EX_IOERR;
-        goto error_exit;
-    }
-    if (fseeko(tmpf, 0, SEEK_SET) != 0)
-    {
-        print_error(_("cannot rewind temporary file: %s"),
-                sanitize_string(strerror(errno)));
-        error_code = EX_IOERR;
-        goto error_exit;
-    }
-    conf->recipients = list_new();
-    if ((error_code = msmtp_read_headers(tmpf, NULL,
-                    list_last(conf->recipients), NULL, NULL, &errstr)) != EX_OK)
-    {
-        print_error("%s", sanitize_string(errstr));
-        goto error_exit;
+        if (error_code == EOF)
+        {
+            print_error(_("cannot write mail headers to temporary "
+                        "file: output error"));
+            error_code = EX_IOERR;
+            goto error_exit;
+        }
+        if (fseeko(tmpf, 0, SEEK_SET) != 0)
+        {
+            print_error(_("cannot rewind temporary file: %s"),
+                    sanitize_string(strerror(errno)));
+            error_code = EX_IOERR;
+            goto error_exit;
+        }
+        if ((error_code = msmtp_read_headers(tmpf, NULL,
+                        list_last(conf->recipients), NULL, NULL, &errstr))
+                != EX_OK)
+        {
+            print_error("%s", sanitize_string(errstr));
+            goto error_exit;
+        }
     }
     error_code = EX_OK;
 
@@ -3338,6 +3504,8 @@ void msmtp_print_conf(msmtp_cmdline_conf_t conf, account_t *account)
     printf("proxy host = %s\n",
             account->proxy_host ? account->proxy_host : _("(not set)"));
     printf("proxy port = %d\n", account->proxy_port);
+    printf("socket = %s\n",
+            account->socketname ? account->socketname : _("(not set)"));
     printf("timeout = ");
     if (account->timeout <= 0)
     {
@@ -3419,6 +3587,8 @@ void msmtp_print_conf(msmtp_cmdline_conf_t conf, account_t *account)
     }
     printf("tls_priorities = %s\n",
             account->tls_priorities ? account->tls_priorities : _("(not set)"));
+    printf("tls_host_override = %s\n",
+            account->tls_host_override ? account->tls_host_override : _("(not set)"));
     if (conf.sendmail)
     {
         printf("auto_from = %s\n", account->auto_from ? _("on") : _("off"));
@@ -3427,12 +3597,16 @@ void msmtp_print_conf(msmtp_cmdline_conf_t conf, account_t *account)
         printf("from = %s\n",
                 account->from ? account->from : conf.read_envelope_from
                 ? _("(read from mail)") : _("(not set)"));
-        printf("add_missing_from_header = %s\n",
-                account->add_missing_from_header ? _("on") : _("off"));
-        printf("add_missing_date_header = %s\n",
-                account->add_missing_date_header ? _("on") : _("off"));
+        printf("set_from_header = %s\n",
+                account->set_from_header == 2 ? _("auto")
+                : account->set_from_header == 1 ? _("on") : _("off"));
+        printf("set_date_header = %s\n",
+                account->set_date_header == 2 ? _("auto")
+                : _("off"));
         printf("remove_bcc_headers = %s\n",
                 account->remove_bcc_headers ? _("on") : _("off"));
+        printf("undisclosed_recipients = %s\n",
+                account->undisclosed_recipients ? _("on") : _("off"));
         printf("dsn_notify = %s\n",
                 account->dsn_notify ? account->dsn_notify : _("(not set)"));
         printf("dsn_return = %s\n",
@@ -3501,10 +3675,6 @@ int main(int argc, char *argv[])
     list_t *lp_lmtp_error_msgs;
     /* log information */
     char *log_info;
-    /* needed to get the default port */
-#if HAVE_GETSERVBYNAME
-    struct servent *se;
-#endif
     /* needed to read the headers and extract addresses */
     FILE *header_tmpfile = NULL;
     FILE *prepend_header_tmpfile = NULL;
@@ -3761,7 +3931,22 @@ int main(int argc, char *argv[])
     {
         account->proxy_port = 1080;
     }
-    if (conf.sendmail && account->auto_from)
+    if (expand_domain(&(account->domain), &errstr) != CONF_EOK)
+    {
+        print_error("%s", sanitize_string(errstr));
+        error_code = EX_CONFIG;
+        goto exit;
+    }
+    if (conf.sendmail && account->from)
+    {
+        if (expand_from(&(account->from), &errstr) != CONF_EOK)
+        {
+            print_error("%s", sanitize_string(errstr));
+            error_code = EX_CONFIG;
+            goto exit;
+        }
+    }
+    if (conf.sendmail && account->auto_from /* obsolete */)
     {
         free(account->from);
         account->from = msmtp_construct_env_from(account->maildomain);
@@ -3838,7 +4023,7 @@ int main(int argc, char *argv[])
     if (account->tls)
     {
 #ifdef HAVE_TLS
-        if ((e = tls_lib_init(&errstr)) != TLS_EOK)
+        if ((e = mtls_lib_init(&errstr)) != TLS_EOK)
         {
             print_error(_("cannot initialize TLS library: %s"),
                     sanitize_string(errstr));
@@ -3856,8 +4041,11 @@ int main(int argc, char *argv[])
     /* do the work */
     if (conf.sendmail)
     {
-        if ((!have_from_header && account->add_missing_from_header)
-                || (!have_date_header && account->add_missing_date_header))
+        int prepend_header_contains_from = 0;
+        if (account->undisclosed_recipients
+                || account->set_from_header == 1
+                || (!have_from_header && account->set_from_header == 2)
+                || (!have_date_header && account->set_date_header == 2))
         {
             if (!(prepend_header_tmpfile = tmpfile()))
             {
@@ -3867,7 +4055,8 @@ int main(int argc, char *argv[])
                 goto exit;
             }
         }
-        if (!have_from_header && account->add_missing_from_header)
+        if (account->set_from_header == 1
+                || (!have_from_header && account->set_from_header == 2))
         {
             if (conf.full_name)
             {
@@ -3878,8 +4067,13 @@ int main(int argc, char *argv[])
             {
                 fprintf(prepend_header_tmpfile, "From: %s\n", account->from);
             }
+            prepend_header_contains_from = 1;
         }
-        if (!have_date_header && account->add_missing_date_header)
+        if (account->undisclosed_recipients)
+        {
+            fputs("To: undisclosed-recipients:;\n", prepend_header_tmpfile);
+        }
+        if (!have_date_header && account->set_date_header == 2)
         {
             char rfc2822_timestamp[32];
             print_time_rfc2822(time(NULL), rfc2822_timestamp);
@@ -3894,7 +4088,8 @@ int main(int argc, char *argv[])
             goto exit;
         }
         if ((error_code = msmtp_sendmail(account, conf.recipients,
-                        prepend_header_tmpfile, header_tmpfile, stdin,
+                        prepend_header_tmpfile, prepend_header_contains_from,
+                        header_tmpfile, stdin,
                         conf.debug, &mailsize,
                         &lmtp_errstrs, &lmtp_error_msgs,
                         &errmsg, &errstr)) != EX_OK)
@@ -4048,7 +4243,7 @@ exit:
 #ifdef HAVE_TLS
     if (tls_lib_initialized)
     {
-        tls_lib_deinit();
+        mtls_lib_deinit();
     }
 #endif /* HAVE_TLS */
     if (net_lib_initialized)

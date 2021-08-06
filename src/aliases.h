@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2011
+ * Copyright (C) 2011, 2019
  * Scott Shumate <sshumate@austin.rr.com>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -35,6 +35,7 @@
 #define ALIASES_ECANTOPEN  1       /* Cannot open file */
 #define ALIASES_EIO        2       /* Input/output error */
 #define ALIASES_EPARSE     3       /* Parse error */
+#define ALIASES_ELOOP      4       /* Loop in alias definition */
 
 /*
  * aliases()
@@ -42,7 +43,7 @@
  * Read 'aliases' and replace all recipients matching an alias with
  * its list of addresses.
  * Used error codes: ALIASES_EOK, ALIASES_ECANTOPEN, ALIASES_EIO,
- * ALIASES_EPARSE, ALIASES_EINSECURE
+ * ALIASES_EPARSE, ALIASES_ELOOP
  */
 int aliases_replace(const char *aliases, list_t *recipient_list, char **errstr);
 

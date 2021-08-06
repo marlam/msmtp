@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client, and of mpop, a POP3 client.
  *
- * Copyright (C) 2004, 2005, 2006, 2007, 2011, 2014, 2018, 2019
+ * Copyright (C) 2004, 2005, 2006, 2007, 2011, 2014, 2018, 2019, 2020
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -23,6 +23,7 @@
 #ifndef TOOLS_H
 #define TOOLS_H
 
+#include <stdio.h>
 #include <time.h> /* time_t */
 
 #ifdef HAVE_SYSEXITS_H
@@ -73,6 +74,14 @@
 const char *exitcode_to_string(int exitcode);
 
 /*
+ * tmpfile() - only for Windows systems where the native tmpfile() is broken
+ */
+#ifdef W32_NATIVE
+#define tmpfile() w32_tmpfile()
+FILE *w32_tmpfile(void);
+#endif
+
+/*
  * link() - only for systems that lack it
  */
 #ifndef HAVE_LINK
@@ -112,6 +121,15 @@ char *get_sysconfdir(void);
  * all sorts of rubbish!
  */
 char *get_username(void);
+
+/*
+ * get_hostname()
+ *
+ * Get the name of the host. The returned string is allocated.
+ * The returned string may come from a environment variable and may contain
+ * all sorts of rubbish!
+ */
+char *get_hostname(void);
 
 /*
  * get_userconfig()

@@ -4,7 +4,7 @@
  * This file is part of msmtp, an SMTP client.
  *
  * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2010, 2011, 2012,
- * 2014, 2015, 2016, 2018
+ * 2014, 2015, 2016, 2018, 2019, 2020
  * Martin Lambers <marlam@marlam.de>
  * Martin Stenberg <martin@gnutiken.se> (passwordeval support)
  * Scott Shumate <sshumate@austin.rr.com> (aliases support)
@@ -27,7 +27,6 @@
 # include "config.h"
 #endif
 
-#include <unistd.h>
 #include <stdlib.h>
 #include <limits.h>
 #include <stdio.h>
@@ -36,16 +35,13 @@
 #include <ctype.h>
 #include <errno.h>
 
-#if (SIZEOF_LONG_LONG * CHAR_BIT) < 64
-# error "long long has fewer than 64 bits"
-#endif
-
 #include "gettext.h"
 #define _(string) gettext(string)
 
 #include "list.h"
 #include "smtp.h"
 #include "tools.h"
+#include "net.h"
 #include "xalloc.h"
 #include "conf.h"
 
@@ -93,16 +89,19 @@ account_t *account_new(const char *conffile, const char *id)
     a->tls_nocertcheck = 0;
     a->tls_min_dh_prime_bits = -1;
     a->tls_priorities = NULL;
+    a->tls_host_override = NULL;
     a->logfile = NULL;
     a->logfile_time_format = NULL;
     a->syslog = NULL;
     a->aliases = NULL;
     a->proxy_host = NULL;
     a->proxy_port = 0;
-    a->add_missing_from_header = 1;
-    a->add_missing_date_header = 1;
+    a->set_from_header = 2;
+    a->set_date_header = 2;
     a->remove_bcc_headers = 1;
+    a->undisclosed_recipients = 0;
     a->source_ip = NULL;
+    a->socketname = NULL;
     return a;
 }
 
@@ -178,6 +177,8 @@ account_t *account_copy(account_t *acc)
         a->tls_min_dh_prime_bits = acc->tls_min_dh_prime_bits;
         a->tls_priorities =
             acc->tls_priorities ? xstrdup(acc->tls_priorities) : NULL;
+        a->tls_host_override =
+            acc->tls_host_override ? xstrdup(acc->tls_host_override) : NULL;
         a->logfile = acc->logfile ? xstrdup(acc->logfile) : NULL;
         a->logfile_time_format =
             acc->logfile_time_format ? xstrdup(acc->logfile_time_format) : NULL;
@@ -185,10 +186,12 @@ account_t *account_copy(account_t *acc)
         a->aliases = acc->aliases ? xstrdup(acc->aliases) : NULL;
         a->proxy_host = acc->proxy_host ? xstrdup(acc->proxy_host) : NULL;
         a->proxy_port = acc->proxy_port;
-        a->add_missing_from_header = acc->add_missing_from_header;
-        a->add_missing_date_header = acc->add_missing_date_header;
+        a->set_from_header = acc->set_from_header;
+        a->set_date_header = acc->set_date_header;
         a->remove_bcc_headers = acc->remove_bcc_headers;
+        a->undisclosed_recipients = acc->undisclosed_recipients;
         a->source_ip = acc->source_ip ? xstrdup(acc->source_ip) : NULL;
+        a->socketname = acc->socketname ? xstrdup(acc->socketname) : NULL;
     }
     return a;
 }
@@ -224,6 +227,7 @@ void account_free(void *a)
         free(p->tls_sha1_fingerprint);
         free(p->tls_md5_fingerprint);
         free(p->tls_priorities);
+        free(p->tls_host_override);
         free(p->dsn_return);
         free(p->dsn_notify);
         free(p->logfile);
@@ -232,6 +236,7 @@ void account_free(void *a)
         free(p->aliases);
         free(p->proxy_host);
         free(p->source_ip);
+        free(p->socketname);
         free(p);
     }
 }
@@ -272,16 +277,42 @@ account_t *find_account(list_t *acc_list, const char *id)
 account_t *find_account_by_envelope_from(list_t *acc_list, const char *from)
 {
     account_t *a = NULL;
-    char *acc_from;
+    const char *from_detail = strchr(from, '+');
+    const char *from_domain = strchr(from, '@');
+    const char *acc_from, *acc_domain;
 
     while (!list_is_empty(acc_list))
     {
         acc_list = acc_list->next;
         acc_from = ((account_t *)(acc_list->data))->from;
-        if (acc_from && strcasecmp(from, acc_from) == 0)
+        if (!acc_from)
         {
-            a = acc_list->data;
-            break;
+            continue;
+        }
+        if (from_detail && from_domain && !strchr(acc_from, '+'))
+        {
+            /*
+             * Subaddressing matches the pattern /user+detail@domain/. Take `from` to
+             * match `acc_from` iff both user and domain match; i.e., ignore the detail.
+             */
+            acc_domain = strchr(acc_from, '@');
+            if (acc_domain
+                    && (acc_domain - acc_from == from_detail - from)
+                    && strncasecmp(from, acc_from, from_detail - from) == 0
+                    && strcasecmp(from_domain, acc_domain) == 0)
+            {
+                a = acc_list->data;
+                break;
+            }
+        }
+        else
+        {
+            /* simple matching */
+            if (strcasecmp(from, acc_from) == 0)
+            {
+                a = acc_list->data;
+                break;
+            }
         }
     }
 
@@ -290,19 +321,24 @@ account_t *find_account_by_envelope_from(list_t *acc_list, const char *from)
 
 
 /*
- * is_on(), is_off()
+ * is_on(), is_off(), is_auto()
  *
  * see conf.h
  */
 
-int is_on(char *s)
+int is_on(const char *s)
 {
     return (strcmp(s, "on") == 0);
 }
 
-int is_off(char *s)
+int is_off(const char *s)
 {
     return (strcmp(s, "off") == 0);
+}
+
+int is_auto(const char *s)
+{
+    return (strcmp(s, "auto") == 0);
 }
 
 
@@ -399,10 +435,13 @@ int check_auth_arg(char *arg)
             || strcmp(arg, "cram-md5") == 0
             || strcmp(arg, "digest-md5") == 0
             || strcmp(arg, "scram-sha-1") == 0
+            || strcmp(arg, "scram-sha-256") == 0
             || strcmp(arg, "gssapi") == 0
             || strcmp(arg, "external") == 0
             || strcmp(arg, "login") == 0
-            || strcmp(arg, "ntlm") == 0)
+            || strcmp(arg, "ntlm") == 0
+            || strcmp(arg, "oauthbearer") == 0
+            || strcmp(arg, "xoauth2") == 0)
     {
         l = strlen(arg);
         for (i = 0; i < l; i++)
@@ -664,6 +703,12 @@ void override_account(account_t *acc1, account_t *acc2)
         acc1->tls_priorities = acc2->tls_priorities
             ? xstrdup(acc2->tls_priorities) : NULL;
     }
+    if (acc2->mask & ACC_TLS_HOST_OVERRIDE)
+    {
+        free(acc1->tls_host_override);
+        acc1->tls_host_override = acc2->tls_host_override
+            ? xstrdup(acc2->tls_host_override) : NULL;
+    }
     if (acc2->mask & ACC_DSN_RETURN)
     {
         free(acc1->dsn_return);
@@ -677,6 +722,10 @@ void override_account(account_t *acc1, account_t *acc2)
     if (acc2->mask & ACC_REMOVE_BCC_HEADERS)
     {
         acc1->remove_bcc_headers = acc2->remove_bcc_headers;
+    }
+    if (acc2->mask & ACC_UNDISCLOSED_RECIPIENTS)
+    {
+        acc1->undisclosed_recipients = acc2->undisclosed_recipients;
     }
     if (acc2->mask & ACC_LOGFILE)
     {
@@ -708,18 +757,23 @@ void override_account(account_t *acc1, account_t *acc2)
     {
         acc1->proxy_port = acc2->proxy_port;
     }
-    if (acc2->mask & ACC_ADD_MISSING_FROM_HEADER)
+    if (acc2->mask & ACC_SET_FROM_HEADER)
     {
-        acc1->add_missing_from_header = acc2->add_missing_from_header;
+        acc1->set_from_header = acc2->set_from_header;
     }
-    if (acc2->mask & ACC_ADD_MISSING_DATE_HEADER)
+    if (acc2->mask & ACC_SET_DATE_HEADER)
     {
-        acc1->add_missing_date_header = acc2->add_missing_date_header;
+        acc1->set_date_header = acc2->set_date_header;
     }
     if (acc2->mask & ACC_SOURCE_IP)
     {
         free(acc1->source_ip);
         acc1->source_ip = acc2->source_ip ? xstrdup(acc2->source_ip) : NULL;
+    }
+    if (acc2->mask & ACC_SOCKET)
+    {
+        free(acc1->socketname);
+        acc1->socketname = acc2->socketname ? xstrdup(acc2->socketname) : NULL;
     }
     acc1->mask |= acc2->mask;
 }
@@ -733,7 +787,7 @@ void override_account(account_t *acc1, account_t *acc2)
 
 int check_account(account_t *acc, int sendmail_mode, char **errstr)
 {
-    if (!acc->host)
+    if (!acc->host && !acc->socketname)
     {
         *errstr = xasprintf(_("host not set"));
         return CONF_ESYNTAX;
@@ -746,6 +800,11 @@ int check_account(account_t *acc, int sendmail_mode, char **errstr)
     if (sendmail_mode && !acc->from)
     {
         *errstr = xasprintf(_("envelope-from address is missing"));
+        return CONF_ESYNTAX;
+    }
+    if (acc->tls && !(acc->host || acc->tls_host_override))
+    {
+        *errstr = xasprintf(_("host not set"));
         return CONF_ESYNTAX;
     }
     if (acc->tls_key_file && !acc->tls_cert_file)
@@ -786,12 +845,13 @@ int check_account(account_t *acc, int sendmail_mode, char **errstr)
 int get_password_eval(const char *arg, char **buf, char **errstr)
 {
     FILE *eval;
-    size_t l;
-    int have_more_data;
+    size_t bufsize;
+    size_t len;
 
     *buf = NULL;
     *errstr = NULL;
     errno = 0;
+    bufsize = 1; /* Account for the null character. */
 
     if (!(eval = popen(arg, "r")))
     {
@@ -803,40 +863,158 @@ int get_password_eval(const char *arg, char **buf, char **errstr)
         return CONF_EIO;
     }
 
-    *buf = xmalloc(LINEBUFSIZE);
-    if (!fgets(*buf, LINEBUFSIZE, eval))
+    do
     {
-        *errstr = xasprintf(_("cannot read output of '%s'"), arg);
-        pclose(eval);
-        free(*buf);
-        *buf = NULL;
-        return CONF_EIO;
-    }
-    have_more_data = (fgetc(eval) != EOF);
-    pclose(eval);
-
-    l = strlen(*buf);
-    if (l > 0)
-    {
-        if ((*buf)[l - 1] != '\n' && have_more_data)
+        bufsize += LINEBUFSIZE;
+        *buf = xrealloc(*buf, bufsize);
+        if (!fgets(&(*buf)[bufsize - LINEBUFSIZE - 1], LINEBUFSIZE + 1, eval))
         {
-            *errstr = xasprintf(_("output of '%s' is longer than %d characters"),
-                    arg, LINEBUFSIZE - 1);
+            *errstr = xasprintf(_("cannot read output of '%s'"), arg);
+            pclose(eval);
             free(*buf);
             *buf = NULL;
             return CONF_EIO;
         }
-        if ((*buf)[l - 1] == '\n')
+        len = strlen(*buf);
+        if (len > 0 && (*buf)[len - 1] == '\n')
         {
-            (*buf)[l - 1] = '\0';
-            if (l - 1 > 0 && (*buf)[l - 2] == '\r')
-            {
-                (*buf)[l - 2] = '\0';
-            }
+            /* Read only the first line. */
+            break;
+        }
+    }
+    while (!feof(eval));
+    pclose(eval);
+
+    if (len > 0 && (*buf)[len - 1] == '\n')
+    {
+        (*buf)[len - 1] = '\0';
+        if (len - 1 > 0 && (*buf)[len - 2] == '\r')
+        {
+            (*buf)[len - 2] = '\0';
         }
     }
 
     return CONF_EOK;
+}
+
+
+/*
+ * helper function for expand_from() and expand_domain()
+ */
+
+static int expand_from_or_domain(char **str, int expand_U, char **errstr)
+{
+    char* M = NULL;
+    char* U = NULL;
+    char* H = NULL;
+    char* C = NULL;
+
+    if (strstr(*str, "%M"))
+    {
+        char *sysconfdir;
+        char *filename;
+        FILE *f;
+        char buf[256];
+        size_t buflen;
+
+        sysconfdir = get_sysconfdir();
+        filename = get_filename(sysconfdir, "mailname");
+        free(sysconfdir);
+        if (!(f = fopen(filename, "r")))
+        {
+            *errstr = xasprintf(_("%s: %s"), filename, strerror(errno));
+            free(filename);
+            return CONF_ECANTOPEN;
+        }
+        buf[0] = '\0';
+        if (!fgets(buf, sizeof(buf), f) && ferror(f))
+        {
+            *errstr = xasprintf(_("%s: %s"), filename, strerror(errno));
+            free(filename);
+            fclose(f);
+            return CONF_EIO;
+        }
+        fclose(f);
+        buflen = strlen(buf);
+        if (buflen > 0 && buf[buflen - 1] == '\n')
+        {
+            buf[--buflen] = '\0';
+        }
+        if (buflen > 0 && buf[buflen - 1] == '\r')
+        {
+            buf[--buflen] = '\0';
+        }
+        if (buflen == 0)
+        {
+            *errstr = xasprintf(_("%s: %s"), filename, strerror(EINVAL));
+            free(filename);
+            return CONF_EPARSE;
+        }
+        free(filename);
+        M = xstrdup(buf);
+        sanitize_string(M);
+    }
+    if (expand_U && strstr(*str, "%U"))
+    {
+        U = get_username();
+        sanitize_string(U);
+    }
+    if (strstr(*str, "%H") || strstr(*str, "%C"))
+    {
+        H = get_hostname();
+        sanitize_string(H);
+    }
+    if (strstr(*str, "%C"))
+    {
+        C = net_get_canonical_hostname(H);
+    }
+
+    if (M)
+    {
+        *str = string_replace(*str, "%M", M);
+        free(M);
+    }
+    if (U)
+    {
+        *str = string_replace(*str, "%U", U);
+        free(U);
+    }
+    if (H)
+    {
+        *str = string_replace(*str, "%H", H);
+        free(H);
+    }
+    if (C)
+    {
+        *str = string_replace(*str, "%C", C);
+        free(C);
+    }
+
+    return CONF_EOK;
+}
+
+
+/*
+ * expand_from()
+ *
+ * see conf.h
+ */
+
+int expand_from(char **from, char **errstr)
+{
+    return expand_from_or_domain(from, 1, errstr);
+}
+
+
+/*
+ * expand_domain()
+ *
+ * see conf.h
+ */
+
+int expand_domain(char **domain, char **errstr)
+{
+    return expand_from_or_domain(domain, 0, errstr);
 }
 
 
@@ -1284,37 +1462,11 @@ int read_conffile(const char *conffile, FILE *f, list_t **acc_list,
             free(acc->domain);
             acc->domain = xstrdup(arg);
         }
-        else if (strcmp(cmd, "auto_from") == 0)
-        {
-            acc->mask |= ACC_AUTO_FROM;
-            if (*arg == '\0' || is_on(arg))
-            {
-                acc->auto_from = 1;
-            }
-            else if (is_off(arg))
-            {
-                acc->auto_from = 0;
-            }
-            else
-            {
-                *errstr = xasprintf(
-                        _("line %d: invalid argument %s for command %s"),
-                        line, arg, cmd);
-                e = CONF_ESYNTAX;
-                break;
-            }
-        }
         else if (strcmp(cmd, "from") == 0)
         {
             acc->mask |= ACC_FROM;
             free(acc->from);
             acc->from = xstrdup(arg);
-        }
-        else if (strcmp(cmd, "maildomain") == 0)
-        {
-            acc->mask |= ACC_MAILDOMAIN;
-            free(acc->maildomain);
-            acc->maildomain = xstrdup(arg);
         }
         else if (strcmp(cmd, "auth") == 0)
         {
@@ -1546,6 +1698,19 @@ int read_conffile(const char *conffile, FILE *f, list_t **acc_list,
                 acc->tls_priorities = xstrdup(arg);
             }
         }
+        else if (strcmp(cmd, "tls_host_override") == 0)
+        {
+            acc->mask |= ACC_TLS_HOST_OVERRIDE;
+            free(acc->tls_host_override);
+            if (*arg == '\0')
+            {
+                acc->tls_host_override = NULL;
+            }
+            else
+            {
+                acc->tls_host_override = xstrdup(arg);
+            }
+        }
         else if (strcmp(cmd, "dsn_return") == 0)
         {
             acc->mask |= ACC_DSN_RETURN;
@@ -1709,16 +1874,20 @@ int read_conffile(const char *conffile, FILE *f, list_t **acc_list,
                 }
             }
         }
-        else if (strcmp(cmd, "add_missing_from_header") == 0)
+        else if (strcmp(cmd, "set_from_header") == 0)
         {
-            acc->mask |= ACC_ADD_MISSING_FROM_HEADER;
-            if (*arg == '\0' || is_on(arg))
+            acc->mask |= ACC_SET_FROM_HEADER;
+            if (*arg == '\0' || is_auto(arg))
             {
-                acc->add_missing_from_header = 1;
+                acc->set_from_header = 2;
+            }
+            else if (is_on(arg))
+            {
+                acc->set_from_header = 1;
             }
             else if (is_off(arg))
             {
-                acc->add_missing_from_header = 0;
+                acc->set_from_header = 0;
             }
             else
             {
@@ -1729,16 +1898,16 @@ int read_conffile(const char *conffile, FILE *f, list_t **acc_list,
                 break;
             }
         }
-        else if (strcmp(cmd, "add_missing_date_header") == 0)
+        else if (strcmp(cmd, "set_date_header") == 0)
         {
-            acc->mask |= ACC_ADD_MISSING_DATE_HEADER;
-            if (*arg == '\0' || is_on(arg))
+            acc->mask |= ACC_SET_DATE_HEADER;
+            if (*arg == '\0' || is_auto(arg))
             {
-                acc->add_missing_date_header = 1;
+                acc->set_date_header = 2;
             }
             else if (is_off(arg))
             {
-                acc->add_missing_date_header = 0;
+                acc->set_date_header = 0;
             }
             else
             {
@@ -1769,6 +1938,26 @@ int read_conffile(const char *conffile, FILE *f, list_t **acc_list,
                 break;
             }
         }
+        else if (strcmp(cmd, "undisclosed_recipients") == 0)
+        {
+            acc->mask |= ACC_UNDISCLOSED_RECIPIENTS;
+            if (*arg == '\0' || is_on(arg))
+            {
+                acc->undisclosed_recipients = 1;
+            }
+            else if (is_off(arg))
+            {
+                acc->undisclosed_recipients = 0;
+            }
+            else
+            {
+                *errstr = xasprintf(
+                        _("line %d: invalid argument %s for command %s"),
+                        line, arg, cmd);
+                e = CONF_ESYNTAX;
+                break;
+            }
+        }
         else if (strcmp(cmd, "source_ip") == 0)
         {
             acc->mask |= ACC_SOURCE_IP;
@@ -1781,6 +1970,89 @@ int read_conffile(const char *conffile, FILE *f, list_t **acc_list,
             {
                 acc->source_ip = xstrdup(arg);
             }
+        }
+        else if (strcmp(cmd, "socket") == 0)
+        {
+            acc->mask |= ACC_SOCKET;
+            free(acc->socketname);
+            if (*arg == '\0')
+            {
+                acc->socketname = NULL;
+            }
+            else
+            {
+                acc->socketname = xstrdup(arg);
+            }
+        }
+        else if (strcmp(cmd, "add_missing_from_header") == 0)
+        {
+            /* compatibility with < 1.8.8 */
+            acc->mask |= ACC_SET_FROM_HEADER;
+            if (*arg == '\0' || is_on(arg))
+            {
+                acc->set_from_header = 2;
+            }
+            else if (is_off(arg))
+            {
+                acc->set_from_header = 0;
+            }
+            else
+            {
+                *errstr = xasprintf(
+                        _("line %d: invalid argument %s for command %s"),
+                        line, arg, cmd);
+                e = CONF_ESYNTAX;
+                break;
+            }
+        }
+        else if (strcmp(cmd, "add_missing_date_header") == 0)
+        {
+            /* compatibility with < 1.8.8 */
+            acc->mask |= ACC_SET_DATE_HEADER;
+            if (*arg == '\0' || is_on(arg))
+            {
+                acc->set_date_header = 2;
+            }
+            else if (is_off(arg))
+            {
+                acc->set_date_header = 0;
+            }
+            else
+            {
+                *errstr = xasprintf(
+                        _("line %d: invalid argument %s for command %s"),
+                        line, arg, cmd);
+                e = CONF_ESYNTAX;
+                break;
+            }
+        }
+        else if (strcmp(cmd, "auto_from") == 0)
+        {
+            /* compatibility with <= 1.8.7 */
+            acc->mask |= ACC_AUTO_FROM;
+            if (*arg == '\0' || is_on(arg))
+            {
+                acc->auto_from = 1;
+            }
+            else if (is_off(arg))
+            {
+                acc->auto_from = 0;
+            }
+            else
+            {
+                *errstr = xasprintf(
+                        _("line %d: invalid argument %s for command %s"),
+                        line, arg, cmd);
+                e = CONF_ESYNTAX;
+                break;
+            }
+        }
+        else if (strcmp(cmd, "maildomain") == 0)
+        {
+            /* compatibility with <= 1.8.7 */
+            acc->mask |= ACC_MAILDOMAIN;
+            free(acc->maildomain);
+            acc->maildomain = xstrdup(arg);
         }
         else if (strcmp(cmd, "keepbcc") == 0)
         {

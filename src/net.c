@@ -4,7 +4,7 @@
  * This file is part of msmtp, an SMTP client, and of mpop, a POP3 client.
  *
  * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2012, 2014, 2015,
- * 2018, 2019
+ * 2018, 2019, 2020
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -33,7 +33,6 @@
 # include <ws2tcpip.h>
 #endif
 #include <stdlib.h>
-#include <stdio.h>
 #include <stdint.h>
 #include <string.h>
 #include <limits.h>
@@ -41,9 +40,12 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <sys/time.h>
-#include <sys/types.h>
+#ifdef HAVE_SYS_SELECT_H
+# include <sys/select.h>
+#endif
 #ifdef HAVE_SYS_SOCKET_H
 # include <sys/socket.h>
+# include <sys/un.h>
 #endif
 #ifdef HAVE_NETINET_IN_H
 # include <netinet/in.h>
@@ -60,7 +62,6 @@
 #endif
 
 #ifdef HAVE_LIBRESOLV
-# include <netinet/in.h>
 # include <arpa/nameser.h>
 # include <resolv.h>
 #endif
@@ -333,7 +334,7 @@ int net_bind_source_ip_to_socket(int fd, const char *source_ip)
     if (inet_pton(AF_INET6, source_ip, &sa6.sin6_addr) != 0)
     {
         sa6.sin6_family = AF_INET6;
-        return bind(fd, &sa6, sizeof(sa6));
+        return bind(fd, (struct sockaddr *)&sa6, sizeof(sa6));
     }
     else
     {
@@ -341,7 +342,7 @@ int net_bind_source_ip_to_socket(int fd, const char *source_ip)
         if (inet_pton(AF_INET, source_ip, &sa4.sin_addr) != 0)
         {
             sa4.sin_family = AF_INET;
-            return bind(fd, &sa4, sizeof(sa4));
+            return bind(fd, (struct sockaddr *)&sa4, sizeof(sa4));
         }
         else
         {
@@ -515,8 +516,7 @@ void net_set_io_timeout(int socket, int seconds)
 int net_socks5_connect(int fd, const char *hostname, int port, char **errstr)
 {
     /* maximum size of a SOCKS5 message (send or receive) */
-    const size_t required_buffer_size = 1 + 1 + 1 + 1 + 1 + 255 + 2;
-    unsigned char buffer[required_buffer_size];
+    unsigned char buffer[1 + 1 + 1 + 1 + 1 + 255 + 2];
     size_t hostname_len = strlen(hostname);
     uint16_t nport = htons(port);
     size_t len;
@@ -651,6 +651,7 @@ int net_socks5_connect(int fd, const char *hostname, int port, char **errstr)
 }
 
 int net_open_socket(
+        const char *socketname,
         const char *proxy_hostname, int proxy_port,
         const char *hostname, int port,
         const char *source_ip,
@@ -669,10 +670,51 @@ int net_open_socket(
     char nameinfo_buffer[NI_MAXHOST];
     char *idn_hostname = NULL;
 
+    if (socketname)
+    {
+#ifdef W32_NATIVE
+        *errstr = xasprintf(_("cannot connect to %s: %s"), socketname,
+                wsa_strerror(WSAESOCKTNOSUPPORT));
+        return NET_ELIBFAILED;
+#else
+        struct sockaddr_un addr;
+        if (strlen(socketname) + 1 > sizeof(addr.sun_path))
+        {
+            *errstr = xasprintf(_("cannot connect to %s: %s"), socketname,
+                    _("invalid argument"));
+            return NET_EIO;
+        }
+        if ((fd = socket(AF_UNIX, SOCK_STREAM, 0)) == -1)
+        {
+            *errstr = xasprintf(_("cannot create socket: %s"), strerror(errno));
+            return NET_ESOCKET;
+        }
+        memset(&addr, 0, sizeof(addr));
+        addr.sun_family = AF_UNIX;
+        strcpy(addr.sun_path, socketname);
+        if (net_connect(fd, (struct sockaddr *)&addr, sizeof(addr), timeout) < 0)
+        {
+            net_close_socket(fd);
+            *errstr = xasprintf(_("cannot connect to %s: %s"), socketname, strerror(errno));
+            return NET_ECONNECT;
+        }
+        *ret_fd = fd;
+        if (canonical_name)
+        {
+            *canonical_name = NULL;
+        }
+        if (address)
+        {
+            *address = NULL;
+        }
+        return NET_EOK;
+#endif
+    }
+
     if (proxy_hostname)
     {
-        error_code = net_open_socket(NULL, -1, proxy_hostname, proxy_port,
-                NULL, timeout, &fd, NULL, NULL, errstr);
+        error_code = net_open_socket(NULL, NULL, -1, proxy_hostname, proxy_port,
+                source_ip, timeout, &fd, NULL, NULL, errstr);
         if (error_code != NET_EOK)
         {
             return error_code;
@@ -974,17 +1016,24 @@ int net_puts(int fd, const char *s, size_t len, char **errstr)
  * see net.h
  */
 
-char *net_get_canonical_hostname(void)
+char *net_get_canonical_hostname(const char *hostname)
 {
-    char hostname[256];
+    char buf[256];
     char *canonname = NULL;
     struct addrinfo hints;
     struct addrinfo *res0;
 
-    if (gethostname(hostname, 256) == 0)
+    if (!hostname)
     {
-        /* Make sure the hostname is NUL-terminated. */
-        hostname[255] = '\0';
+        if (gethostname(buf, 256) == 0)
+        {
+            /* Make sure the hostname is NUL-terminated. */
+            buf[255] = '\0';
+            hostname = buf;
+        }
+    }
+    if (hostname)
+    {
         hints.ai_family = PF_UNSPEC;
         hints.ai_socktype = 0;
         hints.ai_flags = AI_CANONNAME;
@@ -1002,7 +1051,10 @@ char *net_get_canonical_hostname(void)
             freeaddrinfo(res0);
         }
     }
-
+    if (!canonname && hostname)
+    {
+        canonname = xstrdup(hostname);
+    }
     if (!canonname)
     {
         canonname = xstrdup("localhost");

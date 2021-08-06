@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client, and of mpop, a POP3 client.
  *
- * Copyright (C) 2004, 2005, 2006, 2007, 2009, 2011, 2014, 2018, 2019
+ * Copyright (C) 2004, 2005, 2006, 2007, 2009, 2011, 2014, 2018, 2019, 2020
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -28,6 +28,7 @@
 # define WIN32_LEAN_AND_MEAN    /* do not include more than necessary */
 # define _WIN32_WINNT 0x0601    /* Windows 7 or later */
 # include <windows.h>
+# include <winsock2.h>
 # include <io.h>
 # include <conio.h>
 # include <lmcons.h>
@@ -43,7 +44,6 @@
 #include <strings.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <sys/types.h>
 #include <sys/stat.h>
 #include <time.h>
 #include <unistd.h>
@@ -99,6 +99,66 @@ const char *exitcode_to_string(int exitcode)
     }
 }
 
+
+/*
+ * tmpfile() for Windows
+ *
+ * The native tmpfile() on Windows puts files in the root directory and
+ * therefore requires privileges. This is a replacement for that nonsense.
+ */
+#ifdef W32_NATIVE
+FILE *w32_tmpfile()
+{
+    static char prefix[4] = { '\0', '\0', '\0', '\0' };
+    if (prefix[0] == '\0')
+    {
+        /* initialize the prefix once per process so that different processes use
+         * different prefixes, thus reducing the chances of file name collisions
+         * in the loop below */
+        DWORD pid = GetCurrentProcessId();
+        prefix[0] = 'a' + pid % 26;
+        prefix[1] = 'a' + (pid / 26) % 26;
+        prefix[2] = 'a' + (pid / (26 * 26)) % 26;
+    }
+    /* First get a name. Unfortunately Windows _tempnam() only looks at $TMP
+     * but not at system default destinations, thus we also have to use GetTempPathW().
+     * Furthermore, _tempnam() might return a file name prepended with a backslash to
+     * mean the current directory, so we have to clean that up. */
+    char dirname[MAX_PATH + 2];
+    int fd = -1;
+    int i = 0;
+    do
+    {
+        i++;
+        if (i > TMP_MAX)
+        {
+            errno = EEXIST;
+            return NULL;
+        }
+        DWORD r = GetTempPath(sizeof(dirname), dirname);
+        char *buf = _tempnam(r == 0 ? NULL : dirname, prefix);
+        char *name = buf;
+        if (!name)
+        {
+            errno = EEXIST;
+            return NULL;
+        }
+        if (name[0] == '\\' && !strchr(name + 1, '\\'))
+        {
+            name++;
+        }
+        /* Now create the file with O_EXCL to avoid race conditions. */
+        fd = _open(name, _O_RDWR
+                | _O_CREAT | _O_TRUNC | _O_EXCL
+                | _O_TEMPORARY
+                | _O_BINARY,
+                _S_IREAD | _S_IWRITE);
+        free(buf);
+    }
+    while (fd < 0);
+    return (fd >= 0 ? fdopen(fd, "w+b") : NULL);
+}
+#endif
 
 /*
  * link()
@@ -356,6 +416,46 @@ char *get_username(void)
 
     return username;
 }
+
+
+/*
+ * get_hostname()
+ *
+ * see tools.h
+ */
+
+char *get_hostname(void)
+{
+    char *host;
+
+    host = getenv("HOSTNAME");
+    if (host)
+    {
+        host = xstrdup(host);
+    }
+    else
+    {
+        char buf[256];
+        if (gethostname(buf, 256) == 0)
+        {
+            /* Make sure the hostname is NUL-terminated. */
+            buf[255] = '\0';
+            host = xstrdup(buf);
+        }
+    }
+    if (!host)
+    {
+        host = xstrdup("localhost");
+    }
+    return host;
+}
+
+
+/*
+ * get_userconfig()
+ *
+ * see tools.h
+ */
 
 char *get_userconfig(const char *userconfigfile)
 {

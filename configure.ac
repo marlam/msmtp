@@ -4,7 +4,7 @@ dnl Process this file with autoconf to produce a configure script.
 # This file is part of msmtp, an SMTP client.
 #
 # Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012,
-# 2013, 2014, 2015, 2016, 2017, 2018, 2019
+# 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021
 # Christophe Nowicki
 # Martin Lambers <marlam@marlam.de>
 # Jay Soffian <jaysoffian@gmail.com> (Mac OS X keychain support)
@@ -24,7 +24,7 @@ dnl Process this file with autoconf to produce a configure script.
 #
 
 dnl Autotools init stuff
-AC_INIT([msmtp], [1.8.3], [marlam@marlam.de], [msmtp], [https://marlam.de/msmtp])
+AC_INIT([msmtp], [1.8.15], [marlam@marlam.de], [msmtp], [https://marlam.de/msmtp])
 AC_CONFIG_SRCDIR([src/msmtp.c])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_HEADERS([config.h])
@@ -46,11 +46,10 @@ dnl Gettext
 AM_GNU_GETTEXT([external])
 
 dnl Headers, functions, and types
-AC_CHECK_HEADERS([sysexits.h netdb.h arpa/inet.h sys/socket.h sys/wait.h netinet/in.h])
-AC_CHECK_FUNCS([fmemopen fseeko fseeko64 getpass link signal strndup syslog])
+AC_CHECK_HEADERS([sysexits.h netdb.h arpa/inet.h sys/select.h sys/socket.h sys/wait.h netinet/in.h])
+AC_CHECK_FUNCS([fmemopen fseeko fseeko64 getpass link signal strndup syslog vasprintf])
 AC_SEARCH_LIBS([nanosleep], [rt posix4])
 AC_SEARCH_LIBS([socket], [socket])
-AC_CHECK_SIZEOF([long long])
 
 dnl Unfortunately AC_SEARCH_LIBS([res_query], [resolv]) does not work because we
 dnl apparently need to include the appropriate header files, so we use a double
@@ -60,7 +59,7 @@ AC_TRY_LINK([
     #include <netinet/in.h>
     #include <arpa/nameser.h>
     #include <resolv.h>
-    ], [res_query(0, 0, 0, 0, 0);],
+    ], [res_query(0, 0, 0, 0, 0); ns_initparse(0, 0, 0);],
     found_res_query=yes,
     found_res_query=no)
 if test "$found_res_query" = "yes"; then
@@ -72,7 +71,7 @@ else
         #include <netinet/in.h>
         #include <arpa/nameser.h>
         #include <resolv.h>
-        ], [res_query(0, 0, 0, 0, 0);],
+        ], [res_query(0, 0, 0, 0, 0); ns_initparse(0, 0, 0);],
         found_res_query=yes,
         found_res_query=no)
     if test "$found_res_query" = "yes"; then
@@ -98,28 +97,37 @@ tls_lib="none"
 want_tls="yes"
 want_gnutls="yes"
 want_openssl="no"
+want_libtls="no"
 tls_CFLAGS=""
 tls_LIBS=""
 with_ssl_was_used=no
-AC_ARG_WITH([tls], [AS_HELP_STRING([--with-tls=[gnutls|openssl|no]],
-    [TLS support: GnuTLS (default), OpenSSL (discouraged), or none.])],
+AC_ARG_WITH([tls], [AS_HELP_STRING([--with-tls=[gnutls|openssl|libtls|no]],
+    [TLS support: GnuTLS (default), OpenSSL (discouraged), libtls, or none.])],
     if test "$withval" = "gnutls"; then
 	want_tls=yes
 	want_gnutls=yes
 	want_openssl=no
+	want_libtls=no
     elif test "$withval" = "openssl"; then
 	want_tls=yes
 	want_gnutls=no
 	want_openssl=yes
+	want_libtls=no
+    elif test "$withval" = "libtls"; then
+	want_tls=yes
+	want_gnutls=no
+	want_openssl=no
+	want_libtls=yes
     elif test "$withval" = "no"; then
 	want_tls=no
 	want_gnutls=no
 	want_openssl=no
+	want_libtls=no
     else
-	AC_MSG_ERROR([Use --with-tls=gnutls or --with-tls=openssl or --with-tls=no])
+	AC_MSG_ERROR([Use --with-tls=gnutls or --with-tls=openssl or --with-tls=libtls or --with-tls=no])
     fi)
 if test "$want_gnutls" = "yes"; then
-    PKG_CHECK_MODULES([libgnutls], [gnutls >= 0.0], [HAVE_LIBGNUTLS=1], [HAVE_LIBGNUTLS=0])
+    PKG_CHECK_MODULES([libgnutls], [gnutls >= 3.4], [HAVE_LIBGNUTLS=1], [HAVE_LIBGNUTLS=0])
     if test "$HAVE_LIBGNUTLS" != "1"; then
 	AC_MSG_WARN([library libgnutls not found:])
 	AC_MSG_WARN([$libgnutls_PKG_ERRORS])
@@ -141,10 +149,24 @@ if test "$want_openssl" = "yes" -a "$have_tls" = "no"; then
 	AC_MSG_WARN([libssl is provided by OpenSSL])
     else
 	have_tls="yes"
-	tls_lib="OpenSSL (discouraged)"
+	tls_lib="OpenSSL"
 	tls_CFLAGS="$libssl_CFLAGS"
 	tls_LIBS="$libssl_LIBS"
 	AC_DEFINE([HAVE_LIBSSL], [1], [Define to 1 if libssl is available])
+    fi
+fi
+if test "$want_libtls" = "yes" -a "$have_tls" = "no"; then
+    PKG_CHECK_MODULES([libtls], [libtls >= 0.0], [HAVE_LIBTLS=1], [HAVE_LIBTLS=0])
+    if test "$HAVE_LIBTLS" != "1"; then
+	AC_MSG_WARN([library libtls not found:])
+	AC_MSG_WARN([$libtls_PKG_ERRORS])
+	AC_MSG_WARN([libtls is provided by LibreSSL])
+    else
+	have_tls="yes"
+	tls_lib="libtls"
+	tls_CFLAGS="$libtls_CFLAGS"
+	tls_LIBS="$libtls_LIBS"
+	AC_DEFINE([HAVE_LIBTLS], [1], [Define to 1 if libtls is available])
     fi
 fi
 if test "$have_tls" = "yes"; then
@@ -153,6 +175,9 @@ elif test "$want_tls" = "yes"; then
     AC_MSG_WARN([Disabling TLS support, which is very bad. Consider using GnuTLS!])
 fi
 AM_CONDITIONAL([HAVE_TLS], [test "$have_tls" = "yes"])
+AM_CONDITIONAL([HAVE_GNUTLS], [test "$tls_lib" = "GnuTLS"])
+AM_CONDITIONAL([HAVE_OPENSSL], [test "$tls_lib" = "OpenSSL"])
+AM_CONDITIONAL([HAVE_LIBTLS], [test "$tls_lib" = "libtls"])
 AC_SUBST([tls_CFLAGS])
 AC_SUBST([tls_LIBS])
 
@@ -232,19 +257,7 @@ fi
 dnl Check if the TLS library has IDN support
 have_tls_idn=no
 if test "$tls_lib" = "GnuTLS"; then
-    AC_MSG_CHECKING([whether GnuTLS has builtin IDN support])
-    CFLAGS_BAK="$CFLAGS"
-    CFLAGS="$CFLAGS $tls_CFLAGS"
-    AC_COMPILE_IFELSE(
-        [AC_LANG_PROGRAM([[
-         #include <gnutls/gnutls.h>
-         #if GNUTLS_VERSION_NUMBER < 0x030400
-          error: GnuTLS does not have builtin IDN support
-         #endif]],
-        [[int x = 0;]])],
-        [have_tls_idn="yes"], [])
-    CFLAGS="$CFLAGS_BAK"
-    AC_MSG_RESULT([$have_tls_idn])
+    have_tls_idn="yes"
 fi
 
 dnl Do we need libidn for IDN support?

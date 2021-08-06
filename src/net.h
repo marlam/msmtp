@@ -3,7 +3,8 @@
  *
  * This file is part of msmtp, an SMTP client, and of mpop, a POP3 client.
  *
- * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2014, 2018, 2019
+ * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2014, 2018, 2019,
+ * 2020
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -22,6 +23,8 @@
 
 #ifndef NET_H
 #define NET_H
+
+#include <stddef.h>
 
 #include "readbuf.h"
 
@@ -56,6 +59,8 @@ int net_lib_init(char **errstr);
  * Opens a TCP socket to 'hostname':'port'.
  * 'proxy_hostname' and 'proxy_port' define a SOCKS5 proxy to use, unless they
  * are NULL/-1, in which case no proxy will be used.
+ * If 'socketname' is not NULL, it overrides both 'hostname':'port' and 'proxy_*' by
+ * specifying the file name of a local socket to connect to.
  * 'hostname' may be a host name or a network address.
  * 'source_ip' may be NULL or a string representation of an IPv6 or IPv4 address
  * that will be bound as the source address for the outgoing connection.
@@ -75,6 +80,7 @@ int net_lib_init(char **errstr);
  * Used error codes: NET_EHOSTNOTFOUND, NET_ESOCKET, NET_ECONNECT, NET_EPROXY
  */
 int net_open_socket(
+        const char *socketname,
         const char *proxy_hostname, int proxy_port,
         const char *hostname, int port,
         const char *source_ip,
@@ -115,10 +121,13 @@ void net_close_socket(int fd);
 /*
  * net_get_canonical_hostname()
  *
- * Get a canonical name of this host. This means that the name is meaningful to
- * other hosts. Usually, it is the fully qualified domain name of this host.
+ * Get a canonical host name. This means that the name is meaningful to
+ * other hosts. Usually, it is the fully qualified domain name.
+ *
+ * You can optionally specify a hostname to try and canonicalize; if this is
+ * NULL, the name of the local host is used.
  */
-char *net_get_canonical_hostname(void);
+char *net_get_canonical_hostname(const char *hostname);
 
 /*
  * net_get_srv_query()

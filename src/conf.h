@@ -4,7 +4,7 @@
  * This file is part of msmtp, an SMTP client.
  *
  * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2010, 2011, 2014,
- * 2016, 2018
+ * 2016, 2018, 2019, 2020
  * Martin Lambers <marlam@marlam.de>
  * Martin Stenberg <martin@gnutiken.se> (passwordeval support)
  * Scott Shumate <sshumate@austin.rr.com> (aliases support)
@@ -25,6 +25,8 @@
 
 #ifndef CONF_H
 #define CONF_H
+
+#include <stddef.h>
 
 #include "list.h"
 
@@ -70,16 +72,19 @@
 #define ACC_TLS_NOCERTCHECK             (1LL << 22LL)
 #define ACC_TLS_MIN_DH_PRIME_BITS       (1LL << 23LL)
 #define ACC_TLS_PRIORITIES              (1LL << 24LL)
-#define ACC_LOGFILE                     (1LL << 25LL)
-#define ACC_SYSLOG                      (1LL << 26LL)
-#define ACC_ALIASES                     (1LL << 27LL)
-#define ACC_PROXY_HOST                  (1LL << 28LL)
-#define ACC_PROXY_PORT                  (1LL << 29LL)
-#define ACC_ADD_MISSING_FROM_HEADER     (1LL << 30LL)
-#define ACC_ADD_MISSING_DATE_HEADER     (1LL << 31LL)
-#define ACC_REMOVE_BCC_HEADERS          (1LL << 32LL)
-#define ACC_SOURCE_IP                   (1LL << 33LL)
-#define ACC_LOGFILE_TIME_FORMAT         (1LL << 34LL)
+#define ACC_TLS_HOST_OVERRIDE           (1LL << 25LL)
+#define ACC_LOGFILE                     (1LL << 26LL)
+#define ACC_SYSLOG                      (1LL << 27LL)
+#define ACC_ALIASES                     (1LL << 28LL)
+#define ACC_PROXY_HOST                  (1LL << 29LL)
+#define ACC_PROXY_PORT                  (1LL << 30LL)
+#define ACC_SET_FROM_HEADER             (1LL << 31LL)
+#define ACC_SET_DATE_HEADER             (1LL << 32LL)
+#define ACC_REMOVE_BCC_HEADERS          (1LL << 33LL)
+#define ACC_UNDISCLOSED_RECIPIENTS      (1LL << 34LL)
+#define ACC_SOURCE_IP                   (1LL << 35LL)
+#define ACC_LOGFILE_TIME_FORMAT         (1LL << 36LL)
+#define ACC_SOCKET                      (1LL << 37LL)
 
 typedef struct
 {
@@ -96,10 +101,10 @@ typedef struct
     /* SMTP settings */
     int protocol;               /* which SMTP sub protocol? */
     char *domain;               /* argument to EHLO command */
-    int auto_from;              /* automatic envelope-from addresses? */
     char *from;                 /* envelope from address */
-    char *maildomain;           /* the domain part of generated envelope from
-                                   addresses */
+    int auto_from;              /* obsolete: automatic envelope-from addresses? */
+    char *maildomain;           /* obsolete: the domain part of generated
+                                   envelope from addresses */
     char *dsn_return;           /* DSN return request */
     char *dsn_notify;           /* DSN notify request */
     /* Authentication */
@@ -122,6 +127,7 @@ typedef struct
     int tls_nocertcheck;        /* flag: do not check certificate? */
     int tls_min_dh_prime_bits;  /* parameter; -1 for default */
     char *tls_priorities;       /* parameter; NULL for default */
+    char *tls_host_override;    /* overrides 'host' for verification; or NULL */
     /* logging */
     char *logfile;              /* NULL or logfile */
     char *logfile_time_format;  /* NULL or format string for strftime() */
@@ -131,11 +137,14 @@ typedef struct
     char *proxy_host;           /* NULL or proxy hostname */
     int proxy_port;             /* port number; 0 for default */
     /* header modifications */
-    int add_missing_from_header;/* add From header if it is missing? */
-    int add_missing_date_header;/* add Date header if it is missing? */
+    int set_from_header;        /* 0=off, 1=on, 2=auto */
+    int set_date_header;        /* 0=off,       2=auto */
     int remove_bcc_headers;     /* remove the Bcc headers from the mail? */
+    int undisclosed_recipients; /* remove To, Cc, Bcc, add anonymous To */
     /* source ip binding */
     char *source_ip;            /* Source IP to bind the connection to */
+    /* unix domain socket */
+    char *socketname;           /* File name of local socket to connect to */
 } account_t;
 
 
@@ -182,12 +191,13 @@ account_t *find_account(list_t *acc_list, const char *id);
 account_t *find_account_by_envelope_from(list_t *acc_list, const char *from);
 
 /*
- * is_on(), is_off()
+ * is_on(), is_off(), is_auto()
  *
- * Check whether the given string is "on" or "off"
+ * Check whether the given string is "on" or "off" or "auto"
  */
-int is_on(char *s);
-int is_off(char *s);
+int is_on(const char *s);
+int is_off(const char *s);
+int is_auto(const char *s);
 
 /*
  * get_pos_int()
@@ -273,6 +283,28 @@ int check_account(account_t *acc, int sendmail_mode, char **errstr);
  * *errstr will contain an error string.
  */
 int get_password_eval(const char *arg, char **buf, char **errstr);
+
+/*
+ * expand_from()
+ *
+ * Expands the argument of the 'from' command: replaces the substitution
+ * patterns with appropriate values. The 'from' string must be allocated,
+ * and the returned string replaces it. This function returns CONF_EOK
+ * or, if an error occured, one of the CONF_E* error codes, in which case
+ * *errstr will contain an error string.
+ */
+int expand_from(char **from, char **errstr);
+
+/*
+ * expand_domain()
+ *
+ * Expands the argument of the 'domain' command: replaces the substitution
+ * patterns with appropriate values. The 'domain' string must be allocated,
+ * and the returned string replaces it. This function returns CONF_EOK
+ * or, if an error occured, one of the CONF_E* error codes, in which case
+ * *errstr will contain an error string.
+ */
+int expand_domain(char **domain, char **errstr);
 
 /*
  * get_conf()

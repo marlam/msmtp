@@ -1,7 +1,7 @@
 .\" -*-nroff-*-
 .\"
 .\" Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014,
-.\" 2015, 2016, 2017, 2018, 2019
+.\" 2015, 2016, 2017, 2018, 2019, 2020, 2021
 .\" Martin Lambers
 .\" Copyright (C) 2011
 .\" Scott Shumate
@@ -10,7 +10,7 @@
 .\" under the terms of the GNU Free Documentation License, Version 1.2 or
 .\" any later version published by the Free Software Foundation; with no
 .\" Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
-.TH MSMTP 1 2019-01
+.TH MSMTP 1 2021-03
 .SH NAME
 msmtp \- An SMTP client
 .SH SYNOPSIS
@@ -94,6 +94,8 @@ Set or unset an IP address to bind the socket to. See the \fBsource_ip\fP comman
 Set or unset a SOCKS proxy to use. See the \fBproxy_host\fP command.
 .IP "\-\-proxy\-port=[\fInumber\fP]"
 Set or unset a port number for the proxy host. See the \fBproxy_port\fP command.
+.IP "\-\-socket=[\fIsocketname\fP]"
+Set or unset a local unix domain socket name to connect to. See the \fBsocket\fP command.
 .IP "\-\-timeout=(\fIoff\fP|\fIseconds\fP)"
 Set or unset a network timeout, in seconds. See the \fBtimeout\fP command.
 .IP "\-\-protocol=(\fIsmtp\fP|\fIlmtp\fP)
@@ -115,7 +117,7 @@ Enable or disable STARTTLS for TLS. See the \fBtls_starttls\fP command.
 .IP "\-\-tls\-trust\-file=[\fIfile\fP]"
 Set or unset a trust file for TLS. See the \fBtls_trust_file\fP command.
 .IP "\-\-tls\-crl\-file=[\fIfile\fP]"
-Set or unset a certificate revocation list (CRL) file for TLS. See the
+Deprecated. Set or unset a certificate revocation list (CRL) file for TLS. See the
 \fBtls_crl_file\fP command.
 .IP "\-\-tls\-fingerprint=[\fIfingerprint\fP]"
 Set or unset the fingerprint of a trusted TLS certificate. See the
@@ -127,42 +129,42 @@ Set or unset a cert file for TLS. See the \fBtls_cert_file\fP command.
 .IP "\-\-tls\-certcheck[=(\fIon\fP|\fIoff\fP)]"
 Enable or disable server certificate checks for TLS. See the
 \fBtls_certcheck\fP command.
-.IP "\-\-tls\-min\-dh\-prime\-bits=[\fIbits\fP]"
-Set or unset minimum bit size of the Diffie-Hellman (DH) prime. See the
-\fBtls_min_dh_prime_bits\fP command.
 .IP "\-\-tls\-priorities=[\fIpriorities\fP]"
 Set or unset TLS priorities. See the \fBtls_priorities\fP command.
+.IP "\-\-tls\-host\-override=[\fIhost\fP]"
+Set or unset override for TLS host verification. See the \fBtls_host_override\fP command.
+.IP "\-\-tls\-min\-dh\-prime\-bits=[\fIbits\fP]"
+Deprecated, use \-\-tls\-priorities instead.
+Set or unset minimum bit size of the Diffie-Hellman (DH) prime. See the
+\fBtls_min_dh_prime_bits\fP command.
 .RE
 .IP "\fBOptions specific to sendmail mode\fP"
 .RS
-.IP "\-f, \-\-from=\fIaddress\fI"
-Set the envelope-from address. It is only used when \fIauto_from\fP is off.
+.IP "\-f, \-\-from=\fIaddress\fP"
+Set the envelope-from address.
 .br
 If no account was chosen yet (with \fB\-\-account\fP or \fB\-\-host\fP), this
 option will choose the first account that has the given envelope-from address
 (set with the \fBfrom\fP command). If no such account is found, "default" is
 used.
-.IP "\-\-auto\-from[=(\fIon\fP|\fIoff\fP)]"
-Enable or disable automatic envelope-from addresses. The default is off.
-See the \fBauto_from\fP command.
-.IP "\-\-maildomain=[\fIdomain\fP]"
-Set the domain part for the \fI\-\-auto\-from\fP address. See the
-\fBmaildomain\fP command.
+.br
+See the \fBfrom\fP command for substitution patterns supported in \fIaddress\fP.
 .IP "\-N, \-\-dsn\-notify=(\fIoff\fP|\fIcond\fP)"
 Set or unset DSN notification conditions. See the \fBdsn_notify\fP command.
 .IP "\-R, \-\-dsn\-return=(\fIoff\fP|\fIret\fP)"
 Set or unset the DSN notification amount. See the \fBdsn_return\fP command.
 Note that \fIhdrs\fP is accepted as an alias for \fIheaders\fP to be
 compatible with sendmail.
-.IP "\-\-add\-missing\-from\-header[=(\fIon\fP|\fIoff\fP)]"
-Enable or disable the addition of a missing From header. See the
-\fBadd_missing_from_header\fP command.
-.IP "\-\-add\-missing\-date\-header[=(\fIon\fP|\fIoff\fP)]"
-Enable or disable the addition of a missing Date header. See the
-\fBadd_missing_date_header\fP command.
+.IP "\-\-set\-from\-header[=(\fIauto\fP|\fIon\fP|\fIoff\fP)]"
+Set From header handling. See the \fBset_from_header\fP command.
+.IP "\-\-set\-date\-header[=(\fIauto\fP|\fIoff\fP)]"
+Set Date header handling. See the \fBset_date_header\fP command.
 .IP "\-\-remove\-bcc\-headers[=(\fIon\fP|\fIoff\fP)]"
 Enable or disable the removal of Bcc headers. See the \fBremove_bcc_headers\fP
 command.
+.IP "\-\-undisclosed\-recipients[=(\fIon\fP|\fIoff\fP)]"
+Enable or disable the replacement of To/Cc/Bcc with "To: undisclosed-recipients:;".
+See the \fBundisclosed_recipients\fP command.
 .IP "\-X, \-\-logfile=[\fIfile\fP]"
 Set or unset the log file. See the \fBlogfile\fP command.
 .IP "\-\-logfile\-time\-format=[\fIfmt\fP]"
@@ -177,13 +179,15 @@ Resent-Cc, and Resent-Bcc headers in the first block of Resent- headers are
 used instead.
 .IP "\-\-read\-envelope\-from"
 Read the envelope from address from the From header of the mail.
-Currently this header must be on a single line for this option to work
-correctly.
 .IP "\-\-aliases=[\fIfile\fP]"
 Set or unset an aliases file. See the \fBaliases\fP command.
 .IP "\-F\fIname\fP"
 Msmtp adds a From header to mails that lack it, using the envelope from
 address. This option allows one to set a full name to be used in that header.
+.IP "\-\-auto\-from[=(\fIon\fP|\fIoff\fP)]"
+Obsolete. See the \fBauto_from\fP command.
+.IP "\-\-maildomain=[\fIdomain\fP]"
+Obsolete. See the \fBmaildomain\fP command.
 .IP "\-\-"
 This marks the end of options. All following arguments will be treated as
 recipient addresses, even if they start with a `\-'.
@@ -215,6 +219,9 @@ data.
 Choose the first account from the system or user configuration file that has
 a matching envelope-from address as specified by a \fBfrom\fP command. This
 works only when neither \fB\-\-account\fP nor \fB\-\-host\fP is used.
+.br
+Subadresses are supported. For example, the envelope from address
+\fIuser+detail@example.com\fP will match the account for \fIuser@example.com\fP.
 .PP
 If none of the above options is used (or if no account has a matching
 \fBfrom\fP command), then the account "default" is used.
@@ -225,14 +232,15 @@ Msmtp transmits mails unaltered to the SMTP server, with the following exception
 \fBremove_bcc_headers\fP command and \fB\-\-remove\-bcc\-headers\fP option.
 .br
 - A From header will be added if the mail does not have one. This can be changed
-with the \fBadd_missing_from_header\fP command and
-\fB\-\-add\-missing\-from\-header\fP option.
+with the \fBset_from_header\fP command and \fB\-\-set\-from\-header\fP option.
 The header will use the envelope from address and optionally a full name set
 with the \fB\-F\fP option.
 .br
 - A Date header will be added if the mail does not have one. This can be changed
-with the \fBadd_missing_date_header\fP command and
-\fB\-\-add\-missing\-date\-header\fP option.
+with the \fBset_date_header\fP command and \fB\-\-set\-date\-header\fP option.
+.br
+- When \fBundisclosed_recipients\fP is set, the original To, Cc, and Bcc headers
+are removed and replaced with "To: undisclosed-recipients:;".
 .PP
 Skip to the EXAMPLES section for a quick start.
 .SH CONFIGURATION FILES
@@ -297,6 +305,9 @@ see also "Using msmtp with Tor" below.
 .IP "proxy_port [\fInumber\fP]"
 Set the port number for the proxy host. An empty \fInumber\fP argument resets
 this to the default port.
+.IP "socket \fIsocketname\fP"
+Set the file name of a unix domain socket to connect to. This overrides
+both \fBhost\fP/\fBport\fP and \fBproxy_host\fP/\fBproxy_port\fP.
 .IP "timeout (\fIoff\fP|\fIseconds\fP)"
 Set or unset a network timeout, in seconds. The argument \fIoff\fP means that no
 timeout will be set, which means that the operating system default will be used.
@@ -310,6 +321,16 @@ change the default if mails get rejected due to anti-SPAM measures. Possible
 choices are the domain part of your mail address (provider.example for
 joe@provider.example) or the fully qualified domain name of your host (if
 available).
+.br
+The following substitution patterns are supported:
+.br
+%H will be replaced by $HOSTNAME, or if that fails by the host name of the system.
+.br
+%C will be replaced by the canonical name of %H.
+.br
+%M will be replaced by the contents of /etc/mailname (potentially a different
+directory is used depending on the build configuration; see the output of msmtp
+\-\-version and look for the location of the system configuration file).
 .IP "auth [(\fIon\fP|\fIoff\fP|\fImethod\fP)]"
 Enable or disable authentication and optionally choose a method to use. The
 argument \fIon\fP chooses a method automatically.
@@ -332,7 +353,7 @@ joe.smith with your user name.
 to specify a command to decrypt that file, e.g. using GnuPG. See EXAMPLES.
 .br
 3. Store the password in the configuration file using the \fBpassword\fP command.
-(Usually it is not considered a good idea to store passwords in plain text files.
+(Usually it is not considered a good idea to store passwords in cleartext files.
 If you do it anyway, you must make sure that the file can only be read by yourself.)
 .br
 4. Store the password in ~/.netrc. This method is probably obsolete.
@@ -346,23 +367,30 @@ Historically, sophisticated methods were developed to protect passwords from
 being sent unencrypted to the server, but nowadays everybody needs TLS anyway,
 so the simple methods suffice since the whole session is protected. A suitable
 authentication method is chosen automatically, and when TLS is disabled for
-some reason, only methods that avoid sending clear text passwords are
+some reason, only methods that avoid sending cleartext passwords are
 considered.
 .br
 The following user / password methods are supported: \fIplain\fP (a simple
-plain text method, with base64 encoding, supported by almost all servers),
-\fIscram\-sha\-1\fP (a method that avoids clear-text passwords),
-\fIcram\-md5\fP (an obsolete method that avoids clear-text passwords, but is not
+cleartext method, with base64 encoding, supported by almost all servers),
+\fIscram\-sha\-1\fP (a method that avoids cleartext passwords),
+\fIscram\-sha\-256\fP (same but with stronger hash),
+\fIcram\-md5\fP (an obsolete method that avoids cleartext passwords, but is not
 considered secure anymore),
 \fIdigest\-md5\fP (an overcomplicated
-obsolete method that avoids clear-text passwords, but is not considered secure
-anymore), \fIlogin\fP (a non-standard clear-text method similar to but worse
+obsolete method that avoids cleartext passwords, but is not considered secure
+anymore), \fIlogin\fP (a non-standard cleartext method similar to but worse
 than the plain method), \fIntlm\fP (an obscure non-standard method that is now
 considered broken; it sometimes requires a special domain parameter passed via
 \fBntlmdomain\fP).
 .br
-There are currently two authentication methods that are not based on user /
-password information and have to be chosen manually: \fIexternal\fP (the
+There are currently three authentication methods that are not based on user /
+password information and have to be chosen manually: \fIoauthbearer\fP or its
+predecessor \fIxoauth2\fP (an OAuth2
+token from the mail provider is used as the password.
+See the documentation of your mail provider for details on how to get this
+token. The \fBpasswordeval\fP command can be used to pass the regularly changing
+tokens into msmtp from a script or an environment variable),
+\fIexternal\fP (the
 authentication happens outside of the protocol, typically by sending a TLS
 client certificate, and the method merely confirms that this authentication
 succeeded), and \fIgssapi\fP (the Kerberos framework takes care of secure
@@ -376,12 +404,16 @@ Set the user name for authentication. An empty argument unsets the user name.
 .IP "password \fIsecret\fP"
 Set the password for authentication. An empty argument unsets the password.
 Consider using the \fBpasswordeval\fP command or a key ring instead of this
-command, to avoid storing plain text passwords in the configuration file.
+command, to avoid storing cleartext passwords in the configuration file.
 .IP "passwordeval [\fIeval\fP]"
 Set the password for authentication to the output (stdout) of the command
 \fIeval\fP.
 This can be used e.g. to decrypt password files on the fly or to query key
-rings, and thus to avoid storing plain text passwords.
+rings, and thus to avoid storing cleartext passwords.
+.br
+Note that the \fIeval\fP command must not mess with standard input (stdin)
+because that is where msmtp reads the mail from. If in doubt, append
+\fI</dev/null\fP to \fIeval\fP.
 .IP "ntlmdomain [\fIdomain\fP]"
 Set a domain for the \fBntlm\fP authentication method. This is obsolete.
 .IP "tls [(\fIon\fP|\fIoff\fP)]"
@@ -409,13 +441,7 @@ The list of trusted CAs is specified using the \fBtls_trust_file\fP command.
 The default value ist "system" and chooses the system-wide default, but you can
 also choose the trusted CAs yourself.
 .br
-One practical problem with this approach is that the client program should also
-check if the server certificate has been revoked for some reason, using a
-Certificate Revocation List (CRL). A CRL file can be specified using the
-\fBtls_crl_file\fP command, but getting the relevant CRL files and keeping them
-up to date is not straightforward. You are basically on your own.
-.br
-A much more serious and fundamental problem is is that you need to trust CAs.
+A fundamental problem with this is that you need to trust CAs.
 Like any other organization, a CA can be incompetent, malicious, subverted by
 bad people, or forced by government agencies to compromise end users without
 telling them. All of these things happened and continue to happen worldwide.
@@ -445,6 +471,13 @@ file. You can set the certificate and key files using \fBtls_cert_file\fP and
 \fBtls_key_file\fP. This mechanism can also be used to authenticate users, so
 that traditional user / password authentication is not necessary anymore. See the
 \fIexternal\fP mechanism in \fBauth\fP.
+.br
+You can also use client certificates stored on some external authentication
+device by specifying GnuTLS device URIs in \fBtls_cert_file\fP and
+\fBtls_key_file\fP. You can find the correct URIs using \fBp11tool
+\-\-list-privkeys \-\-login\fP (p11tool is bundled with GnuTLS). If your device
+requires a PIN to access the data, you can specify that using one of the
+password mechanisms (e.g. \fBpasswordeval\fP, \fBpassword\fP). 
 .IP "tls_starttls [(\fIon\fP|\fIoff\fP)]"
 Choose the TLS variant: start TLS from within the session (\fIon\fP, default),
 or tunnel the session through TLS (\fIoff\fP).
@@ -455,8 +488,9 @@ system default. An empty argument disables trust in CAs.
 If you select a file, it must be in PEM format, and you should also use
 \fBtls_crl_file\fP.
 .IP "tls_crl_file [\fIfile\fP]"
-Set a certificate revocation list (CRL) file for TLS, to check for revoked
-certificates. An empty argument disables this.
+Deprecated. This sets a certificate revocation list (CRL) file for TLS, to check
+for revoked certificates (an empty argument, which is the default, disables this).
+Nowadays automatic OCSP checks replace CRL file checks.
 .IP "tls_fingerprint [\fIfingerprint\fP]"
 Set the fingerprint of a single certificate to accept for TLS. This certificate
 will be trusted regardless of its contents (this overrides \fBtls_trust_file\fP).
@@ -479,32 +513,44 @@ this feature.
 Enable or disable checks of the server certificate. They are enabled by default.
 Disabling them will override \fBtls_trust_file\fP and \fBtls_fingerprint\fP.
 WARNING: When the checks are disabled, TLS sessions will not be secure!
-.IP "tls_min_dh_prime_bits [\fIbits\fP]"
-Set or unset the minimum number of Diffie-Hellman (DH) prime bits that mpop
-will accept for TLS sessions.  The default is set by the TLS library and can be
-selected by using an empty argument to this command.  Only lower the default
-(for example to 512 bits) if there is no other way to make TLS work with the
-remote server.
 .IP "tls_priorities [\fIpriorities\fP]"
-Set the priorities for TLS sessions. The default is set by the TLS library and
-can be selected by using an empty argument to this command.
-See the GnuTLS documentation of the \fIgnutls_priority_init\fP function for a
-description of the priorities string.
+Set priorities for TLS session parameters. The default is set by the TLS library and
+can be selected by using an empty argument to this command. The interpretation of the
+\fIpriorities\fP string depends on the TLS library. Use \fI\-\-version\fP to find out
+which TLS library you use.
+.br
+For GnuTLS, see the section on Priority Strings in the manual.
+.br
+For libtls, the \fIpriorites\fP string is a space-separated list of parameter strings
+prefixed with either PROTOCOLS=, CIPHERS=, or ECDHECURVES=. These parameter strings
+will be passed to the functions \fItls_config_parse_protocols\fP, \fItls_config_set_ciphers\fP,
+and \fItls_config_set_ecdhecurves\fP. Unrecognized parts of the \fIpriorities\fP string
+will be ignored. Example: "PROTOCOLS=TLSv1.3 CIPHERS=ECDHE-RSA-AES128-SHA256 ECDHECURVES=P-384". 
+.IP "tls_host_override [\fIhost\fP]"
+By default, TLS host verification uses the host name given by the \fBhost\fP command.
+This command allows one to use a different host name for verification. This is only
+useful in special cases.
+.IP "tls_min_dh_prime_bits [\fIbits\fP]"
+Deprecated, use \fBtls_priorities\fP instead.
+Set or unset the minimum number of Diffie-Hellman (DH) prime bits accepted for
+TLS sessions. The default is set by the TLS library and can be selected by
+using an empty argument to this command. Only lower the default (for example to
+512 bits) if there is no other way to make TLS work with the remote server.
 .IP "from \fIenvelope_from\fP"
-Set the envelope-from address. This address will only be used when
-\fIauto_from\fP is off.
-.IP "auto_from [(\fIon\fP|\fIoff\fP)]
-Enable or disable automatic envelope-from addresses. The default is off.
-When enabled, an envelope-from address of the form user@domain will be
-generated.  The local part will be set to \fBUSER\fP or, if that fails, to
-\fBLOGNAME\fP or, if that fails, to the login name of the current user.  The
-domain part can be set with the \fBmaildomain\fP command.  If the maildomain
-is empty, the envelope-from address will only consist of the user name and not
-have a domain part. When auto_from is disabled, the envelope-from address must
-be set explicitly.
-.IP "maildomain [\fIdomain\fP]"
-Set a domain part for the generation of an envelope-from address. This is only
-used when \fIauto_from\fP is on. The domain may be empty.
+Set the envelope-from address. The following substitution patterns are supported:
+.br
+%U will be replaced by $USER, or if that fails by $LOGNAME, or if that fails by
+the login name of the user running msmtp.
+.br
+%H will be replaced by $HOSTNAME, or if that fails by the host name of the system.
+.br
+%C will be replaced by the canonical name of %H.
+.br
+%M will be replaced by the contents of /etc/mailname (potentially a different
+directory is used depending on the build configuration; see the output of msmtp
+\-\-version and look for the location of the system configuration file).
+.br
+Note that the obsolete \fIauto_from\fP command replaces this envelope-from address.
 .IP "dsn_notify (\fIoff\fP|\fIcondition\fP)"
 This command sets the condition(s) under which the mail system should send DSN
 (Delivery Status Notification) messages. The argument \fIoff\fP disables
@@ -523,14 +569,28 @@ DSN messages. This is the default.
 The \fIamount\fP must be \fIheaders\fP, to just return the message headers, or
 \fIfull\fP, to return the full mail.  The SMTP server must support the DSN
 extension.
-.IP "add_missing_from_header [(\fIon\fP|\fIoff\fP)]"
-This command controls whether to add a From header if the mail does not have one.
-The default is to add it.
-.IP "add_missing_date_header [(\fIon\fP|\fIoff\fP)]"
-This command controls whether to add a Date header if the mail does not have one.
-The default is to add it.
+.IP "set_from_header [(\fIauto\fP|\fIon\fP|\fIoff\fP)]"
+When to set a From header: \fIauto\fP adds a From header if the mail does not
+have one (this is the default), \fIon\fP always sets a From header and overrides
+any existing one, and \fIoff\fP never sets a From header.
+.br
+If the mail server rejects the mail because its From header does not match the
+envelope from address (a common anti-spam measure), then you might want to set
+this option to \fIon\fP.
+.br
+For compatibility with older versions, \fBadd_missing_from_header\fP [(\fIon\fP|\fIoff\fP)]
+is still supported and corresponds to the \fIauto\fP and \fIoff\fP settings.
+.IP "set_date_header [(\fIon\fP|\fIoff\fP)]"
+When to set a Date header: \fIauto\fP adds a Date header if the mail does not
+have one (this is the default), and \fIoff\fP never sets a Date header.
+.br
+For compatibility with older versions, \fBadd_missing_date_header\fP [(\fIon\fP|\fIoff\fP)]
+is still supported and corresponds to the \fIauto\fP and \fIoff\fP settings.
 .IP "remove_bcc_headers [(\fIon\fP|\fIoff\fP)]"
 This command controls whether to remove Bcc headers. The default is to remove them.
+.IP "undisclosed_recipients [(\fIon\fP|\fIoff\fP)]"
+When set, the original To, Cc, and Bcc headers of the mail are removed and a single
+new header line "To: undisclosed-recipients:;" is added. The default setting is off.
 .IP "logfile [\fIfile\fP]"
 An empty argument disables logging (this is the default).
 .br
@@ -570,14 +630,12 @@ if available), exit code (from sysexits.h; EX_OK indicates success).
 .br
 .IP "aliases [\fIfile\fP]"
 Replace local recipients with addresses in the aliases file.  The aliases file
-is a plain text file containing mappings between a local address and a list of
-domain addresses.  A local address is defined as one without an `@' character
-and a domain address is one with an `@' character.  The mappings are of the
-form:
+is a cleartext file containing mappings between a local address and a list of
+replacement addresses. The mappings are of the form:
 .br
     local: someone@example.com, person@domain.example
 .br
-Multiple domain addresses are separated with commas.  Comments start with `#'
+Multiple replacement addresses are separated with commas.  Comments start with `#'
 and continue to the end of the line.
 .br
 The local address \fIdefault\fP has special significance and is matched if the
@@ -586,6 +644,24 @@ found, then the local address is left as is.
 .br
 An empty argument to the aliases command disables the replacement of local
 addresses.  This is the default.
+.IP "auto_from [(\fIon\fP|\fIoff\fP)]
+Obsolete; you can achieve the same and more using the substitution patterns of the
+\fIfrom\fP command.
+.br
+Enable or disable automatic envelope-from addresses. The default is off.
+When enabled, an envelope-from address of the form user@domain will be
+generated.  The local part will be set to \fBUSER\fP or, if that fails, to
+\fBLOGNAME\fP or, if that fails, to the login name of the current user.  The
+domain part can be set with the \fBmaildomain\fP command.  If the maildomain
+is empty, the envelope-from address will only consist of the user name and not
+have a domain part. When auto_from is disabled, the envelope-from address must
+be set explicitly.
+.IP "maildomain [\fIdomain\fP]"
+Obsolete; you can achieve the same and more using the substitution patterns of the
+\fIfrom\fP command.
+.br
+Set a domain part for the generation of an envelope-from address. This is only
+used when \fIauto_from\fP is on. The domain may be empty.
 .br
 .SH EXAMPLES
 .br
@@ -630,16 +706,6 @@ tls on
 .br
 
 .br
-# If you select your own file, you should also use the tls_crl_file command to
-.br
-# check for revoked certificates, but unfortunately getting revocation lists and
-.br
-# keeping them up to date is not straightforward.
-.br
-#tls_crl_file ~/.tls\-crls
-.br
-
-.br
 # A freemail service
 .br
 account freemail
@@ -652,7 +718,7 @@ host smtp.freemail.example
 .br
 
 .br
-# As an alternative to tls_trust_file/tls_crl_file, you can use tls_fingerprint
+# As an alternative to tls_trust_file, you can use tls_fingerprint
 .br
 # to pin a single certificate. You have to update the fingerprint when the
 .br
@@ -706,7 +772,7 @@ passwordeval gpg2 \-\-no\-tty \-q \-d ~/.msmtp\-password.gpg
 .br
 # Password method 3: Store the password directly in this file. Usually it is not
 .br
-# a good idea to store passwords in plain text files. If you do it anyway, at
+# a good idea to store passwords in cleartext files. If you do it anyway, at
 .br
 # least make sure that this file can only be read by yourself.
 .br

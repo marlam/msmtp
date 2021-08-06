@@ -4,7 +4,7 @@
  * This file is part of msmtp, an SMTP client.
  *
  * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2008, 2010, 2012, 2014, 2016,
- * 2018, 2019
+ * 2018, 2019, 2020
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -28,9 +28,8 @@
 
 #include "list.h"
 #include "readbuf.h"
-#include "net.h"
 #ifdef HAVE_TLS
-# include "tls.h"
+# include "mtls.h"
 #endif /* HAVE_TLS */
 
 
@@ -72,7 +71,10 @@
 #define SMTP_CAP_AUTH_GSSAPI            (1 << 10)
 #define SMTP_CAP_AUTH_EXTERNAL          (1 << 11)
 #define SMTP_CAP_AUTH_NTLM              (1 << 12)
-#define SMTP_CAP_ETRN                   (1 << 13)
+#define SMTP_CAP_AUTH_OAUTHBEARER       (1 << 13)
+#define SMTP_CAP_AUTH_XOAUTH2           (1 << 14)
+#define SMTP_CAP_ETRN                   (1 << 15)
+#define SMTP_CAP_AUTH_SCRAM_SHA_256     (1 << 16)
 
 
 /*
@@ -94,7 +96,7 @@ typedef struct
 {
     int fd;
 #ifdef HAVE_TLS
-    tls_t tls;
+    mtls_t mtls;
 #endif /* HAVE_TLS */
     readbuf_t readbuf;
     int protocol;
@@ -116,7 +118,7 @@ smtp_server_t smtp_new(FILE *debug, int protocol);
 /*
  * smtp_connect()
  *
- * Connect to a SMTP server.
+ * Connect to a SMTP server. See net_open_socket().
  * If 'server_canonical_name' is not NULL, a pointer to a string containing the
  * canonical hostname of the server will be stored in '*server_canonical_name',
  * or NULL if this information is not available.
@@ -127,7 +129,9 @@ smtp_server_t smtp_new(FILE *debug, int protocol);
  * Used error codes: NET_EHOSTNOTFOUND, NET_ESOCKET, NET_ECONNECT, NET_EPROXY
  * Success: NET_EOK
  */
-int smtp_connect(smtp_server_t *srv, const char *proxy_host, int proxy_port,
+int smtp_connect(smtp_server_t *srv,
+        const char *socketname,
+        const char *proxy_host, int proxy_port,
         const char *host, int port, const char *source_ip, int timeout,
         char **server_canonical_name, char **server_address,
         char **errstr);
@@ -176,13 +180,16 @@ int smtp_init(smtp_server_t *srv, const char *ehlo_domain, list_t **msg,
  */
 #ifdef HAVE_TLS
 int smtp_tls_init(smtp_server_t *srv,
-        const char *tls_key_file, const char *tls_cert_file,
+        const char *tls_key_file, const char *tls_cert_file, const char *pin,
         const char *tls_trust_file, const char *tls_crl_file,
         const unsigned char *tls_sha256_fingerprint,
         const unsigned char *tls_sha1_fingerprint,
         const unsigned char *tls_md5_fingerprint,
         int min_dh_prime_bits,
-        const char *priorities, char **errstr);
+        const char *priorities,
+        const char *hostname,
+        int no_certcheck,
+        char **errstr);
 #endif /* HAVE_TLS */
 
 /*
@@ -193,8 +200,8 @@ int smtp_tls_init(smtp_server_t *srv,
  * Use this function after smtp_init(). The SMTP server must have the
  * SMTP_CAP_STARTTLS capability.
  * Call smtp_tls() afterwards. Finally, call smtp_init() again (the SMTP server
- * might advertise different capabilities when TLS is active, for example plain
- * text authentication mechanisms).
+ * might advertise different capabilities when TLS is active, for example
+ * cleartext authentication mechanisms).
  * 'error_msg' contains the error message from the SMTP server or NULL.
  * Used error codes: SMTP_EIO, SMTP_EPROTO, SMTP_EINVAL
  */
@@ -215,8 +222,8 @@ int smtp_tls_starttls(smtp_server_t *srv, list_t **error_msg, char **errstr);
  * Success: TLS_EOK
  */
 #ifdef HAVE_TLS
-int smtp_tls(smtp_server_t *srv, const char *hostname, int tls_nocertcheck,
-        tls_cert_info_t *tci, char **tls_parameter_description, char **errstr);
+int smtp_tls(smtp_server_t *srv,
+        mtls_cert_info_t *tci, char **tls_parameter_description, char **errstr);
 #endif /* HAVE_TLS */
 
 /*
@@ -243,10 +250,12 @@ int smtp_server_supports_authmech(smtp_server_t *srv, const char *mech);
  * to find out which authentication mechanisms are available.
  * The special value "" for 'auth_mech' causes the function to choose the best
  * authentication method supported by the server, unless TLS is incative and the
- * method sends plain text passwords. In this case, the function fails with
+ * method sends cleartext passwords. In this case, the function fails with
  * SMTP_EINSECURE.
  * The hostname is the name of the SMTP server. It may be needed for
  * authentication.
+ * The port is port number SMTP server accepts connections on. It may be needed
+ * for authentication.
  * The ntlmdomain may be NULL (even if you use NTLM authentication).
  * If 'password' is NULL, but the authentication method needs a password,
  * the 'password_callback' function is called (if 'password_callback' is not
@@ -258,6 +267,7 @@ int smtp_server_supports_authmech(smtp_server_t *srv, const char *mech);
  */
 int smtp_auth(smtp_server_t *srv,
         const char *hostname,
+        unsigned short port,
         const char *user,
         const char *password,
         const char *ntlmdomain,
@@ -296,13 +306,11 @@ int smtp_send_envelope(smtp_server_t *srv,
  * Sends a mail via the SMTP server 'srv'.
  * You can use this function more than once to send the mail in chunks.
  * When you're done, call smtp_end_mail().
- * keep_bcc:    Set this flag in one of the following situation:
- *              1. The mail data contains a Bcc header that you want to keep
- *                 (highly unlikely)
- *              2. The mail data contains no headers at all. This prevents
- *                 accidental removal of mail body contents.
- *              The default (unset) is to expect headers in the mail data and
- *              remove the Bcc header.
+ * keep_from, keep_to, keep_cc, keep_bcc:
+ * These flags signal if the corresponding header should be kept or removed.
+ * You typically want to set keep_from, keep_to, keep_cc, but not keep_bcc.
+ * You should set all flags when sending mail data without preceding headers,
+ * to avoid accidental removal of mail body contents.
  * mailf:       The file containing the mail
  * mailsize:    This counter will be increased by the number of bytes
  *              of the mail (as transferred to the SMTP server) in case
@@ -312,7 +320,8 @@ int smtp_send_envelope(smtp_server_t *srv,
  *              message (or NULL)
  * Used error codes: SMTP_EIO
  */
-int smtp_send_mail(smtp_server_t *srv, FILE *mailf, int keep_bcc,
+int smtp_send_mail(smtp_server_t *srv, FILE *mailf,
+        int keep_from, int keep_to, int keep_cc, int keep_bcc,
         long *mailsize, char **errstr);
 
 /*

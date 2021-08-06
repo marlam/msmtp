@@ -4,7 +4,7 @@
  * This file is part of msmtp, an SMTP client.
  *
  * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011,
- * 2014, 2016, 2018, 2019
+ * 2014, 2016, 2018, 2019, 2020
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -33,14 +33,13 @@
 #include <strings.h>
 #include <ctype.h>
 #include <errno.h>
-#include <unistd.h>
 
 #ifdef HAVE_LIBGSASL
 # include <gsasl.h>
 #else
-# include "base64.h"
 # include "md5-apps.h"
 #endif
+#include "base64.h"
 
 #include "gettext.h"
 #define _(string) gettext(string)
@@ -53,7 +52,7 @@
 #include "smtp.h"
 #include "stream.h"
 #ifdef HAVE_TLS
-#include "tls.h"
+#include "mtls.h"
 #endif /* HAVE_TLS */
 
 
@@ -111,7 +110,7 @@ smtp_server_t smtp_new(FILE *debug, int protocol)
 
     srv.fd = -1;
 #ifdef HAVE_TLS
-    tls_clear(&srv.tls);
+    mtls_clear(&srv.mtls);
 #endif /* HAVE_TLS */
     readbuf_init(&(srv.readbuf));
     srv.protocol = protocol;
@@ -128,13 +127,16 @@ smtp_server_t smtp_new(FILE *debug, int protocol)
  * see smtp.h
  */
 
-int smtp_connect(smtp_server_t *srv, const char *proxy_host, int proxy_port,
+int smtp_connect(smtp_server_t *srv,
+        const char *socketname,
+        const char *proxy_host, int proxy_port,
         const char *host, int port, const char *source_ip, int timeout,
         char **server_canonical_name, char **server_address,
         char **errstr)
 {
-    return net_open_socket(proxy_host, proxy_port, host, port, source_ip,
-            timeout, &srv->fd, server_canonical_name, server_address, errstr);
+    return net_open_socket(socketname, proxy_host, proxy_port, host, port,
+            source_ip, timeout, &srv->fd,
+            server_canonical_name, server_address, errstr);
 }
 
 
@@ -168,9 +170,9 @@ int smtp_get_msg(smtp_server_t *srv, list_t **msg, char **errstr)
     do
     {
 #ifdef HAVE_TLS
-        if (tls_is_active(&srv->tls))
+        if (mtls_is_active(&srv->mtls))
         {
-            if (tls_gets(&srv->tls, &(srv->readbuf),
+            if (mtls_gets(&srv->mtls, &(srv->readbuf),
                         line, SMTP_BUFSIZE, &len, errstr) != TLS_EOK)
             {
                 list_xfree(l, free);
@@ -266,9 +268,9 @@ int smtp_put(smtp_server_t *srv, const char *s, size_t len, char **errstr)
     int e = 0;
 
 #ifdef HAVE_TLS
-    if (tls_is_active(&srv->tls))
+    if (mtls_is_active(&srv->mtls))
     {
-        e = (tls_puts(&srv->tls, s, len, errstr) != TLS_EOK);
+        e = (mtls_puts(&srv->mtls, s, len, errstr) != TLS_EOK);
     }
     else
     {
@@ -502,6 +504,10 @@ int smtp_init(smtp_server_t *srv, const char *ehlo_domain, list_t **errmsg,
             {
                 srv->cap.flags |= SMTP_CAP_AUTH_SCRAM_SHA_1;
             }
+            if (strstr(s + 9, "SCRAM-SHA-256"))
+            {
+                srv->cap.flags |= SMTP_CAP_AUTH_SCRAM_SHA_256;
+            }
             if (strstr(s + 9, "GSSAPI"))
             {
                 srv->cap.flags |= SMTP_CAP_AUTH_GSSAPI;
@@ -517,6 +523,14 @@ int smtp_init(smtp_server_t *srv, const char *ehlo_domain, list_t **errmsg,
             if (strstr(s + 9, "NTLM"))
             {
                 srv->cap.flags |= SMTP_CAP_AUTH_NTLM;
+            }
+            if (strstr(s + 9, "OAUTHBEARER"))
+            {
+                srv->cap.flags |= SMTP_CAP_AUTH_OAUTHBEARER;
+            }
+            if (strstr(s + 9, "XOAUTH2"))
+            {
+                srv->cap.flags |= SMTP_CAP_AUTH_XOAUTH2;
             }
         }
         else if (strncmp(s + 4, "ETRN", 4) == 0)
@@ -538,18 +552,21 @@ int smtp_init(smtp_server_t *srv, const char *ehlo_domain, list_t **errmsg,
 
 #ifdef HAVE_TLS
 int smtp_tls_init(smtp_server_t *srv,
-        const char *tls_key_file, const char *tls_cert_file,
+        const char *tls_key_file, const char *tls_cert_file, const char *pin,
         const char *tls_trust_file, const char *tls_crl_file,
         const unsigned char *tls_sha256_fingerprint,
         const unsigned char *tls_sha1_fingerprint,
         const unsigned char *tls_md5_fingerprint,
         int min_dh_prime_bits,
-        const char *priorities, char **errstr)
+        const char *priorities,
+        const char *hostname,
+        int no_certcheck,
+        char **errstr)
 {
-    return tls_init(&srv->tls, tls_key_file, tls_cert_file,
+    return mtls_init(&srv->mtls, tls_key_file, tls_cert_file, pin,
             tls_trust_file, tls_crl_file,
             tls_sha256_fingerprint, tls_sha1_fingerprint, tls_md5_fingerprint,
-            min_dh_prime_bits, priorities, errstr);
+            min_dh_prime_bits, priorities, hostname, no_certcheck, errstr);
 }
 #endif /* HAVE_TLS */
 
@@ -599,11 +616,11 @@ int smtp_tls_starttls(smtp_server_t *srv, list_t **error_msg, char **errstr)
  */
 
 #ifdef HAVE_TLS
-int smtp_tls(smtp_server_t *srv, const char *hostname, int tls_nocertcheck,
-        tls_cert_info_t *tci, char **tls_parameter_description, char **errstr)
+int smtp_tls(smtp_server_t *srv,
+        mtls_cert_info_t *tci, char **mtls_parameter_description, char **errstr)
 {
-    return tls_start(&srv->tls, srv->fd, hostname, tls_nocertcheck, tci,
-            tls_parameter_description, errstr);
+    return mtls_start(&srv->mtls, srv->fd, tci,
+            mtls_parameter_description, errstr);
 }
 #endif /* HAVE_TLS */
 
@@ -917,6 +934,147 @@ int smtp_auth_external(smtp_server_t *srv, const char *user,
 
 
 /*
+ * smtp_auth_oauthbearer()
+ *
+ * Do SMTP authentication via AUTH OAUTHBEARER.
+ * The SMTP server must support SMTP_CAP_AUTH_OAUTHBEARER
+ * Used error codes: SMTP_EIO, SMTP_EAUTHFAIL, SMTP_EINVAL
+ */
+
+int smtp_auth_oauthbearer(smtp_server_t *srv,
+        const char *hostname, unsigned short port,
+        const char *user, const char *token,
+        list_t **error_msg, char **errstr)
+{
+    list_t *msg;
+    char *oauth;
+    size_t oa_len;
+    char *b64;
+    size_t b64_len;
+    int e;
+    int status;
+
+    *error_msg = NULL;
+
+    oa_len = 4 + /* "n,a=" */
+             strlen(user) +
+             7 + /* ",^Ahost=" */
+             strlen(hostname) +
+             6 + 5 + /* "^Aport=" + up to 5 digits */
+             13 + /* "^Aauth=Bearer " */
+             strlen(token) +
+             2 /* "^A^A" */;
+    oauth = xmalloc(oa_len + 1);
+    oa_len = snprintf(oauth, oa_len + 1,
+                      "n,a=%s,\001host=%s\001port=%d\001auth=Bearer %s\001\001",
+                      user, hostname, port, token);
+    b64_len = BASE64_LENGTH(oa_len) + 1;
+    b64 = xmalloc(b64_len);
+    base64_encode(oauth, oa_len, b64, b64_len);
+    e = smtp_send_cmd(srv, errstr, "AUTH OAUTHBEARER %s", b64);
+    free(oauth);
+    free(b64);
+    if (e != SMTP_EOK)
+    {
+        return e;
+    }
+    if ((e = smtp_get_msg(srv, &msg, errstr)) != SMTP_EOK)
+    {
+        return e;
+    }
+    if ((status = smtp_msg_status(msg)) != 235)
+    {
+        if (status == 334)
+        {
+            list_xfree(msg, free);
+            if ((e = smtp_send_cmd(srv, errstr, "")) != SMTP_EOK)
+            {
+                return e;
+            }
+            if ((e = smtp_get_msg(srv, &msg, errstr)) != SMTP_EOK)
+            {
+                return e;
+            }
+        }
+        *error_msg = msg;
+        *errstr = xasprintf(_("authentication failed (method %s)"), "OAUTHBEARER");
+        return SMTP_EAUTHFAIL;
+    }
+    list_xfree(msg, free);
+
+    return SMTP_EOK;
+}
+
+
+/*
+ * smtp_auth_xoauth2()
+ *
+ * Do SMTP authentication via AUTH XOAUTH2.
+ * The SMTP server must support SMTP_CAP_AUTH_XOAUTH2
+ * Used error codes: SMTP_EIO, SMTP_EAUTHFAIL, SMTP_EINVAL
+ */
+
+int smtp_auth_xoauth2(smtp_server_t *srv,
+        const char *user, const char *token,
+        list_t **error_msg, char **errstr)
+{
+    list_t *msg;
+    char *oauth;
+    size_t oa_len;
+    char *b64;
+    size_t b64_len;
+    int e;
+    int status;
+
+    *error_msg = NULL;
+
+    oa_len = 5 + /* "user=" */
+             strlen(user) +
+             13 + /* "^Aauth=Bearer " */
+             strlen(token) +
+             2 /* "^A^A" */;
+    oauth = xmalloc(oa_len + 1);
+    oa_len = snprintf(oauth, oa_len + 1,
+            "user=%s\001auth=Bearer %s\001\001", user, token);
+    b64_len = BASE64_LENGTH(oa_len) + 1;
+    b64 = xmalloc(b64_len);
+    base64_encode(oauth, oa_len, b64, b64_len);
+    e = smtp_send_cmd(srv, errstr, "AUTH XOAUTH2 %s", b64);
+    free(oauth);
+    free(b64);
+    if (e != SMTP_EOK)
+    {
+        return e;
+    }
+    if ((e = smtp_get_msg(srv, &msg, errstr)) != SMTP_EOK)
+    {
+        return e;
+    }
+    if ((status = smtp_msg_status(msg)) != 235)
+    {
+        if (status == 334)
+        {
+            list_xfree(msg, free);
+            if ((e = smtp_send_cmd(srv, errstr, "")) != SMTP_EOK)
+            {
+                return e;
+            }
+            if ((e = smtp_get_msg(srv, &msg, errstr)) != SMTP_EOK)
+            {
+                return e;
+            }
+        }
+        *error_msg = msg;
+        *errstr = xasprintf(_("authentication failed (method %s)"), "XOAUTH2");
+        return SMTP_EAUTHFAIL;
+    }
+    list_xfree(msg, free);
+
+    return SMTP_EOK;
+}
+
+
+/*
  * smtp_server_supports_authmech()
  *
  * see smtp.h
@@ -932,6 +1090,8 @@ int smtp_server_supports_authmech(smtp_server_t *srv, const char *mech)
                 && strcmp(mech, "DIGEST-MD5") == 0)
             || ((srv->cap.flags & SMTP_CAP_AUTH_SCRAM_SHA_1)
                 && strcmp(mech, "SCRAM-SHA-1") == 0)
+            || ((srv->cap.flags & SMTP_CAP_AUTH_SCRAM_SHA_256)
+                && strcmp(mech, "SCRAM-SHA-256") == 0)
             || ((srv->cap.flags & SMTP_CAP_AUTH_EXTERNAL)
                 && strcmp(mech, "EXTERNAL") == 0)
             || ((srv->cap.flags & SMTP_CAP_AUTH_GSSAPI)
@@ -939,7 +1099,11 @@ int smtp_server_supports_authmech(smtp_server_t *srv, const char *mech)
             || ((srv->cap.flags & SMTP_CAP_AUTH_LOGIN)
                 && strcmp(mech, "LOGIN") == 0)
             || ((srv->cap.flags & SMTP_CAP_AUTH_NTLM)
-                && strcmp(mech, "NTLM") == 0));
+                && strcmp(mech, "NTLM") == 0)
+            || ((srv->cap.flags & SMTP_CAP_AUTH_OAUTHBEARER)
+                && strcmp(mech, "OAUTHBEARER") == 0)
+            || ((srv->cap.flags & SMTP_CAP_AUTH_XOAUTH2)
+                && strcmp(mech, "XOAUTH2") == 0));
 }
 
 
@@ -956,12 +1120,19 @@ int smtp_client_supports_authmech(const char *mech)
     int supported = 0;
     Gsasl *ctx;
 
-    if (gsasl_init(&ctx) != GSASL_OK)
+    if (strcmp(mech, "OAUTHBEARER") == 0 || strcmp(mech, "XOAUTH2") == 0)
     {
-        return 0;
+        supported = 1;
     }
-    supported = gsasl_client_support_p(ctx, mech);
-    gsasl_done(ctx);
+    else
+    {
+        if (gsasl_init(&ctx) != GSASL_OK)
+        {
+            return 0;
+        }
+        supported = gsasl_client_support_p(ctx, mech);
+        gsasl_done(ctx);
+    }
     return supported;
 
 #else /* not HAVE_LIBGSASL */
@@ -969,7 +1140,9 @@ int smtp_client_supports_authmech(const char *mech)
     return (strcmp(mech, "CRAM-MD5") == 0
             || strcmp(mech, "PLAIN") == 0
             || strcmp(mech, "EXTERNAL") == 0
-            || strcmp(mech, "LOGIN") == 0);
+            || strcmp(mech, "LOGIN") == 0
+            || strcmp(mech, "OAUTHBEARER") == 0
+            || strcmp(mech, "XOAUTH2") == 0);
 
 #endif /* not HAVE_LIBGSASL */
 }
@@ -983,6 +1156,7 @@ int smtp_client_supports_authmech(const char *mech)
 
 int smtp_auth(smtp_server_t *srv,
         const char *hostname,
+        unsigned short port,
         const char *user,
         const char *password,
         const char *ntlmdomain,
@@ -1018,7 +1192,7 @@ int smtp_auth(smtp_server_t *srv,
         *errstr = xasprintf(_("GNU SASL: %s"), gsasl_strerror(error_code));
         return SMTP_ELIBFAILED;
     }
-    if (strcmp(auth_mech, "") != 0 && !gsasl_client_support_p(ctx, auth_mech))
+    if (strcmp(auth_mech, "") != 0 && !smtp_client_supports_authmech(auth_mech))
     {
         gsasl_done(ctx);
         *errstr = xasprintf(
@@ -1031,12 +1205,17 @@ int smtp_auth(smtp_server_t *srv,
         /* Choose "best" authentication mechanism. */
         /* TODO: use gsasl_client_suggest_mechanism()? */
 #ifdef HAVE_TLS
-        if (tls_is_active(&srv->tls))
+        if (mtls_is_active(&srv->mtls))
         {
             if (gsasl_client_support_p(ctx, "PLAIN")
                     && (srv->cap.flags & SMTP_CAP_AUTH_PLAIN))
             {
                 auth_mech = "PLAIN";
+            }
+            else if (gsasl_client_support_p(ctx, "SCRAM-SHA-256")
+                    && (srv->cap.flags & SMTP_CAP_AUTH_SCRAM_SHA_256))
+            {
+                auth_mech = "SCRAM-SHA-256";
             }
             else if (gsasl_client_support_p(ctx, "SCRAM-SHA-1")
                     && (srv->cap.flags & SMTP_CAP_AUTH_SCRAM_SHA_1))
@@ -1067,7 +1246,12 @@ int smtp_auth(smtp_server_t *srv,
         else
 #endif /* HAVE_TLS */
         {
-            if (gsasl_client_support_p(ctx, "SCRAM-SHA-1")
+            if (gsasl_client_support_p(ctx, "SCRAM-SHA-256")
+                    && (srv->cap.flags & SMTP_CAP_AUTH_SCRAM_SHA_256))
+            {
+                auth_mech = "SCRAM-SHA-256";
+            }
+	    else if (gsasl_client_support_p(ctx, "SCRAM-SHA-1")
                     && (srv->cap.flags & SMTP_CAP_AUTH_SCRAM_SHA_1))
             {
                 auth_mech = "SCRAM-SHA-1";
@@ -1078,7 +1262,7 @@ int smtp_auth(smtp_server_t *srv,
     {
         gsasl_done(ctx);
 #ifdef HAVE_TLS
-        if (!tls_is_active(&srv->tls))
+        if (!mtls_is_active(&srv->mtls))
         {
 #endif /* HAVE_TLS */
             *errstr = xasprintf(_("cannot use a secure authentication method"));
@@ -1096,8 +1280,7 @@ int smtp_auth(smtp_server_t *srv,
     /* Check availability of required authentication data */
     if (strcmp(auth_mech, "EXTERNAL") != 0)
     {
-        /* GSSAPI, SCRAM-SHA-1, DIGEST-MD5, CRAM-MD5, PLAIN, LOGIN, NTLM all
-         * need a user name */
+        /* All authentication schemes need a user name */
         if (!user)
         {
             gsasl_done(ctx);
@@ -1105,8 +1288,8 @@ int smtp_auth(smtp_server_t *srv,
                     auth_mech);
             return SMTP_EUNAVAIL;
         }
-        /* SCRAM-SHA-1, DIGEST-MD5, CRAM-MD5, PLAIN, LOGIN, NTLM all need a
-         * password */
+        /* SCRAM-SHA-256, SCRAM-SHA-1, DIGEST-MD5, CRAM-MD5, PLAIN, LOGIN, NTLM, OAUTHBEARER, XOAUTH2
+         * all need a password */
         if (strcmp(auth_mech, "GSSAPI") != 0 && !password)
         {
             if (!password_callback
@@ -1122,7 +1305,23 @@ int smtp_auth(smtp_server_t *srv,
         }
     }
 
-    if ((error_code = gsasl_client_start(ctx, auth_mech, &sctx)) != GSASL_OK)
+    /* OAUTHBEARER and XOAUTH2 are built-in, all other methods are provided by GNU SASL */
+    if (strcmp(auth_mech, "OAUTHBEARER") == 0)
+    {
+        gsasl_done(ctx);
+        e = smtp_auth_oauthbearer(srv, hostname, port, user, password,
+                                  error_msg, errstr);
+        free(callback_password);
+        return e;
+    }
+    else if (strcmp(auth_mech, "XOAUTH2") == 0)
+    {
+        gsasl_done(ctx);
+        e = smtp_auth_xoauth2(srv, user, password, error_msg, errstr);
+        free(callback_password);
+        return e;
+    }
+    else if ((error_code = gsasl_client_start(ctx, auth_mech, &sctx)) != GSASL_OK)
     {
         gsasl_done(ctx);
         *errstr = xasprintf(_("GNU SASL: %s"), gsasl_strerror(error_code));
@@ -1146,7 +1345,7 @@ int smtp_auth(smtp_server_t *srv,
         gsasl_property_set(sctx, GSASL_PASSWORD, password);
     }
     free(callback_password);
-    /* For DIGEST-MD5 and GSSAPI (and SCRAM-SHA-1?) */
+    /* For DIGEST-MD5 and GSSAPI */
     gsasl_property_set(sctx, GSASL_SERVICE, "smtp");
     if (hostname)
     {
@@ -1233,6 +1432,7 @@ int smtp_auth(smtp_server_t *srv,
          * with mpop on 2011-01-17 with one POP3 server and the methods CRAM-MD5
          * and SCRAM-SHA-1. */
         if (outbuf[0]
+                || strcmp(auth_mech, "SCRAM-SHA-256") == 0
                 || strcmp(auth_mech, "SCRAM-SHA-1") == 0
                 || strcmp(auth_mech, "GSSAPI") == 0)
         {
@@ -1322,7 +1522,7 @@ int smtp_auth(smtp_server_t *srv,
     {
         /* Choose "best" authentication mechanism. */
 #ifdef HAVE_TLS
-        if (tls_is_active(&srv->tls))
+        if (mtls_is_active(&srv->mtls))
         {
             if (srv->cap.flags & SMTP_CAP_AUTH_PLAIN)
             {
@@ -1342,7 +1542,7 @@ int smtp_auth(smtp_server_t *srv,
     if (strcmp(auth_mech, "") == 0)
     {
 #ifdef HAVE_TLS
-        if (!tls_is_active(&srv->tls))
+        if (!mtls_is_active(&srv->mtls))
         {
 #endif /* HAVE_TLS */
             *errstr = xasprintf(_("cannot use a secure authentication method"));
@@ -1359,7 +1559,8 @@ int smtp_auth(smtp_server_t *srv,
 
     if (strcmp(auth_mech, "EXTERNAL") != 0)
     {
-        /* CRAMD-MD5, PLAIN, LOGIN all need a user name and a password */
+        /* CRAMD-MD5, PLAIN, LOGIN, OAUTHBEARER all need a user name and a
+         * password */
         if (!user)
         {
             *errstr = xasprintf(_("authentication method %s needs a user name"),
@@ -1395,6 +1596,15 @@ int smtp_auth(smtp_server_t *srv,
     else if (strcmp(auth_mech, "LOGIN") == 0)
     {
         e = smtp_auth_login(srv, user, password, error_msg, errstr);
+    }
+    else if (strcmp(auth_mech, "OAUTHBEARER") == 0)
+    {
+        e = smtp_auth_oauthbearer(srv, hostname, port, user, password,
+                                  error_msg, errstr);
+    }
+    else if (strcmp(auth_mech, "XOAUTH2") == 0)
+    {
+        e = smtp_auth_xoauth2(srv, user, password, error_msg, errstr);
     }
     else
     {
@@ -1571,7 +1781,8 @@ int smtp_send_envelope(smtp_server_t *srv,
  * see smtp.h
  */
 
-int smtp_send_mail(smtp_server_t *srv, FILE *mailf, int keep_bcc,
+int smtp_send_mail(smtp_server_t *srv, FILE *mailf,
+        int keep_from, int keep_to, int keep_cc, int keep_bcc,
         long *mailsize, char **errstr)
 {
     char bigbuffer[MAIL_BUFSIZE + 3];   /* buffer + leading dot + ending CRLF */
@@ -1580,6 +1791,9 @@ int smtp_send_mail(smtp_server_t *srv, FILE *mailf, int keep_bcc,
     char *send_buf;
     size_t send_len;
     int in_header;
+    int in_from;
+    int in_to;
+    int in_cc;
     int in_bcc;
     int line_starts;
     int line_continues;
@@ -1588,6 +1802,9 @@ int smtp_send_mail(smtp_server_t *srv, FILE *mailf, int keep_bcc,
     bigbuffer[0] = '.';
     buffer = bigbuffer + 1;
     in_header = 1;
+    in_from = 0;
+    in_to = 0;
+    in_cc = 0;
     in_bcc = 0;
     line_continues = 0;
     e = SMTP_EOK;
@@ -1632,44 +1849,102 @@ int smtp_send_mail(smtp_server_t *srv, FILE *mailf, int keep_bcc,
              * character */
             line_continues = 0;
         }
-        if (!keep_bcc)
+        if (line_starts && in_header && buffer[0] == '\0')
         {
-            if (line_starts && in_header && buffer[0] == '\0')
+            in_header = 0;
+        }
+        if (in_header)
+        {
+            if (line_starts)
             {
-                in_header = 0;
-            }
-            if (in_header)
-            {
-                if (line_starts)
+                if (!keep_from && strncasecmp(buffer, "From:", 5) == 0)
                 {
-                    if (strncasecmp(buffer, "Bcc:", 4) == 0)
+                    in_from = 1;
+                    /* remove header by ignoring this line */
+                    continue;
+                }
+                else if (!keep_from && in_from)
+                {
+                    /* continued header lines begin with "horizontal
+                     * whitespace" (RFC 2822, section 2.2.3) */
+                    if (buffer[0] == '\t' || buffer[0] == ' ')
                     {
-                        in_bcc = 1;
-                        /* remove Bcc header by ignoring this line */
+                        /* remove header by ignoring this line */
                         continue;
                     }
-                    else if (in_bcc)
+                    else
                     {
-                        /* continued header lines begin with "horizontal
-                         * whitespace" (RFC 2822, section 2.2.3) */
-                        if (buffer[0] == '\t' || buffer[0] == ' ')
-                        {
-                            /* remove Bcc header by ignoring this line */
-                            continue;
-                        }
-                        else
-                        {
-                            in_bcc = 0;
-                        }
+                        in_from = 0;
                     }
                 }
-                else
+                if (!keep_to && strncasecmp(buffer, "To:", 3) == 0)
                 {
-                    if (in_bcc)
+                    in_to = 1;
+                    /* remove header by ignoring this line */
+                    continue;
+                }
+                else if (!keep_to && in_to)
+                {
+                    /* continued header lines begin with "horizontal
+                     * whitespace" (RFC 2822, section 2.2.3) */
+                    if (buffer[0] == '\t' || buffer[0] == ' ')
                     {
-                        /* remove Bcc header by ignoring this line */
+                        /* remove header by ignoring this line */
                         continue;
                     }
+                    else
+                    {
+                        in_to = 0;
+                    }
+                }
+                if (!keep_cc && strncasecmp(buffer, "Cc:", 3) == 0)
+                {
+                    in_cc = 1;
+                    /* remove header by ignoring this line */
+                    continue;
+                }
+                else if (!keep_cc && in_cc)
+                {
+                    /* continued header lines begin with "horizontal
+                     * whitespace" (RFC 2822, section 2.2.3) */
+                    if (buffer[0] == '\t' || buffer[0] == ' ')
+                    {
+                        /* remove header by ignoring this line */
+                        continue;
+                    }
+                    else
+                    {
+                        in_cc = 0;
+                    }
+                }
+                if (!keep_bcc && strncasecmp(buffer, "Bcc:", 4) == 0)
+                {
+                    in_bcc = 1;
+                    /* remove header by ignoring this line */
+                    continue;
+                }
+                else if (!keep_bcc && in_bcc)
+                {
+                    /* continued header lines begin with "horizontal
+                     * whitespace" (RFC 2822, section 2.2.3) */
+                    if (buffer[0] == '\t' || buffer[0] == ' ')
+                    {
+                        /* remove header by ignoring this line */
+                        continue;
+                    }
+                    else
+                    {
+                        in_bcc = 0;
+                    }
+                }
+            }
+            else
+            {
+                if ((!keep_from && in_from) || (!keep_to && in_to)
+                        || (!keep_cc && in_cc) || (!keep_bcc && in_bcc))
+                {
+                    /* remove header by ignoring this line */
+                    continue;
                 }
             }
         }
@@ -1909,9 +2184,9 @@ int smtp_quit(smtp_server_t *srv, char **errstr)
 void smtp_close(smtp_server_t *srv)
 {
 #ifdef HAVE_TLS
-    if (tls_is_active(&srv->tls))
+    if (mtls_is_active(&srv->mtls))
     {
-        tls_close(&srv->tls);
+        mtls_close(&srv->mtls);
     }
 #endif /* HAVE_TLS */
     net_close_socket(srv->fd);

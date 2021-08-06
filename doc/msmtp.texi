@@ -14,7 +14,7 @@
 This manual was last updated @value{UPDATED} for version
 @value{VERSION} of msmtp.
 
-Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019
+Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020
 Martin Lambers@*
 Copyright (C) 2011
 Scott Shumate
@@ -99,7 +99,7 @@ Supported features include:
 @item TLS secured connections (including server certificate verification and
 the possibility to send a client certificate)
 @item Authentication methods PLAIN, LOGIN, CRAM-MD5 and EXTERNAL
-(and GSSAPI, SCRAM-SHA-1, DIGEST-MD5, and NTLM when compiled with GNU SASL
+(and GSSAPI, SCRAM-SHA-1, SCRAM-SHA-256, DIGEST-MD5, and NTLM when compiled with GNU SASL
 support)
 @item Internationalized Domain Names (IDN)
 @item DSN (Delivery Status Notification) support
@@ -189,6 +189,11 @@ see also @ref{Using msmtp with Tor}.
 @cmindex proxy_port
 Set the port number for the proxy host. An empty @samp{number} argument resets
 this to the default port, which is 1080 ("socks").
+@anchor{socket}
+@item socket [@var{socketname}]
+@cmindex socket
+Set the file name of a unix domain socket to connect to. This overrides
+both @samp{host}/@samp{port} and @samp{proxy_host}/@samp{proxy_port}.
 @anchor{timeout}
 @item timeout (off|@var{seconds})
 @cmindex timeout
@@ -208,7 +213,15 @@ default is @samp{localhost}, which is stupid but usually works. Try to change
 the default if mails get rejected due to anti-SPAM measures. Possible choices
 are the domain part of your mail address (@code{provider.example} for
 @code{joe@@provider.example}) or the fully qualified domain name of your host
-(if available).
+(if available).@*
+The following substitution patterns are supported:
+@itemize
+@item @code{%H} will be replaced by @code{$HOSTNAME}, or if that fails by the host name of the system.
+@item @code{%C} will be replaced by the canonical name of @code{%H}.
+@item @code{%M} will be replaced by the contents of @code{/etc/mailname} (potentially a different
+directory is used depending on the build configuration; see the output of
+@samp{msmtp --version} and look for the location of the system configuration file).
+@end itemize
 @end table
 
 @section Authentication commands
@@ -221,7 +234,7 @@ are the domain part of your mail address (@code{provider.example} for
 @cmindex auth
 Enable or disable authentication and optionally choose a method to use. The
 argument @samp{on} chooses a method automatically.
-Accepted methods are @samp{plain}, @samp{scram-sha-1}, @samp{cram-md5},
+Accepted methods are @samp{plain}, @samp{scram-sha-1}, @samp{scram-sha-256}, @samp{oauthbearer}, @samp{xoauth2}, @samp{cram-md5},
 @samp{gssapi}, @samp{external}, @samp{digest-md5}, @samp{login}, and
 @samp{ntlm}.
 @xref{Authentication}.@*
@@ -235,7 +248,7 @@ Authentication must be activated with the @samp{auth} command.
 @cmindex password
 Set the password for authentication. An empty argument unsets the password.
 Consider using the @samp{passwordeval} command or a key ring instead of this
-command, to avoid storing plain text passwords in the configuration file.
+command, to avoid storing cleartext passwords in the configuration file.
 @xref{Authentication}.
 @anchor{passwordeval}
 @item passwordeval [@var{eval}]
@@ -243,7 +256,10 @@ command, to avoid storing plain text passwords in the configuration file.
 Set the password for authentication to the output (stdout) of the command
 @var{eval}.
 This can be used e.g. to decrypt password files on the fly or to query key
-rings, and thus to avoid storing plain text passwords.
+rings, and thus to avoid storing cleartext passwords.@*
+Note that the @var{eval} command must not mess with standard input (stdin)
+because that is where msmtp reads the mail from. If in doubt, append
+@var{< /dev/null} to @var{eval}.@*
 @xref{Authentication}.
 @anchor{ntlmdomain}
 @item ntlmdomain [@var{ntlmdomain}]
@@ -276,8 +292,9 @@ If you select a file, it must be in PEM format, and you should also use
 @anchor{tls_crl_file}
 @item tls_crl_file [@var{file}]
 @cmindex tls_crl_file
-Set a certificate revocation list (CRL) file for TLS, to check for revoked
-certificates. An empty argument disables this.
+Deprecated. This sets a certificate revocation list (CRL) file for TLS, to check
+for revoked certificates (an empty argument, which is the default, disables this).
+Nowadays automatic OCSP checks replace CRL file checks.
 @anchor{tls_fingerprint}
 @item tls_fingerprint [@var{fingerprint}]
 @cmindex tls_fingerprint
@@ -308,20 +325,34 @@ this feature.
 Enable or disable checks of the server certificate. They are enabled by default.@*
 Disabling them will override @samp{tls_trust_file} and @samp{tls_fingerprint}.
 WARNING: When the checks are disabled, TLS sessions will not be secure!
+@anchor{tls_priorities}
+@item tls_priorities [@var{priorities}]
+@cmindex tls_priorities
+Set priorities for TLS session parameters. The default is set by the TLS library and
+can be selected by using an empty argument to this command. The interpretation of the
+@var{priorities} string depends on the TLS library. Use @samp{--version} to find out
+which TLS library you use.@*
+For GnuTLS, see the section on Priority Strings in the manual.@*
+For libtls, the @var{priorites} string is a space-separated list of parameter strings
+prefixed with either @code{PROTOCOLS=}, @code{CIPHERS=}, or @code{ECDHECURVES=}.
+These parameter strings will be passed to the functions @samp{tls_config_parse_protocols},
+@samp{tls_config_set_ciphers}, and @samp{tls_config_set_ecdhecurves}.
+Unrecognized parts of the @var{priorities} string will be ignored. Example:
+@code{PROTOCOLS=TLSv1.3 CIPHERS=ECDHE-RSA-AES128-SHA256 ECDHECURVES=P-384}.
+@anchor{tls_host_override}
+@item tls_host_override [@var{host}]
+@cmindex tls_host_override
+By default, TLS host verification uses the host name given by the @samp{host} command.
+This command allows one to use a different host name for verification. This is only
+useful in special cases.
 @anchor{tls_min_dh_prime_bits}
 @item tls_min_dh_prime_bits [@var{bits}]
 @cmindex tls_min_dh_prime_bits
+Deprecated, use @samp{tls_priorities} instead.
 Set or unset the minimum number of Diffie-Hellman (DH) prime bits accepted for
 TLS sessions. The default is set by the TLS library and can be selected by
 using an empty argument to this command. Only lower the default (for example to
 512 bits) if there is no other way to make TLS work with the remote server.
-@anchor{tls_priorities}
-@item tls_priorities [@var{priorities}]
-@cmindex tls_priorities
-Set the priorities for TLS sessions. The default is set by the TLS library and
-can be selected by using an empty argument to this command.
-See the GnuTLS documentation of the @samp{gnutls_priority_init} function for a
-description of the @var{priorities} string.
 @end table
 
 @section Commands specific to sendmail mode
@@ -332,23 +363,18 @@ description of the @var{priorities} string.
 @anchor{from}
 @item from [@var{address}]
 @cmindex from
-Set the envelope-from address. This is usually required, but sometimes
-@samp{auto_from} is a useful alternative.
+Set the envelope-from address. The following substitution patterns are supported:
+@itemize
+@item @code{%U} will be replaced by @code{$USER}, or if that fails by @code{$LOGNAME}, or if that fails by
+the login name of the user running msmtp.
+@item @code{%H} will be replaced by @code{$HOSTNAME}, or if that fails by the host name of the system.
+@item @code{%C} will be replaced by the canonical name of @code{%H}.
+@item @code{%M} will be replaced by the contents of @code{/etc/mailname} (potentially a different
+directory is used depending on the build configuration; see the output of
+@samp{msmtp --version} and look for the location of the system configuration file).
+@end itemize
+Note that the obsolete @samp{auto_from} command replaces this envelope-from address.
 @xref{Envelope-from address}.
-@anchor{auto_from}
-@item auto_from [(on|off)]
-@cmindex auto_from
-Enable or disable automatic envelope-from addresses. The default is @samp{off}.
-When enabled, an envelope-from address of the form user@@domain will be
-generated. The local part will be set to @code{USER} or, if that fails, to
-@code{LOGNAME} or, if that fails, to the login name of the current user. The
-domain part can be set with the @samp{maildomain} command; if that is empty,
-the address not have a domain part.
-@xref{Envelope-from address}.
-@anchor{maildomain}
-@item maildomain [@var{domain}]
-@cmindex maildomain
-Set a domain part for the generation of an envelope-from address. See @ref{auto_from}.
 @anchor{dsn_notify}
 @item dsn_notify (off|@var{condition})
 @cmindex dsn_notify
@@ -373,20 +399,35 @@ The @var{amount} must be @samp{headers}, to just return the message headers, or
 @samp{full}, to return the full mail.
 The SMTP server must support the DSN extension.
 @xref{Delivery Status Notifications}.
-@anchor{add_missing_from_header}
-@item add_missing_from_header [(on|off)]
-@cmindex add_missing_from_header
-This command controls whether to add a From header if the mail does not have one.
-The default is to add it. @xref{Header handling}.
-@anchor{add_missing_date_header}
-@item add_missing_date_header [(on|off)]
-@cmindex add_missing_date_header
-This command controls whether to add a Date header if the mail does not have one.
-The default is to add it. @xref{Header handling}.
+@anchor{set_from_header}
+@item set_from_header [(auto|on|off)]
+@cmindex set_from_header
+When to set a From header: @samp{auto} adds a From header if the mail does not
+have one (this is the default), @samp{on\} always sets a From header and overrides
+any existing one, and @samp{off} never sets a From header.@*
+If the mail server rejects the mail because its From header does not match the
+envelope from address (a common anti-spam measure), then you might want to set
+this option to @samp{on}.@*
+For compatibility with older versions, @samp{add_missing_from_header [(on|off)]}
+is still supported and corresponds to the @samp{auto} and @samp{off} settings.@*
+@xref{Header handling}.
+@anchor{set_date_header}
+@item set_date_header [(auto|off)]
+@cmindex set_date_header
+When to set a Date header: @samp{auto} adds a Date header if the mail does not
+have one (this is the default), and @samp{off} never sets a Date header.@*
+For compatibility with older versions, @samp{add_missing_date_header [(on|off)]}
+is still supported and corresponds to the @samp{auto} and @samp{off} settings.@*
+@xref{Header handling}.
 @anchor{remove_bcc_headers}
 @item remove_bcc_headers [(on|off)]
 @cmindex remove_bcc_headers
 This command controls whether to remove Bcc headers. The default is to remove them.
+@anchor{undisclosed_recipients}
+@item undisclosed_recipients [(on|off)]
+@cmindex undisclosed_recipients
+When set, the original To, Cc, and Bcc headers of the mail are removed and a single
+new header line "To: undisclosed-recipients:;" is added. The default setting is off.
 @xref{Header handling}.
 @anchor{logfile}
 @item logfile [@var{file}]
@@ -412,20 +453,36 @@ The default is @samp{LOG_USER}. Syslog logging is disabled by default.
 @item aliases [@var{file}]
 @cmindex aliases
 Replace local recipients with addresses in the aliases file. The aliases file
-is a plain text file containing mappings between a local address and a list of
-domain addresses. A local address is defined as one without an '@@' character
-and a domain address is one with an '@@' character.  The mappings are of the
-form:
+is a cleartext file containing mappings between a local address and a list of
+replacement addresses. The mappings are of the form:
 @example
 local: someone@@example.com, person@@domain.example
 @end example
-Multiple domain addresses are separated with commas. Comments start with '#'
+Multiple replacement addresses are separated with commas. Comments start with '#'
 and continue to the end of the line.@*
 The local address @samp{default} has special significance and is matched if the
 local address is not found in the aliases file. If no @samp{default} alias is
 found, then the local address is left as is.@*
 An empty argument to the aliases command disables the replacement of local
 addresses. This is the default.
+@anchor{auto_from}
+@item auto_from [(on|off)]
+@cmindex auto_from
+Obsolete; you can achieve the same and more using the substitution patterns of the
+@samp{from} command.@*
+Enable or disable automatic envelope-from addresses. The default is @samp{off}.
+When enabled, an envelope-from address of the form user@@domain will be
+generated. The local part will be set to @code{USER} or, if that fails, to
+@code{LOGNAME} or, if that fails, to the login name of the current user. The
+domain part can be set with the @samp{maildomain} command; if that is empty,
+the address not have a domain part.
+@xref{Envelope-from address}.
+@anchor{maildomain}
+@item maildomain [@var{domain}]
+@cmindex maildomain
+Obsolete; you can achieve the same and more using the substitution patterns of the
+@samp{from} command.@*
+Set a domain part for the generation of an envelope-from address. See @ref{auto_from}.
 @end table
 
 
@@ -538,6 +595,9 @@ Set or unset a SOCKS proxy to use. @xref{proxy_host}.
 @item --proxy-port=[@var{number}]
 @opindex --proxy-port
 Set or unset a port number for the proxy host. @xref{proxy_port}.
+@item --socket=[@var{socketname}]
+@opindex --socket
+Set or unset a local unix domain socket name to connect to. @xref{socket}.
 @item --timeout=(off|@var{seconds})
 @opindex --timeout
 Set or unset a network timeout, in seconds. @xref{timeout}.
@@ -573,7 +633,7 @@ Set or unset a trust file for TLS. @xref{tls_trust_file}.
 @anchor{--tls-crl-file}
 @item --tls-crl-file=[@var{file}]
 @opindex --tls-crl-file
-Set or unset a certificate revocation list (CRL) file for TLS.
+Deprecated. Set or unset a certificate revocation list (CRL) file for TLS.
 @xref{tls_crl_file}.
 @anchor{--tls-fingerprint}
 @item --tls-fingerprint=[@var{fingerprint}]
@@ -593,15 +653,20 @@ Set or unset a cert file for TLS. @xref{tls_cert_file}.
 @opindex --tls-certcheck
 Enable or disable server certificate checks for TLS.
 @xref{tls_certcheck}.
-@anchor{--tls-min-dh-prime-bits}
-@item --tls-min-dh-prime-bits=[@var{bits}]
-@opindex --tls-min-dh-prime-bits
-Set or unset minimum bit size of the Diffie-Hellman (DH) prime.
-@xref{tls_min_dh_prime_bits}.
 @anchor{--tls-priorities}
 @item --tls-priorities=[@var{priorities}]
 @opindex --tls-priorities
 Set or unset TLS priorities. @xref{tls_priorities}.
+@anchor{--tls-host-override}
+@item --tls-host-override=[@var{host}]
+@opindex --tls-host-override
+Set or unset override for TLS host verification. @xref{tls_host_override}.
+@anchor{--tls-min-dh-prime-bits}
+@item --tls-min-dh-prime-bits=[@var{bits}]
+@opindex --tls-min-dh-prime-bits
+Deprecated, use @samp{--tls-priorities} instead.
+Set or unset minimum bit size of the Diffie-Hellman (DH) prime.
+@xref{tls_min_dh_prime_bits}.
 @end table
 
 @subsection Options specific to sendmail mode
@@ -615,15 +680,8 @@ Set the envelope-from address. @xref{from}.@*
 If no account was chosen yet (with @option{--account} or @option{--host}), this
 option will choose the first account that has the given envelope-from address
 (set with the @samp{from} command). If no such account is found, "default" is
-used. @xref{Choosing an account}.
-@anchor{--auto-from}
-@item --auto-from[=(on|off)]
-@opindex --auto-from
-Enable or disable automatic envelope-from addresses. @xref{auto_from}.
-@anchor{--maildomain}
-@item --maildomain=[@var{domain}]
-@opindex --maildomain
-Set the domain part for the @option{--auto-from} address. @xref{maildomain}.
+used. @xref{Choosing an account}.@*
+See the @samp{from} command for substitution patterns supported in @var{address}.
 @anchor{--dsn-notify}
 @item -N (off|@var{condition})
 @itemx --dsn-notify=(off|@var{condition})
@@ -638,18 +696,23 @@ Set or unset DSN notification conditions. @xref{dsn_notify}.
 Set or unset the DSN notification amount. @xref{dsn_return}.
 Note that @samp{hdrs} is accepted as an alias for @samp{headers} to be
 compatible with sendmail.
-@anchor{--add-missing-from-header}
-@item --add-missing-from-header[=(on|off)]
-@opindex --add-missing-from-header
-Enable or disable the addition of a missing From header. @xref{add_missing_from_header}.
-@anchor{--add-missing-date-header}
-@item --add-missing-date-header[=(on|off)]
-@opindex --add-missing-date-header
-Enable or disable the addition of a missing Date header. @xref{add_missing_date_header}.
+@anchor{--set-from-header}
+@item --set-from-header[=(auto|on|off)]
+@opindex --set-from-header
+Set From header handling. @xref{set_from_header}.
+@anchor{--set-date-header}
+@item --set-date-header[=(auto|off)]
+@opindex --set-date-header
+Set Date header handling. @xref{set_date_header}.
 @anchor{--remove-bcc-headers}
 @item --remove-bcc-headers[=(on|off)]
 @opindex --remove-bcc-headers
 Enable or disable the removal of Bcc headers. @xref{remove_bcc_headers}.
+@anchor{--undisclosed-recipients}
+@item --undisclosed-recipients[=(on|off)]
+@opindex --undisclosed-recipients
+Enable or disable the replacement of To/Cc/Bcc with "To: undisclosed-recipients:;".
+@xref{undisclosed_recipients}.
 @anchor{--logfile}
 @item -X [@var{file}]
 @itemx --logfile=[@var{file}]
@@ -676,14 +739,20 @@ used instead.
 @item --read-envelope-from
 @opindex --read-envelope-from
 Read the envelope from address from the From header of the mail.
-Currently this header must be on a single line for this option to work
-correctly.
 @item --aliases=[@var{file}]
 @opindex --aliases
 Set or unset an aliases file. @xref{aliases}.
 @item -F@var{name}
 Msmtp adds a From header to mails that lack it, using the envelope from
 address. This option allows to set a full name to be used in that header.
+@anchor{--auto-from}
+@item --auto-from[=(on|off)]
+@opindex --auto-from
+Obsolete. @xref{auto_from}.
+@anchor{--maildomain}
+@item --maildomain=[@var{domain}]
+@opindex --maildomain
+Obsolete. @xref{maildomain}.
 @item --
 This marks the end of options. All following arguments will be treated as
 recipient addresses, even if they start with a '-'.
@@ -709,7 +778,9 @@ data.
 @item @option{--from=@var{address}} or @option{--read-envelope-from}@*
 Choose the first account from the system or user configuration file that has
 a matching envelope-from address as specified by a @ref{from} command. This
-works only when neither @option{--account} nor @option{--host} is used.
+works only when neither @option{--account} nor @option{--host} is used.@*
+Subadresses are supported. For example, the envelope from address
+@var{user+detail@@example.com} will match the account for @var{user@@example.com}.
 @end enumerate
 If none of the above options is used (or if no account has a matching
 @ref{from} command), then the account "default" is used.
@@ -783,13 +854,7 @@ The list of trusted CAs is specified using the @ref{tls_trust_file} command.
 The default value ist @samp{system} and chooses the system-wide default, but you can
 also choose the trusted CAs yourself.
 
-One practical problem with this approach is that the client program should also
-check if the server certificate has been revoked for some reason, using a
-Certificate Revocation List (CRL). A CRL file can be specified using the
-@ref{tls_crl_file} command, but getting the relevant CRL files and keeping them
-up to date is not straightforward. You are basically on your own.
-
-A much more serious and fundamental problem is is that you need to trust CAs.
+A fundamental problem with this is that you need to trust CAs.
 Like any other organization, a CA can be incompetent, malicious, subverted by
 bad people, or forced by government agencies to compromise end users without
 telling them. All of these things happened and continue to happen worldwide.
@@ -813,6 +878,12 @@ certificate (so you can trust that particular certificate via
 @samp{tls_fingerprint}).
 @xref{Server information mode}.
 
+If you need to fine tune TLS parameters, have a look at the
+@ref{tls_priorities} command.
+
+@anchor{Client Certificates}
+@section Client Certificates
+
 TLS also allows the server to verify the identity of the client. For this
 purpose, the client has to present a certificate issued by a CA that the server
 trusts. To present that certificate, the client also needs the matching key
@@ -821,8 +892,30 @@ file. You can set the certificate and key files using @ref{tls_cert_file} and
 that traditional user / password authentication is not necessary anymore. See the
 EXTERNAL mechanism in @ref{Authentication}.
 
-If you need to fine tune TLS parameters, have a look at the
-@ref{tls_priorities} and @ref{tls_min_dh_prime_bits} commands.
+@example
+# Enable TLS
+tls on
+# Enable TLS client certificates
+tls_cert_file /path/to/client_cert
+tls_key_file /path/to/client_key
+# Enable authentication via the EXTERNAL mechanism (optional; depends on server)
+# The user name is empty because the server should get it from the client cert
+auth external
+user ""
+@end example
+
+You can also use client certificates stored on some external authentication
+device by specifying GnuTLS device URIs in @ref{tls_cert_file} and
+@ref{tls_key_file}. You can find the correct URIs using @code{p11tool
+--list-privkeys --login} (p11tool is bundled with GnuTLS). If your device
+requires a PIN to access the data, you can specify that using one of the
+password mechanisms (e.g. @ref{passwordeval}, @ref{password}). 
+
+@example
+tls_cert_file pkcs11:model=PKCS%2315%20emulated;manufacturer=piv_II;serial=00000000;token=PIV_II%20%28PIV%20Card%20Holder%20pin%29;id=%01;object=Certificate%20for%20PIV%20Authentication;type=cert
+tls_key_file  pkcs11:model=PKCS%2315%20emulated;manufacturer=piv_II;serial=00000000;token=PIV_II%20%28PIV%20Card%20Holder%20pin%29;id=%01;object=PIV%20AUTH%20key;type=private
+passwordeval  gpg2 --no-tty -q -d ~/.smart-card-pin.gpg
+@end example
 
 
 @node Authentication
@@ -853,7 +946,7 @@ joe.smith with your user name.
 @item Store the password in an encrypted files, and use @ref{passwordeval}
 to specify a command to decrypt that file, e.g. using GnuPG. @xref{Examples}.
 @item Store the password in the configuration file using the @ref{password} command.
-(Usually it is not considered a good idea to store passwords in plain text files.
+(Usually it is not considered a good idea to store passwords in cleartext files.
 If you do it anyway, you must make sure that the file can only be read by yourself.)
 @item Store the password in @file{~/.netrc}. This method is probably obsolete.
 @item Type the password into the terminal when it is required.
@@ -866,33 +959,41 @@ being sent unencrypted to the server, but nowadays everybody needs
 @ref{Transport Layer Security} anyway, so the simple methods suffice since the
 whole session is protected. A suitable authentication method is chosen
 automatically, and when TLS is disabled for some reason, only methods that avoid
-sending clear text passwords are considered.
+sending cleartext passwords are considered.
 
 The following user / password methods are supported:
 @itemize
 @item @samp{PLAIN}@*
-A simple plain text method supported by almost all servers.
+A simple cleartext method supported by almost all servers.
 @item @samp{SCRAM-SHA-1}@*
-A method that avoids clear-text passwords.
+A method that avoids cleartext passwords.
+@item @samp{SCRAM-SHA-256}@*
+A method that avoids cleartext passwords.  Same family as SCRAM-SHA-1
+but with stronger hash function.
 @item @samp{CRAM-MD5}@*
-An obsolete method that avoids clear-text passwords, but is not considered
+An obsolete method that avoids cleartext passwords, but is not considered
 secure anymore.
 @item @samp{DIGEST-MD5}@*
-An overcomplicated obsolete method that avoids clear-text passwords, but is not
+An overcomplicated obsolete method that avoids cleartext passwords, but is not
 considered secure anymore.
 @item @samp{LOGIN}@*
-A non-standard clear-text method similar to (but worse than) PLAIN.
+A non-standard cleartext method similar to (but worse than) PLAIN.
 @item @samp{NTLM}@*
 An obscure non-standard method that is now considered broken. It sometimes requires
 a special domain parameter passed via @ref{ntlmdomain}. Do not use it.
 @end itemize
 
-There are currently two authentication methods that are not based on user /
+There are currently three authentication methods that are not based on user /
 password information and have to be chosen manually:
 @itemize
+@item @samp{OAUTHBEARER} or its predecessor @samp{XOAUTH2}@*
+An OAuth2 token from the mail provider is used as the password.
+See the documentation of your mail provider for details on how to get this
+token. The @samp{passwordeval} command can be used to pass the regularly changing
+tokens into msmtp from a script or an environment variable.
 @item @samp{EXTERNAL}@*
 The authentication happens outside of the protocol, typically by sending a TLS
-client certificate (see @ref{Transport Layer Security}).@*
+client certificate (see @ref{Client Certificates}).@*
 The EXTERNAL method merely confirms that this authentication succeeded; it does
 not perform the authentication. Thus it may not be necessary to use it for
 authentication to succeed, and if the server does not support the EXTERNAL
@@ -948,8 +1049,8 @@ envelope-from address. It is independent of the From header (because it is
 part of the mail @emph{envelope}, not of the mail itself), but in most cases
 both addresses are the same.
 
-Envelope-from addresses can be generated automatically (when @ref{auto_from}
-is enabled) or set explicitly with the @ref{from} command.
+Envelope-from addresses are set with the @ref{from} command, which allows
+automatisms using some substitution patterns.
 
 @node Logging
 @section Logging
@@ -994,11 +1095,13 @@ Msmtp transmits mails unaltered to the SMTP server, with the following exception
 @item The Bcc header(s) will be removed. This behavior can be changed with the
 @ref{remove_bcc_headers} command,
 @item A From header will be added if the mail does not have one. This can be changed
-with the @ref{add_missing_from_header} command.
+with the @ref{set_from_header} command.
 The header will use the envelope from address and optionally a full name set
 with the @samp{-F} option.
 @item A Date header will be added if the mail does not have one. This can be changed
-with the @ref{add_missing_date_header} command.
+with the @ref{set_date_header} command.
+@item When @ref{undisclosed_recipients} is set, the original To, Cc, and Bcc headers
+are removed and replaced with "To: undisclosed-recipients:;".
 @end itemize
 
 
@@ -1117,10 +1220,6 @@ tls on
 # Set a list of trusted CAs for TLS. The default is to use system settings, but
 # you can select your own file.
 #tls_trust_file /etc/ssl/certs/ca-certificates.crt
-# If you select your own file, you should also use the tls_crl_file command to
-# check for revoked certificates, but unfortunately getting revocation lists and
-# keeping them up to date is not straightforward.
-#tls_crl_file ~/.tls-crls
 
 
 # A freemail service
@@ -1129,7 +1228,7 @@ account freemail
 # Host name of the SMTP server
 host smtp.freemail.example
 
-# As an alternative to tls_trust_file/tls_crl_file, you can use tls_fingerprint
+# As an alternative to tls_trust_file, you can use tls_fingerprint
 # to pin a single certificate. You have to update the fingerprint when the
 # server certificate changes, but an attacker cannot trick you into accepting
 # a fraudulent certificate. Get the fingerprint with
@@ -1156,7 +1255,7 @@ user joe.smith
 passwordeval gpg2 --no-tty -q -d ~/.msmtp-password.gpg
 
 # Password method 3: Store the password directly in this file. Usually it is not
-# a good idea to store passwords in plain text files. If you do it anyway, at
+# a good idea to store passwords in cleartext files. If you do it anyway, at
 # least make sure that this file can only be read by yourself.
 #password secret123
 
@@ -1194,7 +1293,7 @@ account default : freemail
 account default
 
 # The SMTP smarthost
-host mailhub.oursite.example
+host mail.oursite.example
 
 # Use TLS on port 465
 port 465
@@ -1202,8 +1301,7 @@ tls on
 tls_starttls off
 
 # Construct envelope-from addresses of the form "user@@oursite.example"
-#auto_from on
-#maildomain oursite.example
+from %U@@oursite.example
 
 # Syslog logging with facility LOG_MAIL instead of the default LOG_USER
 syslog LOG_MAIL

@@ -1,10 +1,10 @@
 /*
- * tls.h
+ * mtls.h
  *
- * This file is part of msmtp, an SMTP client.
+ * This file is part of msmtp, an SMTP client, and of mpop, a POP3 client.
  *
  * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2010, 2014, 2016,
- * 2018, 2019
+ * 2018, 2019, 2020
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -21,18 +21,18 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TLS_H
-#define TLS_H
+#ifndef MTLS_H
+#define MTLS_H
 
-#ifdef HAVE_LIBGNUTLS
-# include <gnutls/gnutls.h>
-#endif /* HAVE_LIBGNUTLS */
-#ifdef HAVE_LIBSSL
-# include <openssl/ssl.h>
-#endif /* HAVE_LIBSSL */
+/*
+ * TODO: the following updates should be made for the next stable series:
+ * - remove SHA1 and MD5 fingerprints, support only SHA256
+ * - remove tls_min_dh_prime_bits support; tls_priorities should be used instead
+ */
+
+#include <time.h>
 
 #include "readbuf.h"
-
 
 /*
  * If a function with an 'errstr' argument returns a value != TLS_EOK,
@@ -53,6 +53,8 @@
  * Never call a tls_*() function with tls_t NULL!
  */
 
+struct mtls_internals_t;
+
 typedef struct
 {
     int is_active;
@@ -61,25 +63,13 @@ typedef struct
     int have_sha1_fingerprint;
     int have_md5_fingerprint;
     unsigned char fingerprint[32];
-#ifdef HAVE_LIBGNUTLS
-    gnutls_session_t session;
-    gnutls_certificate_credentials_t cred;
-#endif /* HAVE_LIBGNUTLS */
-#ifdef HAVE_LIBSSL
-    SSL_CTX *ssl_ctx;
-    SSL *ssl;
-#endif /* HAVE_LIBSSL */
-} tls_t;
+    int no_certcheck;
+    char *hostname;
+    struct mtls_internals_t *internals;
+} mtls_t;
 
 /*
  * Information about a X509 certificate.
- * The 6 owner_info and issuer_info fields are:
- *   Common Name
- *   Organization
- *   Organizational unit
- *   Locality
- *   State/Province
- *   Country
  * Each of these entries may be NULL if it was not provided.
  */
 typedef struct
@@ -88,31 +78,34 @@ typedef struct
     unsigned char sha1_fingerprint[20];
     time_t activation_time;
     time_t expiration_time;
-    char *owner_info[6];
-    char *issuer_info[6];
-} tls_cert_info_t;
+    char *subject_info;
+    char *issuer_info;
+} mtls_cert_info_t;
 
 /*
- * tls_lib_init()
+ * mtls_lib_init()
  *
  * Initialize underlying TLS library. If this function returns TLS_ELIBFAILED,
  * *errstr will always point to an error string.
  * Used error codes: TLS_ELIBFAILED
  */
-int tls_lib_init(char **errstr);
+int mtls_lib_init(char **errstr);
 
 /*
- * tls_clear()
+ * mtls_clear()
  *
- * Clears a tls_t type (marks it inactive).
+ * Clears a mtls_t type (marks it inactive).
  */
-void tls_clear(tls_t *tls);
+void mtls_clear(mtls_t *mtls);
 
 /*
- * tls_init()
+ * mtls_init()
  *
- * Initializes a tls_t. If both 'key_file' and 'cert_file' are not NULL, they
- * are set to be used when the peer request a certificate. If 'trust_file' is
+ * Initializes a mtls_t. If both 'key_file' and 'cert_file' are not NULL, they
+ * are set to be used when the peer request a certificate.
+ * If 'key_file' and 'cert_file' are PKCS11 URIS, a PIN might be needed to access
+ * e.g. a smart card; this must be given in 'pin' (which can be NULL if there is no PIN).
+ * If 'trust_file' is
  * not NULL, it will be used to verify the peer certificate. If additionally
  * 'crl_file' is not NULL, then this file will be used during verification to
  * check if a certificate has been revoked. If 'trust_file' is NULL and one of
@@ -125,118 +118,131 @@ void tls_clear(tls_t *tls);
  * zero, the library default is used.
  * If 'priorities' is not NULL, it must contain a string describing the TLS
  * priorities. This is library dependent; see gnutls_priority_init().
+ * 'hostname' is the host to start TLS with. It is needed for sanity checks/
+ * verification.
+ * If 'no_certcheck' is true, then no checks will be performed on the peer
+ * certificate. If it is false and no trust file was set with mtls_init(),
+ * only sanity checks are performed on the peer certificate. If it is false
+ * and a trust file was set, real verification of the peer certificate is
+ * performed.
  * Used error codes: TLS_ELIBFAILED, TLS_EFILE
  */
-int tls_init(tls_t *tls,
-        const char *key_file, const char *cert_file,
+int mtls_init(mtls_t *mtls,
+        const char *key_file, const char *cert_file, const char* pin,
         const char *trust_file, const char *crl_file,
         const unsigned char *sha256_fingerprint,
         const unsigned char *sha1_fingerprint,
         const unsigned char *md5_fingerprint,
         int min_dh_prime_bits, const char *priorities,
+        const char *hostname,
+        int no_certcheck,
         char **errstr);
 
 /*
- * tls_start()
+ * mtls_start()
  *
  * Starts TLS encryption on a socket.
- * 'tls' must be initialized using tls_init().
- * If 'no_certcheck' is true, then no checks will be performed on the peer
- * certificate. If it is false and no trust file was set with tls_init(),
- * only sanity checks are performed on the peer certificate. If it is false
- * and a trust file was set, real verification of the peer certificate is
- * performed.
- * 'hostname' is the host to start TLS with. It is needed for sanity checks/
- * verification.
- * 'tci' must be allocated with tls_cert_info_new(). Information about the
+ * 'mtls' must be initialized using mtls_init().
+ * 'tci' must be allocated with mtls_cert_info_new(). Information about the
  * peer's certificata will be stored in it. It can later be freed with
- * tls_cert_info_free(). 'tci' is allowed to be NULL; no certificate
+ * mtls_cert_info_free(). 'tci' is allowed to be NULL; no certificate
  * information will be passed in this case.
- * 'tls_parameter_description' may be NULL; if it is not, it will be used
+ * 'mtls_parameter_description' may be NULL; if it is not, it will be used
  * to return an allocated string describing the TLS session parameters.
  * Used error codes: TLS_ELIBFAILED, TLS_ECERT, TLS_EHANDSHAKE
  */
-int tls_start(tls_t *tls, int fd, const char *hostname, int no_certcheck,
-        tls_cert_info_t *tci, char **tls_parameter_description, char **errstr);
+int mtls_start(mtls_t *mtls, int fd,
+        mtls_cert_info_t *tci, char **mtls_parameter_description, char **errstr);
 
 /*
- * tls_is_active()
+ * mtls_is_active()
  *
- * Returns whether 'tls' is an active TLS connection.
+ * Returns whether 'mtls' is an active TLS connection.
  */
-int tls_is_active(tls_t *tls);
+int mtls_is_active(mtls_t *mtls);
 
 /*
- * tls_cert_info_new()
- * Returns a new tls_cert_info_t
+ * mtls_cert_info_new()
+ * Returns a new mtls_cert_info_t
  */
-tls_cert_info_t *tls_cert_info_new(void);
+mtls_cert_info_t *mtls_cert_info_new(void);
 
 /*
- * tls_cert_info_free()
- * Frees a tls_cert_info_t
+ * mtls_cert_info_free()
+ * Frees a mtls_cert_info_t
  */
-void tls_cert_info_free(tls_cert_info_t *tci);
+void mtls_cert_info_free(mtls_cert_info_t *tci);
 
 /*
- * tls_cert_info_get()
+ * mtls_cert_info_get()
  *
- * Extracts certificate information from the TLS connection 'tls' and stores
- * it in 'tci'. See the description of tls_cert_info_t above.
+ * Extracts certificate information from the TLS connection 'mtls' and stores
+ * it in 'tci'. See the description of mtls_cert_info_t above.
  * Used error codes: TLS_ECERT
  */
-int tls_cert_info_get(tls_t *tls, tls_cert_info_t *tci, char **errstr);
+int mtls_cert_info_get(mtls_t *mtls, mtls_cert_info_t *tci, char **errstr);
 
 /*
- * tls_print_info()
+ * mtls_print_info()
  *
  * Prints information about a TLS session.
  */
-void tls_print_info(const char *tls_parameter_description,
-        const tls_cert_info_t *tci);
+void mtls_print_info(const char *mtls_parameter_description,
+        const mtls_cert_info_t *tci);
 
 /*
- * tls_gets()
+ * mtls_gets()
  *
- * Reads in at most one less than 'size' characters from 'tls' and stores them
+ * Reads in at most one less than 'size' characters from 'mtls' and stores them
  * into the buffer pointed 'str'. Reading stops after an EOF or a newline.
  * If a newline is read, it is stored into the buffer. A '\0' is stored after
  * the last character in the buffer. The length of the resulting string (the
  * number of characters excluding the terminating '\0') will be stored in 'len'.
  * 'readbuf' will be used as an input buffer and must of course be the same for
- * all read operations on 'tls'.
+ * all read operations on 'mtls'.
  * Used error codes: TLS_EIO
  */
-int tls_gets(tls_t *tls, readbuf_t *readbuf,
+int mtls_gets(mtls_t *mtls, readbuf_t *readbuf,
         char *str, size_t size, size_t *len, char **errstr);
 
 /*
- * tls_puts()
+ * mtls_puts()
  *
  * Writes 'len' characters from the string 's' using TLS.
  * Used error codes: TLS_EIO
  */
-int tls_puts(tls_t *tls, const char *s, size_t len, char **errstr);
+int mtls_puts(mtls_t *mtls, const char *s, size_t len, char **errstr);
 
 /*
- * tls_close()
+ * mtls_close()
  *
  * Close a TLS connection and mark it inactive
  */
-void tls_close(tls_t *tls);
+void mtls_close(mtls_t *mtls);
 
 /*
- * tls_lib_deinit()
+ * mtls_lib_deinit()
  *
  * Deinit underlying TLS library.
  */
-void tls_lib_deinit(void);
+void mtls_lib_deinit(void);
 
 /*
- * tls_exitcode()
+ * mtls_exitcode()
  *
  * Translate TLS_* error code to an error code from sysexits.h
  */
-int tls_exitcode(int tls_error_code);
+int mtls_exitcode(int mtls_error_code);
+
+
+/*** THE FOLLOWING ARE ONLY USED INTERNALLY ***/
+
+/*
+ * mtls_readbuf_read()
+ *
+ * Wraps TLS read function to provide buffering for mtls_gets().
+ */
+int mtls_readbuf_read(mtls_t *mtls, readbuf_t *readbuf, char *ptr, char **errstr);
+
 
 #endif

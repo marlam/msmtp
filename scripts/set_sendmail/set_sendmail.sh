@@ -105,7 +105,7 @@ function get_domainname()
     # Try and get domain name from /etc/resolv.conf.
     # 2007-07-10: If a vpn connection is active, then it usually adds the
     # private search domain as the last field.
-    domainname=$(egrep -m1 '^(search|domain)' /etc/resolv.conf |	\
+    domainname=$(grep -E -m1 '^(search|domain)' /etc/resolv.conf |	\
 		    awk '{ print $NF }')
     debug "Got domain '$domainname' from /etc/resolv.conf"
     [[ -n $domainname ]] && return;
@@ -165,9 +165,9 @@ for ((i=0; i<${#accounts[*]}; i++ )); do
     if [[ -n ${resolv_regexp[$i]} ]]; then
 	regexp=${resolv_regexp[$i]}
 	if [[ ${regexp:0:1} != '!' ]]; then
-	    egrep -q $regexp /etc/resolv.conf && do_account ${accounts[$i]}
+	    grep -E -q $regexp /etc/resolv.conf && do_account ${accounts[$i]}
 	else
-	    egrep -q ${regexp:1} /etc/resolv.conf || do_account ${accounts[$i]}
+	    grep -E -q ${regexp:1} /etc/resolv.conf || do_account ${accounts[$i]}
 	fi
     fi
 done

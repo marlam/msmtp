@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2018, 2019  Martin Lambers <marlam@marlam.de>
+ * Copyright (C) 2018, 2019, 2020, 2021  Martin Lambers <marlam@marlam.de>
  * Copyright (C) 2021 Informatyka Boguslawski sp. z o.o. sp.k., http://www.ib.pl/
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -27,12 +27,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 #include <errno.h>
 #include <unistd.h>
 #include <signal.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
-#include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/wait.h>
 #include <getopt.h>
@@ -177,9 +177,9 @@ int msmtpd_session(FILE* in, FILE* out, const char* command, int* cmd_err_code)
     char* cmd;
     char* tmpcmd;
     size_t cmd_blocks;
-    size_t cmd_index = 0;
-    int envfrom_was_handled = 0;
-    int recipient_was_seen = 0;
+    size_t cmd_index;
+    int envfrom_was_handled;
+    int recipient_was_seen;
     FILE* pipe;
     int pipe_status;
     size_t i;
@@ -188,127 +188,129 @@ int msmtpd_session(FILE* in, FILE* out, const char* command, int* cmd_err_code)
     fprintf(out, "220 localhost ESMTP msmtpd\r\n");
     if (read_smtp_cmd(in, buf, SMTP_BUFSIZE) != 0)
         return 1;
-    if (strncmp(buf, "EHLO ", 5) != 0 && strncmp(buf, "HELO ", 5) != 0) {
+    if (strncasecmp(buf, "EHLO ", 5) != 0 && strncasecmp(buf, "HELO ", 5) != 0) {
         fprintf(out, "500 Expected EHLO or HELO\r\n");
         return 1;
     }
     fprintf(out, "250 localhost\r\n");
     if (read_smtp_cmd(in, buf, SMTP_BUFSIZE) != 0)
         return 1;
-    if (strncmp(buf, "MAIL FROM:", 10) != 0 && strcmp(buf, "QUIT") != 0) {
-        fprintf(out, "500 Expected MAIL FROM:<addr> or QUIT\r\n");
-        return 1;
-    }
-    if (strcmp(buf, "QUIT") == 0) {
-        fprintf(out, "221 Bye\r\n");
-        return 0;
-    }
-    if (get_addr(buf + 10, addrbuf, 1, &addrlen) != 0) {
-        fprintf(out, "501 Invalid address\r\n");
-        return 1;
-    }
-
-    cmd_blocks = 1;
-    while (cmd_blocks * CMD_BLOCK_SIZE < strlen(command) + addrlen + 2 * SMTP_BUFSIZE)
-        cmd_blocks++;
-    cmd = malloc(cmd_blocks * CMD_BLOCK_SIZE);
-    if (!cmd) {
-        fprintf(out, "554 %s\r\n", strerror(ENOMEM));
-        return 1;
-    }
-
-    for (i = 0; command[i];) {
-        if (!envfrom_was_handled && command[i] == '%' && command[i + 1] == 'F') {
-            memcpy(cmd + cmd_index, addrbuf, addrlen);
-            cmd_index += addrlen;
-            i += 2;
-            envfrom_was_handled = 1;
-        } else {
-            cmd[cmd_index] = command[i];
-            cmd_index++;
-            i++;
-        }
-    }
-    fprintf(out, "250 Ok\r\n");
 
     for (;;) {
-        if (read_smtp_cmd(in, buf, SMTP_BUFSIZE) != 0) {
-            free(cmd);
+        cmd_index = 0;
+        envfrom_was_handled = 0;
+        recipient_was_seen = 0;
+
+        if (strncasecmp(buf, "MAIL FROM:", 10) != 0 && strcasecmp(buf, "QUIT") != 0) {
+            fprintf(out, "500 Expected MAIL FROM:<addr> or QUIT\r\n");
             return 1;
         }
-        if (!recipient_was_seen) {
-            if (strncmp(buf, "RCPT TO:", 8) != 0) {
-                fprintf(out, "500 Expected RCPT TO:<addr>\r\n");
-                free(cmd);
-                return 1;
-            }
-        } else {
-            if (strncmp(buf, "RCPT TO:", 8) != 0 && strcmp(buf, "DATA") != 0) {
-                fprintf(out, "500 Expected RCPT TO:<addr> or DATA\r\n");
-                free(cmd);
-                return 1;
+        if (strcasecmp(buf, "QUIT") == 0) {
+            fprintf(out, "221 Bye\r\n");
+            return 0;
+        }
+        if (get_addr(buf + 10, addrbuf, 1, &addrlen) != 0) {
+            fprintf(out, "501 Invalid address\r\n");
+            return 1;
+        }
+
+        cmd_blocks = 1;
+        while (cmd_blocks * CMD_BLOCK_SIZE < strlen(command) + addrlen + 2 * SMTP_BUFSIZE)
+            cmd_blocks++;
+        cmd = malloc(cmd_blocks * CMD_BLOCK_SIZE);
+        if (!cmd) {
+            fprintf(out, "554 %s\r\n", strerror(ENOMEM));
+            return 1;
+        }
+
+        for (i = 0; command[i];) {
+            if (!envfrom_was_handled && command[i] == '%' && command[i + 1] == 'F') {
+                memcpy(cmd + cmd_index, addrbuf, addrlen);
+                cmd_index += addrlen;
+                i += 2;
+                envfrom_was_handled = 1;
+            } else {
+                cmd[cmd_index] = command[i];
+                cmd_index++;
+                i++;
             }
         }
-        if (strcmp(buf, "DATA") == 0) {
-            break;
-        } else {
-            if (get_addr(buf + 8, addrbuf, 0, &addrlen) != 0) {
-                fprintf(out, "501 Invalid address\r\n");
+        fprintf(out, "250 Ok\r\n");
+
+        for (;;) {
+            if (read_smtp_cmd(in, buf, SMTP_BUFSIZE) != 0) {
                 free(cmd);
                 return 1;
             }
-            if (cmd_index + 1 + addrlen + 1 >= cmd_blocks * CMD_BLOCK_SIZE) {
-                cmd_blocks++;
-                if (cmd_blocks > CMD_MAX_BLOCKS) {
-                    fprintf(out, "554 Too many recipients\r\n");
+            if (!recipient_was_seen) {
+                if (strncasecmp(buf, "RCPT TO:", 8) != 0) {
+                    fprintf(out, "500 Expected RCPT TO:<addr>\r\n");
                     free(cmd);
                     return 1;
                 }
-                tmpcmd = realloc(cmd, cmd_blocks * CMD_MAX_BLOCKS);
-                if (!tmpcmd) {
+            } else {
+                if (strncasecmp(buf, "RCPT TO:", 8) != 0 && strcasecmp(buf, "DATA") != 0) {
+                    fprintf(out, "500 Expected RCPT TO:<addr> or DATA\r\n");
                     free(cmd);
-                    fprintf(out, "554 %s\r\n", strerror(ENOMEM));
                     return 1;
                 }
-                cmd = tmpcmd;
             }
-            cmd[cmd_index++] = ' ';
-            memcpy(cmd + cmd_index, addrbuf, addrlen);
-            cmd_index += addrlen;
-            fprintf(out, "250 Ok\r\n");
-            recipient_was_seen = 1;
+            if (strcasecmp(buf, "DATA") == 0) {
+                break;
+            } else {
+                if (get_addr(buf + 8, addrbuf, 0, &addrlen) != 0) {
+                    fprintf(out, "501 Invalid address\r\n");
+                    free(cmd);
+                    return 1;
+                }
+                if (cmd_index + 1 + addrlen + 1 >= cmd_blocks * CMD_BLOCK_SIZE) {
+                    cmd_blocks++;
+                    if (cmd_blocks > CMD_MAX_BLOCKS) {
+                        fprintf(out, "554 Too many recipients\r\n");
+                        free(cmd);
+                        return 1;
+                    }
+                    tmpcmd = realloc(cmd, cmd_blocks * CMD_MAX_BLOCKS);
+                    if (!tmpcmd) {
+                        free(cmd);
+                        fprintf(out, "554 %s\r\n", strerror(ENOMEM));
+                        return 1;
+                    }
+                    cmd = tmpcmd;
+                }
+                cmd[cmd_index++] = ' ';
+                memcpy(cmd + cmd_index, addrbuf, addrlen);
+                cmd_index += addrlen;
+                fprintf(out, "250 Ok\r\n");
+                recipient_was_seen = 1;
+            }
         }
-    }
-    cmd[cmd_index++] = '\0';
+        cmd[cmd_index++] = '\0';
 
-    pipe = popen(cmd, "w");
-    free(cmd);
-    if (!pipe) {
-        fprintf(out, "%d Cannot start pipe command\r\n", *cmd_err_code);
-        return 1;
-    }
-    fprintf(out, "354 Send data\r\n");
-    if (smtp_pipe(in, pipe, buf, SMTP_BUFSIZE) != 0) {
-        fprintf(out, "%d Cannot pipe mail to command\r\n", *cmd_err_code);
-        return 1;
-    }
-    pipe_status = pclose(pipe);
-    if (pipe_status == -1 || !WIFEXITED(pipe_status)) {
-        fprintf(out, "%d Pipe command failed to execute\r\n", *cmd_err_code);
-        return 1;
-    } else if (WEXITSTATUS(pipe_status) != 0) {
-        fprintf(out, "%d Pipe command reported error %d\r\n", *cmd_err_code, WEXITSTATUS(pipe_status));
-        return 1;
-    }
+        pipe = popen(cmd, "w");
+        free(cmd);
+        if (!pipe) {
+            fprintf(out, "%d Cannot start pipe command\r\n", *cmd_err_code);
+            return 1;
+        }
+        fprintf(out, "354 Send data\r\n");
+        if (smtp_pipe(in, pipe, buf, SMTP_BUFSIZE) != 0) {
+            fprintf(out, "%d Cannot pipe mail to command\r\n", *cmd_err_code);
+            return 1;
+        }
+        pipe_status = pclose(pipe);
+        if (pipe_status == -1 || !WIFEXITED(pipe_status)) {
+            fprintf(out, "%d Pipe command failed to execute\r\n", *cmd_err_code);
+            return 1;
+        } else if (WEXITSTATUS(pipe_status) != 0) {
+            fprintf(out, "%d Pipe command reported error %d\r\n", *cmd_err_code, WEXITSTATUS(pipe_status));
+            return 1;
+        }
 
-    fprintf(out, "250 Ok, mail was piped\r\n");
-    if (read_smtp_cmd(in, buf, SMTP_BUFSIZE) != 0)
-        return 0; /* ignore missing QUIT */
-    if (strcmp(buf, "QUIT") != 0) {
-        fprintf(out, "500 Expected QUIT\r\n");
-        return 1;
+        fprintf(out, "250 Ok, mail was piped\r\n");
+        if (read_smtp_cmd(in, buf, SMTP_BUFSIZE) != 0)
+            break; /* ignore missing QUIT */
     }
-    fprintf(out, "221 Bye\r\n");
     return 0;
 }
 
@@ -342,9 +344,15 @@ int parse_command_line(int argc, char* argv[],
     };
 
     for (;;) {
-        int c = getopt_long(argc, argv, "", options, NULL);
+        int option_index = -1;
+        int c = getopt_long(argc, argv, "", options, &option_index);
         if (c == -1)
             break;
+        if (optarg && optarg[0] == '\0') {
+            fprintf(stderr, "%s: option '--%s' requires non-empty argument\n", argv[0],
+                    options[option_index].name);
+            return 1;
+        }
         switch (c) {
         case msmtpd_option_version:
             *print_version = 1;
@@ -402,7 +410,7 @@ int main(int argc, char* argv[])
     }
     if (print_version) {
         printf("msmtpd version %s\n", VERSION);
-        printf("Copyright (C) 2018 Martin Lambers.\n"
+        printf("Copyright (C) 2021 Martin Lambers.\n"
                 "This is free software.  You may redistribute copies of it under the terms of\n"
                 "the GNU General Public License <http://www.gnu.org/licenses/gpl.html>.\n"
                 "There is NO WARRANTY, to the extent permitted by law.\n");

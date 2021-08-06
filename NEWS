@@ -1,3 +1,75 @@
+Version 1.8.15:
+- Added support for SCRAM-SHA-256 authentication via GNU SASL
+
+Version 1.8.14:
+- Added support for libtls as an alternative to GnuTLS
+
+Version 1.8.13:
+- Added support for XOAUTH2, the predecessor of OAUTHBEARER.
+- The passwordeval command can now handle very long input, which can be
+  necessary for OAUTHBEARER and XOAUTH2.
+- GnuTLS >= 3.4 is required
+
+Version 1.8.12:
+- msmtpd now supports session reuse and improves standards compliance
+- Automatic account matching now supports subaddresses. For example,
+  user+detail@example.com will match account user@example.com.
+
+Version 1.8.11:
+- Add a new undisclosed_recipients command and --undisclosed-recipients option
+  to replace To, Cc, Bcc with a single "To: undisclosed-recipients:;" header.
+- Improved handling of temporary files on Windows systems.
+- Re-enabled support for systems lacking vasprintf(), such as IBM i PASE.
+
+Version 1.8.10:
+- The msmtpq script was fixed (the fix in 1.8.9 was incomplete)
+
+Version 1.8.9:
+- The msmtpq script was fixed (it was accidently broken in 1.8.8)
+
+Version 1.8.8:
+- Added a new socket command and --socket option to connect via local sockets.
+- Added a new tls_host_override command and --tls-host-override option to
+  override the host name used for TLS verification.
+- Added a new set_from_header command and --set-from-header option with three
+  settings:
+  - on: always set a From header, possibly replacing an existing one
+  - off: never set a From header
+  - auto: add a From header if there is none (this is the default).
+  This replaces the add_missing_from_header option (which remains supported).
+- Added a new set_date_header command and --set-date-header option with two
+  settings:
+  - off: never set a Date header
+  - auto: add a Date header if there is none (this is the default).
+  This replaces the add_missing_date_header option (which remains supported).
+- Fixed the handling of empty From headers with --read-recipients/-t.
+- Fixed the source_ip command for proxies.
+
+Version 1.8.7:
+- The from command now supports the patterns %U, %H, %C, %M that are replaced
+  with user name, host name, canonicalized host name, and the contents of
+  /etc/mailname. This replaces the old auto_from and maildomain commands (which
+  remain supported).
+
+Version 1.8.6:
+- Aliases are now expanded recursively
+- Minor bug fixes
+
+Version 1.8.5:
+- Fixed OAUTHBEARER.
+- Support for TLS client certificates via PKCS11 devices, e.g. smart cards.
+- Various small bug fixes and improvements.
+
+Version 1.8.4:
+- Added support for the OAUTHBEARER authentication method.
+- Several minor bug fixes.
+
+Version 1.8.3:
+- This version fixes a security problem that affects version 1.8.2 (older
+  versions are not affected): when the new default value system for
+  tls_trust_file is used, the result of certificate verification was not
+  properly checked.
+
 Version 1.8.2:
 - To simplify TLS setup, the tls_trust_file command has a new default value
   'system' that selects the system default trust. Now you just need tls=on to

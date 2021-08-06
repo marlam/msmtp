@@ -1,219 +1,215 @@
-# Ukrainian translation of msmtp
-# Copyright (C) 2018 Martin Lambers <marlam@marlam.de>
+# Serbian translation for msmtp.
+# Copyright © 2020 Martin Lambers <marlam@marlam.de>
 # This file is distributed under the same license as the msmtp package.
-#
-# Yuri Chornoivan <yurchor@ukr.net>, 2018, 2019, 2020.
+# Мирослав Николић <miroslavnikolic@rocketmail.com>, 2020–2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: msmtp 1.8.14\n"
 "Report-Msgid-Bugs-To: marlam@marlam.de\n"
 "POT-Creation-Date: 2021-03-12 15:28+0100\n"
-"PO-Revision-Date: 2020-12-23 18:16+0200\n"
-"Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
-"Language-Team: Ukrainian <trans-uk@lists.fedoraproject.org>\n"
-"Language: uk\n"
+"PO-Revision-Date: 2021-01-12 07:12+0200\n"
+"Last-Translator: Мирослав Николић <miroslavnikolic@rocketmail.com>\n"
+"Language-Team: Serbian <(nothing)>\n"
+"Language: sr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Bugs: Report translation errors to the Language-Team address.\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Lokalize 20.11.70\n"
+"X-Bugs: Report translation errors to the Language-Team address.\n"
 
 #. TRANSLATORS: msmtp shares a lot of code and translatable strings with
 #. mpop <https://marlam.de/mpop>.
 #: src/msmtp.c:88
 #, c-format
 msgid "%s: FATAL: %s\n"
-msgstr "%s: АВАРІЯ: %s\n"
+msgstr "%s: КОБНО: %s\n"
 
 #: src/msmtp.c:228 src/msmtp.c:406 src/msmtp.c:1401
 #, c-format
 msgid "the server does not support TLS via the STARTTLS command"
-msgstr "на сервері не передбачено підтримки TLS на основі команди STARTTLS"
+msgstr "сервер не подржава „TLS“ путем „STARTTLS“ наредбе"
 
 #: src/msmtp.c:270
 #, c-format
 msgid "the server does not support Remote Message Queue Starting"
-msgstr "на сервері не передбачено підтримки Remote Message Queue Starting"
+msgstr "сервер не подржава започињање реда удаљене поруке"
 
 #: src/msmtp.c:282 src/msmtp.c:1459
 #, c-format
 msgid "the server does not support authentication"
-msgstr "на сервері не передбачено підтримки розпізнавання"
+msgstr "сервер не подржава потврђивање идентитета"
 
 #: src/msmtp.c:441
 #, c-format
 msgid "%s server at %s (%s [%s]), port %d:\n"
-msgstr "сервер %s на %s (%s [%s]), порт %d:\n"
+msgstr "„%s“ сервер на „%s“ (%s [%s]), прикључник %d:\n"
 
 #: src/msmtp.c:447
 #, c-format
 msgid "%s server at %s (%s), port %d:\n"
-msgstr "сервер %s на %s (%s), порт %d:\n"
+msgstr "„%s“ сервер на „%s“ (%s), прикључник %d:\n"
 
 #: src/msmtp.c:453
 #, c-format
 msgid "%s server at %s ([%s]), port %d:\n"
-msgstr "сервер %s на %s ([%s]), порт %d:\n"
+msgstr "„%s“ сервер на „%s“ ([%s]), прикључник %d:\n"
 
 #: src/msmtp.c:459
 #, c-format
 msgid "%s server at %s, port %d:\n"
-msgstr "сервер %s на %s, порт %d:\n"
+msgstr "„%s“ сервер на „%s“, прикључник %d:\n"
 
 #: src/msmtp.c:479
 #, c-format
 msgid "No special capabilities.\n"
-msgstr "Немає особливих можливостей.\n"
+msgstr "Нема нарочитих могућности.\n"
 
 #: src/msmtp.c:483
 #, c-format
 msgid "Capabilities:\n"
-msgstr "Можливості:\n"
+msgstr "Могућности:\n"
 
 #: src/msmtp.c:487
 msgid "Maximum message size is "
-msgstr "Максимальний розмір повідомлення — "
+msgstr "Највећа величина поруке је "
 
 #: src/msmtp.c:490
 #, c-format
 msgid "unlimited\n"
-msgstr "без обмежень\n"
+msgstr "неограничено\n"
 
 #: src/msmtp.c:494
 #, c-format
 msgid "%ld bytes"
-msgstr "%ld байтів"
+msgstr "%ld бајта"
 
 #: src/msmtp.c:497
 #, c-format
 msgid " = %.2f MiB"
-msgstr " = %.2f МіБ"
+msgstr " = %.2f MiB"
 
 #: src/msmtp.c:502
 #, c-format
 msgid " = %.2f KiB"
-msgstr " = %.2f КіБ"
+msgstr " = %.2f KiB"
 
 #: src/msmtp.c:509
 msgid "Support for command grouping for faster transmission"
-msgstr "Підтримка групування команд для швидшого передавання даних"
+msgstr "Подршка за груписање наредби ради бржег преноса"
 
 #: src/msmtp.c:514
 msgid "Support for RMQS (Remote Message Queue Starting)"
-msgstr "Підтримка RMQS (Remote Message Queue Starting)"
+msgstr "Подршка за „RMQS“ (започињање реда удаљене поруке)"
 
 #: src/msmtp.c:519
 msgid "Support for Delivery Status Notifications"
-msgstr "Підтримка сповіщень щодо доставлення"
+msgstr "Подршка за обавештења стања испоруке"
 
 #: src/msmtp.c:529
 msgid "Support for TLS encryption via the STARTTLS command"
-msgstr "Підтримка шифрування TLS на основі команди STARTTLS"
+msgstr "Подршка за „TLS“ шифровање путем наредбе „STARTTLS“"
 
 #: src/msmtp.c:535
 msgid "Supported authentication methods:"
-msgstr "Підтримувані способи розпізнавання:"
+msgstr "Подржани начини потврђивања идентитета:"
 
 #: src/msmtp.c:588
 #, c-format
 msgid ""
 "This server might advertise more or other capabilities when TLS is active.\n"
-msgstr "Можливості цього сервера можуть бути ширшими, якщо увімкнено TLS.\n"
+msgstr ""
+"Овај сервер може обавестити о више или о другим могућностима када је „TLS“ "
+"активно.\n"
 
 #: src/msmtp.c:1153 src/msmtp.c:3299
 #, c-format
 msgid "cannot write mail headers to temporary file: output error"
-msgstr ""
-"не вдалося виконати запис заголовків повідомлення до тимчасового файла: "
-"помилка під час виведення даних"
+msgstr "не могу да пишем заглавља поште у привремену датотеку: излазна грешка"
 
 #: src/msmtp.c:1261
 #, c-format
 msgid "input error while reading the mail"
-msgstr "помилка у вхідних даних під час читання пошти"
+msgstr "улазна грешка приликом читања поште"
 
 #: src/msmtp.c:1448
 #, c-format
 msgid "the server does not support DSN"
-msgstr "на сервері не передбачено підтримки DSN"
+msgstr "сервер не подржава „DSN“"
 
 #: src/msmtp.c:1597 src/msmtp.c:1616 src/msmtp.c:1668
 #, c-format
 msgid "automatic configuration based on SRV records failed: %s"
-msgstr ""
-"не вдалося виконати автоматичне налаштовування на основі записів SRV: %s"
+msgstr "самоподешавање на основу „SRV“ снимака није успело: %s"
 
 #: src/msmtp.c:1598
 msgid "invalid mail address"
-msgstr "некоректна поштова адреса"
+msgstr "нетачна адреса е-поште"
 
 #: src/msmtp.c:1614
 #, c-format
 msgid "no SRV records for %s or %s"
-msgstr "немає записів SRV для %s або %s"
+msgstr "нема „SRV“ снимака за „%s“ или „%s“"
 
 #: src/msmtp.c:1631
 #, c-format
 msgid "copy this to your configuration file %s"
-msgstr "скопіюйте це до вашого файла налаштувань %s"
+msgstr "умножите ово у вашу датотеку подешавања „%s“"
 
 #: src/msmtp.c:1635
 msgid "warning: the host does not match the mail domain; please check"
-msgstr ""
-"попередження: вузол є невідповідним поштовому домену; будь ласка, перевірте"
+msgstr "упозорење: домаћин не одговара домену поште; проверите то"
 
 #: src/msmtp.c:1638 src/msmtp.c:1642
 msgid "add your password to the key ring:"
-msgstr "додайте ваш пароль до сховища ключів:"
+msgstr "додајте вашу лозинку у привезак кључева:"
 
 #: src/msmtp.c:1645
 msgid "encrypt your password:"
-msgstr "зашифруйте ваш пароль:"
+msgstr "шифрујте вашу лозинку:"
 
 #: src/msmtp.c:1669
 msgid "this system lacks libresolv"
-msgstr "у цій системі немає libresolv"
+msgstr "овом систему недостаје „libresolv“"
 
 #: src/msmtp.c:1896
 #, c-format
 msgid "invalid logfile_time_format"
-msgstr "некоректне значення logfile_time_format"
+msgstr "неисправан запис_времена_дневника"
 
 #: src/msmtp.c:1909
 #, c-format
 msgid "cannot open: %s"
-msgstr "не вдалося відкрити: %s"
+msgstr "не могу да отворим: %s"
 
 #: src/msmtp.c:1917
 #, c-format
 msgid "cannot lock (tried for %d seconds): %s"
-msgstr "не вдалося заблокувати (спроби виконувалися %d секунд): %s"
+msgstr "не могу да закључам (покушах %d секунде): %s"
 
 #: src/msmtp.c:1922
 #, c-format
 msgid "cannot lock: %s"
-msgstr "не вдалося заблокувати: %s"
+msgstr "не могу да закључам: %s"
 
 #: src/msmtp.c:1931
 msgid "output error"
-msgstr "помилка виведення"
+msgstr "излазна грешка"
 
 #: src/msmtp.c:1948
 #, c-format
 msgid "cannot log to %s: %s"
-msgstr "не вдалося записати дані журналу до %s: %s"
+msgstr "не могу да упишем дневник у „%s“: %s"
 
 #: src/msmtp.c:1952
 #, c-format
 msgid "log info was: %s"
-msgstr "дані журналу: %s"
+msgstr "подаци дневника беху: %s"
 
 #: src/msmtp.c:2061
 #, c-format
 msgid "%s version %s\n"
-msgstr "%s, версія %s\n"
+msgstr "%s издање %s\n"
 
 #: src/msmtp.c:2062
 #, c-format
@@ -223,12 +219,12 @@ msgstr "Платформа: %s\n"
 #: src/msmtp.c:2064
 #, c-format
 msgid "TLS/SSL library: %s\n"
-msgstr "Бібліотека TLS/SSL: %s\n"
+msgstr "„TLS/SSL“ библиотека: %s\n"
 
 #: src/msmtp.c:2072 src/msmtp.c:2150
 #, c-format
 msgid "none"
-msgstr "немає"
+msgstr "ништа"
 
 #: src/msmtp.c:2076
 #, c-format
@@ -236,31 +232,31 @@ msgid ""
 "Authentication library: %s\n"
 "Supported authentication methods:\n"
 msgstr ""
-"Бібліотека для розпізнавання: %s\n"
-"Підтримувані способи розпізнавання:\n"
+"Библиотека потврђивања идентитета: %s\n"
+"Подржани начини потврђивања идентитета:\n"
 
 #: src/msmtp.c:2079
 msgid "GNU SASL; oauthbearer and xoauth2: built-in"
-msgstr "GNU SASL; oauthbearer та xoauth2: вбудовані"
+msgstr "GNU SASL; oauthbearer и xoauth2: уграђено"
 
 #: src/msmtp.c:2081
 msgid "built-in"
-msgstr "вбудований"
+msgstr "уграђено"
 
 #: src/msmtp.c:2130
 #, c-format
 msgid "IDN support: "
-msgstr "Підтримка IDN: "
+msgstr "„IDN“ подршка: "
 
 #: src/msmtp.c:2134 src/msmtp.c:2142
 #, c-format
 msgid "enabled"
-msgstr "увімкнено"
+msgstr "омогућено"
 
 #: src/msmtp.c:2136 src/msmtp.c:2145
 #, c-format
 msgid "disabled"
-msgstr "вимкнено"
+msgstr "онемогућено"
 
 #: src/msmtp.c:2140
 #, c-format
@@ -270,17 +266,17 @@ msgstr "NLS: "
 #: src/msmtp.c:2143
 #, c-format
 msgid ", LOCALEDIR is %s"
-msgstr ", LOCALEDIR %s"
+msgstr ", ДИРЈЕЗИКА ЈЕ „%s“"
 
 #: src/msmtp.c:2148
 #, c-format
 msgid "Keyring support: "
-msgstr "Підтримка сховища ключів: "
+msgstr "Подршка привеска кључева: "
 
 #: src/msmtp.c:2153
 #, c-format
 msgid "Gnome "
-msgstr "GNOME "
+msgstr "Гном "
 
 #: src/msmtp.c:2156
 #, c-format
@@ -290,12 +286,12 @@ msgstr "MacOS "
 #: src/msmtp.c:2162
 #, c-format
 msgid "System configuration file name: %s\n"
-msgstr "Назва загальносистемного файла налаштувань: %s\n"
+msgstr "Датотека подешавања система: %s\n"
 
 #: src/msmtp.c:2166
 #, c-format
 msgid "User configuration file name: %s\n"
-msgstr "Назва файла налаштувань користувача: %s\n"
+msgstr "Датотека подешавања корисника: %s\n"
 
 #: src/msmtp.c:2169
 #, c-format
@@ -306,12 +302,11 @@ msgid ""
 "the GNU General Public License <http://www.gnu.org/licenses/gpl.html>.\n"
 "There is NO WARRANTY, to the extent permitted by law.\n"
 msgstr ""
-"© Martin Lambers та інші, 2021.\n"
-"Це вільне програмне забезпечення. Ви можете поширювати його копії за умов "
-"дотримання\n"
-"Загальної громадської ліцензії GNU <http://www.gnu.org/licenses/gpl.html>.\n"
-"Щодо користування ним не надається ЖОДНИХ ГАРАНТІЙ, окрім передбачених "
-"законодавством.\n"
+"Ауторска права © 2021. Мартин Ламберс и други.\n"
+"Ово је слободан софтвер.  Можете да расподељујете његове умношке под "
+"условима\n"
+"Гнуове Опште Јавне Лиценце <http://www.gnu.org/licenses/gpl.html>.\n"
+"Не постоји НИКАКВА ГАРАНЦИЈА, у оквирима дозвољеним законом.\n"
 
 #: src/msmtp.c:2186
 #, c-format
@@ -319,7 +314,7 @@ msgid ""
 "Usage:\n"
 "\n"
 msgstr ""
-"Користування:\n"
+"Употреба:\n"
 "\n"
 
 #: src/msmtp.c:2187
@@ -331,11 +326,11 @@ msgid ""
 "  Read a mail from standard input and transmit it to an SMTP or LMTP "
 "server.\n"
 msgstr ""
-"Режим sendmail (типовий):\n"
-"  %s [параметр...] [--] отримувач...\n"
-"  %s [параметр...] -t [--] [отримувач...]\n"
-"  Прочитати пошту зі стандартного вхідного каналу і передати її до сервера "
-"SMTP або LMTP.\n"
+"Режим слања поште (основно):\n"
+"  %s [опција...] [--] прималац...\n"
+"  %s [опција...] -t [--] [прималац...]\n"
+"  Чита пошту са стандардног улаза и пребацује је на „SMTP“ или „LMTP“ "
+"сервер.\n"
 
 #: src/msmtp.c:2192
 #, c-format
@@ -344,9 +339,9 @@ msgid ""
 "  %s --configure=mailadress\n"
 "  Generate and print configuration for address.\n"
 msgstr ""
-"Режим налаштовування:\n"
-"  %s --configure=поштова_адреса\n"
-"  створити і вивести налаштування для вказаної адреси\n"
+"Режим подешавања:\n"
+"  %s --configure=адреса_поште\n"
+"  Ствара и исписује подешавање за адресу.\n"
 
 #: src/msmtp.c:2195
 #, c-format
@@ -355,9 +350,9 @@ msgid ""
 "  %s [option...] --serverinfo\n"
 "  Print information about a server.\n"
 msgstr ""
-"Режим даних щодо сервера:\n"
-"  %s [параметр...] --serverinfo\n"
-"  Вивести відомості щодо сервера.\n"
+"Режим података сервера:\n"
+"  %s [опција...] --serverinfo\n"
+"  Исписује податке о серверу.\n"
 
 #: src/msmtp.c:2198
 #, c-format
@@ -367,73 +362,70 @@ msgid ""
 "  Send a Remote Message Queue Starting request to a server.\n"
 "\n"
 msgstr ""
-"Режим Remote Message Queue Starting:\n"
-"  %s [параметр...] --rmqs=вузол|@домен|#черга\n"
-"  Надіслати запит Remote Message Queue Starting до сервера.\n"
+"Режим започињања реда удаљене поруке:\n"
+"  %s [опција...] --rmqs=домаћин|@домен|#ред\n"
+"  Шаље серверу захтев започињања реда удаљене поруке.\n"
 "\n"
 
 #: src/msmtp.c:2202
 #, c-format
 msgid "General options:\n"
-msgstr "Загальні параметри:\n"
+msgstr "Опште опције:\n"
 
 #: src/msmtp.c:2203
 #, c-format
 msgid "  --version                    print version\n"
-msgstr "  --version                    вивести дані щодо версії\n"
+msgstr "  --version                      исписује издање\n"
 
 #: src/msmtp.c:2204
 #, c-format
 msgid "  --help                       print help\n"
-msgstr "  --help                       вивести додаткове повідомлення\n"
+msgstr "  --help                         исписује помоћ\n"
 
 #: src/msmtp.c:2205
 #, c-format
 msgid "  -P, --pretend                print configuration info and exit\n"
 msgstr ""
-"  -P, --pretend                вивести дані щодо налаштування і завершити "
-"роботу\n"
+"  -P, --pretend                  исписује податке подешавања и излази\n"
 
 #: src/msmtp.c:2206
 #, c-format
 msgid "  -d, --debug                  print debugging information\n"
-msgstr "  -d, --debug                  вивести діагностичну інформацію\n"
+msgstr "  -d, --debug                    исписује податке пречишћавања\n"
 
 #: src/msmtp.c:2207
 #, c-format
 msgid "Changing the mode of operation:\n"
-msgstr "Зміна режиму роботи:\n"
+msgstr "Промена режима рада:\n"
 
 #: src/msmtp.c:2208
 #, c-format
 msgid ""
 "  --configure=mailaddress      generate and print configuration for address\n"
 msgstr ""
-"  --configure=поштова_адреса   створити і вивести налаштування для вказаної "
-"адреси\n"
+"  --configure=адреса_поште       ствара и исписује подешавање за адресу\n"
 
 #: src/msmtp.c:2209
 #, c-format
 msgid "  -S, --serverinfo             print information about the server\n"
-msgstr "  -S, --serverinfo             вивести відомості щодо сервера\n"
+msgstr "  -S, --serverinfo               исписује податке о серверу\n"
 
 #: src/msmtp.c:2210
 #, c-format
 msgid ""
 "  --rmqs=host|@domain|#queue   send a Remote Message Queue Starting request\n"
 msgstr ""
-"  --rmqs=вузол|@домен|#черга   надіслати запит Remote Message Queue "
-"Starting\n"
+"  --rmqs=домаћин|@домен|#ред     шаље захтев започињања реда удаљене поруке\n"
 
 #: src/msmtp.c:2211
 #, c-format
 msgid "Configuration options:\n"
-msgstr "Параметри налаштовування:\n"
+msgstr "Опције подешавања:\n"
 
 #: src/msmtp.c:2212
 #, c-format
 msgid "  -C, --file=filename          set configuration file\n"
-msgstr "  -C, --file=назва_файла       вказати файл налаштувань\n"
+msgstr "  -C, --file=датотека            поставља датотеку подешавања\n"
 
 #: src/msmtp.c:2213
 #, c-format
@@ -443,10 +435,10 @@ msgid ""
 "changed\n"
 "                               with command-line options\n"
 msgstr ""
-"  -a, --account=ідентифікатор  використати вказаний обліковий запис замість\n"
-"                               облікового запису із назвою «default»; його\n"
-"                               параметри можна змінити за допомогою рядка "
-"команди\n"
+"  -a, --account=иб               користи дати налог уместо налога\n"
+"                                 под називом „основни“; његова подешавања се "
+"могу изменити\n"
+"                                 опцијама линије наредби\n"
 
 #: src/msmtp.c:2216
 #, c-format
@@ -455,14 +447,15 @@ msgid ""
 "settings;\n"
 "                               do not use any configuration file data\n"
 msgstr ""
-"  --host=назва_вузла           вказати сервер, використовувати лише "
-"параметри командного рядка;\n"
-"                               не використовувати дані з файла налаштувань\n"
+"  --host=домаћин                 подешава сервер, користи само подешавања "
+"линије наредби;\n"
+"                                 не користи никакве податке датотеке "
+"подешавања\n"
 
 #: src/msmtp.c:2218
 #, c-format
 msgid "  --port=number                set port number\n"
-msgstr "  --port=число                 вказати номер порту\n"
+msgstr "  --port=број                    подешава број прикључника\n"
 
 #: src/msmtp.c:2219
 #, c-format
@@ -470,47 +463,46 @@ msgid ""
 "  --source-ip=[IP]             set/unset source ip address to bind the "
 "socket to\n"
 msgstr ""
-"  --source-ip=[IP]             вказати/скасувати визначення ip-адреси для "
-"прив'язування сокета\n"
+"  --source-ip=[ИП]               подешава/расподешава ип адресу извора на "
+"коју ће свезати прикључницу\n"
 
 #: src/msmtp.c:2220
 #, c-format
 msgid "  --proxy-host=[IP|hostname]   set/unset proxy\n"
-msgstr "  --proxy-host=[IP|вузол]     визначити/скасувати визначення проксі\n"
+msgstr "  --proxy-host=[ИП|домаћин]      подешава/расподешава посредника\n"
 
 #: src/msmtp.c:2221
 #, c-format
 msgid "  --proxy-port=[number]        set/unset proxy port\n"
 msgstr ""
-"  --proxy-port=[число]         вказати/скасувати визначення порту проксі\n"
+"  --proxy-port=[број]            подешава/расподешава прикључник посредника\n"
 
 #: src/msmtp.c:2222
 #, c-format
 msgid "  --socket=[socketname]        set/unset local socket to connect to\n"
 msgstr ""
-"  --socket=[назва_сокета]      вказати/скасувати визначення сокет для "
-"з'єднання\n"
+"  --socket=[прикључница]         подешава/расподешава локалну прикључницу на "
+"коју ће се повезати\n"
 
 #: src/msmtp.c:2223
 #, c-format
 msgid "  --timeout=(off|seconds)      set/unset network timeout in seconds\n"
 msgstr ""
-"  --timeout=(off|секунди)      вказати/скасувати визначення часу очікування "
-"у секундах\n"
+"  --timeout=(искљ.|сек.)         подешава/расподешава време истека мреже у "
+"секундама\n"
 
 #: src/msmtp.c:2224
 #, c-format
 msgid "  --protocol=(smtp|lmtp)       use the given sub protocol\n"
-msgstr ""
-"  --protocol=(smtp|lmtp)       використати вказаний допоміжний протокол\n"
+msgstr "  --protocol=(smtp|lmtp)         користи дати подпротокол\n"
 
 #: src/msmtp.c:2225
 #, c-format
 msgid ""
 "  --domain=string              set the argument of EHLO or LHLO command\n"
 msgstr ""
-"  --domain=рядок               встановити аргумент для команди EHLO або "
-"LHLO\n"
+"  --domain=ниска                 подешава аргумент „EHLO“ или „LHLO“ "
+"наредбе\n"
 
 #: src/msmtp.c:2226
 #, c-format
@@ -518,45 +510,48 @@ msgid ""
 "  --auth[=(on|off|method)]     enable/disable authentication and optionally\n"
 "                               choose the method\n"
 msgstr ""
-"  --auth[=(on|off|метод)]      увімкнути/вимкнути розпізнавання і, якщо "
-"потрібно,\n"
-"                               вибрати спосіб розпізнавання\n"
+"  --auth[=(укљ|искљ|начин)]      омогућује/онемогућује потврђивање "
+"идентитета и\n"
+"                                 опционално бира начин\n"
 
 #: src/msmtp.c:2228
 #, c-format
 msgid "  --user=[username]            set/unset user name for authentication\n"
 msgstr ""
-"  --user=[користувач]          вказати/скасувати визначення користувача для "
-"розпізнавання\n"
+"  --user=[корисник]              подешава/расподешава корисничко име за "
+"потврђивање идентитета\n"
 
 #: src/msmtp.c:2229
 #, c-format
 msgid "  --passwordeval=[eval]        evaluate password for authentication\n"
-msgstr "  --passwordeval=[eval]        перевірити пароль для розпізнавання\n"
+msgstr ""
+"  --passwordeval=[оцењ]          оцењује лозинку за потврђивање идентитета\n"
 
 #: src/msmtp.c:2230
 #, c-format
 msgid "  --tls[=(on|off)]             enable/disable TLS encryption\n"
-msgstr "  --tls[=(on|off)]             увімкнути/вимкнути шифрування TLS\n"
+msgstr ""
+"  --tls[=(укљ|искљ)]             омогућује/онемогућује „TLS“ шифровање\n"
 
 #: src/msmtp.c:2231
 #, c-format
 msgid "  --tls-starttls[=(on|off)]    enable/disable STARTTLS for TLS\n"
-msgstr "  --tls-starttls[=(on|off)]    увімкнути/вимкнути STARTTLS для TLS\n"
+msgstr ""
+"  --tls-starttls[=(укљ|искљ)]    омогућује/онемогућује „STARTTLS“ за „TLS“\n"
 
 #: src/msmtp.c:2232
 #, c-format
 msgid "  --tls-trust-file=[file]      set/unset trust file for TLS\n"
 msgstr ""
-"  --tls-trust-file=[файл]      вказати/скасувати визначення файла довіри для "
-"TLS\n"
+"  --tls-trust-file=[датотека]    подешава/расподешава датотеку поверења за "
+"„TLS“\n"
 
 #: src/msmtp.c:2233
 #, c-format
 msgid "  --tls-crl-file=[file]        set/unset revocation file for TLS\n"
 msgstr ""
-"  --tls-crl-file=[файл]        вказати/скасувати визначення файла "
-"відкликання для TLS\n"
+"  --tls-crl-file=[датотека]      подешава/расподешава датотеку опозивања за "
+"„TLS“\n"
 
 #: src/msmtp.c:2234
 #, c-format
@@ -564,8 +559,8 @@ msgid ""
 "  --tls-fingerprint=[f]        set/unset trusted certificate fingerprint for "
 "TLS\n"
 msgstr ""
-"  --tls-fingerprint=[f]        вказати/скасувати визначення відбитка "
-"надійного сертифіката для TLS\n"
+"  --tls-fingerprint=[ф]          подешава/расподешава отисак поверљивог "
+"уверења за „TLS“\n"
 
 #: src/msmtp.c:2235
 #, c-format
@@ -573,29 +568,28 @@ msgid ""
 "  --tls-certcheck[=(on|off)]   enable/disable server certificate checks for "
 "TLS\n"
 msgstr ""
-"  --tls-certcheck[=(on|off)]   увімкнути/вимкнути перевірки сертифіката для "
-"TLS\n"
+"  --tls-certcheck[=(укљ|искљ)]   подешава/расподешава провере уверења "
+"сервера за „TLS“\n"
 
 #: src/msmtp.c:2236
 #, c-format
 msgid "  --tls-key-file=[file]        set/unset private key file for TLS\n"
 msgstr ""
-"  --tls-key-file=[файл]        вказати/скасувати визначення файла закритого "
-"ключа для TLS\n"
+"  --tls-key-file=[датотека]      подешава/расподешава датотеку личног кључа "
+"за „TLS“\n"
 
 #: src/msmtp.c:2237
 #, c-format
 msgid "  --tls-cert-file=[file]       set/unset private cert file for TLS\n"
 msgstr ""
-"  --tls-cert-file=[файл]        вказати/скасувати визначення файла закритого "
-"сертифіката для TLS\n"
+"  --tls-cert-file=[датотека]     подешава/расподешава датотеку личног "
+"уверења за „TLS“\n"
 
 #: src/msmtp.c:2238
 #, c-format
 msgid "  --tls-priorities=[prios]     set/unset TLS priorities.\n"
 msgstr ""
-"  --tls-priorities=[пріор]     вказати/скасувати визначення пріоритетностей "
-"TLS.\n"
+"  --tls-priorities=[приор]       подешава/расподешава „TLS“ приоритете.\n"
 
 #: src/msmtp.c:2239
 #, c-format
@@ -603,20 +597,20 @@ msgid ""
 "  --tls-host-override=[host]   set/unset override for TLS host "
 "verification.\n"
 msgstr ""
-"  --tls-host-override=[вузол]  встановити або зняти перевизначення для "
-"перевірки вузла TLS.\n"
+"  --tls-host-override=[домаћин]  подешава/расподешава прескок за проверу "
+"„TLS“ домаћина.\n"
 
 #: src/msmtp.c:2240
 #, c-format
 msgid "  --tls-min-dh-prime-bits=[b]  set/unset minimum bit size of DH prime\n"
 msgstr ""
-"  --tls-min-dh-prime-bits=[b]  встановити/скасувати визначення мінімального "
-"розміру у бітах для основи DH\n"
+"  --tls-min-dh-prime-bits=[б]    подешава/расподешава најмању величину бита "
+"„DH“ простог броја\n"
 
 #: src/msmtp.c:2241
 #, c-format
 msgid "Options specific to sendmail mode:\n"
-msgstr "Специфічні для режиму sendmail параметри:\n"
+msgstr "Опције специфичне режиму слања поште:\n"
 
 #: src/msmtp.c:2242
 #, c-format
@@ -624,13 +618,13 @@ msgid ""
 "  --auto-from[=(on|off)]       enable/disable automatic envelope-from "
 "addresses\n"
 msgstr ""
-"  --auto-from[=(on|off)]       увімкнути/вимкнути автоматичне додавання "
-"адрес envelope-from\n"
+"  --auto-from[=(укљ|искљ)]       омогућује/онемогућује аутоматске адресе за "
+"„коверту-шаље“\n"
 
 #: src/msmtp.c:2243
 #, c-format
 msgid "  -f, --from=address           set envelope from address\n"
-msgstr "  -f, --from=адреса            встановити адресу відправника\n"
+msgstr "  -f, --from=адреса              подешава адресу за „коверту шаље“\n"
 
 #: src/msmtp.c:2244
 #, c-format
@@ -638,28 +632,24 @@ msgid ""
 "  --maildomain=[domain]        set the domain for automatic envelope from\n"
 "                               addresses\n"
 msgstr ""
-"  --maildomain=[домен]         встановити домен для автоматичного додавання\n"
-"                               адрес відправника\n"
+"  --maildomain=[домен]           подешава домен за аутоматске адресе за\n"
+"                                 „коверту шаље“\n"
 
 #: src/msmtp.c:2246
 #, c-format
 msgid "  -N, --dsn-notify=(off|cond)  set/unset DSN conditions\n"
-msgstr ""
-"  -N, --dsn-notify=(off|cond)  встановити/скасувати встановлення умов DSN\n"
+msgstr "  -N, --dsn-notify=(искљ|усл)    подешава/расподешава „DSN“ услове\n"
 
 #: src/msmtp.c:2247
 #, c-format
 msgid "  -R, --dsn-return=(off|ret)   set/unset DSN amount\n"
-msgstr ""
-"  -R, --dsn-return=(off|ret)   встановити/скасувати встановлення розміру "
-"DSN\n"
+msgstr "  -R, --dsn-return=(искљ|врат)   подешава/расподешава „DSN“ износ\n"
 
 #: src/msmtp.c:2248
 #, c-format
 msgid "  -X, --logfile=[file]         set/unset log file\n"
 msgstr ""
-"  -X, --logfile=[файл]         встановити/скасувати встановлення файла "
-"журналу\n"
+"  -X, --logfile=[датотека]       подешава/расподешава датотеку дневника\n"
 
 #: src/msmtp.c:2249
 #, c-format
@@ -667,55 +657,55 @@ msgid ""
 "  --logfile-time-format=[fmt]  set/unset log file time format for "
 "strftime()\n"
 msgstr ""
-"  --logfile-time-format=[фмт]  встановити/скасувати встановлення формату "
-"часу у файлі журналу для strftime()\n"
+"  --logfile-time-format=[зпв]    подешава/расподешава запис времена датотеке "
+"дневника за „strftime()“\n"
 
 #: src/msmtp.c:2250
 #, c-format
 msgid ""
 "  --syslog[=(on|off|facility)] enable/disable/configure syslog logging\n"
 msgstr ""
-"  --syslog[=(on|off|facility)] увімкнути/вимкнути/налаштувати ведення "
-"журналу syslog\n"
+"  --syslog[=(укљ|искљ|олакш)]    омогућава/онемогућава/подешава вођење "
+"сситемског дневника\n"
 
 #: src/msmtp.c:2251
 #, c-format
 msgid ""
 "  -t, --read-recipients        read additional recipients from the mail\n"
-msgstr ""
-"  -t, --read-recipients        читати додаткові адреси відправників з пошти\n"
+msgstr "  -t, --read-recipients          чита додатне примаоце из поште\n"
 
 #: src/msmtp.c:2252
 #, c-format
 msgid ""
 "  --read-envelope-from         read envelope from address from the mail\n"
-msgstr "  --read-envelope-from         читати адресу відправника з пошти\n"
+msgstr ""
+"  --read-envelope-from           чита даресу за „коверту шаље“ из поште\n"
 
 #: src/msmtp.c:2253
 #, c-format
 msgid "  --aliases=[file]             set/unset aliases file\n"
 msgstr ""
-"  --aliases=[файл]             встановити/скасувати встановлення файла "
-"псевдонімів\n"
+"  --aliases=[датотека]           подешава/расподешава датотеку алијаса\n"
 
 #: src/msmtp.c:2254
 #, c-format
 msgid "  --set-from-header[=(auto|on|off)] set From header handling\n"
 msgstr ""
-"  --set-from-header[=(auto|on|off)] встановити обробку заголовка «Від»\n"
+"  --set-from-header[=(ауто|укљ|искљ)] подешава руковање заглављем пошиљаоца\n"
 
 #: src/msmtp.c:2255
 #, c-format
 msgid "  --set-date-header[=(auto|off)] set Date header handling\n"
-msgstr "  --set-date-header[=(auto|off)] встановити обробку заголовка «Дата»\n"
+msgstr ""
+"  --set-date-header[=(ауто|искљ)]  подешава руковање заглављем датума\n"
 
 #: src/msmtp.c:2256
 #, c-format
 msgid ""
 "  --remove-bcc-headers[=(on|off)] enable/disable removal of Bcc headers\n"
 msgstr ""
-"  --remove-bcc-headers[=(on|off)] увімкнути/вимкнути вилучення заголовків "
-"Bcc\n"
+"  --remove-bcc-headers[=(укљ|искљ)] омогућује/онемогућује уклањање заглавља "
+"угљених умножака\n"
 
 #: src/msmtp.c:2257
 #, c-format
@@ -724,21 +714,21 @@ msgid ""
 "Bcc\n"
 "                               with To: undisclosed-recipients:;\n"
 msgstr ""
-"  --undisclosed-recipients[=(on|off)] увімкнути або вимкнути заміну To/Cc/"
-"Bcc\n"
-"                               на To: undisclosed-recipients:;\n"
+"  --undisclosed-recipients[=(укљ|искљ)] укључује/искључује замену за „Прима/"
+"Уу/Суу“\n"
+"                               са „Прима: необјављени-примаоци:“;\n"
 
 #: src/msmtp.c:2259
 #, c-format
 msgid "  --                           end of options\n"
-msgstr "  --                           кінець параметрів\n"
+msgstr "  --                             крај опција\n"
 
 #: src/msmtp.c:2260
 #, c-format
 msgid ""
 "Accepted but ignored: -A, -B, -bm, -F, -G, -h, -i, -L, -m, -n, -O, -o, -v\n"
 msgstr ""
-"Приймаються, але ігноруються: -A, -B, -bm, -F, -G, -h, -i, -L, -m, -n, -O, -"
+"Прихваћене али занемарене су: -A, -B, -bm, -F, -G, -h, -i, -L, -m, -n, -O, -"
 "o, -v\n"
 
 #: src/msmtp.c:2261
@@ -748,15 +738,15 @@ msgid ""
 "Report bugs to <%s>.\n"
 msgstr ""
 "\n"
-"Сповіщайте про помилки на адресу <%s>.\n"
+"Грешке пријавите на <%s>.\n"
 
 #: src/msmtp.c:2503 src/msmtp.c:2517
 msgid "cannot use both --serverinfo and --rmqs"
-msgstr "не можна одночасно використовувати --serverinfo і --rmqs"
+msgstr "не можете користити и „--serverinfo“ и „--rmqs“"
 
 #: src/msmtp.c:2537 src/msmtp.c:2549
 msgid "cannot use both --host and --account"
-msgstr "не можна одночасно використовувати --host і --account"
+msgstr "не можете користити и „--host“ и „--account“"
 
 #: src/msmtp.c:2565 src/msmtp.c:2583 src/msmtp.c:2602 src/msmtp.c:2657
 #: src/msmtp.c:2689 src/msmtp.c:2707 src/msmtp.c:2770 src/msmtp.c:2815
@@ -766,51 +756,51 @@ msgstr "не можна одночасно використовувати --host
 #: src/msmtp.c:3221
 #, c-format
 msgid "invalid argument %s for %s"
-msgstr "некоректний аргумент %s %s"
+msgstr "неисправан аргумент „%s“ за „%s“"
 
 #: src/msmtp.c:2612 src/msmtp.c:3184
 msgid "cannot use both --from and --read-envelope-from"
-msgstr "не можна одночасно використовувати --from і --read-envelope-from"
+msgstr "не можете користити и „--from“ и „--read-envelope-from“"
 
 #: src/msmtp.c:3199
 #, c-format
 msgid "unsupported operation mode b%s"
-msgstr "непідтримуваний режим роботи b%s"
+msgstr "неподржан режим радње „b%s“"
 
 #: src/msmtp.c:3276 src/msmtp.c:3753 src/msmtp.c:4046
 #, c-format
 msgid "cannot create temporary file: %s"
-msgstr "не вдалося створити тимчасовий файл: %s"
+msgstr "не могу да направим привремену датотеку: %s"
 
 #: src/msmtp.c:3306 src/msmtp.c:3778 src/msmtp.c:4079
 #, c-format
 msgid "cannot rewind temporary file: %s"
-msgstr "не вдалося виконати гортання назад тимчасового файла: %s"
+msgstr "не могу да премотам привремену датотеку: %s"
 
 #: src/msmtp.c:3371
 #, c-format
 msgid "ignoring system configuration file %s: %s\n"
-msgstr "ігноруємо загальносистемний файл налаштувань %s: %s\n"
+msgstr "занемарујем системску датотеку подешавања „%s“: %s\n"
 
 #: src/msmtp.c:3386
 #, c-format
 msgid "loaded system configuration file %s\n"
-msgstr "завантажено загальносистемний файл налаштувань %s\n"
+msgstr "учитах системску датотеку подешавања „%s“\n"
 
 #: src/msmtp.c:3425
 #, c-format
 msgid "ignoring user configuration file %s: %s\n"
-msgstr "ігноруємо файл налаштувань користувача %s: %s\n"
+msgstr "занемарујем корисничку датотеку подешавања „%s“: %s\n"
 
 #: src/msmtp.c:3440
 #, c-format
 msgid "loaded user configuration file %s\n"
-msgstr "завантажено файл налаштувань користувача %s\n"
+msgstr "учитах корисничку датотеку подешавања „%s“\n"
 
 #: src/msmtp.c:3497
 #, c-format
 msgid "using account %s from %s\n"
-msgstr "з використанням облікового запису %s з %s\n"
+msgstr "користим налог „%s“ са „%s“\n"
 
 #: src/msmtp.c:3503 src/msmtp.c:3505 src/msmtp.c:3508 src/msmtp.c:3542
 #: src/msmtp.c:3543 src/msmtp.c:3545 src/msmtp.c:3547 src/msmtp.c:3551
@@ -819,17 +809,17 @@ msgstr "з використанням облікового запису %s з %s
 #: src/msmtp.c:3599 src/msmtp.c:3611 src/msmtp.c:3613 src/msmtp.c:3615
 #: src/msmtp.c:3618 src/msmtp.c:3620 src/msmtp.c:3622
 msgid "(not set)"
-msgstr "(не встановлено)"
+msgstr "(није подешено)"
 
 #: src/msmtp.c:3512
 #, c-format
 msgid "off\n"
-msgstr "вимкнено\n"
+msgstr "искљ\n"
 
 #: src/msmtp.c:3518
 #, c-format
 msgid "%d seconds\n"
-msgstr "%d секунд\n"
+msgstr "%d секунде\n"
 
 #: src/msmtp.c:3522
 #, c-format
@@ -839,176 +829,174 @@ msgstr "1 секунда\n"
 #: src/msmtp.c:3531
 #, c-format
 msgid "none\n"
-msgstr "немає\n"
+msgstr "ништа\n"
 
 #: src/msmtp.c:3535
 #, c-format
 msgid "choose\n"
-msgstr "виберіть\n"
+msgstr "изабери\n"
 
 #: src/msmtp.c:3548 src/msmtp.c:3549 src/msmtp.c:3578 src/msmtp.c:3594
 #: src/msmtp.c:3602 src/msmtp.c:3607 src/msmtp.c:3609
 msgid "on"
-msgstr "увімкнено"
+msgstr "укљ"
 
 #: src/msmtp.c:3548 src/msmtp.c:3549 src/msmtp.c:3578 src/msmtp.c:3594
 #: src/msmtp.c:3602 src/msmtp.c:3605 src/msmtp.c:3607 src/msmtp.c:3609
 msgid "off"
-msgstr "вимкнено"
+msgstr "искљ"
 
 #: src/msmtp.c:3599
 msgid "(read from mail)"
-msgstr "(прочитано з пошти)"
+msgstr "(читам из поште)"
 
 #: src/msmtp.c:3601 src/msmtp.c:3604
 msgid "auto"
-msgstr "авто"
+msgstr "самостално"
 
 #: src/msmtp.c:3625
 #, c-format
 msgid "reading recipients from the command line and the mail\n"
-msgstr "читаємо записи отримувачів з командного рядка і пошти\n"
+msgstr "читам примаоце са линије наредби и из поште\n"
 
 #: src/msmtp.c:3630
 #, c-format
 msgid "reading recipients from the command line\n"
-msgstr "читаємо записи отримувачів з командного рядка\n"
+msgstr "читам примаоце са линије наредби\n"
 
 #: src/msmtp.c:3743
 msgid "too many arguments"
-msgstr "забагато аргументів"
+msgstr "превише аргумената"
 
 #: src/msmtp.c:3772
 #, c-format
 msgid "envelope from address extracted from mail: %s\n"
-msgstr "адреса відправника, яку видобуто з пошти: %s\n"
+msgstr "адреса за „коверту шаље“ извучена из поште: %s\n"
 
 #: src/msmtp.c:3787
 msgid "no recipients found"
-msgstr "не знайдено отримувачів"
+msgstr "нисам нашао примаоце"
 
 #: src/msmtp.c:3817
 #, c-format
 msgid "account chosen by envelope from address %s: %s\n"
-msgstr "обліковий запис, який вибрано за адресою відправника %s: %s\n"
+msgstr "налог који је изабран адресом за „коверту шаље“ „%s“: %s\n"
 
 #: src/msmtp.c:3831
 #, c-format
 msgid "falling back to default account\n"
-msgstr "повертаємося до типового облікового запису\n"
+msgstr "пребацујем се на основни налог\n"
 
 #: src/msmtp.c:3854
 #, c-format
 msgid "using environment variables EMAIL and SMTPSERVER\n"
-msgstr "з використанням змінних середовища EMAIL та SMTPSERVER\n"
+msgstr "користим променљиве окружења „EMAIL“ и „SMTPSERVER“\n"
 
 #: src/msmtp.c:3862
 #, c-format
 msgid "account %s not found in %s and %s"
-msgstr "облікового запису %s у %s та %s не знайдено"
+msgstr "нисам нашао налог „%s“ у „%s“ и „%s“"
 
 #: src/msmtp.c:3868 src/msmtp.c:3873
 #, c-format
 msgid "account %s not found in %s"
-msgstr "облікового запису %s у %s не знайдено"
+msgstr "нисам нашао налог „%s“ у „%s“"
 
 #: src/msmtp.c:3878
 #, c-format
 msgid "account %s not found: no configuration file available"
-msgstr "обліковий запис %s не знайдено: немає доступного файла налаштувань"
+msgstr "нисам нашао налог „%s“: датотека подешавања није доступна"
 
 #: src/msmtp.c:3893
 #, c-format
 msgid "using account specified on command line\n"
-msgstr "з використанням облікового запису, вказаного у рядку команди\n"
+msgstr "користим налог наведен на линији наредби\n"
 
 #: src/msmtp.c:3953
 #, c-format
 msgid "account %s from %s: %s"
-msgstr "обліковий запис %s з %s: %s"
+msgstr "налог „%s“ из „%s“: %s"
 
 #: src/msmtp.c:3994
 msgid "this platform does not support syslog logging"
-msgstr "на цій платформі не передбачено підтримки ведення журналу syslog"
+msgstr "ова платформа не подржава вођење системског дневника"
 
 #: src/msmtp.c:4003
 #, c-format
 msgid "support for authentication method %s is not compiled in"
-msgstr ""
-"під час збирання програми не було увімкнено підтримку способу розпізнавання "
-"%s"
+msgstr "подршка за начин потврђивања идентитета „%s“ није преведена"
 
 #: src/msmtp.c:4011
 #, c-format
 msgid "cannot initialize networking: %s"
-msgstr "не вдалося ініціалізувати мережу: %s"
+msgstr "не могу да покренем умрежавање: %s"
 
 #: src/msmtp.c:4022
 #, c-format
 msgid "cannot initialize TLS library: %s"
-msgstr "не вдалося ініціалізувати бібліотеку TLS: %s"
+msgstr "не могу да покренем „TLS“ библиотеку: %s"
 
 #: src/msmtp.c:4029
 msgid "support for TLS is not compiled in"
-msgstr "підтримку TLS не було увімкнено під час збирання програми"
+msgstr "подршка за „TLS“ није преведена"
 
 #: src/msmtp.c:4108
 #, c-format
 msgid "LMTP server message: %s"
-msgstr "Повідомлення сервера LMTP: %s"
+msgstr "порука „LMTP“ сервера: %s"
 
 #: src/msmtp.c:4119
 #, c-format
 msgid "could not send mail to all recipients (account %s from %s)"
-msgstr "не вдалося надіслати пошту усім отримувачам (обліковий запис %s з %s)"
+msgstr "не могу да пошаљем пошту свим примаоцима (налог „%s“ са „%s“)"
 
 #: src/msmtp.c:4125
 msgid "could not send mail to all recipients"
-msgstr "не вдалося надіслати пошту усім отримувачам"
+msgstr "не могу да пошаљем пошту свим примаоцима"
 
 #: src/msmtp.c:4140 src/msmtp.c:4195 src/msmtp.c:4216
 #, c-format
 msgid "server message: %s"
-msgstr "повідомлення сервера: %s"
+msgstr "порука сервера: %s"
 
 #: src/msmtp.c:4146
 #, c-format
 msgid "could not send mail (account %s from %s)"
-msgstr "не вдалося надіслати пошту (обліковий запис %s з %s)"
+msgstr "не могу да пошаљем пошту (налог „%s“ са „%s“)"
 
 #: src/msmtp.c:4151
 msgid "could not send mail"
-msgstr "не вдалося надіслати пошту"
+msgstr "не могу да пошаљем пошту"
 
 #: src/msmtp.c:4161
 #, c-format
 msgid "delivery to one or more recipients failed"
-msgstr "не вдалося доставити пошту до одного або декількох отримувачів"
+msgstr "испорука примаоцу или примаоцима није успела"
 
 #: src/conf.c:792 src/conf.c:807
 #, c-format
 msgid "host not set"
-msgstr "не вказано вузол"
+msgstr "домаћин није подешен"
 
 #: src/conf.c:797
 #, c-format
 msgid "port not set"
-msgstr "порт не встановлено"
+msgstr "прикључник није подешен"
 
 #: src/conf.c:802
 #, c-format
 msgid "envelope-from address is missing"
-msgstr "пропущено адресу-обгортку «Від» (envelope-from)"
+msgstr "недостаје адреса за „коверту шаље“"
 
 #: src/conf.c:812
 #, c-format
 msgid "tls_key_file requires tls_cert_file"
-msgstr "tls_key_file потребує визначення tls_cert_file"
+msgstr "„tls_key_file“ захтева „tls_cert_file“"
 
 #: src/conf.c:817
 #, c-format
 msgid "tls_cert_file requires tls_key_file"
-msgstr "tls_cert_file потребує визначення tls_key_file"
+msgstr "„tls_cert_file“ захтева „tls_key_file“"
 
 #: src/conf.c:825
 #, c-format
@@ -1016,23 +1004,23 @@ msgid ""
 "tls requires either tls_trust_file (highly recommended) or tls_fingerprint "
 "or a disabled tls_certcheck"
 msgstr ""
-"tls потребує встановлення tls_trust_file (наполегливо рекомендуємо) або "
-"tls_fingerprint чи вимикання tls_certcheck"
+"тлс захтева или „tls_trust_file“ (веома препоручљиво) или „tls_fingerprint“ "
+"или искључено „tls_certcheck“"
 
 #: src/conf.c:831
 #, c-format
 msgid "tls_crl_file requires tls_trust_file"
-msgstr "tls_crl_file потребує визначення tls_trust_file"
+msgstr "„tls_crl_file“ захтева „tls_trust_file“"
 
 #: src/conf.c:862
 #, c-format
 msgid "cannot evaluate '%s': %s"
-msgstr "не вдалося визначити «%s»: %s"
+msgstr "не могу да оценим „%s“: %s"
 
 #: src/conf.c:872
 #, c-format
 msgid "cannot read output of '%s'"
-msgstr "не вдалося прочитати дані, які виведено «%s»"
+msgstr "не могу да читам излаз од „%s“"
 
 #: src/conf.c:927 src/conf.c:934 src/conf.c:947 src/mtls-gnutls.c:328
 #, c-format
@@ -1042,43 +1030,43 @@ msgstr "%s: %s"
 #: src/conf.c:1092 src/stream.c:63
 #, c-format
 msgid "input error"
-msgstr "помилка у вхідних даних"
+msgstr "улазна грешка"
 
 #: src/conf.c:1114
 #, c-format
 msgid "line longer than %d characters"
-msgstr "довжина рядка перевищує %d символів"
+msgstr "ред је дужи од %d знака"
 
 #: src/conf.c:1165 src/conf.c:1290
 #, c-format
 msgid "line %d: missing account name"
-msgstr "рядок %d: пропущено назву облікового запису"
+msgstr "%d. ред: недостаје назив налога"
 
 #: src/conf.c:1170
 #, c-format
 msgid "line %d: account %s not (yet) defined"
-msgstr "рядок %d: обліковий запис %s (ще) не визначено"
+msgstr "%d. ред: налог „%s“ није (још увек) дефинисан"
 
 #: src/conf.c:1262 src/conf.c:2059 src/conf.c:2076
 #, c-format
 msgid "line %d: command %s does not take an argument"
-msgstr "рядок %d: команді %s не слід передавати аргументи"
+msgstr "%d. ред: наредба „%s“ не захтева аргумент"
 
 #: src/conf.c:1298
 #, c-format
 msgid "line %d: an account name must not contain colons or commas"
-msgstr "рядок %d: назва облікового запису не повинна містити двокрапок і ком"
+msgstr "%d. ред: назив налога не сме да садржи двотачке или зарезе"
 
 #: src/conf.c:1308
 #, c-format
 msgid "line %d: account %s was already defined"
-msgstr "рядок %d: обліковий запис %s вже визначено"
+msgstr "%d. ред: налог „%s“ је већ дефинисан"
 
 #: src/conf.c:1333 src/conf.c:1352 src/conf.c:1379 src/conf.c:1408
 #: src/conf.c:1694 src/conf.c:1729
 #, c-format
 msgid "line %d: command %s needs an argument"
-msgstr "рядок %d: команді %s слід передати аргумент"
+msgstr "%d. ред: наредба „%s“ захтева аргумент"
 
 #: src/conf.c:1363 src/conf.c:1395 src/conf.c:1426 src/conf.c:1465
 #: src/conf.c:1510 src/conf.c:1530 src/conf.c:1615 src/conf.c:1636
@@ -1088,17 +1076,17 @@ msgstr "рядок %d: команді %s слід передати аргуме�
 #: src/conf.c:2046
 #, c-format
 msgid "line %d: invalid argument %s for command %s"
-msgstr "рядок %d: некоректний аргумент %s команди %s"
+msgstr "%d. ред: неисправан аргумент „%s“ за наредбу „%s“"
 
 #: src/conf.c:2092
 #, c-format
 msgid "line %d: unknown command %s"
-msgstr "рядок %d: невідома команда %s"
+msgstr "%d. ред: непозната наредба „%s“"
 
 #: src/conf.c:2144
 #, c-format
 msgid "contains secrets and therefore must be owned by you"
-msgstr "містить конфіденційні дані, тому його власником маєте бути ви"
+msgstr "садржи тајне и стога мора бити у вашем власништву"
 
 #: src/conf.c:2150
 #, c-format
@@ -1106,26 +1094,25 @@ msgid ""
 "contains secrets and therefore must have no more than user read/write "
 "permissions"
 msgstr ""
-"містить конфіденційні дані, тому права доступу до нього не можуть бути "
-"ширшими, ніж читання і запису для користувача"
+"садржи тајне и стога не сме имати ништа сем корисникових овлашћења за читање/"
+"писање"
 
 #: src/smtp.c:208
 #, c-format
 msgid "the server sent an empty reply"
-msgstr "сервером надіслано порожню відповідь"
+msgstr "сервер је послао празан одговор"
 
 #: src/smtp.c:212
 #, c-format
 msgid "the server sent an invalid reply"
-msgstr "сервером надіслано некоректну відповідь"
+msgstr "сервер је послао неисправан одговор"
 
 #: src/smtp.c:236
 #, c-format
 msgid ""
 "Rejecting server reply that is longer than %d lines. Increase SMTP_MAXLINES."
 msgstr ""
-"Відмова у отриманні відповіді від сервера, оскільки розмір відповіді "
-"перевищує %d рядків. Збільште SMTP_MAXLINES."
+"Одбацујем одговор сервера који је дужи од %d реда. Повећајте „SMTP_MAXLINES“."
 
 #: src/smtp.c:323
 #, c-format
@@ -1133,41 +1120,42 @@ msgid ""
 "Cannot send command because it is longer than %d characters. Increase "
 "SMTP_MAXCMDLEN."
 msgstr ""
-"Не вдалося надіслати команду, оскільки її довжина перевищує %d символів. "
-"Збільште SMTP_MAXCMDLEN."
+"Не могу да пошаљем наредбу јер је дужа од %d знака. Повећајте "
+"„SMTP_MAXCMDLEN“."
 
 #: src/smtp.c:355
 #, c-format
 msgid "cannot get initial OK message from server"
-msgstr "не вдалося отримати початкове повідомлення OK від сервера"
+msgstr "не могу добити почетну потврдну поруку са сервера"
 
 #: src/smtp.c:417
 #, c-format
 msgid "SMTP server does not accept EHLO or HELO commands"
-msgstr "команди EHLO або HELO є неприйнятними для сервера SMTP"
+msgstr "„SMTP“ не прихвата „EHLO“ или „HELO“ наредбе"
 
 #: src/smtp.c:440 src/smtp.c:598 src/smtp.c:603 src/smtp.c:676 src/smtp.c:724
 #: src/smtp.c:814 src/smtp.c:905 src/smtp.c:2145
 #, c-format
 msgid "command %s failed"
-msgstr "помилка під час спроби виконати команду %s"
+msgstr "наредба „%s“ није успела"
 
 #: src/smtp.c:681 src/smtp.c:745 src/smtp.c:766 src/smtp.c:863 src/smtp.c:926
 #: src/smtp.c:1000 src/smtp.c:1068 src/smtp.c:1416 src/smtp.c:1459
 #: src/smtp.c:1496
 #, c-format
 msgid "authentication failed (method %s)"
-msgstr "не вдалося пройти розпізнавання (спосіб %s)"
+msgstr "потврђивање идентитета није успело (начин „%s“)"
 
 #: src/smtp.c:825
 #, c-format
 msgid "authentication method CRAM-MD5: server sent invalid challenge"
-msgstr "спосіб розпізнавання CRAM-MD5: сервером надіслано некоректний запит"
+msgstr ""
+"начин потврђивања идентитета „CRAM-MD5“: сервер је послао неисправан изазов"
 
 #: src/smtp.c:1186 src/smtp.c:1517
 #, c-format
 msgid "the server does not support authentication method %s"
-msgstr "на сервері не передбачено способу розпізнавання %s"
+msgstr "сервер не подржава „%s“ начин потврђивања идентитета"
 
 #: src/smtp.c:1192 src/smtp.c:1327 src/smtp.c:1370
 #, c-format
@@ -1177,639 +1165,638 @@ msgstr "GNU SASL: %s"
 #: src/smtp.c:1199
 #, c-format
 msgid "GNU SASL: authentication method %s not supported"
-msgstr "GNU SASL: не передбачено підтримки способу розпізнавання %s"
+msgstr "GNU SASL: „%s“ начин потврђивања идентитета није подржан"
 
 #: src/smtp.c:1268 src/smtp.c:1548
 #, c-format
 msgid "cannot use a secure authentication method"
-msgstr "неможливо скористатися безпечним способом розпізнавання"
+msgstr "не могу да користим безбедни начин потврђивања идентитета"
 
 #: src/smtp.c:1274 src/smtp.c:1554
 #, c-format
 msgid "cannot find a usable authentication method"
-msgstr "не вдалося знайти придатний до використання спосіб розпізнавання"
+msgstr "не могу да нађем употребљив начин потврђивања идентитета"
 
 #: src/smtp.c:1287 src/smtp.c:1566
 #, c-format
 msgid "authentication method %s needs a user name"
-msgstr ""
-"для використання способу розпізнавання %s слід вказати ім'я користувача"
+msgstr "„%s“ начин потврђивања идентитета тражи корисничко име"
 
 #: src/smtp.c:1300 src/smtp.c:1576
 #, c-format
 msgid "authentication method %s needs a password"
-msgstr "для використання способу розпізнавання %s слід вказати пароль"
+msgstr "„%s“ начин потврђивања идентитета тражи лозинку"
 
 #: src/smtp.c:1475
 #, c-format
 msgid "authentication failed: %s (method %s)"
-msgstr "помилка розпізнавання: %s (спосіб %s)"
+msgstr "потврђивање идентитета није успело: %s (начин „%s“)"
 
 #: src/smtp.c:1611
 #, c-format
 msgid "authentication method %s not supported"
-msgstr "не передбачено підтримки способу розпізнавання %s"
+msgstr "„%s“ начин потврђивања идентитета није подржан"
 
 #: src/smtp.c:1725
 #, c-format
 msgid "envelope from address %s not accepted by the server"
-msgstr "обгортка із адресою відправника %s є неприйнятною для сервера"
+msgstr "сервер није прихватио адресу за „коверту шаље“ „%s“"
 
 #: src/smtp.c:1744
 #, c-format
 msgid "recipient address %s not accepted by the server"
-msgstr "адреса отримувача %s є неприйнятною для сервера"
+msgstr "сервер није прихватио адресу примаоца „%s“"
 
 #: src/smtp.c:1763
 #, c-format
 msgid "the server does not accept mail data"
-msgstr "сервер відмовився приймати поштові дані"
+msgstr "сервер не прихвата податке поште"
 
 #: src/smtp.c:2003
 #, c-format
 msgid "the server did not accept the mail"
-msgstr "сервер відмовився приймати пошту"
+msgstr "сервер није прихватио пошту"
 
 #: src/smtp.c:2067
 #, c-format
 msgid "the server refuses to send the mail to %s"
-msgstr "сервером відмовлено у надсиланні пошти до %s"
+msgstr "сервер одбија да пошаље поштуза „%s“"
 
 #: src/smtp.c:2131
 #, c-format
 msgid "the server is unable to fulfill the request"
-msgstr "серверу не вдалося виконати запит"
+msgstr "сервер није у могућности да испуни захтев"
 
 #: src/smtp.c:2139
 #, c-format
 msgid "invalid argument for Remote Message Queue Starting"
-msgstr "некоректний аргумент Remote Message Queue Starting"
+msgstr "неисправан аргумент за започињање реда удаљене поруке"
 
 #: src/net.c:94
 msgid "not enough memory"
-msgstr "недостатньо пам'яті"
+msgstr "нема довољно меморије"
 
 #: src/net.c:97 src/net.c:208 src/net.c:255 src/net.c:767 src/net.c:894
 #: src/mtls-gnutls.c:623 src/mtls-gnutls.c:670 src/mtls-openssl.c:866
 #: src/mtls-openssl.c:933 src/mtls-openssl.c:975
 #, c-format
 msgid "operation aborted"
-msgstr "виконання дії перервано"
+msgstr "радња је обустављена"
 
 #: src/net.c:100 src/net.c:684
 msgid "invalid argument"
-msgstr "некоректний аргумент"
+msgstr "неисправан агргумент"
 
 #: src/net.c:103
 msgid "class type not found"
-msgstr "не знайдено типу класу"
+msgstr "нисам нашао врсту класе"
 
 #: src/net.c:106
 msgid "the network subsystem has failed"
-msgstr "помилка підсистеми мережі"
+msgstr "подсистем мреже није успео"
 
 #: src/net.c:109
 msgid "host not found (authoritative)"
-msgstr "не знайдено вузла (уповноваженого)"
+msgstr "нисам нашао домаћина (званично)"
 
 #: src/net.c:112
 msgid "host not found (nonauthoritative) or server failure"
-msgstr "не знайдено вузла (неуповноваженого) або помилка сервера"
+msgstr "нисам нашао домаћина (незванично) или неуспех сервера"
 
 #: src/net.c:115
 msgid "nonrecoverable error"
-msgstr "помилка без можливості відновлення"
+msgstr "непоправљива грешка"
 
 #: src/net.c:118
 msgid "valid name, but no data record of requested type"
-msgstr "коректна назва, але немає запису даних для потрібного типу"
+msgstr "исправан назив, али нема снимка података тражене врсте"
 
 #: src/net.c:121
 msgid "address family not supported"
-msgstr "підтримки цього сімейства адрес не передбачено"
+msgstr "скупина адреса није подржана"
 
 #: src/net.c:124
 msgid "no socket descriptors available"
-msgstr "немає дескрипторів сокета"
+msgstr "описници прикључнице нису доступни"
 
 #: src/net.c:127
 msgid "no buffer space available"
-msgstr "У буфері не залишилося місця"
+msgstr "простор међумеморије није доступан"
 
 #: src/net.c:130
 msgid "protocol not supported"
-msgstr "підтримки протоколу не передбачено"
+msgstr "протокол није подржан"
 
 #: src/net.c:133
 msgid "wrong protocol type for this socket"
-msgstr "помилковий тип протоколу для цього сокета"
+msgstr "погрешна врста протокола за ову прикључницу"
 
 #: src/net.c:136
 msgid "socket type is not supported in this address family"
-msgstr "підтримки такого типу сокетів у цьому сімействі адрес не передбачено"
+msgstr "врста прикључнице није подржана у овој скупини адреса"
 
 #: src/net.c:139
 msgid "remote address is not valid"
-msgstr "віддалена адреса є некоректною"
+msgstr "удаљена адреса није исправна"
 
 #: src/net.c:142 src/net.c:636
 msgid "connection refused"
-msgstr "у з'єднанні відмовлено"
+msgstr "веза је одбијена"
 
 #: src/net.c:145 src/net.c:630
 msgid "network unreachable"
-msgstr "немає доступу до мережі"
+msgstr "мрежа није доступна"
 
 #: src/net.c:148
 msgid "timeout"
-msgstr "час очікування"
+msgstr "истекло је време"
 
 #: src/net.c:151
 msgid "socket not connected"
-msgstr "сокет не з'єднано"
+msgstr "прикључница није прикључена"
 
 #: src/net.c:154
 msgid "the socket was shut down"
-msgstr "роботу сокета було завершено"
+msgstr "прикључница је угашена"
 
 #: src/net.c:157 src/net.c:633
 msgid "host unreachable"
-msgstr "вузол недоступний"
+msgstr "домаћин није доступан"
 
 #: src/net.c:160
 msgid "connection reset by peer"
-msgstr "вузол розірвав з’єднання"
+msgstr "веза је прекинута на другом крају"
 
 #: src/net.c:163
 msgid "the underlying network subsystem is not ready"
-msgstr "підлегла підсистема мережі є неготовою"
+msgstr "темељни мрежни подсистем није спреман"
 
 #: src/net.c:166
 msgid "the requested version is not available"
-msgstr "потрібна версія недоступна"
+msgstr "захтевано издање није доступно"
 
 #: src/net.c:169
 msgid "a blocking operation is in progress"
-msgstr "виконується дія з блокування"
+msgstr "радња блокирања је у току"
 
 #: src/net.c:172
 msgid "limit on the number of tasks has been reached"
-msgstr "досягнуто граничної можливої кількості завдань"
+msgstr "ограничење у броју задатака је достигнуто"
 
 #: src/net.c:175
 msgid "invalid request"
-msgstr "некоректний запит"
+msgstr "неисправан захтев"
 
 #: src/net.c:178 src/net.c:648 src/mtls-gnutls.c:686 src/mtls-openssl.c:809
 #: src/mtls-openssl.c:833
 msgid "unknown error"
-msgstr "невідома помилка"
+msgstr "непозната грешка"
 
 #: src/net.c:197 src/net.c:202 src/net.c:212 src/net.c:217
 #, c-format
 msgid "network read error: %s"
-msgstr "помилка читання у мережі: %s"
+msgstr "грешка читања мреже: %s"
 
 #: src/net.c:198 src/net.c:213 src/net.c:245 src/net.c:260
 #: src/mtls-openssl.c:828
 msgid "the operation timed out"
-msgstr "строк очікування на завершення дії перевищено"
+msgstr "истекло је време за радњу"
 
 #: src/net.c:244 src/net.c:249 src/net.c:259 src/net.c:264
 #, c-format
 msgid "network write error: %s"
-msgstr "помилка запису у мережі: %s"
+msgstr "грешка писања мреже: %s"
 
 #: src/net.c:528 src/net.c:558 src/net.c:593 src/net.c:624 src/net.c:627
 #: src/net.c:630 src/net.c:633 src/net.c:636 src/net.c:639 src/net.c:642
 #: src/net.c:645 src/net.c:648
 #, c-format
 msgid "proxy failure: %s"
-msgstr "помилка проксі: %s"
+msgstr "неуспех посредника: %s"
 
 #: src/net.c:528
 msgid "host name too long"
-msgstr "назва вузла є надто довгою"
+msgstr "назив домаћина је предуг"
 
 #: src/net.c:542 src/net.c:576 src/net.c:1007
 #, c-format
 msgid "network write error"
-msgstr "помилка запису у мережі"
+msgstr "грешка писања мреже"
 
 #: src/net.c:552 src/net.c:586 src/net.c:615
 #, c-format
 msgid "network read error"
-msgstr "помилка читання у мережі"
+msgstr "грешка читања мреже"
 
 #: src/net.c:558 src/net.c:593
 msgid "unexpected reply"
-msgstr "неочікувана відповідь"
+msgstr "неочекиван одговор"
 
 #: src/net.c:624
 msgid "general server failure"
-msgstr "загальна помилка сервера"
+msgstr "општи неуспех сервера"
 
 #: src/net.c:627
 msgid "connection not allowed"
-msgstr "з'єднання заборонено"
+msgstr "веза није дозвољена"
 
 #: src/net.c:639
 msgid "time-to-live expired"
-msgstr "перевищено час життя"
+msgstr "време трајања је истекло"
 
 #: src/net.c:642
 msgid "command not supported"
-msgstr "підтримки команди не передбачено"
+msgstr "наредба није подржана"
 
 #: src/net.c:645
 msgid "address type not supported"
-msgstr "підтримки цього типу адрес не передбачено"
+msgstr "врста адресе није подржана"
 
 #: src/net.c:676 src/net.c:683 src/net.c:698
 #, c-format
 msgid "cannot connect to %s: %s"
-msgstr "не вдалося з'єднатися із %s: %s"
+msgstr "не могу да се повежем на „%s“: %s"
 
 #: src/net.c:689 src/net.c:862
 #, c-format
 msgid "cannot create socket: %s"
-msgstr "не вдалося створити сокет: %s"
+msgstr "не могу да направим прикључницу: %s"
 
 #: src/net.c:762 src/net.c:771
 #, c-format
 msgid "cannot locate host %s: %s"
-msgstr "не вдалося встановити розташування вузла %s: %s"
+msgstr "не могу да нађем домаћина „%s“: %s"
 
 #: src/net.c:873
 #, c-format
 msgid "cannot bind source ip %s: %s"
-msgstr "не вдалося прив'язати ip джерела %s: %s"
+msgstr "не могу да свежем ип извора „%s“: %s"
 
 #: src/net.c:889 src/net.c:902
 #, c-format
 msgid "cannot connect to %s, port %d: %s"
-msgstr "не вдалося з'єднатися із %s, порт %d: %s"
+msgstr "не могу да се повежем на „%s“, прикључник %d: %s"
 
 #: src/mtls.c:142
 #, c-format
 msgid "TLS session parameters:\n"
-msgstr "Параметри сеансу TLS:\n"
+msgstr "Параметри „TLS“ сесије:\n"
 
 #: src/mtls.c:144
 msgid "not available"
-msgstr "не доступне"
+msgstr "недоступно"
 
 #: src/mtls.c:152
 #, c-format
 msgid "TLS certificate information:\n"
-msgstr "Дані щодо сертифіката TLS:\n"
+msgstr "Подаци „TLS“ уверења:\n"
 
 #: src/mtls.c:153
 msgid "Subject"
-msgstr "Призначення"
+msgstr "Наслов"
 
 #: src/mtls.c:155
 msgid "Issuer"
-msgstr "Видавець"
+msgstr "Издавач"
 
 #: src/mtls.c:157
 msgid "Validity"
-msgstr "Чинність"
+msgstr "Исправност"
 
 #: src/mtls.c:159
 msgid "Activation time"
-msgstr "Час активації"
+msgstr "Време активирања"
 
 #: src/mtls.c:161
 msgid "Expiration time"
-msgstr "Завершення строку дії"
+msgstr "Време истека"
 
 #: src/mtls.c:162
 msgid "Fingerprints"
-msgstr "Відбитки"
+msgstr "Отисци"
 
 #: src/mtls-gnutls.c:120 src/mtls-openssl.c:285 src/mtls-libtls.c:105
 msgid "cannot get TLS certificate info"
-msgstr "не вдалося отримати даних щодо сертифіката TLS"
+msgstr "не могу да добавим податке „TLS“ уверења"
 
 #: src/mtls-gnutls.c:125 src/mtls-gnutls.c:241 src/mtls-openssl.c:288
 #, c-format
 msgid "%s: no certificate was found"
-msgstr "%s: не знайдено сертифіката"
+msgstr "%s: нисам нашао ниједно уверење"
 
 #: src/mtls-gnutls.c:130 src/mtls-gnutls.c:247
 #, c-format
 msgid "%s: cannot initialize certificate structure"
-msgstr "%s: не вдалося ініціалізувати структуру сертифікації"
+msgstr "%s: не могу да покренем структуру уверења"
 
 #: src/mtls-gnutls.c:136
 #, c-format
 msgid "%s: error parsing certificate"
-msgstr "%s: помилка під час спроби обробити сертифікат"
+msgstr "%s: грешка обраде уверења"
 
 #: src/mtls-gnutls.c:145 src/mtls-gnutls.c:263 src/mtls-openssl.c:308
 #: src/mtls-openssl.c:470 src/mtls-libtls.c:113 src/mtls-libtls.c:179
 #, c-format
 msgid "%s: error getting SHA256 fingerprint"
-msgstr "%s: помилка під час спроби отримання відбитка SHA256"
+msgstr "%s: грешка добављања „SHA256“ отиска"
 
 #: src/mtls-gnutls.c:152 src/mtls-gnutls.c:281 src/mtls-openssl.c:314
 #: src/mtls-openssl.c:488
 #, c-format
 msgid "%s: error getting SHA1 fingerprint"
-msgstr "%s: помилка під час спроби отримання відбитка SHA1"
+msgstr "%s: грешка добављања „SHA1“ отиска"
 
 #: src/mtls-gnutls.c:158 src/mtls-openssl.c:322 src/mtls-libtls.c:126
 #, c-format
 msgid "%s: cannot get activation time"
-msgstr "%s: не вдалося отримати час активації"
+msgstr "%s: не могу да добавим време активирања"
 
 #: src/mtls-gnutls.c:164 src/mtls-openssl.c:332 src/mtls-libtls.c:133
 #, c-format
 msgid "%s: cannot get expiration time"
-msgstr "%s: не вдалося отримати строку дії"
+msgstr "%s: не могу да добавим време истека"
 
 #: src/mtls-gnutls.c:224 src/mtls-openssl.c:446 src/mtls-libtls.c:166
 msgid "TLS certificate verification failed"
-msgstr "Сертифікат TLS не пройшов перевірки"
+msgstr "Потврђивање „TLS“ уверења није успело"
 
 #: src/mtls-gnutls.c:254
 #, c-format
 msgid "%s: error parsing certificate %u of %u"
-msgstr "%s: помилка під час спроби обробити сертифікат %u з %u"
+msgstr "%s: грешка обраде уверења „%u“ од „%u“"
 
 #: src/mtls-gnutls.c:270 src/mtls-gnutls.c:288 src/mtls-gnutls.c:306
 #: src/mtls-openssl.c:477 src/mtls-openssl.c:495 src/mtls-openssl.c:513
 #: src/mtls-libtls.c:191
 #, c-format
 msgid "%s: the certificate fingerprint does not match"
-msgstr "%s: відбиток сертифіката не збігається із еталонним"
+msgstr "%s: отисак уверења не одговара"
 
 #: src/mtls-gnutls.c:299 src/mtls-openssl.c:506
 #, c-format
 msgid "%s: error getting MD5 fingerprint"
-msgstr "%s: помилка під час спроби отримати відбиток MD5"
+msgstr "%s: грешка добављања „MD5“ отиска"
 
 #: src/mtls-gnutls.c:387 src/mtls-libtls.c:238 src/mtls-libtls.c:370
 #, c-format
 msgid "cannot initialize TLS session: %s"
-msgstr "не вдалося ініціалізувати сеанс TLS: %s"
+msgstr "не могу да покренем „TLS“ сесију: %s"
 
 #: src/mtls-gnutls.c:400
 #, c-format
 msgid "error in priority string at position %d"
-msgstr "помилка у рядку пріоритетності на позиції %d"
+msgstr "грешка у нисци приоритета на положају %d"
 
 #: src/mtls-gnutls.c:403 src/mtls-gnutls.c:410 src/mtls-openssl.c:657
 #: src/mtls-libtls.c:257 src/mtls-libtls.c:272 src/mtls-libtls.c:287
 #: src/mtls-libtls.c:297
 #, c-format
 msgid "cannot set priorities for TLS session: %s"
-msgstr "не вдалося встановити пріоритетності для сеансу TLS: %s"
+msgstr "не могу да подесим приоритете за „TLS“ сесију: %s"
 
 #: src/mtls-gnutls.c:423
 #, c-format
 msgid "cannot set default priority for TLS session: %s"
-msgstr "не вдалося встановити типову пріоритетність для сеансу TLS: %s"
+msgstr "не могу да подесим основни приоритет за „TLS“ сесију: %s"
 
 #: src/mtls-gnutls.c:438
 #, c-format
 msgid "cannot allocate certificate for TLS session: %s"
-msgstr "не вдалося розмістити сертифікат для сеансу TLS: %s"
+msgstr "не могу да доделим уверење за „TLS“ сесију: %s"
 
 #: src/mtls-gnutls.c:451 src/mtls-libtls.c:312
 #, c-format
 msgid ""
 "cannot set X509 key file %s and/or X509 cert file %s for TLS session: %s"
 msgstr ""
-"не вдалося встановити файл ключа X509 %s і/або файл сертифіката X509 %s для "
-"сеансу TLS: %s"
+"не могу да подесим датотеку „%s“ „X509“ кључа и/или датотеку „%s“ „X509“ "
+"уверења за „TLS“ сесију: %s"
 
 #: src/mtls-gnutls.c:473 src/mtls-openssl.c:720
 #, c-format
 msgid "cannot set X509 system trust for TLS session: %s"
-msgstr "не вдалося встановити загальносистемну довіру X509 для сеансу TLS: %s"
+msgstr "не могу да подесим поверење „X509“ система за „TLS“ сесију: %s"
 
 #: src/mtls-gnutls.c:488 src/mtls-libtls.c:338
 #, c-format
 msgid "cannot set X509 trust file %s for TLS session: %s"
-msgstr "не вдалося встановити файл довіри X509 %s для сеансу TLS: %s"
+msgstr "не могу да подесим датотеку „%s“ „X509“ поверења за „TLS“ сесију: %s"
 
 #: src/mtls-gnutls.c:503 src/mtls-libtls.c:351
 #, c-format
 msgid "cannot set X509 CRL file %s for TLS session: %s"
-msgstr "не вдалося встановити файл CRL X509 %s для сеансу TLS: %s"
+msgstr "не могу да подесим „X509 CRL“ датотеку „%s“ за „TLS“ сесију: %s"
 
 #: src/mtls-gnutls.c:532
 #, c-format
 msgid "cannot set credentials for TLS session: %s"
-msgstr "не вдалося встановити реєстраційні дані для сеансу TLS: %s"
+msgstr "не могу да подесим поверења за „TLS“ сесију: %s"
 
 #: src/mtls-gnutls.c:567 src/mtls-libtls.c:406
 #, c-format
 msgid "TLS handshake failed: %s"
-msgstr "Помилка при ініціалізації TLS: %s"
+msgstr "„TLS“ руковање није успело: %s"
 
 #: src/mtls-gnutls.c:627 src/mtls-libtls.c:493
 #, c-format
 msgid "cannot read from TLS connection: %s"
-msgstr "не вдалося прочитати дані зі з'єднання TLS: %s"
+msgstr "не могу да читам са „TLS“ везе: %s"
 
 #: src/mtls-gnutls.c:674 src/mtls-gnutls.c:685 src/mtls-libtls.c:525
 #, c-format
 msgid "cannot write to TLS connection: %s"
-msgstr "не вдалося записати дані до з'єднання TLS: %s"
+msgstr "не могу да пишем на „TLS“ везу: %s"
 
 #: src/mtls-openssl.c:92
 #, c-format
 msgid ""
 "no environment variables RANDFILE or HOME, or filename of rand file too long"
 msgstr ""
-"немає змінної середовища RANDFILE або HOME, або назва файла rand є надто "
-"довгою"
+"нема променљиве окружења „RANDFILE“ или „HOME“, или је назив датотеке предуг "
+"или је предуга насумична датотека"
 
 #: src/mtls-openssl.c:98
 #, c-format
 msgid "%s: input error"
-msgstr "%s: помилка у вхідних даних"
+msgstr "%s: улазна грешка"
 
 #: src/mtls-openssl.c:120
 #, c-format
 msgid "random file + time + pseudo randomness is not enough, giving up"
 msgstr ""
-"випадкового файла + часу + псевдовипадковості недостатньо, припиняємо спроби"
+"насумична датотека + време + псеудо насумичност није довољно, дижем руке од "
+"свега"
 
 #: src/mtls-openssl.c:293 src/mtls-openssl.c:579
 #, c-format
 msgid "%s: cannot get certificate subject"
-msgstr "%s: не вдалося отримати призначення сертифіката"
+msgstr "%s: не могу да добавим субјекат уверења"
 
 #: src/mtls-openssl.c:299
 #, c-format
 msgid "%s: cannot get certificate issuer"
-msgstr "%s: не вдалося отримати дані щодо видавця сертифіката"
+msgstr "%s: не могу да добавим издавача уверења"
 
 #: src/mtls-openssl.c:450
 msgid "TLS certificate check failed"
-msgstr "Не вдалося перевірити сертифікат TLS"
+msgstr "Провера „TLS“ уверења није успела"
 
 #: src/mtls-openssl.c:456
 #, c-format
 msgid "%s: no certificate was sent"
-msgstr "%s: не було надіслано жодного сертифіката"
+msgstr "%s: није послато никакво уверење"
 
 #: src/mtls-openssl.c:559
 #, c-format
 msgid "%s: certificate subject alternative name contains NUL"
-msgstr "%s: альтернативна назва призначення сертифіката містить NUL"
+msgstr "%s: заменски назив субјекта уверења садржи „NUL“"
 
 #: src/mtls-openssl.c:591
 #, c-format
 msgid "%s: cannot get certificate common name"
-msgstr "%s: не вдалося отримати загальну назву сертифіката"
+msgstr "%s: не могу да добавим уопштен назив уверења"
 
 #: src/mtls-openssl.c:600
 #, c-format
 msgid "%s: certificate common name contains NUL"
-msgstr "%s: загальна назва сертифіката містить NUL"
+msgstr "%s: уопштен назив уверења садржи „NUL“"
 
 #: src/mtls-openssl.c:617
 #, c-format
 msgid "%s: the certificate owner does not match hostname %s"
-msgstr "%s: запис власника сертифіката не відповідає назві вузла %s"
+msgstr "%s: власник уверења не одговара домаћину „%s“"
 
 #: src/mtls-openssl.c:649 src/mtls-libtls.c:231
 #, c-format
 msgid "cannot set minimum number of DH prime bits for TLS: %s"
-msgstr "не вдалося встановити мінімальне число основних бітів DH для TLS: %s"
+msgstr "не могу да подесим најмањи број „DH“ простих битова за „TLS“: %s"
 
 #: src/mtls-openssl.c:650 src/mtls-openssl.c:658 src/mtls-openssl.c:666
 msgid "feature not yet implemented for OpenSSL"
-msgstr "можливість ще не реалізовано для OpenSSL"
+msgstr "функција још није примењена за „OpenSSL“"
 
 #: src/mtls-openssl.c:665
 #, c-format
 msgid "cannot load CRL file: %s"
-msgstr "не вдалося завантажити файл CRL: %s"
+msgstr "не могу да учитам „CRL“ датотеку: %s"
 
 #: src/mtls-openssl.c:672
 #, c-format
 msgid "cannot set TLS method"
-msgstr "не вдалося встановити спосіб TLS"
+msgstr "не могу да подесим „TLS“ начин"
 
 #: src/mtls-openssl.c:680
 #, c-format
 msgid "cannot create TLS context: %s"
-msgstr "не вдалося створити контекст TLS: %s"
+msgstr "не могу да направим „TLS“ контекст: %s"
 
 #: src/mtls-openssl.c:693
 #, c-format
 msgid "cannot load key file %s: %s"
-msgstr "не вдалося завантажити файл ключа %s: %s"
+msgstr "не могу да учитам датотеку кључа „%s“: %s"
 
 #: src/mtls-openssl.c:702
 #, c-format
 msgid "cannot load certificate file %s: %s"
-msgstr "не вдалося завантажити файл сертифіката %s: %s"
+msgstr "не могу да учитам датотеку уверења „%s“: %s"
 
 #: src/mtls-openssl.c:732
 #, c-format
 msgid "cannot load trust file %s: %s"
-msgstr "не вдалося завантажити файл довіри %s: %s"
+msgstr "не могу да учитам датотеку поверења „%s“: %s"
 
 #: src/mtls-openssl.c:759 src/mtls-libtls.c:361
 #, c-format
 msgid "cannot create a TLS structure: %s"
-msgstr "не вдалося створити структуру TLS: %s"
+msgstr "не могу да направим „TLS“ структуру: %s"
 
 #: src/mtls-openssl.c:801
 msgid "a protocol violating EOF occurred"
-msgstr "виявлено EOF, що порушує протокол"
+msgstr "догодио се протокол који је прекршио крај датотеке"
 
 #: src/mtls-openssl.c:819
 msgid "the connection was closed unexpectedly"
-msgstr "з'єднання неочікувано розірвано"
+msgstr "веза је неочекивано затворена"
 
 #: src/mtls-openssl.c:853 src/mtls-libtls.c:398
 #, c-format
 msgid "cannot set the file descriptor for TLS: %s"
-msgstr "не вдалося встановити дескриптор файла для TLS: %s"
+msgstr "не могу да подесим описника датотеке за „TLS“: %s"
 
 #: src/mtls-openssl.c:872
 msgid "TLS handshake failed"
-msgstr "Помилка при ініціалізації TLS"
+msgstr "„TLS“ руковање није успело"
 
 #: src/mtls-openssl.c:938
 msgid "cannot read from TLS connection"
-msgstr "не вдалося прочитати дані зі з'єднання TLS"
+msgstr "не могу да читам са „TLS“ везе"
 
 #: src/mtls-openssl.c:981
 msgid "cannot write to TLS connection"
-msgstr "не вдалося записати дані до з'єднання TLS"
+msgstr "не могу да пишем на „TLS“ везу"
 
 #: src/mtls-libtls.c:59
 #, c-format
 msgid "cannot initialize libtls"
-msgstr "не вдалося ініціалізувати libtls"
+msgstr "не могу да покренем „libtls“"
 
 #: src/mtls-libtls.c:223
 #, c-format
 msgid "cannot use deprecated fingerprints, please update to SHA256"
-msgstr ""
-"використання застарілих відбитків неможливе, будь ласка, оновіться до SHA256"
+msgstr "не могу да користим застарели отисак, освежите на „SHA256“"
 
 #: src/mtls-libtls.c:232
 msgid "feature not yet implemented for libtls"
-msgstr "можливість ще не реалізовано для libtls"
+msgstr "функција још није примењена за „libtls“"
 
 #: src/mtls-libtls.c:288
 msgid "could not parse protocols"
-msgstr "не вдалося обробити дані протоколів"
+msgstr "не могу да обрадим протокол"
 
 #~ msgid "Common Name"
-#~ msgstr "Звичайне ім'я"
+#~ msgstr "Општи назив"
 
 #~ msgid "Organization"
-#~ msgstr "Установа"
+#~ msgstr "Организација"
 
 #~ msgid "Organizational unit"
-#~ msgstr "Відділення установи"
+#~ msgstr "Организациона јединица"
 
 #~ msgid "Locality"
-#~ msgstr "Місто або селище"
+#~ msgstr "Место"
 
 #~ msgid "State or Province"
-#~ msgstr "Область або провінція"
+#~ msgstr "Држава или Покрајина"
 
 #~ msgid "Country"
-#~ msgstr "Країна"
+#~ msgstr "Земља"
 
 #~ msgid "Owner"
 #~ msgstr "Власник"
 
 #~ msgid "output of '%s' is longer than %d characters"
-#~ msgstr "виведені дані «%s» є довшими за %d символів"
+#~ msgstr "излаз „%s“ је дужи од %d знака"
 
 #~ msgid "%s: the certificate type is not X509"
-#~ msgstr "%s: сертифікат не належить до типу X509"
+#~ msgstr "%s: врста уверења није „X509“"
 
 #~ msgid "%s: the certificate has been revoked"
-#~ msgstr "%s: сертифікат відкликано"
+#~ msgstr "%s: уверење је опозвано"
 
 #~ msgid "%s: the certificate hasn't got a known issuer"
-#~ msgstr "%s: сертифікат не отримав відомого видавця"
+#~ msgstr "%s: уверење није добило познатог издавача"
 
 #~ msgid "%s: the certificate is not trusted"
-#~ msgstr "%s: сертифікат не є надійним"
+#~ msgstr "%s: уверење није поверљиво"
 
 #~ msgid "%s: cannot get activation time for certificate %u of %u"
-#~ msgstr "%s: не вдалося отримати час активації для сертифіката %u з %u"
+#~ msgstr "%s: не могу да добавим време активирања за уверење „%u“ од „%u“"
 
 #~ msgid "%s: certificate %u of %u is not yet activated"
-#~ msgstr "%s: сертифікат %u з %u ще не активовано"
+#~ msgstr "%s: уверење „%u“ од „%u“ још није активирано"
 
 #~ msgid "%s: cannot get expiration time for certificate %u of %u"
-#~ msgstr "%s: не вдалося отримати строк дії для сертифіката %u з %u"
+#~ msgstr "%s: не могу да добавим време истека за уверење „%u“ од „%u“"
 
 #~ msgid "%s: certificate %u of %u has expired"
-#~ msgstr "%s: строк дії сертифіката %u з %u вичерпано"
+#~ msgstr "%s: уверење „%u“ од „%u“ је истекло"

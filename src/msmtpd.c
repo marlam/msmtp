@@ -34,6 +34,7 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <sys/wait.h>
+#include <sysexits.h>
 #include <getopt.h>
 extern char *optarg;
 extern int optind;
@@ -301,7 +302,28 @@ int msmtpd_session(FILE* in, FILE* out, const char* command)
             fprintf(out, "554 Pipe command failed to execute\r\n");
             return 1;
         } else if (WEXITSTATUS(pipe_status) != 0) {
-            fprintf(out, "554 Pipe command reported error %d\r\n", WEXITSTATUS(pipe_status));
+            int return_code = 554; /* permanent error */
+            switch (WEXITSTATUS(pipe_status)) {
+            case EX_NOHOST:
+            case EX_UNAVAILABLE:
+            case EX_OSERR:
+            case EX_TEMPFAIL:
+                return_code = 451; /* temporary error */
+                break;
+            case EX_USAGE:
+            case EX_DATAERR:
+            case EX_NOINPUT:
+            case EX_SOFTWARE:
+            case EX_OSFILE:
+            case EX_CANTCREAT:
+            case EX_IOERR:
+            case EX_PROTOCOL:
+            case EX_NOPERM:
+            case EX_CONFIG:
+            default:
+                break;
+            }
+            fprintf(out, "%d Pipe command reported error %d\r\n", return_code, WEXITSTATUS(pipe_status));
             return 1;
         }
 

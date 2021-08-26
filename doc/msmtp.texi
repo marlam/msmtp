@@ -14,7 +14,7 @@
 This manual was last updated @value{UPDATED} for version
 @value{VERSION} of msmtp.
 
-Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020
+Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021
 Martin Lambers@*
 Copyright (C) 2011
 Scott Shumate
@@ -1423,6 +1423,12 @@ In the string that defines the command that msmtpd pipes each mail to, the first
 @samp{%F} will be replaced with the envelope from address. Furthermore, all recipients of the
 mail will be appended as arguments. The command must not write to standard output, as that would
 mess up the SMTP session.
+
+If the command that the mail is piped to reports an error, this is typically reported as a
+permanent failure by msmtpd (SMTP server return code 554). The command can optionally signal
+temporary errors by using return codes defined in @samp{sysexits.h}, e.g. 75 for @samp{EX_TEMPFAIL}. These
+will then be reported as temporary failures by msmtpd (SMTP server return code 451), which means
+the client should try again later.
 
 Only run msmtpd if you know you need it. Only use a local interface to listen on. Take care
 to run it with correct user rights and permissions (e.g. use @samp{CAP_NET_BIND_SERVICE} to bind

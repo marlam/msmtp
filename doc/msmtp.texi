@@ -374,7 +374,10 @@ directory is used depending on the build configuration; see the output of
 @samp{msmtp --version} and look for the location of the system configuration file).
 @end itemize
 Note that the obsolete @samp{auto_from} command replaces this envelope-from address.
-@xref{Envelope-from address}.
+@xref{Envelope-from address}.@*
+Furthermore, the envelope-from address may be a wildcard pattern as used for file name matching
+in the shell. This is the case if it contains one of the characters @code{?}, @code{*} or @code{[}.
+This allows a variety of envelope-from addresses given with the @samp{--from} option to match a single account.
 @anchor{dsn_notify}
 @item dsn_notify (off|@var{condition})
 @cmindex dsn_notify
@@ -780,7 +783,9 @@ Choose the first account from the system or user configuration file that has
 a matching envelope-from address as specified by a @ref{from} command. This
 works only when neither @option{--account} nor @option{--host} is used.@*
 Subadresses are supported. For example, the envelope from address
-@var{user+detail@@example.com} will match the account for @var{user@@example.com}.
+@var{user+detail@@example.com} will match the account for @var{user@@example.com}.@*
+Furthermore, the envelope-from address of the account may be a wildcard pattern.
+@xref{from}.
 @end enumerate
 If none of the above options is used (or if no account has a matching
 @ref{from} command), then the account "default" is used.
@@ -1049,8 +1054,7 @@ envelope-from address. It is independent of the From header (because it is
 part of the mail @emph{envelope}, not of the mail itself), but in most cases
 both addresses are the same.
 
-Envelope-from addresses are set with the @ref{from} command, which allows
-automatisms using some substitution patterns.
+Envelope-from addresses are set with the @ref{from} command or @ref{--from} option.
 
 @node Logging
 @section Logging

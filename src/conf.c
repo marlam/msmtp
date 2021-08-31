@@ -4,7 +4,7 @@
  * This file is part of msmtp, an SMTP client.
  *
  * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2010, 2011, 2012,
- * 2014, 2015, 2016, 2018, 2019, 2020
+ * 2014, 2015, 2016, 2018, 2019, 2020, 2021
  * Martin Lambers <marlam@marlam.de>
  * Martin Stenberg <martin@gnutiken.se> (passwordeval support)
  * Scott Shumate <sshumate@austin.rr.com> (aliases support)
@@ -34,6 +34,9 @@
 #include <strings.h>
 #include <ctype.h>
 #include <errno.h>
+#ifdef HAVE_FNMATCH_H
+# include <fnmatch.h>
+#endif
 
 #include "gettext.h"
 #define _(string) gettext(string)
@@ -305,6 +308,17 @@ account_t *find_account_by_envelope_from(list_t *acc_list, const char *from)
                 break;
             }
         }
+#ifdef HAVE_FNMATCH_H
+        else if (strchr(acc_from, '?') || strchr(acc_from, '*') || strchr(acc_from, '['))
+        {
+            /* This is a wildcard pattern according to glob(7) */
+            if (fnmatch(acc_from, from, 0) != FNM_NOMATCH)
+            {
+                a = acc_list->data;
+                break;
+            }
+        }
+#endif
         else
         {
             /* simple matching */

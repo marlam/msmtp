@@ -1438,7 +1438,7 @@ Only run msmtpd if you know you need it. Only use a local interface to listen on
 to run it with correct user rights and permissions (e.g. use @samp{CAP_NET_BIND_SERVICE} to bind
 to port 25 instead of running as root, or use systemd with inetd service
 capabilities). Be aware that the pipe command will be run as the same user that
-msmtpd runs as.
+msmtpd runs as. If you run msmtpd as a system service, you probably want to enable logging to syslog.
 
 Msmtpd handles the following options:
 @table @samp
@@ -1452,6 +1452,10 @@ Start single SMTP session on stdin/stdout
 Listen on the given IPv6 or IPv4 address instead of 127.0.0.1
 @item --port=@var{number}
 Listen on the given port number instead of 25
+@item --log=@var{none}|@var{syslog}|@var{filename}
+Set logging: none (default), syslog, or logging to the given file.
+@item --log-level=@var{error}|@var{info}
+Log only messages of this or higher severity.
 @item --command=@var{cmd}
 Pipe mails to @var{cmd} instead of msmtp
 @end table

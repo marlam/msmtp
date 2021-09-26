@@ -24,6 +24,7 @@
 #endif
 
 #include <stdio.h>
+#include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
@@ -34,6 +35,8 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <sys/wait.h>
+#include <time.h>
+#include <syslog.h>
 #include <sysexits.h>
 #include <getopt.h>
 extern char *optarg;
@@ -47,6 +50,83 @@ static const char* DEFAULT_COMMAND = BINDIR "/msmtp -f %F";
 static const size_t SMTP_BUFSIZE = 1024; /* must be at least 512 according to RFC2821 */
 static const size_t CMD_BLOCK_SIZE = 4096; /* initial buffer size for command */
 static const size_t CMD_MAX_BLOCKS = 16; /* limit memory allocation */
+
+/* Logging */
+
+typedef enum {
+    log_info = 0,
+    log_error = 1,
+    log_nothing = 2
+} log_level_t;
+
+typedef struct {
+    FILE* file; /* if NULL then use syslog */
+    log_level_t level;
+} log_t;
+
+void log_open(int log_to_syslog, const char* log_file_name, log_level_t log_level, log_t* log)
+{
+    log->file = NULL;
+    log->level = log_level;
+    int log_file_open_failure = 0;
+    if (log_file_name) {
+        log->file = fopen(log_file_name, "a");
+        if (!log->file) {
+            log_file_open_failure = 1;
+            log_to_syslog = 1;
+        }
+    }
+    if (log_to_syslog) {
+        openlog("msmtpd", LOG_PID, LOG_MAIL);
+        if (log_file_open_failure)
+            syslog(LOG_ERR, "cannot open log file, using syslog instead");
+    }
+    if (!log_file_name && !log_to_syslog) {
+        log->level = log_nothing;
+    }
+}
+
+void log_close(log_t* log)
+{
+    if (log->level < log_nothing) {
+        if (log->file)
+            fclose(log->file);
+        else
+            closelog();
+    }
+}
+
+void
+#ifdef __GNUC__
+__attribute__ ((format (printf, 3, 4)))
+#endif
+log_msg(log_t* log,
+        log_level_t msg_level,
+        const char* msg_format, ...)
+{
+    if (msg_level >= log->level) {
+        if (log->file) {
+            long long pid = getpid();
+            time_t t = time(NULL);
+            struct tm* tm = localtime(&t);
+            char time_str[128];
+            strftime(time_str, sizeof(time_str), "%F %T", tm);
+            fprintf(log->file, "msmtpd[%lld] %s: ", pid,
+                    msg_level >= log_error ? "error" : "info");
+            va_list args;
+            va_start(args, msg_format);
+            vfprintf(log->file, msg_format, args);
+            va_end(args);
+            fputc('\n', log->file);
+        } else {
+            int priority = (msg_level >= log_error ? LOG_ERR : LOG_INFO);
+            va_list args;
+            va_start(args, msg_format);
+            vsyslog(priority, msg_format, args);
+            va_end(args);
+        }
+    }
+}
 
 /* Read SMTP command from client */
 int read_smtp_cmd(FILE* in, char* buf, int bufsize)
@@ -168,7 +248,7 @@ int smtp_pipe(FILE* in, FILE* pipe, char* buf, size_t bufsize)
  * Mails are piped to the given command, where the first occurrence of %F
  * will be replaced with the envelope-from address, and all recipient addresses
  * will be appended as arguments. */
-int msmtpd_session(FILE* in, FILE* out, const char* command)
+int msmtpd_session(log_t* log, FILE* in, FILE* out, const char* command)
 {
     char buf[SMTP_BUFSIZE];
     char addrbuf[SMTP_BUFSIZE];
@@ -183,17 +263,23 @@ int msmtpd_session(FILE* in, FILE* out, const char* command)
     int pipe_status;
     size_t i;
 
+    log_msg(log, log_info, "starting SMTP session");
     setlinebuf(out);
     fprintf(out, "220 localhost ESMTP msmtpd\r\n");
-    if (read_smtp_cmd(in, buf, SMTP_BUFSIZE) != 0)
+    if (read_smtp_cmd(in, buf, SMTP_BUFSIZE) != 0) {
+        log_msg(log, log_error, "client did not send initial command, session aborted");
         return 1;
+    }
     if (strncasecmp(buf, "EHLO ", 5) != 0 && strncasecmp(buf, "HELO ", 5) != 0) {
         fprintf(out, "500 Expected EHLO or HELO\r\n");
+        log_msg(log, log_error, "client did not start with EHLO or HELO, session aborted");
         return 1;
     }
     fprintf(out, "250 localhost\r\n");
-    if (read_smtp_cmd(in, buf, SMTP_BUFSIZE) != 0)
+    if (read_smtp_cmd(in, buf, SMTP_BUFSIZE) != 0) {
+        log_msg(log, log_error, "client did not send second command, session aborted");
         return 1;
+    }
 
     for (;;) {
         cmd_index = 0;
@@ -202,14 +288,17 @@ int msmtpd_session(FILE* in, FILE* out, const char* command)
 
         if (strncasecmp(buf, "MAIL FROM:", 10) != 0 && strcasecmp(buf, "QUIT") != 0) {
             fprintf(out, "500 Expected MAIL FROM:<addr> or QUIT\r\n");
+            log_msg(log, log_error, "client did not send MAIL FROM or QUIT, session aborted");
             return 1;
         }
         if (strcasecmp(buf, "QUIT") == 0) {
             fprintf(out, "221 Bye\r\n");
+            log_msg(log, log_info, "client ended session");
             return 0;
         }
         if (get_addr(buf + 10, addrbuf, 1, &addrlen) != 0) {
             fprintf(out, "501 Invalid address\r\n");
+            log_msg(log, log_error, "invalid address in MAIL FROM, session aborted");
             return 1;
         }
 
@@ -219,6 +308,7 @@ int msmtpd_session(FILE* in, FILE* out, const char* command)
         cmd = malloc(cmd_blocks * CMD_BLOCK_SIZE);
         if (!cmd) {
             fprintf(out, "554 %s\r\n", strerror(ENOMEM));
+            log_msg(log, log_error, "%s, session aborted", strerror(ENOMEM));
             return 1;
         }
 
@@ -238,18 +328,21 @@ int msmtpd_session(FILE* in, FILE* out, const char* command)
 
         for (;;) {
             if (read_smtp_cmd(in, buf, SMTP_BUFSIZE) != 0) {
+                log_msg(log, log_error, "client did not send command, session aborted");
                 free(cmd);
                 return 1;
             }
             if (!recipient_was_seen) {
                 if (strncasecmp(buf, "RCPT TO:", 8) != 0) {
                     fprintf(out, "500 Expected RCPT TO:<addr>\r\n");
+                    log_msg(log, log_error, "client did not send RCPT TO, session aborted");
                     free(cmd);
                     return 1;
                 }
             } else {
                 if (strncasecmp(buf, "RCPT TO:", 8) != 0 && strcasecmp(buf, "DATA") != 0) {
                     fprintf(out, "500 Expected RCPT TO:<addr> or DATA\r\n");
+                    log_msg(log, log_error, "client did not send RCPT TO or DATA, session aborted");
                     free(cmd);
                     return 1;
                 }
@@ -259,6 +352,7 @@ int msmtpd_session(FILE* in, FILE* out, const char* command)
             } else {
                 if (get_addr(buf + 8, addrbuf, 0, &addrlen) != 0) {
                     fprintf(out, "501 Invalid address\r\n");
+                    log_msg(log, log_error, "invalid address in RCPT TO, session aborted");
                     free(cmd);
                     return 1;
                 }
@@ -266,13 +360,15 @@ int msmtpd_session(FILE* in, FILE* out, const char* command)
                     cmd_blocks++;
                     if (cmd_blocks > CMD_MAX_BLOCKS) {
                         fprintf(out, "554 Too many recipients\r\n");
+                        log_msg(log, log_error, "too many recipients, session aborted");
                         free(cmd);
                         return 1;
                     }
                     tmpcmd = realloc(cmd, cmd_blocks * CMD_MAX_BLOCKS);
                     if (!tmpcmd) {
-                        free(cmd);
                         fprintf(out, "554 %s\r\n", strerror(ENOMEM));
+                        log_msg(log, log_error, "%s, session aborted", strerror(ENOMEM));
+                        free(cmd);
                         return 1;
                     }
                     cmd = tmpcmd;
@@ -286,20 +382,24 @@ int msmtpd_session(FILE* in, FILE* out, const char* command)
         }
         cmd[cmd_index++] = '\0';
 
+        log_msg(log, log_info, "pipe command is %s", cmd);
         pipe = popen(cmd, "w");
         free(cmd);
         if (!pipe) {
             fprintf(out, "554 Cannot start pipe command\r\n");
+            log_msg(log, log_error, "cannot start pipe command, session aborted");
             return 1;
         }
         fprintf(out, "354 Send data\r\n");
         if (smtp_pipe(in, pipe, buf, SMTP_BUFSIZE) != 0) {
             fprintf(out, "554 Cannot pipe mail to command\r\n");
+            log_msg(log, log_error, "cannot pipe mail to command, session aborted");
             return 1;
         }
         pipe_status = pclose(pipe);
         if (pipe_status == -1 || !WIFEXITED(pipe_status)) {
             fprintf(out, "554 Pipe command failed to execute\r\n");
+            log_msg(log, log_error, "pipe command failed to execute, session aborted");
             return 1;
         } else if (WEXITSTATUS(pipe_status) != 0) {
             int return_code = 554; /* permanent error */
@@ -324,12 +424,16 @@ int msmtpd_session(FILE* in, FILE* out, const char* command)
                 break;
             }
             fprintf(out, "%d Pipe command reported error %d\r\n", return_code, WEXITSTATUS(pipe_status));
+            log_msg(log, log_error, "pipe command reported error %d, session aborted", WEXITSTATUS(pipe_status));
             return 1;
         }
 
         fprintf(out, "250 Ok, mail was piped\r\n");
-        if (read_smtp_cmd(in, buf, SMTP_BUFSIZE) != 0)
+        log_msg(log, log_info, "mail was piped successfully");
+        if (read_smtp_cmd(in, buf, SMTP_BUFSIZE) != 0) {
+            log_msg(log, log_info, "client ended session without sending QUIT");
             break; /* ignore missing QUIT */
+        }
     }
     return 0;
 }
@@ -339,6 +443,7 @@ int parse_command_line(int argc, char* argv[],
         int* print_version, int* print_help,
         int* inetd,
         const char** interface, int* port,
+        int* log_to_syslog, const char** log_file, log_level_t* log_level,
         const char** command)
 {
     enum {
@@ -347,6 +452,8 @@ int parse_command_line(int argc, char* argv[],
         msmtpd_option_inetd,
         msmtpd_option_port,
         msmtpd_option_interface,
+        msmtpd_option_log,
+        msmtpd_option_log_level,
         msmtpd_option_command
     };
 
@@ -356,6 +463,8 @@ int parse_command_line(int argc, char* argv[],
         { "inetd", no_argument, 0, msmtpd_option_inetd },
         { "port", required_argument, 0, msmtpd_option_port },
         { "interface", required_argument, 0, msmtpd_option_interface },
+        { "log", required_argument, 0, msmtpd_option_log },
+        { "log-level", required_argument, 0, msmtpd_option_log_level },
         { "command", required_argument, 0, msmtpd_option_command },
         { 0, 0, 0, 0 }
     };
@@ -386,6 +495,28 @@ int parse_command_line(int argc, char* argv[],
         case msmtpd_option_interface:
             *interface = optarg;
             break;
+        case msmtpd_option_log:
+            if (strcmp(optarg, "none") == 0) {
+                *log_to_syslog = 0;
+                *log_file = NULL;
+            } else if (strcmp(optarg, "syslog") == 0) {
+                *log_to_syslog = 1;
+                *log_file = NULL;
+            } else {
+                *log_to_syslog = 0;
+                *log_file = optarg;
+            }
+            break;
+        case msmtpd_option_log_level:
+            if (strcmp(optarg, "info") == 0) {
+                *log_level = log_info;
+            } else if (strcmp(optarg, "error") == 0) {
+                *log_level = log_error;
+            } else {
+                fprintf(stderr, "%s: invalid argument to option '--%s'\n", argv[0],
+                        options[option_index].name);
+            }
+            break;
         case msmtpd_option_command:
             *command = optarg;
             break;
@@ -413,12 +544,17 @@ int main(int argc, char* argv[])
     int inetd = 0;
     const char* interface = DEFAULT_INTERFACE;
     int port = DEFAULT_PORT;
+    int log_to_syslog = 0;
+    const char* log_file = NULL;
+    log_level_t log_level = log_info;
     const char* command = DEFAULT_COMMAND;
 
     /* Command line */
     if (parse_command_line(argc, argv,
                 &print_version, &print_help,
-                &inetd, &interface, &port, &command) != 0) {
+                &inetd, &interface, &port,
+                &log_to_syslog, &log_file, &log_level,
+                &command) != 0) {
         return exit_not_running;
     }
     if (print_version) {
@@ -437,6 +573,10 @@ int main(int argc, char* argv[])
         printf("  --inetd         start single SMTP session on stdin/stdout\n");
         printf("  --interface=ip  listen on ip instead of %s\n", DEFAULT_INTERFACE);
         printf("  --port=number   listen on port number instead of %d\n", DEFAULT_PORT);
+        printf("  --log=none|syslog|FILE  do not log anything (default)\n");
+        printf("                  or log to syslog or log to the given file\n");
+        printf("  --log-level=error|info  log messages of this or\n");
+        printf("                  higher severity\n");
         printf("  --command=cmd   pipe mails to cmd instead of %s\n", DEFAULT_COMMAND);
         return exit_ok;
     }
@@ -445,7 +585,11 @@ int main(int argc, char* argv[])
     signal(SIGPIPE, SIG_IGN); /* Do not terminate when piping fails; we want to handle that error */
     if (inetd) {
         /* We are no daemon, so we can just signal error with exit status 1 and success with 0 */
-        return msmtpd_session(stdin, stdout, command);
+        log_t log;
+        log_open(log_to_syslog, log_file, log_level, &log);
+        int ret = msmtpd_session(&log, stdin, stdout, command);
+        log_close(&log);
+        return ret;
     } else {
         int ipv6;
         struct sockaddr_in6 sa6;
@@ -506,13 +650,16 @@ int main(int argc, char* argv[])
             }
             if (fork() == 0) {
                 /* Child process */
+                log_t log;
+                log_open(log_to_syslog, log_file, log_level, &log);
                 FILE* conn;
                 int ret;
                 signal(SIGTERM, SIG_IGN); /* A running session should not be terminated */
                 signal(SIGCHLD, SIG_DFL); /* Make popen()/pclose() work again */
                 conn = fdopen(conn_fd, "rb+");
-                ret = msmtpd_session(conn, conn, command);
+                ret = msmtpd_session(&log, conn, conn, command);
                 fclose(conn);
+                log_close(&log);
                 exit(ret); /* exit status does not really matter since nobody checks it, but still... */
             } else {
                 /* Parent process */

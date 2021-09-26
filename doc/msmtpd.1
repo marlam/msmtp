@@ -6,7 +6,7 @@
 .\" under the terms of the GNU Free Documentation License, Version 1.2 or
 .\" any later version published by the Free Software Foundation; with no
 .\" Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
-.TH MSMTPD 1 2021-08
+.TH MSMTPD 1 2021-09
 .SH NAME
 msmtpd \- A minimal SMTP server
 .SH SYNOPSIS
@@ -36,7 +36,7 @@ Only run msmtpd if you know you need it. Only use a local interface to listen on
 to run it with correct user rights and permissions (e.g. use \fICAP_NET_BIND_SERVICE\fP to bind
 to port 25 instead of running as root, or use systemd with inetd service
 capabilities). Be aware that the pipe command will be run as the same user that
-msmtpd runs as.
+msmtpd runs as. If you run msmtpd as a system service, you probably want to enable logging to syslog.
 .SH OPTIONS
 .IP "\-\-version"
 Print version information
@@ -48,6 +48,10 @@ Start single SMTP session on stdin/stdout
 Listen on the given IPv6 or IPv4 address instead of 127.0.0.1
 .IP "\-\-port=\fInumber\fP
 Listen on the given port number instead of 25
+.IP "\-\-log=\fInone\fP|\fIsyslog\fP|\fIfilename\fP
+Set logging: none (default), syslog, or logging to the given file.
+.IP "\-\-log\-level=\fIerror\fP|\fIinfo\fP
+Log only messages of this or higher severity.
 .IP "\-\-command=\fIcmd\fP
 Pipe mails to \fIcmd\fP instead of msmtp
 .SH EXAMPLES

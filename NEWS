@@ -1,3 +1,7 @@
+Version 1.8.17:
+- msmtpd now supports logging to syslog or to a file, with two new options
+  --log and --log-level.
+
 Version 1.8.16:
 - The 'from' command now accepts patterns (as in shell file name matching)
   so that many envelope from addresses given with --from can match the

@@ -3898,8 +3898,8 @@ int main(int argc, char *argv[])
      * them. */
     if (account->auth_mech && !account->password && account->passwordeval)
     {
-        if (get_password_eval(account->passwordeval,
-                    &account->password, &errstr) != CONF_EOK)
+        if (password_eval(account->passwordeval,
+                    &account->password, &errstr) != 0)
         {
             print_error("%s", sanitize_string(errstr));
             error_code = EX_CONFIG;

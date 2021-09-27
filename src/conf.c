@@ -851,68 +851,6 @@ int check_account(account_t *acc, int sendmail_mode, char **errstr)
 
 
 /*
- * get_password_eval()
- *
- * see conf.h
- */
-
-int get_password_eval(const char *arg, char **buf, char **errstr)
-{
-    FILE *eval;
-    size_t bufsize;
-    size_t len;
-
-    *buf = NULL;
-    *errstr = NULL;
-    errno = 0;
-    bufsize = 1; /* Account for the null character. */
-
-    if (!(eval = popen(arg, "r")))
-    {
-        if (errno == 0)
-        {
-            errno = ENOMEM;
-        }
-        *errstr = xasprintf(_("cannot evaluate '%s': %s"), arg, strerror(errno));
-        return CONF_EIO;
-    }
-
-    do
-    {
-        bufsize += LINEBUFSIZE;
-        *buf = xrealloc(*buf, bufsize);
-        if (!fgets(&(*buf)[bufsize - LINEBUFSIZE - 1], LINEBUFSIZE + 1, eval))
-        {
-            *errstr = xasprintf(_("cannot read output of '%s'"), arg);
-            pclose(eval);
-            free(*buf);
-            *buf = NULL;
-            return CONF_EIO;
-        }
-        len = strlen(*buf);
-        if (len > 0 && (*buf)[len - 1] == '\n')
-        {
-            /* Read only the first line. */
-            break;
-        }
-    }
-    while (!feof(eval));
-    pclose(eval);
-
-    if (len > 0 && (*buf)[len - 1] == '\n')
-    {
-        (*buf)[len - 1] = '\0';
-        if (len - 1 > 0 && (*buf)[len - 2] == '\r')
-        {
-            (*buf)[len - 2] = '\0';
-        }
-    }
-
-    return CONF_EOK;
-}
-
-
-/*
  * helper function for expand_from() and expand_domain()
  */
 

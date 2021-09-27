@@ -114,7 +114,7 @@ log_msg(log_t* log,
             struct tm* tm = localtime(&t);
             char time_str[128];
             strftime(time_str, sizeof(time_str), "%F %T", tm);
-            fprintf(log->file, "msmtpd[%lld] %s: ", pid,
+            fprintf(log->file, "%s msmtpd[%lld] %s: ", time_str, pid,
                     msg_level >= log_error ? "error" : "info");
             va_list args;
             va_start(args, msg_format);

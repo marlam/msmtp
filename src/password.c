@@ -27,6 +27,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <errno.h>
 #ifdef HAVE_LIBSECRET
 # include <libsecret/secret.h>
 #endif

@@ -44,6 +44,7 @@ extern int optind;
 
 #include "base64.h"
 #include "password.h"
+#include "xalloc.h"
 
 
 /* Built-in defaults */
@@ -279,7 +280,7 @@ int msmtpd_session(log_t* log, FILE* in, FILE* out, const char* command,
         log_msg(log, log_error, "client did not start with EHLO or HELO, session aborted");
         return 1;
     }
-    if (user[0] && strncasecmp(buf, "EHLO ", 5) == 0) {
+    if (user && strncasecmp(buf, "EHLO ", 5) == 0) {
         fprintf(out, "250-localhost\r\n");
         fprintf(out, "250 AUTH PLAIN\r\n");
     } else {
@@ -290,7 +291,7 @@ int msmtpd_session(log_t* log, FILE* in, FILE* out, const char* command,
         return 1;
     }
 
-    if (user[0]) {
+    if (user) {
         if (strcmp(buf, "QUIT") == 0) {
             fprintf(out, "221 Bye\r\n");
             log_msg(log, log_info, "client ended session");
@@ -501,7 +502,7 @@ int parse_command_line(int argc, char* argv[],
         const char** interface, int* port,
         int* log_to_syslog, const char** log_file, log_level_t* log_level,
         const char** command,
-        char* user, char* password, size_t user_password_bufsize)
+        char** user, char** password)
 {
     enum {
         msmtpd_option_version,
@@ -583,44 +584,32 @@ int parse_command_line(int argc, char* argv[],
             {
                 char* comma = strchr(optarg, ',');
                 if (!comma) {
-                    if (strlen(optarg) >= user_password_bufsize) {
-                        fprintf(stderr, "%s: user name too long\n", argv[0]);
-                        return 1;
-                    }
-                    strcpy(user, optarg);
-                    char* pw = password_get("localhost", user, password_service_smtp, 0, 0);
-                    if (!pw) {
+                    char* tmp_user = xstrdup(optarg);
+                    char* tmp_password = password_get("localhost", tmp_user, password_service_smtp, 0, 0);
+                    if (!tmp_password) {
                         fprintf(stderr, "%s: cannot get password for (localhost, smtp, %s)\n",
-                                argv[0], user);
+                                argv[0], tmp_user);
+                        free(tmp_user);
                         return 1;
                     }
-                    if (strlen(pw) >= user_password_bufsize) {
-                        free(pw);
-                        fprintf(stderr, "%s: password too long\n", argv[0]);
-                        return 1;
-                    }
-                    strcpy(password, pw);
-                    free(pw);
+                    free(*user);
+                    *user = tmp_user;
+                    free(*password);
+                    *password = tmp_password;
                 } else {
-                    if (comma - optarg >= (ptrdiff_t)user_password_bufsize) {
-                        fprintf(stderr, "%s: user name too long\n", argv[0]);
-                        return 1;
-                    }
-                    strncpy(user, optarg, comma - optarg);
-                    user[comma - optarg] = '\0';
-                    char* pw = NULL;
+                    char* tmp_user = xstrndup(optarg, comma - optarg);
+                    char* tmp_password = NULL;
                     char* errstr = NULL;
-                    if (password_eval(comma + 1, &pw, &errstr) != 0) {
+                    if (password_eval(comma + 1, &tmp_password, &errstr) != 0) {
                         fprintf(stderr, "%s: cannot get password: %s\n", argv[0], errstr);
+                        free(tmp_user);
+                        free(errstr);
                         return 1;
                     }
-                    if (strlen(pw) >= user_password_bufsize) {
-                        free(pw);
-                        fprintf(stderr, "%s: password too long\n", argv[0]);
-                        return 1;
-                    }
-                    strcpy(password, pw);
-                    free(pw);
+                    free(*user);
+                    *user = tmp_user;
+                    free(*password);
+                    *password = tmp_password;
                 }
             }
             break;
@@ -652,9 +641,8 @@ int main(int argc, char* argv[])
     const char* log_file = NULL;
     log_level_t log_level = log_info;
     const char* command = DEFAULT_COMMAND;
-    char user[SMTP_BUFSIZE];
-    char password[SMTP_BUFSIZE];
-    user[0] = '\0';
+    char* user = NULL;
+    char* password = NULL;
 
     /* Command line */
     if (parse_command_line(argc, argv,
@@ -662,7 +650,7 @@ int main(int argc, char* argv[])
                 &inetd, &interface, &port,
                 &log_to_syslog, &log_file, &log_level,
                 &command,
-                user, password, SMTP_BUFSIZE) != 0) {
+                &user, &password) != 0) {
         return exit_not_running;
     }
     if (print_version) {
@@ -694,14 +682,14 @@ int main(int argc, char* argv[])
     }
 
     /* Do it */
+    int ret = exit_ok;
     signal(SIGPIPE, SIG_IGN); /* Do not terminate when piping fails; we want to handle that error */
     if (inetd) {
         /* We are no daemon, so we can just signal error with exit status 1 and success with 0 */
         log_t log;
         log_open(log_to_syslog, log_file, log_level, &log);
-        int ret = msmtpd_session(&log, stdin, stdout, command, user, password);
+        ret = msmtpd_session(&log, stdin, stdout, command, user, password);
         log_close(&log);
-        return ret;
     } else {
         int ipv6;
         struct sockaddr_in6 sa6;
@@ -762,14 +750,12 @@ int main(int argc, char* argv[])
             }
             if (fork() == 0) {
                 /* Child process */
-                log_t log;
-                log_open(log_to_syslog, log_file, log_level, &log);
-                FILE* conn;
-                int ret;
                 signal(SIGTERM, SIG_IGN); /* A running session should not be terminated */
                 signal(SIGCHLD, SIG_DFL); /* Make popen()/pclose() work again */
-                conn = fdopen(conn_fd, "rb+");
-                ret = msmtpd_session(&log, conn, conn, command, user, password);
+                log_t log;
+                log_open(log_to_syslog, log_file, log_level, &log);
+                FILE* conn = fdopen(conn_fd, "rb+");
+                int ret = msmtpd_session(&log, conn, conn, command, user, password);
                 fclose(conn);
                 log_close(&log);
                 exit(ret); /* exit status does not really matter since nobody checks it, but still... */
@@ -780,7 +766,9 @@ int main(int argc, char* argv[])
         }
     }
 
-    return exit_ok;
+    free(user);
+    free(password);
+    return ret;
 }
 
 /* Die if memory allocation fails. Note that we only use xalloc() etc

@@ -99,7 +99,7 @@ void xalloc_die(void)
 
 char *msmtp_password_callback(const char *hostname, const char *user)
 {
-    return password_get(hostname, user, password_service_smtp, 1);
+    return password_get(hostname, user, password_service_smtp, 1, 1);
 }
 
 

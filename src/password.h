@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client, and of mpop, a POP3 client.
  *
- * Copyright (C) 2019  Martin Lambers <marlam@marlam.de>
+ * Copyright (C) 2019, 2020, 2021  Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -32,14 +32,16 @@ typedef enum {
  *
  * This function tries to get a password for service::user@hostname.
  * It tries to get it from the system's keychain (if available).
- * If that fails, it tries to read a password from .netrc.
- * If that fails, it tries to read a password from via getpass().
+ * If that fails and consult_netrc is set, it tries to read a password from .netrc.
+ * If that fails, it tries to read a password via getpass().
  * If getpass_only_via_tty is set, then getpass() will only be called
  * if it reads from /dev/tty instead of stdin.
  * This function returns NULL on failure or the password in an allocated
  * buffer.
  */
 char *password_get(const char *hostname, const char *user,
-        password_service_t service, int getpass_only_via_tty);
+        password_service_t service,
+        int consult_netrc,
+        int getpass_only_via_tty);
 
 #endif

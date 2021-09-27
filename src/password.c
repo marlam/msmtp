@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client, and of mpop, a POP3 client.
  *
- * Copyright (C) 2019  Martin Lambers <marlam@marlam.de>
+ * Copyright (C) 2019, 2020, 2021  Martin Lambers <marlam@marlam.de>
  * Jay Soffian <jaysoffian@gmail.com> (Mac OS X keychain support)
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -85,7 +85,9 @@ static const char *service_string(password_service_t service)
 #endif
 
 char *password_get(const char *hostname, const char *user,
-        password_service_t service, int getpass_only_via_tty)
+        password_service_t service,
+        int consult_netrc,
+        int getpass_only_via_tty)
 {
     char *password = NULL;
 
@@ -144,7 +146,7 @@ char *password_get(const char *hostname, const char *user,
     }
 #endif /* HAVE_MACOSXKEYRING */
 
-    if (!password)
+    if (!password && consult_netrc)
     {
         char *netrc_directory;
         char *netrc_filename;

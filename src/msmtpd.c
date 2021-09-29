@@ -50,6 +50,9 @@ extern int optind;
 /* Built-in defaults */
 static const char* DEFAULT_INTERFACE = "127.0.0.1";
 static const int DEFAULT_PORT = 25;
+static const int MAX_ACTIVE_SESSIONS = 16;
+static const int AUTH_DELAY_SECONDS = 1;
+static const int AUTH_DELAY_EXPIRATION_SECONDS = 60;
 static const char* DEFAULT_COMMAND = BINDIR "/msmtp -f %F";
 static const size_t SMTP_BUFSIZE = 1024; /* must be at least 512 according to RFC2821 */
 static const size_t CMD_BLOCK_SIZE = 4096; /* initial buffer size for command */
@@ -251,9 +254,16 @@ int smtp_pipe(FILE* in, FILE* pipe, char* buf, size_t bufsize)
 /* SMTP session with input and output from FILE descriptors.
  * Mails are piped to the given command, where the first occurrence of %F
  * will be replaced with the envelope-from address, and all recipient addresses
- * will be appended as arguments. */
-int msmtpd_session(log_t* log, FILE* in, FILE* out, const char* command,
-        const char* user, const char* password)
+ * will be appended as arguments.
+ *
+ * Return value:
+ * 0 if the session ended normally / successfully
+ * 1 if the session had errors and/or was aborted
+ * 2 same as 1 and the session had authentication failures
+ * */
+int msmtpd_session(log_t* log, FILE* in, FILE* out,
+        const char* command,
+        const char* user, const char* password, int impose_auth_delay)
 {
     char buf[SMTP_BUFSIZE];
     char buf2[SMTP_BUFSIZE];
@@ -323,11 +333,12 @@ int msmtpd_session(log_t* log, FILE* in, FILE* out, const char* command,
                 && strncmp(buf2 + 1 + strlen(user) + 1, password, strlen(password)) == 0) {
             authenticated = 1;
         }
-        sleep(1); /* make brute force attacks unfeasible */
+        if (impose_auth_delay)
+            sleep(AUTH_DELAY_SECONDS);
         if (!authenticated) {
             fprintf(out, "535 Authentication failed\r\n");
             log_msg(log, log_error, "authentication failed, session aborted");
-            return 1;
+            return 2;
         } else {
             fprintf(out, "235 Authentication successful\r\n");
             log_msg(log, log_info, "authenticated user %s", user);
@@ -493,6 +504,33 @@ int msmtpd_session(log_t* log, FILE* in, FILE* out, const char* command,
         }
     }
     return 0;
+}
+
+/* Manage the maximum number of concurrent sessions and impose a delay to
+ * authentication requests after an authentication failure occured, to make
+ * brute force attacks infeasible */
+
+volatile sig_atomic_t active_sessions_count;
+volatile sig_atomic_t auth_failure_occurred;
+volatile time_t last_auth_failure_time;
+
+void sigchld_action(int signum, siginfo_t* si, void* ucontext)
+{
+    (void)signum;   /* unused */
+    (void)ucontext; /* unused */
+    int wstatus;
+    if (waitpid(si->si_pid, &wstatus, 0) == si->si_pid) {
+        int child_exit_status = -1;
+        if (WIFEXITED(wstatus))
+            child_exit_status = WEXITSTATUS(wstatus);
+        if (child_exit_status >= 2) {
+            struct timespec tp;
+            clock_gettime(CLOCK_MONOTONIC, &tp);
+            last_auth_failure_time = tp.tv_sec;
+            auth_failure_occurred = 1;
+        }
+        active_sessions_count--;
+    }
 }
 
 /* Parse the command line */
@@ -688,7 +726,9 @@ int main(int argc, char* argv[])
         /* We are no daemon, so we can just signal error with exit status 1 and success with 0 */
         log_t log;
         log_open(log_to_syslog, log_file, log_level, &log);
-        ret = msmtpd_session(&log, stdin, stdout, command, user, password);
+        int impose_auth_delay = 1; /* since we cannot keep track of auth failures in inetd mode */
+        ret = msmtpd_session(&log, stdin, stdout, command, user, password, impose_auth_delay);
+        ret = (ret == 0 ? 0 : 1);
         log_close(&log);
     } else {
         int ipv6;
@@ -711,7 +751,8 @@ int main(int argc, char* argv[])
                 sa4.sin_port = htons(port);
             } else {
                 fprintf(stderr, "%s: invalid interface\n", argv[0]);
-                return exit_not_running;
+                ret = exit_not_running;
+                goto exit;
             }
         }
 
@@ -719,53 +760,101 @@ int main(int argc, char* argv[])
         listen_fd = socket(ipv6 ? PF_INET6 : PF_INET, SOCK_STREAM, 0);
         if (listen_fd < 0) {
             fprintf(stderr, "%s: cannot create socket: %s\n", argv[0], strerror(errno));
-            return exit_not_running;
+            ret = exit_not_running;
+            goto exit;
         }
         if (setsockopt(listen_fd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) < 0) {
             fprintf(stderr, "%s: cannot set socket option: %s\n", argv[0], strerror(errno));
-            return exit_not_running;
+            ret = exit_not_running;
+            goto exit;
         }
         if (bind(listen_fd,
                     ipv6 ? (struct sockaddr*)&sa6 : (struct sockaddr*)&sa4,
                     ipv6 ? sizeof(sa6) : sizeof(sa4)) < 0) {
             fprintf(stderr, "%s: cannot bind to %s:%d: %s\n", argv[0], interface, port, strerror(errno));
-            return exit_not_running;
+            ret = exit_not_running;
+            goto exit;
         }
         if (listen(listen_fd, 128) < 0) {
             fprintf(stderr, "%s: cannot listen on socket: %s\n", argv[0], strerror(errno));
-            return exit_not_running;
+            ret = exit_not_running;
+            goto exit;
         }
 
         /* Set up signal handling, in part conforming to freedesktop.org modern daemon requirements */
         signal(SIGHUP, SIG_IGN); /* Reloading configuration does not make sense for us */
         signal(SIGTERM, SIG_DFL); /* We can be terminated as long as there is no running session */
-        signal(SIGCHLD, SIG_IGN); /* Make sure child processes do not become zombies */
+
+        /* Set SIGCHLD signal handler to manage maximum number of active sessions and impose
+         * authentication delays in case of authentication failures (to make brute force attacks unfeasible) */
+        active_sessions_count = 0;
+        auth_failure_occurred = 0;
+        struct sigaction sa;
+        memset(&sa, 0, sizeof(sa));
+        sa.sa_flags = SA_NOCLDSTOP | SA_SIGINFO | SA_RESTART; /* SA_RESTART: restart accept() after SIGCHLD */
+        sa.sa_sigaction = sigchld_action;
+        sigaction(SIGCHLD, &sa, NULL); /* cannot fail */
 
         /* Accept connection */
         for (;;) {
-            int conn_fd = accept(listen_fd, NULL, NULL);
+            while (active_sessions_count >= MAX_ACTIVE_SESSIONS) {
+                sleep(1);
+            }
+            socklen_t client_len = ipv6 ? sizeof(sa6) : sizeof(sa4);
+            int conn_fd = accept(listen_fd, ipv6 ? (struct sockaddr*)&sa6 : (struct sockaddr*)&sa4, &client_len);
             if (conn_fd < 0) {
                 fprintf(stderr, "%s: cannot accept connection: %s\n", argv[0], strerror(errno));
-                return exit_not_running;
+                ret = exit_not_running;
+                break;
             }
-            if (fork() == 0) {
+            char client_ip_str[INET6_ADDRSTRLEN];
+            int client_port;
+            if (ipv6) {
+                inet_ntop(AF_INET6, &sa6.sin6_addr, client_ip_str, sizeof(client_ip_str));
+                client_port = ntohs(sa6.sin6_port);
+            } else {
+                inet_ntop(AF_INET, &sa4.sin_addr, client_ip_str, sizeof(client_ip_str));
+                client_port = ntohs(sa4.sin_port);
+            }
+            pid_t pid = fork();
+            if (pid == 0) {
                 /* Child process */
+                int impose_auth_delay = 0;
+                if (auth_failure_occurred) {
+                    struct timespec tp;
+                    clock_gettime(CLOCK_MONOTONIC, &tp);
+                    int seconds_since_last_auth_failure = tp.tv_sec - last_auth_failure_time;
+                    if (seconds_since_last_auth_failure <= AUTH_DELAY_EXPIRATION_SECONDS)
+                        impose_auth_delay = 1;
+                }
                 signal(SIGTERM, SIG_IGN); /* A running session should not be terminated */
                 signal(SIGCHLD, SIG_DFL); /* Make popen()/pclose() work again */
                 log_t log;
                 log_open(log_to_syslog, log_file, log_level, &log);
+                log_msg(&log, log_info, "connection from %s port %d, active sessions %d (max %d), auth_delay=%s",
+                        client_ip_str, client_port,
+                        active_sessions_count + 1, MAX_ACTIVE_SESSIONS, impose_auth_delay ? "yes" : "no");
                 FILE* conn = fdopen(conn_fd, "rb+");
-                int ret = msmtpd_session(&log, conn, conn, command, user, password);
+                int ret = msmtpd_session(&log, conn, conn, command, user, password, impose_auth_delay);
                 fclose(conn);
+                log_msg(&log, log_info, "connection closed");
                 log_close(&log);
-                exit(ret); /* exit status does not really matter since nobody checks it, but still... */
+                exit(ret);
             } else {
                 /* Parent process */
                 close(conn_fd);
+                if (pid > 0) {
+                    active_sessions_count++;
+                } else {
+                    fprintf(stderr, "%s: fork failed: %s\n", argv[0], strerror(errno));
+                    ret = exit_not_running;
+                    break;
+                }
             }
         }
     }
 
+exit:
     free(user);
     free(password);
     return ret;

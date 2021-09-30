@@ -71,10 +71,10 @@ typedef struct {
     log_level_t level;
 } log_t;
 
-void log_open(int log_to_syslog, const char* log_file_name, log_level_t log_level, log_t* log)
+void log_open(int log_to_syslog, const char* log_file_name, log_t* log)
 {
     log->file = NULL;
-    log->level = log_level;
+    log->level = log_info; /* default currently hard-coded */
     int log_file_open_failure = 0;
     if (log_file_name) {
         log->file = fopen(log_file_name, "a");
@@ -538,7 +538,7 @@ int parse_command_line(int argc, char* argv[],
         int* print_version, int* print_help,
         int* inetd,
         const char** interface, int* port,
-        int* log_to_syslog, const char** log_file, log_level_t* log_level,
+        int* log_to_syslog, const char** log_file,
         const char** command,
         char** user, char** password)
 {
@@ -549,7 +549,6 @@ int parse_command_line(int argc, char* argv[],
         msmtpd_option_port,
         msmtpd_option_interface,
         msmtpd_option_log,
-        msmtpd_option_log_level,
         msmtpd_option_command,
         msmtpd_option_auth
     };
@@ -561,7 +560,6 @@ int parse_command_line(int argc, char* argv[],
         { "port", required_argument, 0, msmtpd_option_port },
         { "interface", required_argument, 0, msmtpd_option_interface },
         { "log", required_argument, 0, msmtpd_option_log },
-        { "log-level", required_argument, 0, msmtpd_option_log_level },
         { "command", required_argument, 0, msmtpd_option_command },
         { "auth", required_argument, 0, msmtpd_option_auth },
         { 0, 0, 0, 0 }
@@ -603,16 +601,6 @@ int parse_command_line(int argc, char* argv[],
             } else {
                 *log_to_syslog = 0;
                 *log_file = optarg;
-            }
-            break;
-        case msmtpd_option_log_level:
-            if (strcmp(optarg, "info") == 0) {
-                *log_level = log_info;
-            } else if (strcmp(optarg, "error") == 0) {
-                *log_level = log_error;
-            } else {
-                fprintf(stderr, "%s: invalid argument to option '--%s'\n", argv[0],
-                        options[option_index].name);
             }
             break;
         case msmtpd_option_command:
@@ -677,7 +665,6 @@ int main(int argc, char* argv[])
     int port = DEFAULT_PORT;
     int log_to_syslog = 0;
     const char* log_file = NULL;
-    log_level_t log_level = log_info;
     const char* command = DEFAULT_COMMAND;
     char* user = NULL;
     char* password = NULL;
@@ -686,7 +673,7 @@ int main(int argc, char* argv[])
     if (parse_command_line(argc, argv,
                 &print_version, &print_help,
                 &inetd, &interface, &port,
-                &log_to_syslog, &log_file, &log_level,
+                &log_to_syslog, &log_file,
                 &command,
                 &user, &password) != 0) {
         return exit_not_running;
@@ -709,8 +696,6 @@ int main(int argc, char* argv[])
         printf("  --port=number   listen on port number instead of %d\n", DEFAULT_PORT);
         printf("  --log=none|syslog|FILE  do not log anything (default)\n");
         printf("                  or log to syslog or log to the given file\n");
-        printf("  --log-level=error|info  log messages of this or\n");
-        printf("                  higher severity\n");
         printf("  --command=cmd   pipe mails to cmd instead of %s\n", DEFAULT_COMMAND);
         printf("  --auth=user[,passwordeval] require authentication with this user name;\n");
         printf("                  the password will be retrieved from the given\n");
@@ -725,7 +710,7 @@ int main(int argc, char* argv[])
     if (inetd) {
         /* We are no daemon, so we can just signal error with exit status 1 and success with 0 */
         log_t log;
-        log_open(log_to_syslog, log_file, log_level, &log);
+        log_open(log_to_syslog, log_file, &log);
         int impose_auth_delay = 1; /* since we cannot keep track of auth failures in inetd mode */
         ret = msmtpd_session(&log, stdin, stdout, command, user, password, impose_auth_delay);
         ret = (ret == 0 ? 0 : 1);
@@ -830,7 +815,7 @@ int main(int argc, char* argv[])
                 signal(SIGTERM, SIG_IGN); /* A running session should not be terminated */
                 signal(SIGCHLD, SIG_DFL); /* Make popen()/pclose() work again */
                 log_t log;
-                log_open(log_to_syslog, log_file, log_level, &log);
+                log_open(log_to_syslog, log_file, &log);
                 log_msg(&log, log_info, "connection from %s port %d, active sessions %d (max %d), auth_delay=%s",
                         client_ip_str, client_port,
                         active_sessions_count + 1, MAX_ACTIVE_SESSIONS, impose_auth_delay ? "yes" : "no");

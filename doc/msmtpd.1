@@ -13,30 +13,34 @@ msmtpd \- A minimal SMTP server
 .B msmtpd
 [option...]
 .SH DESCRIPTION
-Msmtpd is a minimal SMTP server that pipes mails to msmtp (or some other program) for delivery.
-It is intended to be used with system services that expect an SMTP server on the local host and
-cannot be configured to use the sendmail interface that msmtp provides.
+Msmtpd is a minimal SMTP server that pipes mails to msmtp (or some other
+program) for delivery.  It can be used with system services that expect an SMTP
+server on the local host, or
+it can be used by end users as a way to handle outgoing mail via msmtp with
+mail clients that insist on using SMTP.
+The EXAMPLES section below contains examples for both use cases.
 .br
-Msmtpd handles local SMTP clients. It listens on 127.0.0.1 port 25 by default, but can also run
-without its own network sockets in inetd mode, where it handles a single SMTP session on
+Msmtpd listens on 127.0.0.1 port 25 by default, but can also run without its
+own network sockets in inetd mode, where it handles a single SMTP session on
 standard input / output.
 .br
-In the string that defines the command that msmtpd pipes each mail to, the first occurrence of
-\fI%F\fP will be replaced with the envelope from address. Furthermore, all recipients of the
-mail will be appended as arguments. The command must not write to standard output, as that would
-mess up the SMTP session.
+In the string that defines the command that msmtpd pipes each mail to, the
+first occurrence of \fi%F\fP will be replaced with the envelope from address.
+Furthermore, all recipients of the mail will be appended as arguments. The
+command must not write to standard output, as that would mess up the SMTP
+session.
 .br
-If the command that the mail is piped to reports an error, this is typically reported as a
-permanent failure by msmtpd (SMTP server return code 554). The command can optionally signal
-temporary errors by using return codes defined in sysexits.h, e.g. 75 for EX_TEMPFAIL. These
-will then be reported as temporary failures by msmtpd (SMTP server return code 451), which means
-the client should try again later.
+If the command that the mail is piped to reports an error, this is typically
+reported as a permanent failure by msmtpd (SMTP server return code 554). The
+command can optionally signal temporary errors by using return codes defined in
+\fIsysexits.h\fP, e.g. 75 for \fIEX_TEMPFAIL\fP. These will then be reported
+as temporary failures by msmtpd (SMTP server return code 451), which means the
+client should try again later.
 .br
-Only run msmtpd if you know you need it. Only use a local interface to listen on. Take care
-to run it with correct user rights and permissions (e.g. use \fICAP_NET_BIND_SERVICE\fP to bind
-to port 25 instead of running as root, or use systemd with inetd service
-capabilities). Be aware that the pipe command will be run as the same user that
-msmtpd runs as. If you run msmtpd as a system service, you probably want to enable logging to syslog.
+To prevent abuse, msmtpd will allow only a limited number of concurrent SMTP
+sessions, and if authentication is active and an authentication failure
+occurrs, future authentication requests in any SMTP session will (for a limited
+duration) only be answered after a small delay.
 .SH OPTIONS
 .IP "\-\-version"
 Print version information
@@ -50,13 +54,24 @@ Listen on the given IPv6 or IPv4 address instead of 127.0.0.1
 Listen on the given port number instead of 25
 .IP "\-\-log=\fInone\fP|\fIsyslog\fP|\fIfilename\fP
 Set logging: none (default), syslog, or logging to the given file.
-.IP "\-\-log\-level=\fIerror\fP|\fIinfo\fP
-Log only messages of this or higher severity.
 .IP "\-\-command=\fIcmd\fP
 Pipe mails to \fIcmd\fP instead of msmtp
+.IP "\-\-auth=\fIuser\fP[,\fIpasswordeval\fP]
+Require authentication with this user name. The password will be
+retrieved from the given \fIpasswordeval\fP command (this works 
+just like passwordeval in msmtp) or, if none is given,
+from the key ring or, if that fails, from a prompt.
 .SH EXAMPLES
 .br
-.B Managing msmtpd with \fIstart-stop-daemon\fP
+.B Using msmtpd as a system service
+.br
+Only use a local interface to listen on. Run msmtpd with correct user rights
+and permissions (e.g. use \fICAP_NET_BIND_SERVICE\fP to bind to port 25
+instead of running as root, or use systemd with inetd service capabilities). Be
+aware that the pipe command will be run as the same user that msmtpd runs as.
+Enable logging to syslog with \fI\-\-log=syslog\fP.
+.br
+Example for managing msmtpd with \fIstart-stop-daemon\fP:
 .br
 # start msmtpd
 .br
@@ -65,5 +80,44 @@ start-stop-daemon \-\-start \-\-pidfile /var/run/msmtpd.pid \-\-make-pidfile \-\
 # stop msmtpd
 .br
 start-stop-daemon \-\-stop  \-\-pidfile /var/run/msmtpd.pid \-\-remove-pidfile \-\-quiet \-\-signal TERM
+.br
+.B Using msmtpd to handle outgoing mail for an SMTP-based mail client
+.br
+Some mail clients cannot send outgoing mail with a program like msmtp and
+instead insist on using an SMTP server. You can configure msmtpd to be that
+SMTP server and hand your outgoing mail over to msmtp.
+.br
+(Similarly, some mail clients cannot get incoming mail from a local mailbox and
+insist on using a POP3 or IMAP server. You can configure mpopd to be that POP3
+server and serve incoming mail from a local mailbox. See the
+relevant section in the mpop manual.)
+.br
+For this purpose, msmtpd should listen on an unprivileged port, e.g. 2500.
+Furthermore, msmtpd should require authentication because otherwise anyone
+connecting to it can send mail using your account, even if it's just other
+users or processes on your local machine.
+.br
+Let's use the user name \fImsmtpd-user\fP for this purpose. You have two
+options to manage the password:
+.IP
+Store the password in your key ring, e.g. with \fIsecret-tool store \-\-label=msmtpd host localhost service smtp user msmtpd-user\fP.
+In this case, use the msmtpd option \fI\-\-auth=msmtpd-user\fP.
+.IP
+Store the password in an encrypted file and use the passwordeval
+mechanism. Example for gpg: \fImsmtpd ... \-\-auth=msmtpd\-user,'gpg -q -d ~/.msmtpd\-password.gpg'\fP
+.PP
+The complete command then is (using the keyring): \fImsmtpd \-\-port=2500 \-\-auth=msmtpd-user \-\-command='/path/to/your/msmtp -f %F'\fP
+.br
+The mail client software must then be configured to use \fIlocalhost\fP at
+port \fI2500\fP for outgoing mail via SMTP, and to use authentication with
+user \fImsmtpd-user\fP and the password you chose. The mail client will
+probably complain that the SMTP server does not support TLS, but in this
+special case that is ok since all communication between your mail client and
+msmtpd will stay on the local machine.
+.br
+This setup also works with multiple mail accounts. Msmtp will pick the correct
+one based on the envelope-from address given to it via \fI-f %F\fP. You do not
+need multiple instances of msmtpd for this purpose, and therefore you need only
+one SMTP server in your mail client configuration.
 .SH SEE ALSO
 .BR msmtp(1)

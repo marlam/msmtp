@@ -1,6 +1,6 @@
 Version 1.8.17:
-- msmtpd now supports logging to syslog or to a file, with two new options
-  --log and --log-level.
+- msmtpd now supports logging to syslog or to a file with the option --log,
+  and authentication (for special use cases) with the option --auth.
 
 Version 1.8.16:
 - The 'from' command now accepts patterns (as in shell file name matching)

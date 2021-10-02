@@ -1415,30 +1415,34 @@ default: admin@@domain.example
 @node Minimal SMTP server (msmtpd)
 @chapter Minimal SMTP server (msmtpd)
 
-Msmtpd is a minimal SMTP server that pipes mails to msmtp (or some other program) for delivery.
-It is intended to be used with system services that expect an SMTP server on the local host and
-cannot be configured to use the sendmail interface that msmtp provides.
+Msmtpd is a minimal SMTP server that pipes mails to msmtp (or some other
+program) for delivery.  It can be used with system services that expect an SMTP
+server on the local host (see @ref{Example: using msmtpd as a system service}), or
+it can be used by end users as a way to handle outgoing mail via msmtp with
+mail clients that insist on using SMTP (see @ref{Example: using msmtpd to
+handle outgoing mail for an SMTP-based mail client}).
 
-Msmtpd handles local SMTP clients. It listens on 127.0.0.1 port 25 by default, but can also run
-without its own network sockets in inetd mode, where it handles a single SMTP session on
+Msmtpd listens on 127.0.0.1 port 25 by default, but can also run without its
+own network sockets in inetd mode, where it handles a single SMTP session on
 standard input / output.
 
-In the string that defines the command that msmtpd pipes each mail to, the first occurrence of
-@samp{%F} will be replaced with the envelope from address. Furthermore, all recipients of the
-mail will be appended as arguments. The command must not write to standard output, as that would
-mess up the SMTP session.
+In the string that defines the command that msmtpd pipes each mail to, the
+first occurrence of @samp{%F} will be replaced with the envelope from address.
+Furthermore, all recipients of the mail will be appended as arguments. The
+command must not write to standard output, as that would mess up the SMTP
+session.
 
-If the command that the mail is piped to reports an error, this is typically reported as a
-permanent failure by msmtpd (SMTP server return code 554). The command can optionally signal
-temporary errors by using return codes defined in @samp{sysexits.h}, e.g. 75 for @samp{EX_TEMPFAIL}. These
-will then be reported as temporary failures by msmtpd (SMTP server return code 451), which means
-the client should try again later.
+If the command that the mail is piped to reports an error, this is typically
+reported as a permanent failure by msmtpd (SMTP server return code 554). The
+command can optionally signal temporary errors by using return codes defined in
+@samp{sysexits.h}, e.g. 75 for @samp{EX_TEMPFAIL}. These will then be reported
+as temporary failures by msmtpd (SMTP server return code 451), which means the
+client should try again later.
 
-Only run msmtpd if you know you need it. Only use a local interface to listen on. Take care
-to run it with correct user rights and permissions (e.g. use @samp{CAP_NET_BIND_SERVICE} to bind
-to port 25 instead of running as root, or use systemd with inetd service
-capabilities). Be aware that the pipe command will be run as the same user that
-msmtpd runs as. If you run msmtpd as a system service, you probably want to enable logging to syslog.
+To prevent abuse, msmtpd will allow only a limited number of concurrent SMTP
+sessions, and if authentication is active and an authentication failure
+occurrs, future authentication requests in any SMTP session will (for a limited
+duration) only be answered after a small delay.
 
 Msmtpd handles the following options:
 @table @samp
@@ -1454,11 +1458,23 @@ Listen on the given IPv6 or IPv4 address instead of 127.0.0.1
 Listen on the given port number instead of 25
 @item --log=@var{none}|@var{syslog}|@var{filename}
 Set logging: none (default), syslog, or logging to the given file.
-@item --log-level=@var{error}|@var{info}
-Log only messages of this or higher severity.
 @item --command=@var{cmd}
 Pipe mails to @var{cmd} instead of msmtp
+@item --auth=@var{user}[,@var{passwordeval}]
+Require authentication with this user name. The password will be
+retrieved from the given @var{passwordeval} command (this works 
+just like @ref{passwordeval} in msmtp) or, if none is given,
+from the key ring or, if that fails, from a prompt.
 @end table
+
+@node Example: using msmtpd as a system service
+@section Example: using msmtpd as a system service
+
+Only use a local interface to listen on. Run msmtpd with correct user rights
+and permissions (e.g. use @samp{CAP_NET_BIND_SERVICE} to bind to port 25
+instead of running as root, or use systemd with inetd service capabilities). Be
+aware that the pipe command will be run as the same user that msmtpd runs as.
+Enable logging to syslog with @samp{--log=syslog}.
 
 Example for managing msmtpd with @samp{start-stop-daemon}:
 @example
@@ -1467,5 +1483,54 @@ start-stop-daemon --start --pidfile /var/run/msmtpd.pid --make-pidfile --chuid m
 # stop msmtpd
 start-stop-daemon --stop  --pidfile /var/run/msmtpd.pid --remove-pidfile --quiet --signal TERM
 @end example
+
+@node Example: using msmtpd to handle outgoing mail for an SMTP-based mail client
+@section Example: using msmtpd to handle outgoing mail for an SMTP-based mail client
+
+Some mail clients cannot send outgoing mail with a program like msmtp and
+instead insist on using an SMTP server. You can configure msmtpd to be that
+SMTP server and hand your outgoing mail over to msmtp.
+
+(Similarly, some mail clients cannot get incoming mail from a local mailbox and
+insist on using a POP3 or IMAP server. You can configure mpopd to be that POP3
+server and serve incoming mail from a local mailbox. See the
+@url{https://marlam.de/mpop/documentation/mpop.html#Example_003a-using-mpopd-to-handle-incoming-mail-for-a-POP3_002dbased-mail-client, corresponding section in the mpop manual}.)
+
+For this purpose, msmtpd should listen on an unprivileged port, e.g. 2500.
+Furthermore, msmtpd should require authentication because otherwise anyone
+connecting to it can send mail using your account, even if it's just other
+users or processes on your local machine.
+
+Let's use the user name @var{msmtpd-user} for this purpose. You have two
+options to manage the password:
+@enumerate
+@item Store the password in your key ring, e.g. with
+@example
+secret-tool store --label=msmtpd host localhost service smtp user msmtpd-user
+@end example
+In this case, use the msmtpd option @samp{--auth=msmtpd-user}.
+@item Store the password in an encrypted file and use the passwordeval
+mechanism. Example for gpg:
+@example
+msmtpd ... --auth=msmtpd-user,'gpg -q -d ~/.msmtpd-password.gpg'
+@end example
+@end enumerate
+
+The complete command then is (using the keyring):
+@example
+msmtpd --port=2500 --auth=msmtpd-user --command='/path/to/your/msmtp -f %F'
+@end example
+
+The mail client software must then be configured to use @samp{localhost} at
+port @samp{2500} for outgoing mail via SMTP, and to use authentication with
+user @samp{msmtpd-user} and the password you chose. The mail client will
+probably complain that the SMTP server does not support TLS, but in this
+special case that is ok since all communication between your mail client and
+msmtpd will stay on the local machine.
+
+This setup also works with multiple mail accounts. Msmtp will pick the correct
+one based on the envelope-from address given to it via @samp{-f %F}. You do not
+need multiple instances of msmtpd for this purpose, and therefore you need only
+one SMTP server in your mail client configuration.
 
 @bye

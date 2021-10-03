@@ -24,7 +24,7 @@ dnl Process this file with autoconf to produce a configure script.
 #
 
 dnl Autotools init stuff
-AC_INIT([msmtp], [1.8.17], [marlam@marlam.de], [msmtp], [https://marlam.de/msmtp])
+AC_INIT([msmtp],[1.8.17],[marlam@marlam.de],[msmtp],[https://marlam.de/msmtp])
 AC_CONFIG_SRCDIR([src/msmtp.c])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_HEADERS([config.h])
@@ -53,27 +53,23 @@ AC_SEARCH_LIBS([socket], [socket])
 
 dnl Unfortunately AC_SEARCH_LIBS([res_query], [resolv]) does not work because we
 dnl apparently need to include the appropriate header files, so we use a double
-dnl AC_TRY_LINK instead.
+dnl AC_LINK_IFELSE([AC_LANG_PROGRAM([[]], [[]])],[],[]) instead.
 AC_MSG_CHECKING([for library containing res_query])
-AC_TRY_LINK([
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[
     #include <netinet/in.h>
     #include <arpa/nameser.h>
     #include <resolv.h>
-    ], [res_query(0, 0, 0, 0, 0); ns_initparse(0, 0, 0);],
-    found_res_query=yes,
-    found_res_query=no)
+    ]], [[res_query(0, 0, 0, 0, 0); ns_initparse(0, 0, 0);]])],[found_res_query=yes],[found_res_query=no])
 if test "$found_res_query" = "yes"; then
     AC_MSG_RESULT([none required])
 else
     LIBS_BAK="$LIBS"
     LIBS="$LIBS -lresolv"
-    AC_TRY_LINK([
+    AC_LINK_IFELSE([AC_LANG_PROGRAM([[
         #include <netinet/in.h>
         #include <arpa/nameser.h>
         #include <resolv.h>
-        ], [res_query(0, 0, 0, 0, 0); ns_initparse(0, 0, 0);],
-        found_res_query=yes,
-        found_res_query=no)
+        ]], [[res_query(0, 0, 0, 0, 0); ns_initparse(0, 0, 0);]])],[found_res_query=yes],[found_res_query=no])
     if test "$found_res_query" = "yes"; then
         AC_MSG_RESULT([-lresolv])
     else
@@ -316,10 +312,7 @@ if test "$macosx_keyring" != "no"; then
 	ac_cv_func_SecKeychainGetVersion,
 	[ac_save_LIBS="$LIBS"
 	 LIBS="$LIBS -Wl,-framework -Wl,Security"
-	 AC_TRY_LINK([#include <Security/Security.h>],
-	    [SecKeychainGetVersion(NULL);],
-	    [ac_cv_func_SecKeychainGetVersion=yes],
-	    [ac_cv_func_SecKeychainGetVersion=no])
+	 AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <Security/Security.h>]], [[SecKeychainGetVersion(NULL);]])],[ac_cv_func_SecKeychainGetVersion=yes],[ac_cv_func_SecKeychainGetVersion=no])
 	 LIBS="$ac_save_LIBS"])
     if test $ac_cv_func_SecKeychainGetVersion = yes; then
 	macosx_keyring=yes

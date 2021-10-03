@@ -1494,7 +1494,7 @@ SMTP server and hand your outgoing mail over to msmtp.
 (Similarly, some mail clients cannot get incoming mail from a local mailbox and
 insist on using a POP3 or IMAP server. You can configure mpopd to be that POP3
 server and serve incoming mail from a local mailbox. See the
-@url{https://marlam.de/mpop/documentation/mpop.html#Example_003a-using-mpopd-to-handle-incoming-mail-for-a-POP3_002dbased-mail-client, corresponding section in the mpop manual}.)
+@url{https://marlam.de/mpop/mpop.html#Example_003a-using-mpopd-to-handle-incoming-mail-for-a-POP3_002dbased-mail-client, corresponding section in the mpop manual}.)
 
 For this purpose, msmtpd should listen on an unprivileged port, e.g. 2500.
 Furthermore, msmtpd should require authentication because otherwise anyone

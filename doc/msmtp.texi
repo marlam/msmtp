@@ -1417,9 +1417,9 @@ default: admin@@domain.example
 
 Msmtpd is a minimal SMTP server that pipes mails to msmtp (or some other
 program) for delivery.  It can be used with system services that expect an SMTP
-server on the local host (see @ref{Example: using msmtpd as a system service}), or
+server on the local host (see @ref{Example using msmtpd as a system service}), or
 it can be used by end users as a way to handle outgoing mail via msmtp with
-mail clients that insist on using SMTP (see @ref{Example: using msmtpd to
+mail clients that insist on using SMTP (see @ref{Example using msmtpd to
 handle outgoing mail for an SMTP-based mail client}).
 
 Msmtpd listens on 127.0.0.1 port 25 by default, but can also run without its
@@ -1467,7 +1467,7 @@ just like @ref{passwordeval} in msmtp) or, if none is given,
 from the key ring or, if that fails, from a prompt.
 @end table
 
-@node Example: using msmtpd as a system service
+@node Example using msmtpd as a system service
 @section Example: using msmtpd as a system service
 
 Only use a local interface to listen on. Run msmtpd with correct user rights
@@ -1484,7 +1484,7 @@ start-stop-daemon --start --pidfile /var/run/msmtpd.pid --make-pidfile --chuid m
 start-stop-daemon --stop  --pidfile /var/run/msmtpd.pid --remove-pidfile --quiet --signal TERM
 @end example
 
-@node Example: using msmtpd to handle outgoing mail for an SMTP-based mail client
+@node Example using msmtpd to handle outgoing mail for an SMTP-based mail client
 @section Example: using msmtpd to handle outgoing mail for an SMTP-based mail client
 
 Some mail clients cannot send outgoing mail with a program like msmtp and

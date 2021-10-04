@@ -2166,12 +2166,12 @@ void msmtp_print_version(void)
     printf(_("User configuration file name: %s\n"), userconffile);
     free(userconffile);
     printf("\n");
-    printf(_("Copyright (C) 2021 Martin Lambers and others.\n"
+    printf(_("Copyright (C) %d Martin Lambers and others.\n"
                 "This is free software.  You may redistribute copies of "
                     "it under the terms of\n"
                 "the GNU General Public License "
                     "<http://www.gnu.org/licenses/gpl.html>.\n"
-                "There is NO WARRANTY, to the extent permitted by law.\n"));
+                "There is NO WARRANTY, to the extent permitted by law.\n"), 2021);
 }
 
 

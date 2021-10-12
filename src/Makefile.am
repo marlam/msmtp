@@ -43,5 +43,5 @@ DEFS += -DSYSCONFDIR=\"$(sysconfdir)\" -DLOCALEDIR=\"$(localedir)\" -DBINDIR=\"$
 if BUILD_MSMTPD
 bin_PROGRAMS += msmtpd
 msmtpd_SOURCES = msmtpd.c base64.c base64.h password.c password.h tools.c tools.h xalloc.c xalloc.h netrc.c netrc.h
-msmtpd_LDADD =  $(libsecret_LIBS)
+msmtpd_LDADD =  $(libsecret_LIBS) $(LIBINTL)
 endif

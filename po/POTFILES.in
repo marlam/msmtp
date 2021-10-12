@@ -1,13 +1,15 @@
 # List of source files containing translatable strings.
-# Copyright (C) 2005, 2011, 2020 Martin Lambers <marlam@marlam.de>
+# Copyright (C) 2005, 2011, 2020, 2021 Martin Lambers <marlam@marlam.de>
 
 # Package source files
-src/msmtp.c
+src/aliases.c
 src/conf.c
-src/smtp.c
-src/stream.c
-src/net.c
+src/msmtp.c
 src/mtls.c
 src/mtls-gnutls.c
 src/mtls-openssl.c
 src/mtls-libtls.c
+src/net.c
+src/password.c
+src/smtp.c
+src/stream.c

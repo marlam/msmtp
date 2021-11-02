@@ -171,10 +171,12 @@ int get_addr(const char* inbuf, char* outbuf, int allow_empty, size_t* addrlen)
                 || (*p >= 'A' && *p <= 'Z')
                 || (*p >= '0' && *p <= '9')
                 || *p == '.' || *p == '@' || *p == '_' || *p == '-'
-                || *p == '+' || *p == '/') {
+                || *p == '+' || *p == '/'
+                || *p == '=') {
             /* Character allowed. Note that this set is very restrictive;
              * more characters might be added to the whitelist if the need
-             * arises */
+             * arises. But beware: mail addresses will be part of the
+             * mail pipe command line and therefore will be passed to a shell. */
             continue;
         } else {
             /* Invalid character */

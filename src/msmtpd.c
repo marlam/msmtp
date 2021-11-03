@@ -53,7 +53,7 @@ static const int DEFAULT_PORT = 25;
 static const int MAX_ACTIVE_SESSIONS = 16;
 static const int AUTH_DELAY_SECONDS = 1;
 static const int AUTH_DELAY_EXPIRATION_SECONDS = 60;
-static const char* DEFAULT_COMMAND = BINDIR "/msmtp -f %F";
+static const char* DEFAULT_COMMAND = BINDIR "/msmtp -f %F --";
 static const size_t SMTP_BUFSIZE = 1024; /* must be at least 512 according to RFC2821 */
 static const size_t CMD_BLOCK_SIZE = 4096; /* initial buffer size for command */
 static const size_t CMD_MAX_BLOCKS = 16; /* limit memory allocation */
@@ -170,7 +170,8 @@ int get_addr(const char* inbuf, char* outbuf, int allow_empty, size_t* addrlen)
         if ((*p >= 'a' && *p <= 'z')
                 || (*p >= 'A' && *p <= 'Z')
                 || (*p >= '0' && *p <= '9')
-                || *p == '.' || *p == '@' || *p == '_' || *p == '-'
+                || (p > outbuf && *p == '-') /* must not start with hyphen */
+                || *p == '.' || *p == '@' || *p == '_'
                 || *p == '+' || *p == '/'
                 || *p == '=') {
             /* Character allowed. Note that this set is very restrictive;

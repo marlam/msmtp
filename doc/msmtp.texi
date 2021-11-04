@@ -1460,6 +1460,7 @@ Listen on the given port number instead of 25
 Set logging: none (default), syslog, or logging to the given file.
 @item --command=@var{cmd}
 Pipe mails to @var{cmd} instead of msmtp
+Make sure to end this command with @samp{--} to separate options from arguments.
 @item --auth=@var{user}[,@var{passwordeval}]
 Require authentication with this user name. The password will be
 retrieved from the given @var{passwordeval} command (this works 

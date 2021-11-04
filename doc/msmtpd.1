@@ -55,7 +55,8 @@ Listen on the given port number instead of 25
 .IP "\-\-log=\fInone\fP|\fIsyslog\fP|\fIfilename\fP
 Set logging: none (default), syslog, or logging to the given file.
 .IP "\-\-command=\fIcmd\fP
-Pipe mails to \fIcmd\fP instead of msmtp
+Pipe mails to \fIcmd\fP instead of msmtp.
+Make sure to end this command with \-\- to separate options from arguments.
 .IP "\-\-auth=\fIuser\fP[,\fIpasswordeval\fP]
 Require authentication with this user name. The password will be
 retrieved from the given \fIpasswordeval\fP command (this works 

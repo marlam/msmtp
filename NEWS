@@ -1,3 +1,10 @@
+Version 1.8.19:
+- Fixed a security problem in msmtpd: mail addresses starting with '-' could be
+  interpreted as options of the pipe command.
+
+Version 1.8.18:
+- No significant changes.
+
 Version 1.8.17:
 - msmtpd now supports logging to syslog or to a file with the option --log,
   and authentication (for special use cases) with the option --auth.

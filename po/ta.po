@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: msmtp 1.8.8rc2\n"
 "Report-Msgid-Bugs-To: marlam@marlam.de\n"
-"POT-Creation-Date: 2021-03-12 15:28+0100\n"
+"POT-Creation-Date: 2021-10-22 17:45+0200\n"
 "PO-Revision-Date: 2020-04-07 18:54+0530\n"
 "Last-Translator: Arun Isaac <arunisaac@systemreboot.net>\n"
 "Language-Team: Tamil <tamil@systemreboot.net>\n"
@@ -16,6 +16,142 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Bugs: Report translation errors to the Language-Team address.\n"
+
+#: src/aliases.c:121
+#, fuzzy, c-format
+#| msgid "line longer than %d characters"
+msgid "line %d: longer than %d characters"
+msgstr "வரியில் %d வரியுருகளுக்கு அதிமாக உள்ளன"
+
+#: src/aliases.c:138
+#, c-format
+msgid "line %d: single ':' delimiter expected"
+msgstr ""
+
+#: src/aliases.c:146
+#, c-format
+msgid "line %d: invalid alias '%s'"
+msgstr ""
+
+#: src/aliases.c:153
+#, c-format
+msgid "line %d: duplicate alias '%s'"
+msgstr ""
+
+#: src/aliases.c:178 src/conf.c:1070 src/stream.c:63
+#, c-format
+msgid "input error"
+msgstr "உள்ளீட்டுப் பிழை"
+
+#: src/aliases.c:283
+#, c-format
+msgid "Too many redirects when expanding alias %s."
+msgstr ""
+
+#: src/conf.c:806 src/conf.c:821
+#, c-format
+msgid "host not set"
+msgstr ""
+
+#: src/conf.c:811
+#, c-format
+msgid "port not set"
+msgstr "வாயில் குறிப்பிடப்படவில்லை"
+
+#: src/conf.c:816
+#, c-format
+msgid "envelope-from address is missing"
+msgstr ""
+
+#: src/conf.c:826
+#, c-format
+msgid "tls_key_file requires tls_cert_file"
+msgstr "tls_key_file க்கு tls_cert_file தேவை"
+
+#: src/conf.c:831
+#, c-format
+msgid "tls_cert_file requires tls_key_file"
+msgstr "tls_cert_file க்கு tls_key_file தேவை"
+
+#: src/conf.c:839
+#, c-format
+msgid ""
+"tls requires either tls_trust_file (highly recommended) or tls_fingerprint "
+"or a disabled tls_certcheck"
+msgstr ""
+
+#: src/conf.c:845
+#, c-format
+msgid "tls_crl_file requires tls_trust_file"
+msgstr "tls_crl_file க்கு tls_trust_file தேவை"
+
+#: src/conf.c:877 src/conf.c:884 src/conf.c:901 src/mtls-gnutls.c:328
+#, c-format
+msgid "%s: %s"
+msgstr "%s: %s"
+
+#: src/conf.c:1092
+#, c-format
+msgid "line longer than %d characters"
+msgstr "வரியில் %d வரியுருகளுக்கு அதிமாக உள்ளன"
+
+#: src/conf.c:1143 src/conf.c:1268
+#, c-format
+msgid "line %d: missing account name"
+msgstr "வரி %d: கணக்குப் பெயர் இல்லை"
+
+#: src/conf.c:1148
+#, c-format
+msgid "line %d: account %s not (yet) defined"
+msgstr ""
+
+#: src/conf.c:1240 src/conf.c:2037 src/conf.c:2054
+#, c-format
+msgid "line %d: command %s does not take an argument"
+msgstr "வரி %d: %s கட்டளைக்குச் செயலுருபு கிடையாது"
+
+#: src/conf.c:1276
+#, c-format
+msgid "line %d: an account name must not contain colons or commas"
+msgstr "வரி %d: கணக்குப் பெயரில் விளக்கிசைக்குறிகளோ உறுப்பிசைக்குறிகளோ இடம்பெறக்கூடாது"
+
+#: src/conf.c:1286
+#, c-format
+msgid "line %d: account %s was already defined"
+msgstr "வரி %d: %s என்னும் கணக்கு ஏற்கனவே வரையறுக்கப்பட்டது"
+
+#: src/conf.c:1311 src/conf.c:1330 src/conf.c:1357 src/conf.c:1386
+#: src/conf.c:1672 src/conf.c:1707
+#, c-format
+msgid "line %d: command %s needs an argument"
+msgstr "வரி %d: %s கட்டளைக்குச் செயலுருபு தேவை"
+
+#: src/conf.c:1341 src/conf.c:1373 src/conf.c:1404 src/conf.c:1443
+#: src/conf.c:1488 src/conf.c:1508 src/conf.c:1593 src/conf.c:1614
+#: src/conf.c:1633 src/conf.c:1694 src/conf.c:1725 src/conf.c:1775
+#: src/conf.c:1822 src/conf.c:1847 src/conf.c:1867 src/conf.c:1887
+#: src/conf.c:1907 src/conf.c:1954 src/conf.c:1975 src/conf.c:1996
+#: src/conf.c:2024
+#, c-format
+msgid "line %d: invalid argument %s for command %s"
+msgstr ""
+
+#: src/conf.c:2070
+#, c-format
+msgid "line %d: unknown command %s"
+msgstr "வரி %d: அறியப்படாக் கட்டளை %s"
+
+#: src/conf.c:2122
+#, c-format
+msgid "contains secrets and therefore must be owned by you"
+msgstr ""
+
+#: src/conf.c:2128
+#, c-format
+msgid ""
+"contains secrets and therefore must have no more than user read/write "
+"permissions"
+msgstr ""
 
 #. TRANSLATORS: msmtp shares a lot of code and translatable strings with
 #. mpop <https://marlam.de/mpop>.
@@ -289,15 +425,21 @@ msgid "User configuration file name: %s\n"
 msgstr "பயனர் அமைவடிவக்கோப்பு: %s\n"
 
 #: src/msmtp.c:2169
-#, c-format
+#, fuzzy, c-format
+#| msgid ""
+#| "Copyright (C) 2020 Martin Lambers and others.\n"
+#| "This is free software.  You may redistribute copies of it under the terms "
+#| "of\n"
+#| "the GNU General Public License <http://www.gnu.org/licenses/gpl.html>.\n"
+#| "There is NO WARRANTY, to the extent permitted by law.\n"
 msgid ""
-"Copyright (C) 2021 Martin Lambers and others.\n"
+"Copyright (C) %d Martin Lambers and others.\n"
 "This is free software.  You may redistribute copies of it under the terms "
 "of\n"
 "the GNU General Public License <http://www.gnu.org/licenses/gpl.html>.\n"
 "There is NO WARRANTY, to the extent permitted by law.\n"
 msgstr ""
-"Copyright (C) 2021 Martin Lambers and others.\n"
+"Copyright (C) 2020 Martin Lambers and others.\n"
 "இது கட்டற்ற மென்பொருள்.  இதை நீங்கள் GNU General Public License\n"
 "<http://gnu.org/licenses/gpl.html> என்னும் உரிமத்தின் கீழ் மறுவிநியோகம் செய்யலாம்.\n"
 "சட்டத்தால் அனுமதிக்கப்பட்ட அளவிற்கு எந்த உத்தரவாதமும் இல்லை.\n"
@@ -686,12 +828,12 @@ msgstr "--host, --read-envelope-from இரண்டையும் ஒரே �
 msgid "unsupported operation mode b%s"
 msgstr ""
 
-#: src/msmtp.c:3276 src/msmtp.c:3753 src/msmtp.c:4046
+#: src/msmtp.c:3276 src/msmtp.c:3753 src/msmtp.c:4052
 #, c-format
 msgid "cannot create temporary file: %s"
 msgstr "தற்காலிகக் கோப்பை உருவாக்க இயலவில்லை: %s"
 
-#: src/msmtp.c:3306 src/msmtp.c:3778 src/msmtp.c:4079
+#: src/msmtp.c:3306 src/msmtp.c:3778 src/msmtp.c:4085
 #, c-format
 msgid "cannot rewind temporary file: %s"
 msgstr ""
@@ -831,186 +973,599 @@ msgstr ""
 msgid "using account specified on command line\n"
 msgstr ""
 
-#: src/msmtp.c:3953
+#: src/msmtp.c:3959
 #, c-format
 msgid "account %s from %s: %s"
 msgstr ""
 
-#: src/msmtp.c:3994
+#: src/msmtp.c:4000
 msgid "this platform does not support syslog logging"
 msgstr ""
 
-#: src/msmtp.c:4003
+#: src/msmtp.c:4009
 #, c-format
 msgid "support for authentication method %s is not compiled in"
 msgstr ""
 
-#: src/msmtp.c:4011
+#: src/msmtp.c:4017
 #, c-format
 msgid "cannot initialize networking: %s"
 msgstr "வலையத்தைத் தொடங்க இயலவில்லை: %s"
 
-#: src/msmtp.c:4022
+#: src/msmtp.c:4028
 #, c-format
 msgid "cannot initialize TLS library: %s"
 msgstr ""
 
-#: src/msmtp.c:4029
+#: src/msmtp.c:4035
 msgid "support for TLS is not compiled in"
 msgstr ""
 
-#: src/msmtp.c:4108
+#: src/msmtp.c:4114
 #, c-format
 msgid "LMTP server message: %s"
 msgstr "LMTP வழங்கிச் செய்தி: %s"
 
-#: src/msmtp.c:4119
+#: src/msmtp.c:4125
 #, c-format
 msgid "could not send mail to all recipients (account %s from %s)"
 msgstr ""
 
-#: src/msmtp.c:4125
+#: src/msmtp.c:4131
 msgid "could not send mail to all recipients"
 msgstr ""
 
-#: src/msmtp.c:4140 src/msmtp.c:4195 src/msmtp.c:4216
+#: src/msmtp.c:4146 src/msmtp.c:4201 src/msmtp.c:4222
 #, c-format
 msgid "server message: %s"
 msgstr "வழங்கிச் செய்தி: %s"
 
-#: src/msmtp.c:4146
+#: src/msmtp.c:4152
 #, c-format
 msgid "could not send mail (account %s from %s)"
 msgstr "மடல் அனுப்ப இயலவில்லை (%s யிலுள்ள %s கணக்கு)"
 
-#: src/msmtp.c:4151
+#: src/msmtp.c:4157
 msgid "could not send mail"
 msgstr "மடல் அனுப்ப இயலவில்லை"
 
-#: src/msmtp.c:4161
+#: src/msmtp.c:4167
 #, c-format
 msgid "delivery to one or more recipients failed"
 msgstr ""
 
-#: src/conf.c:792 src/conf.c:807
+#: src/mtls.c:142
 #, c-format
-msgid "host not set"
+msgid "TLS session parameters:\n"
 msgstr ""
 
-#: src/conf.c:797
-#, c-format
-msgid "port not set"
-msgstr "வாயில் குறிப்பிடப்படவில்லை"
-
-#: src/conf.c:802
-#, c-format
-msgid "envelope-from address is missing"
+#: src/mtls.c:144
+msgid "not available"
 msgstr ""
 
-#: src/conf.c:812
+#: src/mtls.c:152
 #, c-format
-msgid "tls_key_file requires tls_cert_file"
-msgstr "tls_key_file க்கு tls_cert_file தேவை"
+msgid "TLS certificate information:\n"
+msgstr "TLS சான்றிதழ் பற்றிய தகவல்:\n"
 
-#: src/conf.c:817
+#: src/mtls.c:153
+msgid "Subject"
+msgstr ""
+
+#: src/mtls.c:155
+msgid "Issuer"
+msgstr "வழங்குநர்"
+
+#: src/mtls.c:157
+msgid "Validity"
+msgstr "செல்லுபடி"
+
+#: src/mtls.c:159
+msgid "Activation time"
+msgstr "செல்லுபடி தொடங்கும் நேரம்"
+
+#: src/mtls.c:161
+msgid "Expiration time"
+msgstr "செல்லுபடி முடியும் நேரம்"
+
+#: src/mtls.c:162
+msgid "Fingerprints"
+msgstr "கைவரைகள்"
+
+#: src/mtls-gnutls.c:120 src/mtls-openssl.c:285 src/mtls-libtls.c:105
+msgid "cannot get TLS certificate info"
+msgstr ""
+
+#: src/mtls-gnutls.c:125 src/mtls-gnutls.c:241 src/mtls-openssl.c:288
 #, c-format
-msgid "tls_cert_file requires tls_key_file"
-msgstr "tls_cert_file க்கு tls_key_file தேவை"
+msgid "%s: no certificate was found"
+msgstr ""
 
-#: src/conf.c:825
+#: src/mtls-gnutls.c:130 src/mtls-gnutls.c:247
+#, c-format
+msgid "%s: cannot initialize certificate structure"
+msgstr ""
+
+#: src/mtls-gnutls.c:136
+#, c-format
+msgid "%s: error parsing certificate"
+msgstr ""
+
+#: src/mtls-gnutls.c:145 src/mtls-gnutls.c:263 src/mtls-openssl.c:308
+#: src/mtls-openssl.c:470 src/mtls-libtls.c:113 src/mtls-libtls.c:179
+#, c-format
+msgid "%s: error getting SHA256 fingerprint"
+msgstr ""
+
+#: src/mtls-gnutls.c:152 src/mtls-gnutls.c:281 src/mtls-openssl.c:314
+#: src/mtls-openssl.c:488
+#, c-format
+msgid "%s: error getting SHA1 fingerprint"
+msgstr ""
+
+#: src/mtls-gnutls.c:158 src/mtls-openssl.c:322 src/mtls-libtls.c:126
+#, c-format
+msgid "%s: cannot get activation time"
+msgstr ""
+
+#: src/mtls-gnutls.c:164 src/mtls-openssl.c:332 src/mtls-libtls.c:133
+#, c-format
+msgid "%s: cannot get expiration time"
+msgstr ""
+
+#: src/mtls-gnutls.c:224 src/mtls-openssl.c:446 src/mtls-libtls.c:166
+msgid "TLS certificate verification failed"
+msgstr ""
+
+#: src/mtls-gnutls.c:254
+#, c-format
+msgid "%s: error parsing certificate %u of %u"
+msgstr ""
+
+#: src/mtls-gnutls.c:270 src/mtls-gnutls.c:288 src/mtls-gnutls.c:306
+#: src/mtls-openssl.c:477 src/mtls-openssl.c:495 src/mtls-openssl.c:513
+#: src/mtls-libtls.c:191
+#, c-format
+msgid "%s: the certificate fingerprint does not match"
+msgstr ""
+
+#: src/mtls-gnutls.c:299 src/mtls-openssl.c:506
+#, c-format
+msgid "%s: error getting MD5 fingerprint"
+msgstr ""
+
+#: src/mtls-gnutls.c:387 src/mtls-libtls.c:238 src/mtls-libtls.c:374
+#, c-format
+msgid "cannot initialize TLS session: %s"
+msgstr ""
+
+#: src/mtls-gnutls.c:400
+#, c-format
+msgid "error in priority string at position %d"
+msgstr ""
+
+#: src/mtls-gnutls.c:403 src/mtls-gnutls.c:410 src/mtls-openssl.c:657
+#: src/mtls-libtls.c:257 src/mtls-libtls.c:272 src/mtls-libtls.c:287
+#: src/mtls-libtls.c:297
+#, c-format
+msgid "cannot set priorities for TLS session: %s"
+msgstr ""
+
+#: src/mtls-gnutls.c:423
+#, c-format
+msgid "cannot set default priority for TLS session: %s"
+msgstr ""
+
+#: src/mtls-gnutls.c:438
+#, c-format
+msgid "cannot allocate certificate for TLS session: %s"
+msgstr ""
+
+#: src/mtls-gnutls.c:451 src/mtls-libtls.c:312
 #, c-format
 msgid ""
-"tls requires either tls_trust_file (highly recommended) or tls_fingerprint "
-"or a disabled tls_certcheck"
+"cannot set X509 key file %s and/or X509 cert file %s for TLS session: %s"
 msgstr ""
 
-#: src/conf.c:831
+#: src/mtls-gnutls.c:473 src/mtls-openssl.c:720
 #, c-format
-msgid "tls_crl_file requires tls_trust_file"
-msgstr "tls_crl_file க்கு tls_trust_file தேவை"
+msgid "cannot set X509 system trust for TLS session: %s"
+msgstr ""
 
-#: src/conf.c:862
+#: src/mtls-gnutls.c:488 src/mtls-libtls.c:342
+#, c-format
+msgid "cannot set X509 trust file %s for TLS session: %s"
+msgstr ""
+
+#: src/mtls-gnutls.c:503 src/mtls-libtls.c:355
+#, c-format
+msgid "cannot set X509 CRL file %s for TLS session: %s"
+msgstr ""
+
+#: src/mtls-gnutls.c:532
+#, c-format
+msgid "cannot set credentials for TLS session: %s"
+msgstr ""
+
+#: src/mtls-gnutls.c:567 src/mtls-libtls.c:410
+#, c-format
+msgid "TLS handshake failed: %s"
+msgstr ""
+
+#: src/mtls-gnutls.c:623 src/mtls-gnutls.c:670 src/mtls-openssl.c:866
+#: src/mtls-openssl.c:933 src/mtls-openssl.c:975 src/net.c:97 src/net.c:208
+#: src/net.c:255 src/net.c:767 src/net.c:894
+#, c-format
+msgid "operation aborted"
+msgstr "செய்பணி நிறுத்தப்பட்டது"
+
+#: src/mtls-gnutls.c:627 src/mtls-libtls.c:497
+#, c-format
+msgid "cannot read from TLS connection: %s"
+msgstr "TLS இணைப்பிலிருந்து படிக்க இயலவில்லை: %s"
+
+#: src/mtls-gnutls.c:674 src/mtls-gnutls.c:685 src/mtls-libtls.c:529
+#, c-format
+msgid "cannot write to TLS connection: %s"
+msgstr "TLS இணைப்பிற்கு எழுத இயலவில்லை: %s"
+
+#: src/mtls-gnutls.c:686 src/mtls-openssl.c:809 src/mtls-openssl.c:833
+#: src/net.c:178 src/net.c:648
+msgid "unknown error"
+msgstr "அறியப்படாப் பிழை"
+
+#: src/mtls-openssl.c:92
+#, c-format
+msgid ""
+"no environment variables RANDFILE or HOME, or filename of rand file too long"
+msgstr ""
+
+#: src/mtls-openssl.c:98
+#, c-format
+msgid "%s: input error"
+msgstr "%s: உள்ளீட்டுப் பிழை"
+
+#: src/mtls-openssl.c:120
+#, c-format
+msgid "random file + time + pseudo randomness is not enough, giving up"
+msgstr ""
+
+#: src/mtls-openssl.c:293 src/mtls-openssl.c:579
+#, c-format
+msgid "%s: cannot get certificate subject"
+msgstr ""
+
+#: src/mtls-openssl.c:299
+#, c-format
+msgid "%s: cannot get certificate issuer"
+msgstr ""
+
+#: src/mtls-openssl.c:450
+msgid "TLS certificate check failed"
+msgstr ""
+
+#: src/mtls-openssl.c:456
+#, c-format
+msgid "%s: no certificate was sent"
+msgstr ""
+
+#: src/mtls-openssl.c:559
+#, c-format
+msgid "%s: certificate subject alternative name contains NUL"
+msgstr ""
+
+#: src/mtls-openssl.c:591
+#, c-format
+msgid "%s: cannot get certificate common name"
+msgstr ""
+
+#: src/mtls-openssl.c:600
+#, c-format
+msgid "%s: certificate common name contains NUL"
+msgstr ""
+
+#: src/mtls-openssl.c:617
+#, c-format
+msgid "%s: the certificate owner does not match hostname %s"
+msgstr ""
+
+#: src/mtls-openssl.c:649 src/mtls-libtls.c:231
+#, c-format
+msgid "cannot set minimum number of DH prime bits for TLS: %s"
+msgstr ""
+
+#: src/mtls-openssl.c:650 src/mtls-openssl.c:658 src/mtls-openssl.c:666
+msgid "feature not yet implemented for OpenSSL"
+msgstr ""
+
+#: src/mtls-openssl.c:665
+#, c-format
+msgid "cannot load CRL file: %s"
+msgstr ""
+
+#: src/mtls-openssl.c:672
+#, c-format
+msgid "cannot set TLS method"
+msgstr ""
+
+#: src/mtls-openssl.c:680
+#, c-format
+msgid "cannot create TLS context: %s"
+msgstr ""
+
+#: src/mtls-openssl.c:693
+#, c-format
+msgid "cannot load key file %s: %s"
+msgstr ""
+
+#: src/mtls-openssl.c:702
+#, c-format
+msgid "cannot load certificate file %s: %s"
+msgstr ""
+
+#: src/mtls-openssl.c:732
+#, c-format
+msgid "cannot load trust file %s: %s"
+msgstr ""
+
+#: src/mtls-openssl.c:759 src/mtls-libtls.c:365
+#, c-format
+msgid "cannot create a TLS structure: %s"
+msgstr ""
+
+#: src/mtls-openssl.c:801
+msgid "a protocol violating EOF occurred"
+msgstr ""
+
+#: src/mtls-openssl.c:819
+msgid "the connection was closed unexpectedly"
+msgstr ""
+
+#: src/mtls-openssl.c:828 src/net.c:198 src/net.c:213 src/net.c:245
+#: src/net.c:260
+msgid "the operation timed out"
+msgstr ""
+
+#: src/mtls-openssl.c:853 src/mtls-libtls.c:402
+#, c-format
+msgid "cannot set the file descriptor for TLS: %s"
+msgstr ""
+
+#: src/mtls-openssl.c:872
+msgid "TLS handshake failed"
+msgstr "TLS கைகுலுக்கல் தோல்வியுற்றது"
+
+#: src/mtls-openssl.c:938
+msgid "cannot read from TLS connection"
+msgstr "TLS இணைப்பிலிருந்து படிக்க இயலவில்லை"
+
+#: src/mtls-openssl.c:981
+msgid "cannot write to TLS connection"
+msgstr "TLS இணைப்பிற்கு எழுத இயலவில்லை"
+
+#: src/mtls-libtls.c:59
+#, fuzzy, c-format
+#| msgid "cannot initialize networking: %s"
+msgid "cannot initialize libtls"
+msgstr "வலையத்தைத் தொடங்க இயலவில்லை: %s"
+
+#: src/mtls-libtls.c:223
+#, c-format
+msgid "cannot use deprecated fingerprints, please update to SHA256"
+msgstr ""
+
+#: src/mtls-libtls.c:232
+msgid "feature not yet implemented for libtls"
+msgstr ""
+
+#: src/mtls-libtls.c:288
+#, fuzzy
+#| msgid "could not send mail"
+msgid "could not parse protocols"
+msgstr "மடல் அனுப்ப இயலவில்லை"
+
+#: src/net.c:94
+msgid "not enough memory"
+msgstr ""
+
+#: src/net.c:100 src/net.c:684
+msgid "invalid argument"
+msgstr "ஏற்கத்தகாச் செயலுருபு"
+
+#: src/net.c:103
+msgid "class type not found"
+msgstr ""
+
+#: src/net.c:106
+msgid "the network subsystem has failed"
+msgstr ""
+
+#: src/net.c:109
+msgid "host not found (authoritative)"
+msgstr ""
+
+#: src/net.c:112
+msgid "host not found (nonauthoritative) or server failure"
+msgstr ""
+
+#: src/net.c:115
+msgid "nonrecoverable error"
+msgstr ""
+
+#: src/net.c:118
+msgid "valid name, but no data record of requested type"
+msgstr ""
+
+#: src/net.c:121
+msgid "address family not supported"
+msgstr ""
+
+#: src/net.c:124
+msgid "no socket descriptors available"
+msgstr ""
+
+#: src/net.c:127
+msgid "no buffer space available"
+msgstr ""
+
+#: src/net.c:130
+msgid "protocol not supported"
+msgstr ""
+
+#: src/net.c:133
+msgid "wrong protocol type for this socket"
+msgstr ""
+
+#: src/net.c:136
+msgid "socket type is not supported in this address family"
+msgstr ""
+
+#: src/net.c:139
+msgid "remote address is not valid"
+msgstr ""
+
+#: src/net.c:142 src/net.c:636
+msgid "connection refused"
+msgstr ""
+
+#: src/net.c:145 src/net.c:630
+msgid "network unreachable"
+msgstr ""
+
+#: src/net.c:148
+msgid "timeout"
+msgstr "காலாவதி ஆனது"
+
+#: src/net.c:151
+msgid "socket not connected"
+msgstr ""
+
+#: src/net.c:154
+msgid "the socket was shut down"
+msgstr ""
+
+#: src/net.c:157 src/net.c:633
+msgid "host unreachable"
+msgstr ""
+
+#: src/net.c:160
+msgid "connection reset by peer"
+msgstr ""
+
+#: src/net.c:163
+msgid "the underlying network subsystem is not ready"
+msgstr ""
+
+#: src/net.c:166
+msgid "the requested version is not available"
+msgstr ""
+
+#: src/net.c:169
+msgid "a blocking operation is in progress"
+msgstr ""
+
+#: src/net.c:172
+msgid "limit on the number of tasks has been reached"
+msgstr ""
+
+#: src/net.c:175
+msgid "invalid request"
+msgstr "ஏற்கத்தகா வேண்டுகோள்"
+
+#: src/net.c:197 src/net.c:202 src/net.c:212 src/net.c:217
+#, c-format
+msgid "network read error: %s"
+msgstr ""
+
+#: src/net.c:244 src/net.c:249 src/net.c:259 src/net.c:264
+#, c-format
+msgid "network write error: %s"
+msgstr ""
+
+#: src/net.c:528 src/net.c:558 src/net.c:593 src/net.c:624 src/net.c:627
+#: src/net.c:630 src/net.c:633 src/net.c:636 src/net.c:639 src/net.c:642
+#: src/net.c:645 src/net.c:648
+#, c-format
+msgid "proxy failure: %s"
+msgstr ""
+
+#: src/net.c:528
+msgid "host name too long"
+msgstr ""
+
+#: src/net.c:542 src/net.c:576 src/net.c:1007
+#, c-format
+msgid "network write error"
+msgstr ""
+
+#: src/net.c:552 src/net.c:586 src/net.c:615
+#, c-format
+msgid "network read error"
+msgstr ""
+
+#: src/net.c:558 src/net.c:593
+msgid "unexpected reply"
+msgstr ""
+
+#: src/net.c:624
+msgid "general server failure"
+msgstr ""
+
+#: src/net.c:627
+msgid "connection not allowed"
+msgstr ""
+
+#: src/net.c:639
+msgid "time-to-live expired"
+msgstr ""
+
+#: src/net.c:642
+msgid "command not supported"
+msgstr ""
+
+#: src/net.c:645
+msgid "address type not supported"
+msgstr ""
+
+#: src/net.c:676 src/net.c:683 src/net.c:698
+#, c-format
+msgid "cannot connect to %s: %s"
+msgstr "%s யை அணுக இயலவில்லை: %s"
+
+#: src/net.c:689 src/net.c:862
+#, c-format
+msgid "cannot create socket: %s"
+msgstr ""
+
+#: src/net.c:762 src/net.c:771
+#, c-format
+msgid "cannot locate host %s: %s"
+msgstr ""
+
+#: src/net.c:873
+#, c-format
+msgid "cannot bind source ip %s: %s"
+msgstr ""
+
+#: src/net.c:889 src/net.c:902
+#, c-format
+msgid "cannot connect to %s, port %d: %s"
+msgstr ""
+
+#: src/password.c:214
+#, c-format
+msgid "password for %s at %s: "
+msgstr "%2$s யில் %1$s யின் கடவுச்சொல்: "
+
+#: src/password.c:252
 #, c-format
 msgid "cannot evaluate '%s': %s"
 msgstr "'%s' யைக் கணிக்க முடியவில்லை: %s"
 
-#: src/conf.c:872
+#: src/password.c:262
 #, c-format
 msgid "cannot read output of '%s'"
 msgstr "'%s' வின் வெளியீட்டைப் படிக்க முடியவில்லை"
-
-#: src/conf.c:927 src/conf.c:934 src/conf.c:947 src/mtls-gnutls.c:328
-#, c-format
-msgid "%s: %s"
-msgstr "%s: %s"
-
-#: src/conf.c:1092 src/stream.c:63
-#, c-format
-msgid "input error"
-msgstr "உள்ளீட்டுப் பிழை"
-
-#: src/conf.c:1114
-#, c-format
-msgid "line longer than %d characters"
-msgstr "வரியில் %d வரியுருகளுக்கு அதிமாக உள்ளன"
-
-#: src/conf.c:1165 src/conf.c:1290
-#, c-format
-msgid "line %d: missing account name"
-msgstr "வரி %d: கணக்குப் பெயர் இல்லை"
-
-#: src/conf.c:1170
-#, c-format
-msgid "line %d: account %s not (yet) defined"
-msgstr ""
-
-#: src/conf.c:1262 src/conf.c:2059 src/conf.c:2076
-#, c-format
-msgid "line %d: command %s does not take an argument"
-msgstr "வரி %d: %s கட்டளைக்குச் செயலுருபு கிடையாது"
-
-#: src/conf.c:1298
-#, c-format
-msgid "line %d: an account name must not contain colons or commas"
-msgstr "வரி %d: கணக்குப் பெயரில் விளக்கிசைக்குறிகளோ உறுப்பிசைக்குறிகளோ இடம்பெறக்கூடாது"
-
-#: src/conf.c:1308
-#, c-format
-msgid "line %d: account %s was already defined"
-msgstr "வரி %d: %s என்னும் கணக்கு ஏற்கனவே வரையறுக்கப்பட்டது"
-
-#: src/conf.c:1333 src/conf.c:1352 src/conf.c:1379 src/conf.c:1408
-#: src/conf.c:1694 src/conf.c:1729
-#, c-format
-msgid "line %d: command %s needs an argument"
-msgstr "வரி %d: %s கட்டளைக்குச் செயலுருபு தேவை"
-
-#: src/conf.c:1363 src/conf.c:1395 src/conf.c:1426 src/conf.c:1465
-#: src/conf.c:1510 src/conf.c:1530 src/conf.c:1615 src/conf.c:1636
-#: src/conf.c:1655 src/conf.c:1716 src/conf.c:1747 src/conf.c:1797
-#: src/conf.c:1844 src/conf.c:1869 src/conf.c:1889 src/conf.c:1909
-#: src/conf.c:1929 src/conf.c:1976 src/conf.c:1997 src/conf.c:2018
-#: src/conf.c:2046
-#, c-format
-msgid "line %d: invalid argument %s for command %s"
-msgstr ""
-
-#: src/conf.c:2092
-#, c-format
-msgid "line %d: unknown command %s"
-msgstr "வரி %d: அறியப்படாக் கட்டளை %s"
-
-#: src/conf.c:2144
-#, c-format
-msgid "contains secrets and therefore must be owned by you"
-msgstr ""
-
-#: src/conf.c:2150
-#, c-format
-msgid ""
-"contains secrets and therefore must have no more than user read/write "
-"permissions"
-msgstr ""
 
 #: src/smtp.c:208
 #, c-format
@@ -1145,522 +1700,6 @@ msgstr ""
 msgid "invalid argument for Remote Message Queue Starting"
 msgstr ""
 
-#: src/net.c:94
-msgid "not enough memory"
-msgstr ""
-
-#: src/net.c:97 src/net.c:208 src/net.c:255 src/net.c:767 src/net.c:894
-#: src/mtls-gnutls.c:623 src/mtls-gnutls.c:670 src/mtls-openssl.c:866
-#: src/mtls-openssl.c:933 src/mtls-openssl.c:975
-#, c-format
-msgid "operation aborted"
-msgstr "செய்பணி நிறுத்தப்பட்டது"
-
-#: src/net.c:100 src/net.c:684
-msgid "invalid argument"
-msgstr "ஏற்கத்தகாச் செயலுருபு"
-
-#: src/net.c:103
-msgid "class type not found"
-msgstr ""
-
-#: src/net.c:106
-msgid "the network subsystem has failed"
-msgstr ""
-
-#: src/net.c:109
-msgid "host not found (authoritative)"
-msgstr ""
-
-#: src/net.c:112
-msgid "host not found (nonauthoritative) or server failure"
-msgstr ""
-
-#: src/net.c:115
-msgid "nonrecoverable error"
-msgstr ""
-
-#: src/net.c:118
-msgid "valid name, but no data record of requested type"
-msgstr ""
-
-#: src/net.c:121
-msgid "address family not supported"
-msgstr ""
-
-#: src/net.c:124
-msgid "no socket descriptors available"
-msgstr ""
-
-#: src/net.c:127
-msgid "no buffer space available"
-msgstr ""
-
-#: src/net.c:130
-msgid "protocol not supported"
-msgstr ""
-
-#: src/net.c:133
-msgid "wrong protocol type for this socket"
-msgstr ""
-
-#: src/net.c:136
-msgid "socket type is not supported in this address family"
-msgstr ""
-
-#: src/net.c:139
-msgid "remote address is not valid"
-msgstr ""
-
-#: src/net.c:142 src/net.c:636
-msgid "connection refused"
-msgstr ""
-
-#: src/net.c:145 src/net.c:630
-msgid "network unreachable"
-msgstr ""
-
-#: src/net.c:148
-msgid "timeout"
-msgstr "காலாவதி ஆனது"
-
-#: src/net.c:151
-msgid "socket not connected"
-msgstr ""
-
-#: src/net.c:154
-msgid "the socket was shut down"
-msgstr ""
-
-#: src/net.c:157 src/net.c:633
-msgid "host unreachable"
-msgstr ""
-
-#: src/net.c:160
-msgid "connection reset by peer"
-msgstr ""
-
-#: src/net.c:163
-msgid "the underlying network subsystem is not ready"
-msgstr ""
-
-#: src/net.c:166
-msgid "the requested version is not available"
-msgstr ""
-
-#: src/net.c:169
-msgid "a blocking operation is in progress"
-msgstr ""
-
-#: src/net.c:172
-msgid "limit on the number of tasks has been reached"
-msgstr ""
-
-#: src/net.c:175
-msgid "invalid request"
-msgstr "ஏற்கத்தகா வேண்டுகோள்"
-
-#: src/net.c:178 src/net.c:648 src/mtls-gnutls.c:686 src/mtls-openssl.c:809
-#: src/mtls-openssl.c:833
-msgid "unknown error"
-msgstr "அறியப்படாப் பிழை"
-
-#: src/net.c:197 src/net.c:202 src/net.c:212 src/net.c:217
-#, c-format
-msgid "network read error: %s"
-msgstr ""
-
-#: src/net.c:198 src/net.c:213 src/net.c:245 src/net.c:260
-#: src/mtls-openssl.c:828
-msgid "the operation timed out"
-msgstr ""
-
-#: src/net.c:244 src/net.c:249 src/net.c:259 src/net.c:264
-#, c-format
-msgid "network write error: %s"
-msgstr ""
-
-#: src/net.c:528 src/net.c:558 src/net.c:593 src/net.c:624 src/net.c:627
-#: src/net.c:630 src/net.c:633 src/net.c:636 src/net.c:639 src/net.c:642
-#: src/net.c:645 src/net.c:648
-#, c-format
-msgid "proxy failure: %s"
-msgstr ""
-
-#: src/net.c:528
-msgid "host name too long"
-msgstr ""
-
-#: src/net.c:542 src/net.c:576 src/net.c:1007
-#, c-format
-msgid "network write error"
-msgstr ""
-
-#: src/net.c:552 src/net.c:586 src/net.c:615
-#, c-format
-msgid "network read error"
-msgstr ""
-
-#: src/net.c:558 src/net.c:593
-msgid "unexpected reply"
-msgstr ""
-
-#: src/net.c:624
-msgid "general server failure"
-msgstr ""
-
-#: src/net.c:627
-msgid "connection not allowed"
-msgstr ""
-
-#: src/net.c:639
-msgid "time-to-live expired"
-msgstr ""
-
-#: src/net.c:642
-msgid "command not supported"
-msgstr ""
-
-#: src/net.c:645
-msgid "address type not supported"
-msgstr ""
-
-#: src/net.c:676 src/net.c:683 src/net.c:698
-#, c-format
-msgid "cannot connect to %s: %s"
-msgstr "%s யை அணுக இயலவில்லை: %s"
-
-#: src/net.c:689 src/net.c:862
-#, c-format
-msgid "cannot create socket: %s"
-msgstr ""
-
-#: src/net.c:762 src/net.c:771
-#, c-format
-msgid "cannot locate host %s: %s"
-msgstr ""
-
-#: src/net.c:873
-#, c-format
-msgid "cannot bind source ip %s: %s"
-msgstr ""
-
-#: src/net.c:889 src/net.c:902
-#, c-format
-msgid "cannot connect to %s, port %d: %s"
-msgstr ""
-
-#: src/mtls.c:142
-#, c-format
-msgid "TLS session parameters:\n"
-msgstr ""
-
-#: src/mtls.c:144
-msgid "not available"
-msgstr ""
-
-#: src/mtls.c:152
-#, c-format
-msgid "TLS certificate information:\n"
-msgstr "TLS சான்றிதழ் பற்றிய தகவல்:\n"
-
-#: src/mtls.c:153
-msgid "Subject"
-msgstr ""
-
-#: src/mtls.c:155
-msgid "Issuer"
-msgstr "வழங்குநர்"
-
-#: src/mtls.c:157
-msgid "Validity"
-msgstr "செல்லுபடி"
-
-#: src/mtls.c:159
-msgid "Activation time"
-msgstr "செல்லுபடி தொடங்கும் நேரம்"
-
-#: src/mtls.c:161
-msgid "Expiration time"
-msgstr "செல்லுபடி முடியும் நேரம்"
-
-#: src/mtls.c:162
-msgid "Fingerprints"
-msgstr "கைவரைகள்"
-
-#: src/mtls-gnutls.c:120 src/mtls-openssl.c:285 src/mtls-libtls.c:105
-msgid "cannot get TLS certificate info"
-msgstr ""
-
-#: src/mtls-gnutls.c:125 src/mtls-gnutls.c:241 src/mtls-openssl.c:288
-#, c-format
-msgid "%s: no certificate was found"
-msgstr ""
-
-#: src/mtls-gnutls.c:130 src/mtls-gnutls.c:247
-#, c-format
-msgid "%s: cannot initialize certificate structure"
-msgstr ""
-
-#: src/mtls-gnutls.c:136
-#, c-format
-msgid "%s: error parsing certificate"
-msgstr ""
-
-#: src/mtls-gnutls.c:145 src/mtls-gnutls.c:263 src/mtls-openssl.c:308
-#: src/mtls-openssl.c:470 src/mtls-libtls.c:113 src/mtls-libtls.c:179
-#, c-format
-msgid "%s: error getting SHA256 fingerprint"
-msgstr ""
-
-#: src/mtls-gnutls.c:152 src/mtls-gnutls.c:281 src/mtls-openssl.c:314
-#: src/mtls-openssl.c:488
-#, c-format
-msgid "%s: error getting SHA1 fingerprint"
-msgstr ""
-
-#: src/mtls-gnutls.c:158 src/mtls-openssl.c:322 src/mtls-libtls.c:126
-#, c-format
-msgid "%s: cannot get activation time"
-msgstr ""
-
-#: src/mtls-gnutls.c:164 src/mtls-openssl.c:332 src/mtls-libtls.c:133
-#, c-format
-msgid "%s: cannot get expiration time"
-msgstr ""
-
-#: src/mtls-gnutls.c:224 src/mtls-openssl.c:446 src/mtls-libtls.c:166
-msgid "TLS certificate verification failed"
-msgstr ""
-
-#: src/mtls-gnutls.c:254
-#, c-format
-msgid "%s: error parsing certificate %u of %u"
-msgstr ""
-
-#: src/mtls-gnutls.c:270 src/mtls-gnutls.c:288 src/mtls-gnutls.c:306
-#: src/mtls-openssl.c:477 src/mtls-openssl.c:495 src/mtls-openssl.c:513
-#: src/mtls-libtls.c:191
-#, c-format
-msgid "%s: the certificate fingerprint does not match"
-msgstr ""
-
-#: src/mtls-gnutls.c:299 src/mtls-openssl.c:506
-#, c-format
-msgid "%s: error getting MD5 fingerprint"
-msgstr ""
-
-#: src/mtls-gnutls.c:387 src/mtls-libtls.c:238 src/mtls-libtls.c:370
-#, c-format
-msgid "cannot initialize TLS session: %s"
-msgstr ""
-
-#: src/mtls-gnutls.c:400
-#, c-format
-msgid "error in priority string at position %d"
-msgstr ""
-
-#: src/mtls-gnutls.c:403 src/mtls-gnutls.c:410 src/mtls-openssl.c:657
-#: src/mtls-libtls.c:257 src/mtls-libtls.c:272 src/mtls-libtls.c:287
-#: src/mtls-libtls.c:297
-#, c-format
-msgid "cannot set priorities for TLS session: %s"
-msgstr ""
-
-#: src/mtls-gnutls.c:423
-#, c-format
-msgid "cannot set default priority for TLS session: %s"
-msgstr ""
-
-#: src/mtls-gnutls.c:438
-#, c-format
-msgid "cannot allocate certificate for TLS session: %s"
-msgstr ""
-
-#: src/mtls-gnutls.c:451 src/mtls-libtls.c:312
-#, c-format
-msgid ""
-"cannot set X509 key file %s and/or X509 cert file %s for TLS session: %s"
-msgstr ""
-
-#: src/mtls-gnutls.c:473 src/mtls-openssl.c:720
-#, c-format
-msgid "cannot set X509 system trust for TLS session: %s"
-msgstr ""
-
-#: src/mtls-gnutls.c:488 src/mtls-libtls.c:338
-#, c-format
-msgid "cannot set X509 trust file %s for TLS session: %s"
-msgstr ""
-
-#: src/mtls-gnutls.c:503 src/mtls-libtls.c:351
-#, c-format
-msgid "cannot set X509 CRL file %s for TLS session: %s"
-msgstr ""
-
-#: src/mtls-gnutls.c:532
-#, c-format
-msgid "cannot set credentials for TLS session: %s"
-msgstr ""
-
-#: src/mtls-gnutls.c:567 src/mtls-libtls.c:406
-#, c-format
-msgid "TLS handshake failed: %s"
-msgstr ""
-
-#: src/mtls-gnutls.c:627 src/mtls-libtls.c:493
-#, c-format
-msgid "cannot read from TLS connection: %s"
-msgstr "TLS இணைப்பிலிருந்து படிக்க இயலவில்லை: %s"
-
-#: src/mtls-gnutls.c:674 src/mtls-gnutls.c:685 src/mtls-libtls.c:525
-#, c-format
-msgid "cannot write to TLS connection: %s"
-msgstr "TLS இணைப்பிற்கு எழுத இயலவில்லை: %s"
-
-#: src/mtls-openssl.c:92
-#, c-format
-msgid ""
-"no environment variables RANDFILE or HOME, or filename of rand file too long"
-msgstr ""
-
-#: src/mtls-openssl.c:98
-#, c-format
-msgid "%s: input error"
-msgstr "%s: உள்ளீட்டுப் பிழை"
-
-#: src/mtls-openssl.c:120
-#, c-format
-msgid "random file + time + pseudo randomness is not enough, giving up"
-msgstr ""
-
-#: src/mtls-openssl.c:293 src/mtls-openssl.c:579
-#, c-format
-msgid "%s: cannot get certificate subject"
-msgstr ""
-
-#: src/mtls-openssl.c:299
-#, c-format
-msgid "%s: cannot get certificate issuer"
-msgstr ""
-
-#: src/mtls-openssl.c:450
-msgid "TLS certificate check failed"
-msgstr ""
-
-#: src/mtls-openssl.c:456
-#, c-format
-msgid "%s: no certificate was sent"
-msgstr ""
-
-#: src/mtls-openssl.c:559
-#, c-format
-msgid "%s: certificate subject alternative name contains NUL"
-msgstr ""
-
-#: src/mtls-openssl.c:591
-#, c-format
-msgid "%s: cannot get certificate common name"
-msgstr ""
-
-#: src/mtls-openssl.c:600
-#, c-format
-msgid "%s: certificate common name contains NUL"
-msgstr ""
-
-#: src/mtls-openssl.c:617
-#, c-format
-msgid "%s: the certificate owner does not match hostname %s"
-msgstr ""
-
-#: src/mtls-openssl.c:649 src/mtls-libtls.c:231
-#, c-format
-msgid "cannot set minimum number of DH prime bits for TLS: %s"
-msgstr ""
-
-#: src/mtls-openssl.c:650 src/mtls-openssl.c:658 src/mtls-openssl.c:666
-msgid "feature not yet implemented for OpenSSL"
-msgstr ""
-
-#: src/mtls-openssl.c:665
-#, c-format
-msgid "cannot load CRL file: %s"
-msgstr ""
-
-#: src/mtls-openssl.c:672
-#, c-format
-msgid "cannot set TLS method"
-msgstr ""
-
-#: src/mtls-openssl.c:680
-#, c-format
-msgid "cannot create TLS context: %s"
-msgstr ""
-
-#: src/mtls-openssl.c:693
-#, c-format
-msgid "cannot load key file %s: %s"
-msgstr ""
-
-#: src/mtls-openssl.c:702
-#, c-format
-msgid "cannot load certificate file %s: %s"
-msgstr ""
-
-#: src/mtls-openssl.c:732
-#, c-format
-msgid "cannot load trust file %s: %s"
-msgstr ""
-
-#: src/mtls-openssl.c:759 src/mtls-libtls.c:361
-#, c-format
-msgid "cannot create a TLS structure: %s"
-msgstr ""
-
-#: src/mtls-openssl.c:801
-msgid "a protocol violating EOF occurred"
-msgstr ""
-
-#: src/mtls-openssl.c:819
-msgid "the connection was closed unexpectedly"
-msgstr ""
-
-#: src/mtls-openssl.c:853 src/mtls-libtls.c:398
-#, c-format
-msgid "cannot set the file descriptor for TLS: %s"
-msgstr ""
-
-#: src/mtls-openssl.c:872
-msgid "TLS handshake failed"
-msgstr "TLS கைகுலுக்கல் தோல்வியுற்றது"
-
-#: src/mtls-openssl.c:938
-msgid "cannot read from TLS connection"
-msgstr "TLS இணைப்பிலிருந்து படிக்க இயலவில்லை"
-
-#: src/mtls-openssl.c:981
-msgid "cannot write to TLS connection"
-msgstr "TLS இணைப்பிற்கு எழுத இயலவில்லை"
-
-#: src/mtls-libtls.c:59
-#, fuzzy, c-format
-msgid "cannot initialize libtls"
-msgstr "வலையத்தைத் தொடங்க இயலவில்லை: %s"
-
-#: src/mtls-libtls.c:223
-#, c-format
-msgid "cannot use deprecated fingerprints, please update to SHA256"
-msgstr ""
-
-#: src/mtls-libtls.c:232
-msgid "feature not yet implemented for libtls"
-msgstr ""
-
-#: src/mtls-libtls.c:288
-#, fuzzy
-msgid "could not parse protocols"
-msgstr "மடல் அனுப்ப இயலவில்லை"
-
 #, c-format
 #~ msgid "output of '%s' is longer than %d characters"
 #~ msgstr "'%s' யின் வெளியீட்டில் %d வரியுருகளுக்கு அதிகமாக உள்ளன"
@@ -1781,6 +1820,3 @@ msgstr "மடல் அனுப்ப இயலவில்லை"
 
 #~ msgid "command DELE %ld failed"
 #~ msgstr "DELE %ld கட்டளை தோல்வியுற்றது"
-
-#~ msgid "password for %s at %s: "
-#~ msgstr "%2$s யில் %1$s யின் கடவுச்சொல்: "

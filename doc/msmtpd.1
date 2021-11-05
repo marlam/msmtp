@@ -76,7 +76,7 @@ Example for managing msmtpd with \fIstart-stop-daemon\fP:
 .br
 # start msmtpd
 .br
-start-stop-daemon \-\-start \-\-pidfile /var/run/msmtpd.pid \-\-make-pidfile \-\-chuid msmtpd \-\-background \-\-exec /usr/local/bin/msmtpd \-\- \-\-command '/usr/local/bin/msmtp -f %F'
+start-stop-daemon \-\-start \-\-pidfile /var/run/msmtpd.pid \-\-make-pidfile \-\-chuid msmtpd \-\-background \-\-exec /usr/local/bin/msmtpd \-\- \-\-command '/usr/local/bin/msmtp -f %F \-\-'
 .br
 # stop msmtpd
 .br
@@ -107,7 +107,7 @@ In this case, use the msmtpd option \fI\-\-auth=msmtpd-user\fP.
 Store the password in an encrypted file and use the passwordeval
 mechanism. Example for gpg: \fImsmtpd ... \-\-auth=msmtpd\-user,'gpg -q -d ~/.msmtpd\-password.gpg'\fP
 .PP
-The complete command then is (using the keyring): \fImsmtpd \-\-port=2500 \-\-auth=msmtpd-user \-\-command='/path/to/your/msmtp -f %F'\fP
+The complete command then is (using the keyring): \fImsmtpd \-\-port=2500 \-\-auth=msmtpd-user \-\-command='/path/to/your/msmtp -f %F \-\-'\fP
 .br
 The mail client software must then be configured to use \fIlocalhost\fP at
 port \fI2500\fP for outgoing mail via SMTP, and to use authentication with

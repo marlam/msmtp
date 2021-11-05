@@ -1459,7 +1459,7 @@ Listen on the given port number instead of 25
 @item --log=@var{none}|@var{syslog}|@var{filename}
 Set logging: none (default), syslog, or logging to the given file.
 @item --command=@var{cmd}
-Pipe mails to @var{cmd} instead of msmtp
+Pipe mails to @var{cmd} instead of msmtp.
 Make sure to end this command with @samp{--} to separate options from arguments.
 @item --auth=@var{user}[,@var{passwordeval}]
 Require authentication with this user name. The password will be
@@ -1480,7 +1480,7 @@ Enable logging to syslog with @samp{--log=syslog}.
 Example for managing msmtpd with @samp{start-stop-daemon}:
 @example
 # start msmtpd
-start-stop-daemon --start --pidfile /var/run/msmtpd.pid --make-pidfile --chuid msmtpd --background --exec /usr/local/bin/msmtpd -- --command '/usr/local/bin/msmtp -f %F'
+start-stop-daemon --start --pidfile /var/run/msmtpd.pid --make-pidfile --chuid msmtpd --background --exec /usr/local/bin/msmtpd -- --command '/usr/local/bin/msmtp -f %F --'
 # stop msmtpd
 start-stop-daemon --stop  --pidfile /var/run/msmtpd.pid --remove-pidfile --quiet --signal TERM
 @end example
@@ -1519,7 +1519,7 @@ msmtpd ... --auth=msmtpd-user,'gpg -q -d ~/.msmtpd-password.gpg'
 
 The complete command then is (using the keyring):
 @example
-msmtpd --port=2500 --auth=msmtpd-user --command='/path/to/your/msmtp -f %F'
+msmtpd --port=2500 --auth=msmtpd-user --command='/path/to/your/msmtp -f %F --'
 @end example
 
 The mail client software must then be configured to use @samp{localhost} at

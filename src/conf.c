@@ -70,6 +70,7 @@ account_t *account_new(const char *conffile, const char *id)
     a->timeout = 0;
     a->protocol = SMTP_PROTO_SMTP;
     a->domain = xstrdup("localhost");
+    a->allow_from_override = 1;
     a->auto_from = 0;
     a->from = NULL;
     a->maildomain = NULL;
@@ -130,6 +131,7 @@ account_t *account_copy(account_t *acc)
         a->timeout = acc->timeout;
         a->protocol = acc->protocol;
         a->domain = acc->domain ? xstrdup(acc->domain) : NULL;
+        a->allow_from_override = acc->allow_from_override;
         a->auto_from = acc->auto_from;
         a->from = acc->from ? xstrdup(acc->from) : NULL;
         a->maildomain = acc->maildomain ? xstrdup(acc->maildomain) : NULL;
@@ -602,7 +604,7 @@ void override_account(account_t *acc1, account_t *acc2)
     {
         acc1->auto_from = acc2->auto_from;
     }
-    if (acc2->mask & ACC_FROM)
+    if (acc1->allow_from_override && (acc2->mask & ACC_FROM))
     {
         free(acc1->from);
         acc1->from = acc2->from ? xstrdup(acc2->from) : NULL;
@@ -1419,6 +1421,27 @@ int read_conffile(const char *conffile, FILE *f, list_t **acc_list,
             acc->mask |= ACC_FROM;
             free(acc->from);
             acc->from = xstrdup(arg);
+        }
+        else if (strcmp(cmd, "allow_from_override") == 0)
+        {
+            /* There is no mask value for this command since it can only
+             * occur in the configuration file, not on the command line */
+            if (is_on(arg))
+            {
+                acc->allow_from_override = 1;
+            }
+            else if (is_off(arg))
+            {
+                acc->allow_from_override = 0;
+            }
+            else
+            {
+                *errstr = xasprintf(
+                        _("line %d: invalid argument %s for command %s"),
+                        line, arg, cmd);
+                e = CONF_ESYNTAX;
+                break;
+            }
         }
         else if (strcmp(cmd, "auth") == 0)
         {

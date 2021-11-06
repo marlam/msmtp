@@ -148,7 +148,7 @@ option will choose the first account that has the given envelope-from address
 (set with the \fBfrom\fP command). If no such account is found, "default" is
 used.
 .br
-See the \fBfrom\fP command for substitution patterns supported in \fIaddress\fP.
+See the \fBfrom\fP and \fBallow_from_override\fP commands.
 .IP "\-N, \-\-dsn\-notify=(\fIoff\fP|\fIcond\fP)"
 Set or unset DSN notification conditions. See the \fBdsn_notify\fP command.
 .IP "\-R, \-\-dsn\-return=(\fIoff\fP|\fIret\fP)"
@@ -553,11 +553,17 @@ the login name of the user running msmtp.
 directory is used depending on the build configuration; see the output of msmtp
 \-\-version and look for the location of the system configuration file).
 .br
-Note that the obsolete \fIauto_from\fP command replaces this envelope-from address.
+Note that the obsolete \fBauto_from\fP command replaces this envelope-from address.
+.br
+To enforce the use of this envelope-from address and ignore the \-f / \-\-from option,
+see the \fBallow_from_override\fP command.
 .br
 Furthermore, the envelope-from address may be a wildcard pattern as used for file name matching
 in the shell. This is the case if it contains one of the characters ?, * or [.
 This allows a variety of envelope-from addresses given with the \fI\-\-from\fP option to match a single account.
+.IP "allow_from_override (\fIon\fP|\fIoff\fP)
+By default, the \fI\-\-from\fP option overrides the \fBfrom\fP command.
+Set to \fIoff\fP to disable this.
 .IP "dsn_notify (\fIoff\fP|\fIcondition\fP)"
 This command sets the condition(s) under which the mail system should send DSN
 (Delivery Status Notification) messages. The argument \fIoff\fP disables

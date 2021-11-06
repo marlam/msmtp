@@ -373,11 +373,17 @@ the login name of the user running msmtp.
 directory is used depending on the build configuration; see the output of
 @samp{msmtp --version} and look for the location of the system configuration file).
 @end itemize
-Note that the obsolete @samp{auto_from} command replaces this envelope-from address.
+Note that the obsolete @samp{auto_from} command replaces this envelope-from address.@*
+To enforce the use of this envelope-from address and ignore the @samp{-f} / @samp{--from} option,
+see @ref{allow_from_override}.@*
 @xref{Envelope-from address}.@*
 Furthermore, the envelope-from address may be a wildcard pattern as used for file name matching
 in the shell. This is the case if it contains one of the characters @code{?}, @code{*} or @code{[}.
 This allows a variety of envelope-from addresses given with the @samp{--from} option to match a single account.
+@anchor{allow_from_override}
+@item allow_from_override (on|off)
+By default, the @ref{--from} option overrides the @ref{from} command.
+Set to @samp{off} to disable this.
 @anchor{dsn_notify}
 @item dsn_notify (off|@var{condition})
 @cmindex dsn_notify
@@ -679,12 +685,11 @@ Set or unset minimum bit size of the Diffie-Hellman (DH) prime.
 @itemx --from=@var{address}
 @opindex -f
 @opindex --from
-Set the envelope-from address. @xref{from}.@*
+Set the envelope-from address. See @ref{from} and @ref{allow_from_override}.@*
 If no account was chosen yet (with @option{--account} or @option{--host}), this
 option will choose the first account that has the given envelope-from address
 (set with the @samp{from} command). If no such account is found, "default" is
 used. @xref{Choosing an account}.@*
-See the @samp{from} command for substitution patterns supported in @var{address}.
 @anchor{--dsn-notify}
 @item -N (off|@var{condition})
 @itemx --dsn-notify=(off|@var{condition})
@@ -1055,6 +1060,7 @@ part of the mail @emph{envelope}, not of the mail itself), but in most cases
 both addresses are the same.
 
 Envelope-from addresses are set with the @ref{from} command or @ref{--from} option.
+The latter can be disabled with the @ref{allow_from_override} command.
 
 @node Logging
 @section Logging

@@ -4,7 +4,7 @@
  * This file is part of msmtp, an SMTP client.
  *
  * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2010, 2011, 2014,
- * 2016, 2018, 2019, 2020
+ * 2016, 2018, 2019, 2020, 2021
  * Martin Lambers <marlam@marlam.de>
  * Martin Stenberg <martin@gnutiken.se> (passwordeval support)
  * Scott Shumate <sshumate@austin.rr.com> (aliases support)
@@ -102,6 +102,7 @@ typedef struct
     int protocol;               /* which SMTP sub protocol? */
     char *domain;               /* argument to EHLO command */
     char *from;                 /* envelope from address */
+    int allow_from_override;    /* flag: allow -f/--from to override from? */
     int auto_from;              /* obsolete: automatic envelope-from addresses? */
     char *maildomain;           /* obsolete: the domain part of generated
                                    envelope from addresses */

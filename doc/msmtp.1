@@ -588,8 +588,12 @@ have one (this is the default), \fIon\fP always sets a From header and overrides
 any existing one, and \fIoff\fP never sets a From header.
 .br
 If the mail server rejects the mail because its From header does not match the
-envelope from address (a common anti-spam measure), then you might want to set
+envelope-from address (a common anti-spam measure), then you might want to set
 this option to \fIon\fP.
+.br
+The From header is created based on the envelope-from address. Disable
+\fBallow_from_override\fP to prevent programs from setting their own
+envelope-from address.
 .br
 For compatibility with older versions, \fBadd_missing_from_header\fP [(\fIon\fP|\fIoff\fP)]
 is still supported and corresponds to the \fIauto\fP and \fIoff\fP settings.

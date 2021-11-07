@@ -417,6 +417,9 @@ any existing one, and @samp{off} never sets a From header.@*
 If the mail server rejects the mail because its From header does not match the
 envelope from address (a common anti-spam measure), then you might want to set
 this option to @samp{on}.@*
+The From header is created based on the envelope-from address. Disable
+@ref{allow_from_override} to prevent programs from setting their own
+envelope-from address.@*
 For compatibility with older versions, @samp{add_missing_from_header [(on|off)]}
 is still supported and corresponds to the @samp{auto} and @samp{off} settings.@*
 @xref{Header handling}.

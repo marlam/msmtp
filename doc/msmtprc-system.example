@@ -15,6 +15,10 @@ tls_starttls off
 
 # Construct envelope-from addresses of the form "user@oursite.example"
 from %U@oursite.example
+# Do not allow programs to override this envelope-from address via -f
+allow_from_override off
+# Always set a From header that matches the envelope-from address
+set_from_header on
 
 # Syslog logging with facility LOG_MAIL instead of the default LOG_USER
 syslog LOG_MAIL

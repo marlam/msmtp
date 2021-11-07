@@ -27,7 +27,7 @@ syntax match msmtpOption /\<\(tls\|tls_trust_file\|tls_crl_file\|tls_fingerprint
 syntax match msmtpOption /\<\(auto_from\|from\|maildomain\|dsn_notify\|dsn_return\|set_from_header\|set_date_header\|remove_bcc_headers\|undisclosed_recipients\|logfile\|logfile_time_format\|syslog\|aliases\)\>/
 
 " Options which accept only an on/off value.
-syn match msmtpWrongOption /\<\(tls\|tls_certcheck\|tls_starttls\|auto_from\|set_from_header\|set_date_header\|remove_bcc_headers\|undisclosed_recipients\) \(on$\|off$\)\@!.*$/
+syn match msmtpWrongOption /\<\(tls\|tls_certcheck\|tls_starttls\|allow_from_override\|auto_from\|set_from_header\|set_date_header\|remove_bcc_headers\|undisclosed_recipients\) \(on$\|off$\)\@!.*$/
 " Option port accepts numeric values.
 syn match msmtpWrongOption /\<\(port\|proxy_port\) \(\d\+$\)\@!.*$/
 " Option timeout accepts off and numeric values.

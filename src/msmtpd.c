@@ -4,6 +4,7 @@
  * This file is part of msmtp, an SMTP client.
  *
  * Copyright (C) 2018, 2019, 2020, 2021  Martin Lambers <marlam@marlam.de>
+ * Copyright (C) 2021 Informatyka Boguslawski sp. z o.o. sp.k., http://www.ib.pl/
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -150,7 +151,7 @@ int read_smtp_cmd(FILE* in, char* buf, int bufsize)
 }
 
 /* Read a mail address enclosed in < and > */
-int get_addr(const char* inbuf, char* outbuf, int allow_empty, size_t* addrlen)
+int get_addr(const char* inbuf, char* outbuf, int allow_empty, size_t* addrlen, int noverify)
 {
     char* p;
 
@@ -165,23 +166,25 @@ int get_addr(const char* inbuf, char* outbuf, int allow_empty, size_t* addrlen)
     if (len == 0 || outbuf[len - 1] != '>')
         return 1;
     outbuf[--len] = '\0';
-    /* Check if characters are valid */
-    for (p = outbuf; *p; p++) {
-        if ((*p >= 'a' && *p <= 'z')
-                || (*p >= 'A' && *p <= 'Z')
-                || (*p >= '0' && *p <= '9')
-                || (p > outbuf && *p == '-') /* must not start with hyphen */
-                || *p == '.' || *p == '@' || *p == '_'
-                || *p == '+' || *p == '/'
-                || *p == '=') {
-            /* Character allowed. Note that this set is very restrictive;
-             * more characters might be added to the whitelist if the need
-             * arises. But beware: mail addresses will be part of the
-             * mail pipe command line and therefore will be passed to a shell. */
-            continue;
-        } else {
-            /* Invalid character */
-            return 1;
+    if (noverify != 1) {
+        /* Check if characters are valid if address verification is not disabled. */
+        for (p = outbuf; *p; p++) {
+            if ((*p >= 'a' && *p <= 'z')
+                    || (*p >= 'A' && *p <= 'Z')
+                    || (*p >= '0' && *p <= '9')
+                    || (p > outbuf && *p == '-') /* must not start with hyphen */
+                    || *p == '.' || *p == '@' || *p == '_'
+                    || *p == '+' || *p == '/'
+                    || *p == '=') {
+                /* Character allowed. Note that this set is very restrictive;
+                 * more characters might be added to the whitelist if the need
+                 * arises. But beware: mail addresses will be part of the
+                 * mail pipe command line and therefore will be passed to a shell. */
+                continue;
+            } else {
+                /* Invalid character */
+                return 1;
+            }
         }
     }
     /* Check for special case of zero length */
@@ -266,7 +269,7 @@ int smtp_pipe(FILE* in, FILE* pipe, char* buf, size_t bufsize)
  * */
 int msmtpd_session(log_t* log, FILE* in, FILE* out,
         const char* command,
-        const char* user, const char* password, int impose_auth_delay)
+        const char* user, const char* password, int impose_auth_delay, int noverify, int norecipients)
 {
     char buf[SMTP_BUFSIZE];
     char buf2[SMTP_BUFSIZE];
@@ -367,7 +370,7 @@ int msmtpd_session(log_t* log, FILE* in, FILE* out,
             log_msg(log, log_info, "client ended session");
             return 0;
         }
-        if (get_addr(buf + 10, buf2, 1, &addrlen) != 0) {
+        if (get_addr(buf + 10, buf2, 1, &addrlen, noverify) != 0) {
             fprintf(out, "501 Invalid address\r\n");
             log_msg(log, log_error, "invalid address in MAIL FROM, session aborted");
             return 1;
@@ -421,7 +424,7 @@ int msmtpd_session(log_t* log, FILE* in, FILE* out,
             if (strcasecmp(buf, "DATA") == 0) {
                 break;
             } else {
-                if (get_addr(buf + 8, buf2, 0, &addrlen) != 0) {
+                if (get_addr(buf + 8, buf2, 0, &addrlen, noverify) != 0) {
                     fprintf(out, "501 Invalid address\r\n");
                     log_msg(log, log_error, "invalid address in RCPT TO, session aborted");
                     free(cmd);
@@ -444,9 +447,12 @@ int msmtpd_session(log_t* log, FILE* in, FILE* out,
                     }
                     cmd = tmpcmd;
                 }
-                cmd[cmd_index++] = ' ';
-                memcpy(cmd + cmd_index, buf2, addrlen);
-                cmd_index += addrlen;
+                if (norecipients != 1) {
+                    /* Add recipient to command if not disabled. */
+                    cmd[cmd_index++] = ' ';
+                    memcpy(cmd + cmd_index, buf2, addrlen);
+                    cmd_index += addrlen;
+                }
                 fprintf(out, "250 Ok\r\n");
                 recipient_was_seen = 1;
             }
@@ -543,7 +549,7 @@ int parse_command_line(int argc, char* argv[],
         const char** interface, int* port,
         int* log_to_syslog, const char** log_file,
         const char** command,
-        char** user, char** password)
+        char** user, char** password, int* noverify, int* norecipients)
 {
     enum {
         msmtpd_option_version,
@@ -553,7 +559,9 @@ int parse_command_line(int argc, char* argv[],
         msmtpd_option_interface,
         msmtpd_option_log,
         msmtpd_option_command,
-        msmtpd_option_auth
+        msmtpd_option_auth,
+        msmtpd_option_noverify,
+        msmtpd_option_norecipients
     };
 
     struct option options[] = {
@@ -565,6 +573,8 @@ int parse_command_line(int argc, char* argv[],
         { "log", required_argument, 0, msmtpd_option_log },
         { "command", required_argument, 0, msmtpd_option_command },
         { "auth", required_argument, 0, msmtpd_option_auth },
+        { "noverify", no_argument, 0, msmtpd_option_noverify },
+        { "norecipients", no_argument, 0, msmtpd_option_norecipients },
         { 0, 0, 0, 0 }
     };
 
@@ -642,6 +652,12 @@ int parse_command_line(int argc, char* argv[],
                 }
             }
             break;
+        case msmtpd_option_noverify:
+            *noverify = 1;
+            break;
+        case msmtpd_option_norecipients:
+            *norecipients = 1;
+            break;
         default:
             return 1;
             break;
@@ -671,6 +687,8 @@ int main(int argc, char* argv[])
     const char* command = DEFAULT_COMMAND;
     char* user = NULL;
     char* password = NULL;
+    int noverify = 0;
+    int norecipients = 0;
 
     /* Command line */
     if (parse_command_line(argc, argv,
@@ -678,7 +696,7 @@ int main(int argc, char* argv[])
                 &inetd, &interface, &port,
                 &log_to_syslog, &log_file,
                 &command,
-                &user, &password) != 0) {
+                &user, &password, &noverify, &norecipients) != 0) {
         return exit_not_running;
     }
     if (print_version) {
@@ -704,6 +722,8 @@ int main(int argc, char* argv[])
         printf("                  the password will be retrieved from the given\n");
         printf("                  passwordeval command or, if none is given, from\n");
         printf("                  the key ring or, if that fails, from a prompt.\n");
+        printf("  --noverify      don't verify e-mail address\n");
+        printf("  --norecipients  don't add recipients to command\n");
         return exit_ok;
     }
 
@@ -715,7 +735,7 @@ int main(int argc, char* argv[])
         log_t log;
         log_open(log_to_syslog, log_file, &log);
         int impose_auth_delay = 1; /* since we cannot keep track of auth failures in inetd mode */
-        ret = msmtpd_session(&log, stdin, stdout, command, user, password, impose_auth_delay);
+        ret = msmtpd_session(&log, stdin, stdout, command, user, password, impose_auth_delay, noverify, norecipients);
         ret = (ret == 0 ? 0 : 1);
         log_close(&log);
     } else {
@@ -823,7 +843,7 @@ int main(int argc, char* argv[])
                         client_ip_str, client_port,
                         active_sessions_count + 1, MAX_ACTIVE_SESSIONS, impose_auth_delay ? "yes" : "no");
                 FILE* conn = fdopen(conn_fd, "rb+");
-                int ret = msmtpd_session(&log, conn, conn, command, user, password, impose_auth_delay);
+                int ret = msmtpd_session(&log, conn, conn, command, user, password, impose_auth_delay, noverify, norecipients);
                 fclose(conn);
                 log_msg(&log, log_info, "connection closed");
                 log_close(&log);

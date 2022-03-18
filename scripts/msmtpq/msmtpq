@@ -71,8 +71,8 @@ MSMTP=msmtp
 ##
 ## the queue dir - modify this to reflect where you'd like it to be  (no quotes !!)
 Q=~/.msmtp.queue
-[ -d "$Q" ] || \
-  err '' "msmtpq : can't find msmtp queue directory [ $Q ]" ''     # if not present - complain ; quit
+[ -d "$Q" ] || mkdir -m 0700 "$Q" || \
+  err '' "msmtpq : can't find or create msmtp queue directory [ $Q ]" ''     # if not present - complain ; quit
 ##
 ## set the queue log file var to the location of the msmtp queue log file
 ##   where it is or where you'd like it to be

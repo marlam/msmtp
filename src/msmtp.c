@@ -4,7 +4,7 @@
  * This file is part of msmtp, an SMTP client.
  *
  * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011,
- * 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021
+ * 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022
  * Martin Lambers <marlam@marlam.de>
  * Martin Stenberg <martin@gnutiken.se> (passwordeval support)
  * Scott Shumate <sshumate@austin.rr.com> (aliases support)
@@ -2171,7 +2171,7 @@ void msmtp_print_version(void)
                     "it under the terms of\n"
                 "the GNU General Public License "
                     "<http://www.gnu.org/licenses/gpl.html>.\n"
-                "There is NO WARRANTY, to the extent permitted by law.\n"), 2021);
+                "There is NO WARRANTY, to the extent permitted by law.\n"), 2022);
 }
 
 

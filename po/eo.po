@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: msmtp 1.8.18\n"
 "Report-Msgid-Bugs-To: marlam@marlam.de\n"
-"POT-Creation-Date: 2021-10-22 17:45+0200\n"
+"POT-Creation-Date: 2022-03-23 20:22+0100\n"
 "PO-Revision-Date: 2021-10-24 12:15-0400\n"
 "Last-Translator: Keith Bowes <zooplah@gmail.com>\n"
 "Language-Team: Esperanto <translation-team-eo@lists.sourceforge.net>\n"
@@ -38,7 +38,7 @@ msgstr "linio %d: nevalida alinomo '%s'"
 msgid "line %d: duplicate alias '%s'"
 msgstr "linio %d: duobligita alinomo '%s'"
 
-#: src/aliases.c:178 src/conf.c:1070 src/stream.c:63
+#: src/aliases.c:178 src/conf.c:1072 src/stream.c:63
 #, c-format
 msgid "input error"
 msgstr "eniga eraro"
@@ -48,32 +48,32 @@ msgstr "eniga eraro"
 msgid "Too many redirects when expanding alias %s."
 msgstr "Tro da alidirektoj dum etendi alinomon %s."
 
-#: src/conf.c:806 src/conf.c:821
+#: src/conf.c:808 src/conf.c:823
 #, c-format
 msgid "host not set"
 msgstr "retnodo ne elektita"
 
-#: src/conf.c:811
+#: src/conf.c:813
 #, c-format
 msgid "port not set"
 msgstr "pordo ne elektita"
 
-#: src/conf.c:816
+#: src/conf.c:818
 #, c-format
 msgid "envelope-from address is missing"
 msgstr "envelope-from-retpoŝtadreso mankas"
 
-#: src/conf.c:826
+#: src/conf.c:828
 #, c-format
 msgid "tls_key_file requires tls_cert_file"
 msgstr "tls_cert_file estas postulata de tls_key_file"
 
-#: src/conf.c:831
+#: src/conf.c:833
 #, c-format
 msgid "tls_cert_file requires tls_key_file"
 msgstr "tls_key_file estas postulata de tls_cert_file"
 
-#: src/conf.c:839
+#: src/conf.c:841
 #, c-format
 msgid ""
 "tls requires either tls_trust_file (highly recommended) or tls_fingerprint "
@@ -82,73 +82,73 @@ msgstr ""
 "aŭ tls_trust_file (ege rekomendinda) aŭ tls_fingerprint aŭ malaktivigita "
 "tls_certcheck estas postulata de TLS"
 
-#: src/conf.c:845
+#: src/conf.c:847
 #, c-format
 msgid "tls_crl_file requires tls_trust_file"
 msgstr "tls_trush_file estas postulata de tls_crl_dosiero"
 
-#: src/conf.c:877 src/conf.c:884 src/conf.c:901 src/mtls-gnutls.c:328
+#: src/conf.c:879 src/conf.c:886 src/conf.c:903 src/mtls-gnutls.c:328
 #, c-format
 msgid "%s: %s"
 msgstr "%s: %s"
 
-#: src/conf.c:1092
+#: src/conf.c:1094
 #, c-format
 msgid "line longer than %d characters"
 msgstr "linio pli longa ol %d signoj"
 
-#: src/conf.c:1143 src/conf.c:1268
+#: src/conf.c:1145 src/conf.c:1270
 #, c-format
 msgid "line %d: missing account name"
 msgstr "linio %d: mankas kontonomo"
 
-#: src/conf.c:1148
+#: src/conf.c:1150
 #, c-format
 msgid "line %d: account %s not (yet) defined"
 msgstr "linio %d: konto %s (ankoraŭ) ne estas difinita"
 
-#: src/conf.c:1240 src/conf.c:2037 src/conf.c:2054
+#: src/conf.c:1242 src/conf.c:2060 src/conf.c:2077
 #, c-format
 msgid "line %d: command %s does not take an argument"
 msgstr "linio %d: ne eblas doni al komando %s argumenton"
 
-#: src/conf.c:1276
+#: src/conf.c:1278
 #, c-format
 msgid "line %d: an account name must not contain colons or commas"
 msgstr "linio %d: konto nomo devas ne havi dupunktojn aŭ komojn"
 
-#: src/conf.c:1286
+#: src/conf.c:1288
 #, c-format
 msgid "line %d: account %s was already defined"
 msgstr "linio %d: konto %s jam estis difinita"
 
-#: src/conf.c:1311 src/conf.c:1330 src/conf.c:1357 src/conf.c:1386
-#: src/conf.c:1672 src/conf.c:1707
+#: src/conf.c:1313 src/conf.c:1332 src/conf.c:1359 src/conf.c:1388
+#: src/conf.c:1695 src/conf.c:1730
 #, c-format
 msgid "line %d: command %s needs an argument"
 msgstr "linio %d: komando %s postulas argumenton"
 
-#: src/conf.c:1341 src/conf.c:1373 src/conf.c:1404 src/conf.c:1443
-#: src/conf.c:1488 src/conf.c:1508 src/conf.c:1593 src/conf.c:1614
-#: src/conf.c:1633 src/conf.c:1694 src/conf.c:1725 src/conf.c:1775
-#: src/conf.c:1822 src/conf.c:1847 src/conf.c:1867 src/conf.c:1887
-#: src/conf.c:1907 src/conf.c:1954 src/conf.c:1975 src/conf.c:1996
-#: src/conf.c:2024
+#: src/conf.c:1343 src/conf.c:1375 src/conf.c:1406 src/conf.c:1440
+#: src/conf.c:1466 src/conf.c:1511 src/conf.c:1531 src/conf.c:1616
+#: src/conf.c:1637 src/conf.c:1656 src/conf.c:1717 src/conf.c:1748
+#: src/conf.c:1798 src/conf.c:1845 src/conf.c:1870 src/conf.c:1890
+#: src/conf.c:1910 src/conf.c:1930 src/conf.c:1977 src/conf.c:1998
+#: src/conf.c:2019 src/conf.c:2047
 #, c-format
 msgid "line %d: invalid argument %s for command %s"
 msgstr "linio %d: nevalida argumento %s por komando %s"
 
-#: src/conf.c:2070
+#: src/conf.c:2093
 #, c-format
 msgid "line %d: unknown command %s"
 msgstr "linio %d: nekonato komando %s"
 
-#: src/conf.c:2122
+#: src/conf.c:2145
 #, c-format
 msgid "contains secrets and therefore must be owned by you"
 msgstr "enhavas sekretojn kaj tial devas esti estrata de vi"
 
-#: src/conf.c:2128
+#: src/conf.c:2151
 #, c-format
 msgid ""
 "contains secrets and therefore must have no more than user read/write "

@@ -3,14 +3,14 @@
 # Copyright (C) 2016 Martin Lambers <marlam@marlam.de>
 # This file is distributed under the same license as the msmtp package.
 # Richard Genoud <richard.genoud@gmail.com>, 2016.
-# Stéphane Aulery <lkppo@free.fr>, 2019, 2020.
+# Stéphane Aulery <lkppo@free.fr>, 2019, 2021.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: msmtp 1.8.14\n"
+"Project-Id-Version: msmtp 1.8.18\n"
 "Report-Msgid-Bugs-To: marlam@marlam.de\n"
-"POT-Creation-Date: 2021-10-22 17:45+0200\n"
-"PO-Revision-Date: 2020-12-30 21:34+0100\n"
+"POT-Creation-Date: 2022-03-23 20:22+0100\n"
+"PO-Revision-Date: 2021-11-07 17:56+0100\n"
 "Last-Translator: Stéphane Aulery <lkppo@free.fr>\n"
 "Language-Team: French <traduc@traduc.org>\n"
 "Language: fr\n"
@@ -22,28 +22,26 @@ msgstr ""
 "X-Generator: Poedit 2.4.2\n"
 
 #: src/aliases.c:121
-#, fuzzy, c-format
-#| msgid "line longer than %d characters"
+#, c-format
 msgid "line %d: longer than %d characters"
-msgstr "ligne supérieure à %d caractères"
+msgstr "ligne %d : supérieure à %d caractères"
 
 #: src/aliases.c:138
 #, c-format
 msgid "line %d: single ':' delimiter expected"
-msgstr ""
+msgstr "ligne %d : un seul délimiteur '/' attendu"
 
 #: src/aliases.c:146
-#, fuzzy, c-format
-#| msgid "line %d: invalid argument %s for command %s"
+#, c-format
 msgid "line %d: invalid alias '%s'"
-msgstr "ligne %d : argument %s invalide pour la commande %s"
+msgstr "ligne %d : alias '%s' invalide"
 
 #: src/aliases.c:153
 #, c-format
 msgid "line %d: duplicate alias '%s'"
-msgstr ""
+msgstr "ligne %d : alias '%s' dupliqué"
 
-#: src/aliases.c:178 src/conf.c:1070 src/stream.c:63
+#: src/aliases.c:178 src/conf.c:1072 src/stream.c:63
 #, c-format
 msgid "input error"
 msgstr "erreur de lecture"
@@ -51,34 +49,34 @@ msgstr "erreur de lecture"
 #: src/aliases.c:283
 #, c-format
 msgid "Too many redirects when expanding alias %s."
-msgstr ""
+msgstr "Trop de redirection lors de la résolution de l'alias %s."
 
-#: src/conf.c:806 src/conf.c:821
+#: src/conf.c:808 src/conf.c:823
 #, c-format
 msgid "host not set"
 msgstr "nom de machine manquant"
 
-#: src/conf.c:811
+#: src/conf.c:813
 #, c-format
 msgid "port not set"
 msgstr "port non défini"
 
-#: src/conf.c:816
+#: src/conf.c:818
 #, c-format
 msgid "envelope-from address is missing"
 msgstr "adresse de l'expéditeur d'enveloppe est manquante"
 
-#: src/conf.c:826
+#: src/conf.c:828
 #, c-format
 msgid "tls_key_file requires tls_cert_file"
 msgstr "tls_key_file a besoin de tls_cert_file"
 
-#: src/conf.c:831
+#: src/conf.c:833
 #, c-format
 msgid "tls_cert_file requires tls_key_file"
 msgstr "tls_cert_file a besoin de tls_key_file"
 
-#: src/conf.c:839
+#: src/conf.c:841
 #, c-format
 msgid ""
 "tls requires either tls_trust_file (highly recommended) or tls_fingerprint "
@@ -87,75 +85,75 @@ msgstr ""
 "tls a besoin soit de tls_trust_file (vivement recommandé) ou de "
 "tls_fingerprint ou bien de désactiver tls_certcheck"
 
-#: src/conf.c:845
+#: src/conf.c:847
 #, c-format
 msgid "tls_crl_file requires tls_trust_file"
 msgstr "tls_crl_file a besoin de tls_trust_file"
 
-#: src/conf.c:877 src/conf.c:884 src/conf.c:901 src/mtls-gnutls.c:328
+#: src/conf.c:879 src/conf.c:886 src/conf.c:903 src/mtls-gnutls.c:328
 #, c-format
 msgid "%s: %s"
 msgstr "%s : %s"
 
-#: src/conf.c:1092
+#: src/conf.c:1094
 #, c-format
 msgid "line longer than %d characters"
 msgstr "ligne supérieure à %d caractères"
 
-#: src/conf.c:1143 src/conf.c:1268
+#: src/conf.c:1145 src/conf.c:1270
 #, c-format
 msgid "line %d: missing account name"
 msgstr "ligne %d : nom de compte manquant"
 
-#: src/conf.c:1148
+#: src/conf.c:1150
 #, c-format
 msgid "line %d: account %s not (yet) defined"
 msgstr "ligne %d : compte %s non défini (à ce niveau)"
 
-#: src/conf.c:1240 src/conf.c:2037 src/conf.c:2054
+#: src/conf.c:1242 src/conf.c:2060 src/conf.c:2077
 #, c-format
 msgid "line %d: command %s does not take an argument"
 msgstr "ligne %d : la commande %s ne prend pas d'argument"
 
-#: src/conf.c:1276
+#: src/conf.c:1278
 #, c-format
 msgid "line %d: an account name must not contain colons or commas"
 msgstr ""
 "ligne %d : un nom de compte ne doit pas contenir de deux-points(:) ni de "
 "virgule(,)"
 
-#: src/conf.c:1286
+#: src/conf.c:1288
 #, c-format
 msgid "line %d: account %s was already defined"
 msgstr "ligne %d : le compte %s était déjà défini"
 
-#: src/conf.c:1311 src/conf.c:1330 src/conf.c:1357 src/conf.c:1386
-#: src/conf.c:1672 src/conf.c:1707
+#: src/conf.c:1313 src/conf.c:1332 src/conf.c:1359 src/conf.c:1388
+#: src/conf.c:1695 src/conf.c:1730
 #, c-format
 msgid "line %d: command %s needs an argument"
 msgstr "ligne %d : la commande %s requiert un argument"
 
-#: src/conf.c:1341 src/conf.c:1373 src/conf.c:1404 src/conf.c:1443
-#: src/conf.c:1488 src/conf.c:1508 src/conf.c:1593 src/conf.c:1614
-#: src/conf.c:1633 src/conf.c:1694 src/conf.c:1725 src/conf.c:1775
-#: src/conf.c:1822 src/conf.c:1847 src/conf.c:1867 src/conf.c:1887
-#: src/conf.c:1907 src/conf.c:1954 src/conf.c:1975 src/conf.c:1996
-#: src/conf.c:2024
+#: src/conf.c:1343 src/conf.c:1375 src/conf.c:1406 src/conf.c:1440
+#: src/conf.c:1466 src/conf.c:1511 src/conf.c:1531 src/conf.c:1616
+#: src/conf.c:1637 src/conf.c:1656 src/conf.c:1717 src/conf.c:1748
+#: src/conf.c:1798 src/conf.c:1845 src/conf.c:1870 src/conf.c:1890
+#: src/conf.c:1910 src/conf.c:1930 src/conf.c:1977 src/conf.c:1998
+#: src/conf.c:2019 src/conf.c:2047
 #, c-format
 msgid "line %d: invalid argument %s for command %s"
 msgstr "ligne %d : argument %s invalide pour la commande %s"
 
-#: src/conf.c:2070
+#: src/conf.c:2093
 #, c-format
 msgid "line %d: unknown command %s"
 msgstr "ligne %d : commande %s inconnue"
 
-#: src/conf.c:2122
+#: src/conf.c:2145
 #, c-format
 msgid "contains secrets and therefore must be owned by you"
 msgstr "contient des mot de passe et doit donc vous appartenir"
 
-#: src/conf.c:2128
+#: src/conf.c:2151
 #, c-format
 msgid ""
 "contains secrets and therefore must have no more than user read/write "
@@ -444,13 +442,7 @@ msgid "User configuration file name: %s\n"
 msgstr "Nom du fichier de configuration utilisateur : %s\n"
 
 #: src/msmtp.c:2169
-#, fuzzy, c-format
-#| msgid ""
-#| "Copyright (C) 2020 Martin Lambers and others.\n"
-#| "This is free software.  You may redistribute copies of it under the terms "
-#| "of\n"
-#| "the GNU General Public License <http://www.gnu.org/licenses/gpl.html>.\n"
-#| "There is NO WARRANTY, to the extent permitted by law.\n"
+#, c-format
 msgid ""
 "Copyright (C) %d Martin Lambers and others.\n"
 "This is free software.  You may redistribute copies of it under the terms "
@@ -458,7 +450,7 @@ msgid ""
 "the GNU General Public License <http://www.gnu.org/licenses/gpl.html>.\n"
 "There is NO WARRANTY, to the extent permitted by law.\n"
 msgstr ""
-"Copyright (C) 2020 Martin Lambers (entre autres).\n"
+"Copyright (C) %d Martin Lambers (entre autres).\n"
 "Ce programme est libre, vous pouvez le redistribuer et/ou le modifier selon "
 "les termes \n"
 "de la Licence Publique Générale GNU <https://www.gnu.org/licenses/gpl."

@@ -440,25 +440,29 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
     {
         printf(_("%s server at %s (%s [%s]), port %d:\n"),
                 acc->protocol == SMTP_PROTO_SMTP ? "SMTP" : "LMTP",
-                acc->host, server_canonical_name, server_address, acc->port);
+                acc->host ? acc->host : acc->socketname,
+                server_canonical_name, server_address, acc->port);
     }
     else if (server_canonical_name)
     {
         printf(_("%s server at %s (%s), port %d:\n"),
                 acc->protocol == SMTP_PROTO_SMTP ? "SMTP" : "LMTP",
-                acc->host, server_canonical_name, acc->port);
+                acc->host ? acc->host : acc->socketname,
+                server_canonical_name, acc->port);
     }
     else if (server_address)
     {
         printf(_("%s server at %s ([%s]), port %d:\n"),
                 acc->protocol == SMTP_PROTO_SMTP ? "SMTP" : "LMTP",
-                acc->host, server_address, acc->port);
+                acc->host ? acc->host : acc->socketname,
+                server_address, acc->port);
     }
     else
     {
         printf(_("%s server at %s, port %d:\n"),
                 acc->protocol == SMTP_PROTO_SMTP ? "SMTP" : "LMTP",
-                acc->host, acc->port);
+                acc->host ? acc->host : acc->socketname,
+                acc->port);
     }
     if (*server_greeting != '\0')
     {
@@ -1757,8 +1761,11 @@ char *msmtp_get_log_info(account_t *acc, list_t *recipients, long mailsize,
     /* calculate the length of the log line */
 
     s = 0;
-    /* "host=%s " */
-    s += 5 + strlen(acc->host) + 1;
+    /* "host=%s " or "socket=%s " */
+    if (acc->host)
+        s += 5 + strlen(acc->host) + 1;
+    else
+        s += 7 + strlen(acc->socketname) + 1;
     /* "tls=on|off " */
     s += 4 + (acc->tls ? 2 : 3) + 1;
     /* "auth=on|off " */
@@ -1803,8 +1810,10 @@ char *msmtp_get_log_info(account_t *acc, list_t *recipients, long mailsize,
     /* build the log line */
 
     p = line;
-    n = snprintf(p, s, "host=%s tls=%s auth=%s ",
-            acc->host, (acc->tls ? "on" : "off"),
+    n = snprintf(p, s, "%s=%s tls=%s auth=%s ",
+            acc->host ? "host" : "socket",
+            acc->host ? acc->host : acc->socketname,
+            (acc->tls ? "on" : "off"),
             (acc->auth_mech ? "on" : "off"));
     s -= n;
     p += n;
@@ -3497,7 +3506,8 @@ void msmtp_print_conf(msmtp_cmdline_conf_t conf, account_t *account)
         printf(_("using account %s from %s\n"),
                 account->id, account->conffile);
     }
-    printf("host = %s\n", account->host);
+    printf("host = %s\n",
+            account->host ? account->host : _("(not set)"));
     printf("port = %d\n", account->port);
     printf("source ip = %s\n",
             account->source_ip ? account->source_ip : _("(not set)"));

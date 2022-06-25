@@ -44,13 +44,4 @@ char *password_get(const char *hostname, const char *user,
         int consult_netrc,
         int getpass_only_via_tty);
 
-/*
- * password_eval()
- *
- * Evaluates command in 'arg' and stores result in 'buf' (which is allocated).
- * Returns non-zero if command execution failed, otherwise zero. On error,
- * *errstr will contain an error string.
- */
-int password_eval(const char *arg, char **buf, char **errstr);
-
 #endif

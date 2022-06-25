@@ -14,7 +14,7 @@
 This manual was last updated @value{UPDATED} for version
 @value{VERSION} of msmtp.
 
-Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021
+Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022
 Martin Lambers@*
 Copyright (C) 2011
 Scott Shumate
@@ -158,6 +158,18 @@ are filled in (see @ref{defaults}).@*
 If a colon and a list of previously defined accounts is given after the account
 name, the new account, with the filled in default values, will inherit all
 settings from the accounts in the list.
+@anchor{eval}
+@item eval [@var{cmd}]
+@cmindex eval
+Replace the current configuration file line with the first line of the output
+(stdout) of the command @var{cmd}. This can be used to decrypt settings or to
+create them via scripts. For example, @code{eval echo host localhost} replaces
+the current line with @code{host localhost}.@*
+The @var{cmd} command must not mess with standard input; if in doubt, append
+@code{< /dev/null}.@*
+Note that for passwords you can also use the @ref{passwordeval} command instead
+of @code{eval password cmd}. This has the advantage that the command is only
+evaluated if needed.
 @anchor{host}
 @item host @var{hostname}
 @cmindex host
@@ -251,15 +263,14 @@ Consider using the @samp{passwordeval} command or a key ring instead of this
 command, to avoid storing cleartext passwords in the configuration file.
 @xref{Authentication}.
 @anchor{passwordeval}
-@item passwordeval [@var{eval}]
+@item passwordeval [@var{cmd}]
 @cmindex passwordeval
 Set the password for authentication to the output (stdout) of the command
-@var{eval}.
+@var{cmd}.
 This can be used e.g. to decrypt password files on the fly or to query key
 rings, and thus to avoid storing cleartext passwords.@*
-Note that the @var{eval} command must not mess with standard input (stdin)
-because that is where msmtp reads the mail from. If in doubt, append
-@var{< /dev/null} to @var{eval}.@*
+The @var{cmd} command must not mess with standard input; if in doubt, append
+@code{< /dev/null}.@*
 @xref{Authentication}.
 @anchor{ntlmdomain}
 @item ntlmdomain [@var{ntlmdomain}]

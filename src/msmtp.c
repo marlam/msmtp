@@ -60,6 +60,7 @@ extern int optind;
 #include "tools.h"
 #include "aliases.h"
 #include "password.h"
+#include "eval.h"
 #ifdef HAVE_TLS
 # include "mtls.h"
 #endif /* HAVE_TLS */
@@ -3908,8 +3909,7 @@ int main(int argc, char *argv[])
      * them. */
     if (account->auth_mech && !account->password && account->passwordeval)
     {
-        if (password_eval(account->passwordeval,
-                    &account->password, &errstr) != 0)
+        if (eval(account->passwordeval, &account->password, &errstr) != 0)
         {
             print_error("%s", sanitize_string(errstr));
             error_code = EX_CONFIG;

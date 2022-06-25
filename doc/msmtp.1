@@ -1,7 +1,7 @@
 .\" -*-nroff-*-
 .\"
 .\" Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014,
-.\" 2015, 2016, 2017, 2018, 2019, 2020, 2021
+.\" 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022
 .\" Martin Lambers
 .\" Copyright (C) 2011
 .\" Scott Shumate
@@ -10,7 +10,7 @@
 .\" under the terms of the GNU Free Documentation License, Version 1.2 or
 .\" any later version published by the Free Software Foundation; with no
 .\" Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
-.TH MSMTP 1 2021-03
+.TH MSMTP 1 2022-06
 .SH NAME
 msmtp \- An SMTP client
 .SH SYNOPSIS
@@ -108,7 +108,7 @@ Enable or disable authentication and optionally choose the method.
 See the \fBauth\fP command.
 .IP "\-\-user=\fI[username]\fP"
 Set or unset the user name for authentication. See the \fBuser\fP command.
-.IP "\-\-passwordeval=[\fIeval\fP]"
+.IP "\-\-passwordeval=[\fIcmd\fP]"
 Evaluate password for authentication. See the \fBpasswordeval\fP command.
 .IP "\-\-tls[=(\fIon\fP|\fIoff\fP)]"
 Enable or disable TLS/SSL. See the \fBtls\fP command.
@@ -287,6 +287,18 @@ are filled in.
 If a colon and a list of previously defined accounts is given after the account
 name, the new account, with the filled in default values, will inherit all
 settings from the accounts in the list.
+.IP "eval \fIcmd\fP"
+Replace the current configuration file line with the first line of the output
+(stdout) of the command \fIcmd\fP. This can be used to decrypt settings or to
+create them via scripts. For example, \fIeval echo host localhost\fP replaces
+the current line with \fIhost localhost\fP.
+.br
+The \fIcmd\fP command must not mess with standard input; if in doubt, append
+\fI< /dev/null\fP.
+.br
+Note that for passwords you can also use the \fBpasswordeval\fP command instead
+of \fIeval password cmd\fP. This has the advantage that the command is only
+evaluated if needed.
 .IP "host \fIhostname\fP"
 The SMTP server to send the mail to.
 The argument may be a host name or a network address.
@@ -408,15 +420,14 @@ Set the user name for authentication. An empty argument unsets the user name.
 Set the password for authentication. An empty argument unsets the password.
 Consider using the \fBpasswordeval\fP command or a key ring instead of this
 command, to avoid storing cleartext passwords in the configuration file.
-.IP "passwordeval [\fIeval\fP]"
+.IP "passwordeval [\fIcmd\fP]"
 Set the password for authentication to the output (stdout) of the command
-\fIeval\fP.
+\fIcmd\fP.
 This can be used e.g. to decrypt password files on the fly or to query key
 rings, and thus to avoid storing cleartext passwords.
 .br
-Note that the \fIeval\fP command must not mess with standard input (stdin)
-because that is where msmtp reads the mail from. If in doubt, append
-\fI</dev/null\fP to \fIeval\fP.
+The \fIcmd\fP command must not mess with standard input; if in doubt, append
+\fI< /dev/null\fP.
 .IP "ntlmdomain [\fIdomain\fP]"
 Set a domain for the \fBntlm\fP authentication method. This is obsolete.
 .IP "tls [(\fIon\fP|\fIoff\fP)]"

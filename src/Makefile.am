@@ -2,6 +2,7 @@ bin_PROGRAMS = msmtp
 
 msmtp_SOURCES = \
 	conf.c conf.h \
+	eval.c eval.h \
 	list.c list.h \
 	msmtp.c \
 	net.c net.h \
@@ -42,6 +43,6 @@ DEFS += -DSYSCONFDIR=\"$(sysconfdir)\" -DLOCALEDIR=\"$(localedir)\" -DBINDIR=\"$
 
 if BUILD_MSMTPD
 bin_PROGRAMS += msmtpd
-msmtpd_SOURCES = msmtpd.c base64.c base64.h password.c password.h tools.c tools.h xalloc.c xalloc.h netrc.c netrc.h
+msmtpd_SOURCES = msmtpd.c base64.c base64.h eval.c eval.h password.c password.h tools.c tools.h xalloc.c xalloc.h netrc.c netrc.h
 msmtpd_LDADD =  $(libsecret_LIBS) $(LIBINTL)
 endif

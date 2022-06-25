@@ -1,3 +1,8 @@
+Version 1.8.21:
+- Added a new configuration command 'eval' to replace the current configuration
+  file line with the output of a command (similar to passwordeval, but more
+  general).
+
 Version 1.8.20:
 - Added a new configuration command 'allow_from_override'. When off, the --from
   option does not override the envelope-from address anymore.

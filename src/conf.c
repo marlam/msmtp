@@ -1176,6 +1176,7 @@ int read_conffile(const char *conffile, FILE *f, list_t **acc_list,
 
     for (line = 1; ; line++)
     {
+        /* read the next line */
         int line_comes_from_eval = 0;
         char linebuf[LINEBUFSIZE];
         size_t linelen;
@@ -1200,24 +1201,14 @@ int read_conffile(const char *conffile, FILE *f, list_t **acc_list,
             return CONF_EPARSE;
         }
 
+        /* split line into command and argument */
         get_cmd(linebuf, &cmd, &arg);
         if (!cmd)
         {
             continue;
         }
 
-        /* compatibility with 1.2.x: if no account command is given, the first
-         * account will be named "default". */
-        if (!acc && strcmp(cmd, "account") != 0 && strcmp(cmd, "defaults") != 0)
-        {
-            acc = account_copy(defaults);
-            acc->id = xstrdup("default");
-            acc->conffile = xstrdup(conffile);
-            acc->mask = 0LL;
-            list_insert(p, acc);
-            p = p->next;
-        }
-
+        /* handle the special eval command first */
         if (strcmp(cmd, "eval") == 0)
         {
             if (*arg == '\0')
@@ -1246,6 +1237,19 @@ int read_conffile(const char *conffile, FILE *f, list_t **acc_list,
             line_comes_from_eval = 1;
         }
 
+        /* compatibility with 1.2.x: if no account command is given, the first
+         * account will be named "default". */
+        if (!acc && strcmp(cmd, "account") != 0 && strcmp(cmd, "defaults") != 0)
+        {
+            acc = account_copy(defaults);
+            acc->id = xstrdup("default");
+            acc->conffile = xstrdup(conffile);
+            acc->mask = 0LL;
+            list_insert(p, acc);
+            p = p->next;
+        }
+
+        /* handle commands */
         if (strcmp(cmd, "defaults") == 0)
         {
             if (*arg != '\0')

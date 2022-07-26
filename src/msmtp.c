@@ -2379,6 +2379,7 @@ void msmtp_print_help(void)
     printf(_("  --aliases=[file]             set/unset aliases file\n"));
     printf(_("  --set-from-header[=(auto|on|off)] set From header handling\n"));
     printf(_("  --set-date-header[=(auto|off)] set Date header handling\n"));
+    printf(_("  --set-msgid-header[=(auto|off)] set Message-ID header handling\n"));
     printf(_("  --remove-bcc-headers[=(on|off)] enable/disable removal of Bcc headers\n"));
     printf(_("  --undisclosed-recipients[=(on|off)] enable/disable replacement of To/Cc/Bcc\n"
              "                               with To: undisclosed-recipients:;\n"));

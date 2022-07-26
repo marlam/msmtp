@@ -61,6 +61,7 @@ extern int optind;
 #include "aliases.h"
 #include "password.h"
 #include "eval.h"
+#include "msgid.h"
 #ifdef HAVE_TLS
 # include "mtls.h"
 #endif /* HAVE_TLS */
@@ -626,8 +627,11 @@ error_exit:
  * If 'from' is not NULL: extracts the address from the From header and stores
  * it in an allocated string. A pointer to this string is stored in 'from'.
  *
- * If 'have_date' is not NULL: set this flag to 1 if a Date header is present
- * , and to 0 otherwise.
+ * If 'have_date' is not NULL: set this flag to 1 if a Date header is present,
+ * and to 0 otherwise.
+ *
+ * If 'have_msgid' is not NULL: set this flag to 1 if a Message-ID header is
+ * present, and to 0 otherwise.
  *
  * See RFC2822, section 3 for the format of these headers.
  *
@@ -646,32 +650,43 @@ error_exit:
 #define STATE_DATE2                     4       /* we saw "^Da" */
 #define STATE_DATE3                     5       /* we saw "^Dat" */
 #define STATE_DATE4                     6       /* we saw "^Date" */
-#define STATE_FROM1                     7       /* we saw "^F" */
-#define STATE_FROM2                     8       /* we saw "^Fr" */
-#define STATE_FROM3                     9       /* we saw "^Fro" */
-#define STATE_TO                        10      /* we saw "^T" */
-#define STATE_CC                        11      /* we saw "^C" */
-#define STATE_BCC1                      12      /* we saw "^B" */
-#define STATE_BCC2                      13      /* we saw "^Bc" */
-#define STATE_ADDRHDR_ALMOST            14      /* we saw "^To", "^Cc"
+#define STATE_MSGID1                    7       /* we saw "^M" */
+#define STATE_MSGID2                    8       /* we saw "^Me" */
+#define STATE_MSGID3                    9       /* we saw "^Mes" */
+#define STATE_MSGID4                    10      /* we saw "^Mess" */
+#define STATE_MSGID5                    11      /* we saw "^Messa" */
+#define STATE_MSGID6                    12      /* we saw "^Messag" */
+#define STATE_MSGID7                    13      /* we saw "^Message" */
+#define STATE_MSGID8                    14      /* we saw "^Message-" */
+#define STATE_MSGID9                    15      /* we saw "^Message-I" */
+#define STATE_MSGID10                   16      /* we saw "^Message-ID" */
+#define STATE_FROM1                     17      /* we saw "^F" */
+#define STATE_FROM2                     18      /* we saw "^Fr" */
+#define STATE_FROM3                     19      /* we saw "^Fro" */
+#define STATE_TO                        20      /* we saw "^T" */
+#define STATE_CC                        21      /* we saw "^C" */
+#define STATE_BCC1                      22      /* we saw "^B" */
+#define STATE_BCC2                      23      /* we saw "^Bc" */
+#define STATE_ADDRHDR_ALMOST            24      /* we saw "^To", "^Cc"
                                                    or "^Bcc" */
-#define STATE_RESENT                    15      /* we saw part of "^Resent-" */
-#define STATE_ADDRHDR_DEFAULT           16      /* in_rcpt_hdr and in_rcpt
+#define STATE_RESENT                    25      /* we saw part of "^Resent-" */
+#define STATE_ADDRHDR_DEFAULT           26      /* in_rcpt_hdr and in_rcpt
                                                    state our position */
-#define STATE_ADDRHDR_DQUOTE            17      /* duoble quotes */
-#define STATE_ADDRHDR_BRACKETS_START    18      /* entering <...> */
-#define STATE_ADDRHDR_IN_BRACKETS       19      /* an address inside <> */
-#define STATE_ADDRHDR_PARENTH_START     20      /* entering (...) */
-#define STATE_ADDRHDR_IN_PARENTH        21      /* a comment inside () */
-#define STATE_ADDRHDR_IN_ADDRESS        22      /* a bare address */
-#define STATE_ADDRHDR_BACKQUOTE         23      /* we saw a '\\' */
-#define STATE_HEADERS_END               24      /* we saw "^$", the blank line
+#define STATE_ADDRHDR_DQUOTE            27      /* duoble quotes */
+#define STATE_ADDRHDR_BRACKETS_START    28      /* entering <...> */
+#define STATE_ADDRHDR_IN_BRACKETS       29      /* an address inside <> */
+#define STATE_ADDRHDR_PARENTH_START     30      /* entering (...) */
+#define STATE_ADDRHDR_IN_PARENTH        31      /* a comment inside () */
+#define STATE_ADDRHDR_IN_ADDRESS        32      /* a bare address */
+#define STATE_ADDRHDR_BACKQUOTE         33      /* we saw a '\\' */
+#define STATE_HEADERS_END               34      /* we saw "^$", the blank line
                                                    between headers and body */
 
 int msmtp_read_headers(FILE *mailf, FILE *tmpf,
         list_t *recipients,
         char **from,
         int *have_date,
+        int *have_msgid,
         char **errstr)
 {
     int c;
@@ -714,6 +729,10 @@ int msmtp_read_headers(FILE *mailf, FILE *tmpf,
     {
         *have_date = 0;
     }
+    if (have_msgid)
+    {
+        *have_msgid = 0;
+    }
     if (recipients)
     {
         normal_recipients_list = list_new();
@@ -747,6 +766,8 @@ int msmtp_read_headers(FILE *mailf, FILE *tmpf,
                     resent_index = -1;
                     if (have_date && (c == 'd' || c == 'D'))
                         state = STATE_DATE1;
+                    else if (have_msgid && (c == 'm' || c == 'M'))
+                        state = STATE_MSGID1;
                     else if (from && from_hdr < 0 && (c == 'f' || c == 'F'))
                         state = STATE_FROM1;
                     else if (recipients && (c == 't' || c == 'T'))
@@ -780,6 +801,8 @@ int msmtp_read_headers(FILE *mailf, FILE *tmpf,
                         state = folded_rcpthdr_savestate;
                     else if (have_date && (c == 'd' || c == 'D'))
                         state = STATE_DATE1;
+                    else if (have_msgid && (c == 'm' || c == 'M'))
+                        state = STATE_MSGID1;
                     else if (from && from_hdr < 0 && (c == 'f' || c == 'F'))
                         state = STATE_FROM1;
                     else if (recipients && (c == 't' || c == 'T'))
@@ -867,6 +890,99 @@ int msmtp_read_headers(FILE *mailf, FILE *tmpf,
                     if (c == ':')
                     {
                         *have_date = 1;
+                        state = STATE_OTHER_HDR;
+                    }
+                    else if (c == '\n')
+                        state = STATE_LINESTART_FRESH;
+                    else
+                        state = STATE_OTHER_HDR;
+                    break;
+
+                case STATE_MSGID1:
+                    if (c == 'e' || c == 'E')
+                        state = STATE_MSGID2;
+                    else if (c == '\n')
+                        state = STATE_LINESTART_FRESH;
+                    else
+                        state = STATE_OTHER_HDR;
+                    break;
+
+                case STATE_MSGID2:
+                    if (c == 's' || c == 'S')
+                        state = STATE_MSGID3;
+                    else if (c == '\n')
+                        state = STATE_LINESTART_FRESH;
+                    else
+                        state = STATE_OTHER_HDR;
+                    break;
+
+                case STATE_MSGID3:
+                    if (c == 's' || c == 'S')
+                        state = STATE_MSGID4;
+                    else if (c == '\n')
+                        state = STATE_LINESTART_FRESH;
+                    else
+                        state = STATE_OTHER_HDR;
+                    break;
+
+                case STATE_MSGID4:
+                    if (c == 'a' || c == 'A')
+                        state = STATE_MSGID5;
+                    else if (c == '\n')
+                        state = STATE_LINESTART_FRESH;
+                    else
+                        state = STATE_OTHER_HDR;
+                    break;
+
+                case STATE_MSGID5:
+                    if (c == 'g' || c == 'G')
+                        state = STATE_MSGID6;
+                    else if (c == '\n')
+                        state = STATE_LINESTART_FRESH;
+                    else
+                        state = STATE_OTHER_HDR;
+                    break;
+
+                case STATE_MSGID6:
+                    if (c == 'e' || c == 'E')
+                        state = STATE_MSGID7;
+                    else if (c == '\n')
+                        state = STATE_LINESTART_FRESH;
+                    else
+                        state = STATE_OTHER_HDR;
+                    break;
+
+                case STATE_MSGID7:
+                    if (c == '-')
+                        state = STATE_MSGID8;
+                    else if (c == '\n')
+                        state = STATE_LINESTART_FRESH;
+                    else
+                        state = STATE_OTHER_HDR;
+                    break;
+
+                case STATE_MSGID8:
+                    if (c == 'i' || c == 'I')
+                        state = STATE_MSGID9;
+                    else if (c == '\n')
+                        state = STATE_LINESTART_FRESH;
+                    else
+                        state = STATE_OTHER_HDR;
+                    break;
+
+                case STATE_MSGID9:
+                    if (c == 'd' || c == 'D')
+                        state = STATE_MSGID10;
+                    else if (c == '\n')
+                        state = STATE_LINESTART_FRESH;
+                    else
+                        state = STATE_OTHER_HDR;
+                    break;
+
+                case STATE_MSGID10:
+                    if (c == ':')
+                    {
+                        *have_msgid = 1;
                         state = STATE_OTHER_HDR;
                     }
                     else if (c == '\n')
@@ -2347,6 +2463,7 @@ typedef struct
 #define LONGONLYOPT_SOCKET                      (256 + 38)
 #define LONGONLYOPT_SET_FROM_HEADER             (256 + 39)
 #define LONGONLYOPT_SET_DATE_HEADER             (256 + 40)
+#define LONGONLYOPT_SET_MSGID_HEADER            (256 + 41)
 
 int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
 {
@@ -2407,6 +2524,8 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
             LONGONLYOPT_SET_FROM_HEADER },
         { "set-date-header", optional_argument, 0,
             LONGONLYOPT_SET_DATE_HEADER },
+        { "set-msgid-header", optional_argument, 0,
+            LONGONLYOPT_SET_MSGID_HEADER },
         { "remove-bcc-headers", optional_argument, 0,
             LONGONLYOPT_REMOVE_BCC_HEADERS },
         { "undisclosed-recipients", optional_argument, 0,
@@ -3084,6 +3203,24 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
                 conf->cmdline_account->mask |= ACC_SET_DATE_HEADER;
                 break;
 
+            case LONGONLYOPT_SET_MSGID_HEADER:
+                if (!optarg || is_auto(optarg))
+                {
+                    conf->cmdline_account->set_msgid_header = 2;
+                }
+                else if (is_off(optarg))
+                {
+                    conf->cmdline_account->set_msgid_header = 0;
+                }
+                else
+                {
+                    print_error(_("invalid argument %s for %s"),
+                            optarg, "--set-msgid-header");
+                    error_code = 1;
+                }
+                conf->cmdline_account->mask |= ACC_SET_MSGID_HEADER;
+                break;
+
             case LONGONLYOPT_ADD_MISSING_FROM_HEADER:
                 /* compatibility with < 1.8.8 */
                 if (!optarg || is_on(optarg))
@@ -3319,7 +3456,8 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
             goto error_exit;
         }
         if ((error_code = msmtp_read_headers(tmpf, NULL,
-                        list_last(conf->recipients), NULL, NULL, &errstr))
+                        list_last(conf->recipients), NULL, NULL, NULL,
+                        &errstr))
                 != EX_OK)
         {
             print_error("%s", sanitize_string(errstr));
@@ -3691,6 +3829,7 @@ int main(int argc, char *argv[])
     FILE *prepend_header_tmpfile = NULL;
     int have_from_header = 0;
     int have_date_header = 0;
+    int have_msgid_header = 0;
 
 
     /* Avoid the side effects of text mode interpretations on DOS systems. */
@@ -3769,7 +3908,8 @@ int main(int argc, char *argv[])
         if ((error_code = msmtp_read_headers(stdin, header_tmpfile,
                         conf.read_recipients
                             ? list_last(conf.recipients) : NULL,
-                        &envelope_from, &have_date_header, &errstr)) != EX_OK)
+                        &envelope_from, &have_date_header, &have_msgid_header,
+                        &errstr)) != EX_OK)
         {
             print_error("%s", sanitize_string(errstr));
             goto exit;
@@ -4055,7 +4195,8 @@ int main(int argc, char *argv[])
         if (account->undisclosed_recipients
                 || account->set_from_header == 1
                 || (!have_from_header && account->set_from_header == 2)
-                || (!have_date_header && account->set_date_header == 2))
+                || (!have_date_header && account->set_date_header == 2)
+                || (!have_msgid_header && account->set_msgid_header == 2))
         {
             if (!(prepend_header_tmpfile = tmpfile()))
             {
@@ -4088,6 +4229,12 @@ int main(int argc, char *argv[])
             char rfc2822_timestamp[32];
             print_time_rfc2822(time(NULL), rfc2822_timestamp);
             fprintf(prepend_header_tmpfile, "Date: %s\n", rfc2822_timestamp);
+        }
+        if (!have_msgid_header && account->set_msgid_header == 2)
+        {
+            char *msgid = create_msgid(account->from);
+            fprintf(prepend_header_tmpfile, "Message-ID: %s\n", msgid);
+            free(msgid);
         }
         if (prepend_header_tmpfile
                 && fseeko(prepend_header_tmpfile, 0, SEEK_SET) != 0)

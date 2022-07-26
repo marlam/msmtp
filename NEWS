@@ -2,6 +2,8 @@ Version 1.8.21:
 - Added a new configuration command 'eval' to replace the current configuration
   file line with the output of a command (similar to passwordeval, but more
   general).
+- Added a new configuration command 'set_msgid_header' with the default setting
+  'auto'. This adds a Message-ID header to the mail if none is present.
 
 Version 1.8.20:
 - Added a new configuration command 'allow_from_override'. When off, the --from

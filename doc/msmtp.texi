@@ -442,6 +442,12 @@ have one (this is the default), and @samp{off} never sets a Date header.@*
 For compatibility with older versions, @samp{add_missing_date_header [(on|off)]}
 is still supported and corresponds to the @samp{auto} and @samp{off} settings.@*
 @xref{Header handling}.
+@anchor{set_msgid_header}
+@item set_msgid_header [(auto|off)]
+@cmindex set_msgid_header
+When to set a Message-ID header: @samp{auto} adds a Message-ID header if the mail does not
+have one (this is the default), and @samp{off} never sets a Message-ID header.@*
+@xref{Header handling}.
 @anchor{remove_bcc_headers}
 @item remove_bcc_headers [(on|off)]
 @cmindex remove_bcc_headers
@@ -726,6 +732,10 @@ Set From header handling. @xref{set_from_header}.
 @item --set-date-header[=(auto|off)]
 @opindex --set-date-header
 Set Date header handling. @xref{set_date_header}.
+@anchor{--set-msgid-header}
+@item --set-msgid-header[=(auto|off)]
+@opindex --set-msgid-header
+Set Message-ID header handling. @xref{set_msgid_header}.
 @anchor{--remove-bcc-headers}
 @item --remove-bcc-headers[=(on|off)]
 @opindex --remove-bcc-headers
@@ -1124,6 +1134,8 @@ The header will use the envelope from address and optionally a full name set
 with the @samp{-F} option.
 @item A Date header will be added if the mail does not have one. This can be changed
 with the @ref{set_date_header} command.
+@item A Message-ID header will be added if the mail does not have one. This can be changed
+with the @ref{set_msgid_header} command.
 @item When @ref{undisclosed_recipients} is set, the original To, Cc, and Bcc headers
 are removed and replaced with "To: undisclosed-recipients:;".
 @end itemize

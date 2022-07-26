@@ -5,6 +5,7 @@ msmtp_SOURCES = \
 	eval.c eval.h \
 	list.c list.h \
 	msmtp.c \
+        msgid.c msgid.h \
 	net.c net.h \
 	netrc.c netrc.h \
 	readbuf.c readbuf.h \

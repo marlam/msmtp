@@ -301,18 +301,21 @@ int msmtpd_session(log_t* log,
         return 1;
     }
     /* save EHLO name for the Received header, but sanitize it */
-    strcpy(ehlo_name, buf + 5);
-    for (i = 0; ehlo_name[i]; i++) {
-        if (!((ehlo_name[i] >= 'a' && ehlo_name[i] <= 'z')
-                    || (ehlo_name[i] >= 'A' && ehlo_name[i] <= 'Z')
-                    || (ehlo_name[i] >= '0' && ehlo_name[i] <= '9')
-                    || (ehlo_name[i] == '.' || ehlo_name[i] == '-'))) {
-            strcpy(ehlo_name, "invalid");
-            break;
+    if (buf[5] == '\0') {
+        strcpy(ehlo_name, "unknown");
+    } else {
+        strcpy(ehlo_name, buf + 5);
+        for (i = 0; ehlo_name[i]; i++) {
+            if (!((i == 0 && ehlo_name[i] == '[') || (ehlo_name[i + 1] == '\0' && ehlo_name[i] == ']')
+                        || (ehlo_name[i] >= 'a' && ehlo_name[i] <= 'z')
+                        || (ehlo_name[i] >= 'A' && ehlo_name[i] <= 'Z')
+                        || (ehlo_name[i] >= '0' && ehlo_name[i] <= '9')
+                        || (ehlo_name[i] == '.' || ehlo_name[i] == ':' || ehlo_name[i] == '-'))) {
+                strcpy(ehlo_name, "invalid");
+                break;
+            }
         }
     }
-    if (ehlo_name[0] == '\0')
-        strcpy(ehlo_name, "invalid");
     /* send EHLO/HELO response */
     if (user && strncasecmp(buf, "EHLO ", 5) == 0) {
         fprintf(out, "250-localhost\r\n");

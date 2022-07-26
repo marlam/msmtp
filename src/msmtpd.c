@@ -35,6 +35,7 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
+#include <netdb.h>
 #include <sys/wait.h>
 #include <time.h>
 #include <syslog.h>
@@ -257,6 +258,43 @@ int smtp_pipe(FILE* in, FILE* pipe, char* buf, size_t bufsize)
     return 0;
 }
 
+/* Get the local and remote IP addresses and host names */
+
+typedef struct {
+    char local_ip[INET6_ADDRSTRLEN+1];
+    char local_name[NI_MAXHOST];
+    char remote_ip[INET6_ADDRSTRLEN+1];
+    char remote_name[NI_MAXHOST];
+} connection_info_t;
+
+void get_connection_info(int socket, connection_info_t* info)
+{
+    struct sockaddr_storage ss;
+    socklen_t ss_len;
+    ss_len = sizeof(ss);
+    info->local_ip[0] = '\0';
+    info->local_name[0] = '\0';
+    if (getsockname(socket, (struct sockaddr*)&ss, &ss_len) == 0) {
+        if (ss.ss_family == AF_INET6) {
+            inet_ntop(AF_INET6, &(((struct sockaddr_in6*)&ss)->sin6_addr), info->local_ip, sizeof(info->local_ip));
+        } else if (ss.ss_family == AF_INET) {
+            inet_ntop(AF_INET, &(((struct sockaddr_in*)&ss)->sin_addr), info->local_ip, sizeof(info->local_ip));
+        }
+        getnameinfo((struct sockaddr*)&ss, sizeof(ss), info->local_name, sizeof(info->local_name), NULL, 0, NI_NAMEREQD);
+    }
+    ss_len = sizeof(ss);
+    info->remote_ip[0] = '\0';
+    info->remote_name[0] = '\0';
+    if (getpeername(socket, (struct sockaddr*)&ss, &ss_len) == 0) {
+        if (ss.ss_family == AF_INET6) {
+            inet_ntop(AF_INET6, &(((struct sockaddr_in6*)&ss)->sin6_addr), info->remote_ip, sizeof(info->remote_ip));
+        } else if (ss.ss_family == AF_INET) {
+            inet_ntop(AF_INET, &(((struct sockaddr_in*)&ss)->sin_addr), info->remote_ip, sizeof(info->remote_ip));
+        }
+        getnameinfo((struct sockaddr*)&ss, sizeof(ss), info->remote_name, sizeof(info->remote_name), NULL, 0, NI_NAMEREQD);
+    }
+}
+
 /* SMTP session with input and output from FILE descriptors.
  * Mails are piped to the given command, where the first occurrence of %F
  * will be replaced with the envelope-from address, and all recipient addresses
@@ -269,7 +307,7 @@ int smtp_pipe(FILE* in, FILE* pipe, char* buf, size_t bufsize)
  * */
 int msmtpd_session(log_t* log,
         FILE* in, FILE* out,
-        const char* local_ip_str, const char* remote_ip_str,
+        const connection_info_t* info,
         const char* command,
         const char* user, const char* password, int impose_auth_delay)
 {
@@ -488,8 +526,13 @@ int msmtpd_session(log_t* log,
         /* first add a Received: header */
         char rfc2822_timestamp[32];
         print_time_rfc2822(time(NULL), rfc2822_timestamp);
-        fprintf(pipe, "Received: from %s ([%s])\r\n", ehlo_name, remote_ip_str);
-        fprintf(pipe, "\tby [%s] (msmtpd) with ESMTP;\r\n", local_ip_str);
+        fprintf(pipe, "Received: from %s (", ehlo_name);
+        if (info->remote_name[0])
+            fprintf(pipe, "%s ", info->remote_name);
+        fprintf(pipe, "[%s])\r\n\tby ", info->remote_ip);
+        if (info->local_name[0])
+            fprintf(pipe, "%s ", info->local_name);
+        fprintf(pipe, "[%s] (msmtpd) with ESMTP;\r\n", info->local_ip);
         fprintf(pipe, "\t%s\r\n", rfc2822_timestamp);
         /* then pipe the mail */
         fprintf(out, "354 Send data\r\n");
@@ -564,33 +607,6 @@ void sigchld_action(int signum, siginfo_t* si, void* ucontext)
             auth_failure_occurred = 1;
         }
         active_sessions_count--;
-    }
-}
-
-/* Get the local and remote IP addresses as strings */
-
-#define IP_STR_BUFSIZE (INET6_ADDRSTRLEN+1)
-void get_ip_strings(int socket, char local_ip_str[IP_STR_BUFSIZE], char remote_ip_str[IP_STR_BUFSIZE])
-{
-    struct sockaddr_storage ss;
-    socklen_t ss_len;
-    ss_len = sizeof(ss);
-    strcpy(local_ip_str, "unknown");
-    if (getsockname(socket, (struct sockaddr*)&ss, &ss_len) == 0) {
-        if (ss.ss_family == AF_INET6) {
-            inet_ntop(AF_INET6, &(((struct sockaddr_in6*)&ss)->sin6_addr), local_ip_str, IP_STR_BUFSIZE);
-        } else if (ss.ss_family == AF_INET) {
-            inet_ntop(AF_INET, &(((struct sockaddr_in*)&ss)->sin_addr), local_ip_str, IP_STR_BUFSIZE);
-        }
-    }
-    ss_len = sizeof(ss);
-    strcpy(remote_ip_str, "unknown");
-    if (getpeername(socket, (struct sockaddr*)&ss, &ss_len) == 0) {
-        if (ss.ss_family == AF_INET6) {
-            inet_ntop(AF_INET6, &(((struct sockaddr_in6*)&ss)->sin6_addr), remote_ip_str, IP_STR_BUFSIZE);
-        } else if (ss.ss_family == AF_INET) {
-            inet_ntop(AF_INET, &(((struct sockaddr_in*)&ss)->sin_addr), remote_ip_str, IP_STR_BUFSIZE);
-        }
     }
 }
 
@@ -766,8 +782,7 @@ int main(int argc, char* argv[])
     }
 
     /* Do it */
-    char local_ip_str[IP_STR_BUFSIZE];
-    char remote_ip_str[IP_STR_BUFSIZE];
+    connection_info_t info;
     int ret = exit_ok;
     signal(SIGPIPE, SIG_IGN); /* Do not terminate when piping fails; we want to handle that error */
     if (inetd) {
@@ -775,10 +790,8 @@ int main(int argc, char* argv[])
         log_t log;
         log_open(log_to_syslog, log_file, &log);
         int impose_auth_delay = 1; /* since we cannot keep track of auth failures in inetd mode */
-        get_ip_strings(fileno(stdin), local_ip_str, remote_ip_str);
-        ret = msmtpd_session(&log, stdin, stdout,
-                local_ip_str, remote_ip_str,
-                command,
+        get_connection_info(fileno(stdin), &info);
+        ret = msmtpd_session(&log, stdin, stdout, &info, command,
                 user, password, impose_auth_delay);
         ret = (ret == 0 ? 0 : 1);
         log_close(&log);
@@ -859,7 +872,7 @@ int main(int argc, char* argv[])
                 ret = exit_not_running;
                 break;
             }
-            get_ip_strings(conn_fd, local_ip_str, remote_ip_str);
+            get_connection_info(conn_fd, &info);
             pid_t pid = fork();
             if (pid == 0) {
                 /* Child process */
@@ -876,12 +889,10 @@ int main(int argc, char* argv[])
                 log_t log;
                 log_open(log_to_syslog, log_file, &log);
                 log_msg(&log, log_info, "connection from %s, active sessions %d (max %d), auth_delay=%s",
-                        remote_ip_str, active_sessions_count + 1, MAX_ACTIVE_SESSIONS,
+                        info.remote_ip, active_sessions_count + 1, MAX_ACTIVE_SESSIONS,
                         impose_auth_delay ? "yes" : "no");
                 FILE* conn = fdopen(conn_fd, "rb+");
-                int ret = msmtpd_session(&log, conn, conn,
-                        local_ip_str, remote_ip_str,
-                        command,
+                int ret = msmtpd_session(&log, conn, conn, &info, command,
                         user, password, impose_auth_delay);
                 fclose(conn);
                 log_msg(&log, log_info, "connection closed");

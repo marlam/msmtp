@@ -3,7 +3,8 @@
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2018, 2019, 2020, 2021  Martin Lambers <marlam@marlam.de>
+ * Copyright (C) 2018, 2019, 2020, 2021, 2022
+ * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -45,6 +46,7 @@ extern int optind;
 #include "base64.h"
 #include "password.h"
 #include "eval.h"
+#include "tools.h"
 #include "xalloc.h"
 
 
@@ -250,7 +252,7 @@ int smtp_pipe(FILE* in, FILE* pipe, char* buf, size_t bufsize)
         if (!line_continues && fputc('\n', pipe) == EOF)
             return 1;
     }
-    if (fflush(pipe) != 0)
+    if (fflush(pipe) != 0 || ferror(pipe))
         return 1;
     return 0;
 }
@@ -265,12 +267,15 @@ int smtp_pipe(FILE* in, FILE* pipe, char* buf, size_t bufsize)
  * 1 if the session had errors and/or was aborted
  * 2 same as 1 and the session had authentication failures
  * */
-int msmtpd_session(log_t* log, FILE* in, FILE* out,
+int msmtpd_session(log_t* log,
+        FILE* in, FILE* out,
+        const char* local_ip_str, const char* remote_ip_str,
         const char* command,
         const char* user, const char* password, int impose_auth_delay)
 {
     char buf[SMTP_BUFSIZE];
     char buf2[SMTP_BUFSIZE];
+    char ehlo_name[SMTP_BUFSIZE];
     size_t addrlen;
     char* cmd;
     char* tmpcmd;
@@ -285,6 +290,7 @@ int msmtpd_session(log_t* log, FILE* in, FILE* out,
     log_msg(log, log_info, "starting SMTP session");
     setlinebuf(out);
     fprintf(out, "220 localhost ESMTP msmtpd\r\n");
+    /* expect EHLO or HELO */
     if (read_smtp_cmd(in, buf, SMTP_BUFSIZE) != 0) {
         log_msg(log, log_error, "client did not send initial command, session aborted");
         return 1;
@@ -294,6 +300,20 @@ int msmtpd_session(log_t* log, FILE* in, FILE* out,
         log_msg(log, log_error, "client did not start with EHLO or HELO, session aborted");
         return 1;
     }
+    /* save EHLO name for the Received header, but sanitize it */
+    strcpy(ehlo_name, buf + 5);
+    for (i = 0; ehlo_name[i]; i++) {
+        if (!((ehlo_name[i] >= 'a' && ehlo_name[i] <= 'z')
+                    || (ehlo_name[i] >= 'A' && ehlo_name[i] <= 'Z')
+                    || (ehlo_name[i] >= '0' && ehlo_name[i] <= '9')
+                    || (ehlo_name[i] == '.' || ehlo_name[i] == '-'))) {
+            strcpy(ehlo_name, "invalid");
+            break;
+        }
+    }
+    if (ehlo_name[0] == '\0')
+        strcpy(ehlo_name, "invalid");
+    /* send EHLO/HELO response */
     if (user && strncasecmp(buf, "EHLO ", 5) == 0) {
         fprintf(out, "250-localhost\r\n");
         fprintf(out, "250 AUTH PLAIN\r\n");
@@ -462,6 +482,13 @@ int msmtpd_session(log_t* log, FILE* in, FILE* out,
             log_msg(log, log_error, "cannot start pipe command, session aborted");
             return 1;
         }
+        /* first add a Received: header */
+        char rfc2822_timestamp[32];
+        print_time_rfc2822(time(NULL), rfc2822_timestamp);
+        fprintf(pipe, "Received: from %s ([%s])\r\n", ehlo_name, remote_ip_str);
+        fprintf(pipe, "\tby [%s] (msmtpd) with ESMTP;\r\n", local_ip_str);
+        fprintf(pipe, "\t%s\r\n", rfc2822_timestamp);
+        /* then pipe the mail */
         fprintf(out, "354 Send data\r\n");
         if (smtp_pipe(in, pipe, buf, SMTP_BUFSIZE) != 0) {
             fprintf(out, "554 Cannot pipe mail to command\r\n");
@@ -534,6 +561,33 @@ void sigchld_action(int signum, siginfo_t* si, void* ucontext)
             auth_failure_occurred = 1;
         }
         active_sessions_count--;
+    }
+}
+
+/* Get the local and remote IP addresses as strings */
+
+#define IP_STR_BUFSIZE (INET6_ADDRSTRLEN+1)
+void get_ip_strings(int socket, char local_ip_str[IP_STR_BUFSIZE], char remote_ip_str[IP_STR_BUFSIZE])
+{
+    struct sockaddr_storage ss;
+    socklen_t ss_len;
+    ss_len = sizeof(ss);
+    strcpy(local_ip_str, "unknown");
+    if (getsockname(socket, (struct sockaddr*)&ss, &ss_len) == 0) {
+        if (ss.ss_family == AF_INET6) {
+            inet_ntop(AF_INET6, &(((struct sockaddr_in6*)&ss)->sin6_addr), local_ip_str, IP_STR_BUFSIZE);
+        } else if (ss.ss_family == AF_INET) {
+            inet_ntop(AF_INET, &(((struct sockaddr_in*)&ss)->sin_addr), local_ip_str, IP_STR_BUFSIZE);
+        }
+    }
+    ss_len = sizeof(ss);
+    strcpy(remote_ip_str, "unknown");
+    if (getpeername(socket, (struct sockaddr*)&ss, &ss_len) == 0) {
+        if (ss.ss_family == AF_INET6) {
+            inet_ntop(AF_INET6, &(((struct sockaddr_in6*)&ss)->sin6_addr), remote_ip_str, IP_STR_BUFSIZE);
+        } else if (ss.ss_family == AF_INET) {
+            inet_ntop(AF_INET, &(((struct sockaddr_in*)&ss)->sin_addr), remote_ip_str, IP_STR_BUFSIZE);
+        }
     }
 }
 
@@ -709,6 +763,8 @@ int main(int argc, char* argv[])
     }
 
     /* Do it */
+    char local_ip_str[IP_STR_BUFSIZE];
+    char remote_ip_str[IP_STR_BUFSIZE];
     int ret = exit_ok;
     signal(SIGPIPE, SIG_IGN); /* Do not terminate when piping fails; we want to handle that error */
     if (inetd) {
@@ -716,7 +772,11 @@ int main(int argc, char* argv[])
         log_t log;
         log_open(log_to_syslog, log_file, &log);
         int impose_auth_delay = 1; /* since we cannot keep track of auth failures in inetd mode */
-        ret = msmtpd_session(&log, stdin, stdout, command, user, password, impose_auth_delay);
+        get_ip_strings(fileno(stdin), local_ip_str, remote_ip_str);
+        ret = msmtpd_session(&log, stdin, stdout,
+                local_ip_str, remote_ip_str,
+                command,
+                user, password, impose_auth_delay);
         ret = (ret == 0 ? 0 : 1);
         log_close(&log);
     } else {
@@ -796,15 +856,7 @@ int main(int argc, char* argv[])
                 ret = exit_not_running;
                 break;
             }
-            char client_ip_str[INET6_ADDRSTRLEN];
-            int client_port;
-            if (ipv6) {
-                inet_ntop(AF_INET6, &sa6.sin6_addr, client_ip_str, sizeof(client_ip_str));
-                client_port = ntohs(sa6.sin6_port);
-            } else {
-                inet_ntop(AF_INET, &sa4.sin_addr, client_ip_str, sizeof(client_ip_str));
-                client_port = ntohs(sa4.sin_port);
-            }
+            get_ip_strings(conn_fd, local_ip_str, remote_ip_str);
             pid_t pid = fork();
             if (pid == 0) {
                 /* Child process */
@@ -820,11 +872,14 @@ int main(int argc, char* argv[])
                 signal(SIGCHLD, SIG_DFL); /* Make popen()/pclose() work again */
                 log_t log;
                 log_open(log_to_syslog, log_file, &log);
-                log_msg(&log, log_info, "connection from %s port %d, active sessions %d (max %d), auth_delay=%s",
-                        client_ip_str, client_port,
-                        active_sessions_count + 1, MAX_ACTIVE_SESSIONS, impose_auth_delay ? "yes" : "no");
+                log_msg(&log, log_info, "connection from %s, active sessions %d (max %d), auth_delay=%s",
+                        remote_ip_str, active_sessions_count + 1, MAX_ACTIVE_SESSIONS,
+                        impose_auth_delay ? "yes" : "no");
                 FILE* conn = fdopen(conn_fd, "rb+");
-                int ret = msmtpd_session(&log, conn, conn, command, user, password, impose_auth_delay);
+                int ret = msmtpd_session(&log, conn, conn,
+                        local_ip_str, remote_ip_str,
+                        command,
+                        user, password, impose_auth_delay);
                 fclose(conn);
                 log_msg(&log, log_info, "connection closed");
                 log_close(&log);

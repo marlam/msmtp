@@ -49,7 +49,7 @@ char* create_msgid(const char* envelope_from)
      * the system is identified via hostname and boot time, and
      * the mail on this system via real time and pid. */
     clock_gettime(CLOCK_REALTIME, &ts_real);
-    clock_gettime(CLOCK_MONOTONIC, &ts_boot);
+    clock_gettime(CLOCK_BOOTTIME, &ts_boot);
     pid = getpid();
     hostname = net_get_canonical_hostname(NULL);
     hostname_len = strlen(hostname);

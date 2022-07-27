@@ -32,15 +32,15 @@
 
 (defvar msmtp-config--keywords
   '("account"
-    "set_date_header"
-    "set_from_header"
     "aliases"
+    "allow_from_override"
     "auth"
     "auto_from"
     "defaults"
     "domain"
     "dsn_notify"
     "dsn_return"
+    "eval"
     "from"
     "host"
     "logfile"
@@ -54,7 +54,10 @@
     "proxy_host"
     "proxy_port"
     "remove_bcc_headers"
-    "undisclosed_recipients"
+    "set_date_header"
+    "set_from_header"
+    "set_msgid_header"
+    "socket"
     "source_ip"
     "syslog"
     "timeout"
@@ -69,6 +72,7 @@
     "tls_host_override"
     "tls_starttls"
     "tls_trust_file"
+    "undisclosed_recipients"
     "user"))
 
 (define-generic-mode 'msmtp-config-mode

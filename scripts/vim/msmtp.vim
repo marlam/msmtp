@@ -18,16 +18,20 @@ endif
 syn match msmtpComment /#.*$/ contains=@Spell
 
 " General commands.
-syntax match msmtpOption /\<\(defaults\|account\|host\|port\|source_ip\|proxy_host\|proxy_port\|timeout\|protocol\|domain\)\>/
+syntax match msmtpOption /\<\(defaults\|account\|eval\|host\|port\|source_ip\|proxy_host\|proxy_port\|socket\|timeout\|protocol\|domain\)\>/
 " Authentication commands.
 syntax match msmtpOption /\<\(auth\|user\|password\|passwordeval\|ntlmdomain\)\>/
 " TLS commands.
-syntax match msmtpOption /\<\(tls\|tls_trust_file\|tls_crl_file\|tls_fingerprint\|tls_key_file\|tls_cert_file\|tls_certcheck\|tls_starttls\|tls_min_dh_prime_bits\|tls_priorities\|tls_host_override\)\>/
+syntax match msmtpOption /\<\(tls\|tls_starttls\|tls_trust_file\|tls_crl_file\|tls_fingerprint\|tls_key_file\|tls_cert_file\|tls_certcheck\|tls_priorities\|tls_host_override\|tls_min_dh_prime_bits\)\>/
 " Sendmail mode specific commands.
-syntax match msmtpOption /\<\(auto_from\|from\|maildomain\|dsn_notify\|dsn_return\|set_from_header\|set_date_header\|remove_bcc_headers\|undisclosed_recipients\|logfile\|logfile_time_format\|syslog\|aliases\)\>/
+syntax match msmtpOption /\<\(from\|allow_from_override\|dsn_notify\|dsn_return\|set_from_header\|set_date_header\|set_msgid_header\|remove_bcc_headers\|undisclosed_recipients\|logfile\|logfile_time_format\|syslog\|aliases\|auto_from\|maildomain\)\>/
 
 " Options which accept only an on/off value.
-syn match msmtpWrongOption /\<\(tls\|tls_certcheck\|tls_starttls\|allow_from_override\|auto_from\|set_from_header\|set_date_header\|remove_bcc_headers\|undisclosed_recipients\) \(on$\|off$\)\@!.*$/
+syn match msmtpWrongOption /\<\(tls\|tls_starttls\|tls_certcheck\|allow_from_override\|remove_bcc_headers\|undisclosed_recipients\|auto_from\) \(on$\|off$\)\@!.*$/
+" Options which accept only an on/off/auto value.
+syn match msmtpWrongOption /\<\(set_from_header\) \(on$\|off$\|auto$\)\@!.*$/
+" Options which accept only an off/auto value.
+syn match msmtpWrongOption /\<\(set_date_header\|set_msgid_header\) \(auto$\|off$\)\@!.*$/
 " Option port accepts numeric values.
 syn match msmtpWrongOption /\<\(port\|proxy_port\) \(\d\+$\)\@!.*$/
 " Option timeout accepts off and numeric values.

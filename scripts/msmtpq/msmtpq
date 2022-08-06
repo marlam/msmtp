@@ -72,7 +72,7 @@ fi
 ##
 ## the queue dir - export this variable to reflect where you'd like it to be  (no quotes !!)
 Q=${Q:-~/.msmtp.queue}
-[ -d "$Q" ] || mkdir -m 0700 "$Q" || \
+[ -d "$Q" ] || mkdir -m 0700 -p "$Q" || \
   err '' "msmtpq : can't find or create msmtp queue directory [ $Q ]" ''     # if not present - complain ; quit
 ##
 ## set the queue log file var to the location of the msmtp queue log file
@@ -86,6 +86,7 @@ Q=${Q:-~/.msmtp.queue}
 ## the queue log file - export this variable to change where logs are stored  (but no quotes !!)
 ##                      Set it to "" (empty string) to disable logging.
 [ -v LOG ] || LOG=~/log/msmtp.queue.log
+[ -d "$(dirname "$LOG")" ] || mkdir -p "$(dirname "$LOG")"
 ## ======================================================================================
 
 ## msmtpq can use the following environment variables :

@@ -56,12 +56,13 @@ err() { dsp '' "$@" '' ; exit 1 ; }
 ## ======================================================================================
 ##
 ## only if necessary (in unusual circumstances - e.g. embedded systems),
-##   enter the location of the msmtp executable  (no quotes !!)
-##   e.g. ( MSMTP=/path/to/msmtp )
-##   and uncomment the test for its existence
-MSMTP=msmtp
-#[ -x "$MSMTP" ] || \
-#  log -e 1 "msmtpq : can't find the msmtp executable [ $MSMTP ]"   # if not found - complain ; quit
+##   export the location of the msmtp executable before running this script  (no quotes !!)
+##   e.g. ( export MSMTP=/path/to/msmtp )
+if [ "$MSMTP" = "" ] ; then  # If MSMTP is unset or empty...
+  MSMTP=msmtp
+elif [ ! -x "$MSMTP" ] ; then
+  log -e 1 "msmtpq : can't find the msmtp executable [ $MSMTP ]"   # if not found - complain ; quit
+fi
 ##
 ## set the queue var to the location of the msmtp queue directory
 ##   if the queue dir doesn't yet exist, create it (0700)
@@ -69,8 +70,8 @@ MSMTP=msmtp
 ##       e.g. ( mkdir msmtp.queue      )
 ##            ( chmod 0700 msmtp.queue )
 ##
-## the queue dir - modify this to reflect where you'd like it to be  (no quotes !!)
-Q=~/.msmtp.queue
+## the queue dir - export this variable to reflect where you'd like it to be  (no quotes !!)
+Q=${Q:-~/.msmtp.queue}
 [ -d "$Q" ] || mkdir -m 0700 "$Q" || \
   err '' "msmtpq : can't find or create msmtp queue directory [ $Q ]" ''     # if not present - complain ; quit
 ##
@@ -79,12 +80,12 @@ Q=~/.msmtp.queue
 ##     ( note that the LOG setting could be the same as the )
 ##     ( 'logfile' setting in .msmtprc - but there may be   )
 ##     ( some advantage in keeping the two logs separate    )
-##   if you don't want the log at all unset (comment out) this var
-##     LOG=~/log/msmtp.queue.log  -->  #LOG=~/log/msmtp.queue.log
+##   if you don't want the log at all set the var to an empty string
 ##     (doing so would be inadvisable under most conditions, however)
 ##
-## the queue log file - modify (or comment out) to taste  (but no quotes !!)
-LOG=~/log/msmtp.queue.log
+## the queue log file - export this variable to change where logs are stored  (but no quotes !!)
+##                      Set it to "" (empty string) to disable logging.
+[ -v LOG ] || LOG=~/log/msmtp.queue.log
 ## ======================================================================================
 
 ## msmtpq can use the following environment variables :

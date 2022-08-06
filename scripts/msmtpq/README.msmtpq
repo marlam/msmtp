@@ -55,7 +55,7 @@ from msmtpq
 Configuration :
 -------------
 
-all config is done within the msmtpq script
+all config is done by exporting these environment variables
 
   set the MSMTP var to point to the location of the msmtp executable
     (set this only if necessary ; if it's not on the path)
@@ -68,15 +68,12 @@ circumstances, such as embedded systems, etc. ; otherwise, if you are
 running a normal Linux distribution you can leave it as is ; msmtp will
 by default be on the execution path
 
-the Q variable should have the location of the queue directory
+the Q variable should have the location of the queue directory ; please
+note that it's preferable to create the queue directory (with 0700
+permissions) before using these routines
 
-the LOG variable should have the desired name & location of the queue log
-
-the locations are clearly marked near the beginning of the script ;
-modify all to the locations you prefer (the defaults work for me ; you
-may or may not be happy with them) ... please note that it's preferable
-to create the queue directory (with 0700 permissions) before using these
-routines
+the LOG variable should have the desired name & location of the queue
+log ; set it to an empty string (export LOG="") to disable logging
 
 note that the default msmtpq set up creates a separate log for queue
 operations ; all operations which modify the queue in any way are logged
@@ -85,9 +82,9 @@ to the queue log ; this is distinct from the msmtp log set by the
 have separate logs (for the distinct functions) ; if this doesn't sit
 well with you it's possible to define the queue log to be the same log
 file as the one defined in .msmtprc ; it's also possible to turn off
-queue logging entirely (by commenting out the 'LOG=' var - to be
-'#LOG=') but this seems hardly advisable, particularly before you are
-confident that all is working
+queue logging entirely (by setting LOG to an empty string -
+export LOG="" ) but this seems hardly advisable, particularly before
+you are confident that all is working
 
 mutt users please take note of the additional setup instructions in the
 msmtp docs & man page.

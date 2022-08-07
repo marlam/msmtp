@@ -4,8 +4,10 @@ msmtp_SOURCES = \
 	conf.c conf.h \
 	eval.c eval.h \
 	list.c list.h \
+	md5.c md5.h \
+	md5-apps.c md5-apps.h \
+	msgid.c msgid.h \
 	msmtp.c \
-        msgid.c msgid.h \
 	net.c net.h \
 	netrc.c netrc.h \
 	readbuf.c readbuf.h \
@@ -16,7 +18,7 @@ msmtp_SOURCES = \
 	gettext.h \
 	aliases.c aliases.h \
 	password.c password.h \
-        base64.c base64.h
+	base64.c base64.h
 
 if HAVE_TLS
 msmtp_SOURCES += mtls.c mtls.h
@@ -29,11 +31,6 @@ msmtp_SOURCES += mtls-openssl.c
 endif
 if HAVE_LIBTLS
 msmtp_SOURCES += mtls-libtls.c
-endif
-
-if HAVE_LIBGSASL
-else
-msmtp_SOURCES += md5.c md5.h md5-apps.c md5-apps.h
 endif
 
 AM_CPPFLAGS = $(tls_CFLAGS) $(libgsasl_CFLAGS) $(libidn2_CFLAGS) $(libsecret_CFLAGS)

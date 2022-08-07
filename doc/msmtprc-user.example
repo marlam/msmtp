@@ -21,7 +21,7 @@ account freemail
 host smtp.freemail.example
 # Envelope-from address
 from joe_smith@freemail.example
-# Authentication. The password is given using one of five methods, see below.
+# Authentication
 auth on
 user joe.smith
 # Password method 1: Add the password to the system keyring, and let msmtp get

@@ -1,3 +1,6 @@
+Version 1.8.22:
+- The msmtpq script was updated.
+
 Version 1.8.21:
 - Added a new configuration command 'eval' to replace the current configuration
   file line with the output of a command (similar to passwordeval, but more

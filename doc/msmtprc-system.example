@@ -8,7 +8,7 @@ account default
 # The SMTP smarthost
 host mail.oursite.example
 
-# Use TLS on port 465
+# Use TLS on port 465. On this port, TLS starts without STARTTLS.
 port 465
 tls on
 tls_starttls off

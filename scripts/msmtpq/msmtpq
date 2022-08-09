@@ -308,38 +308,49 @@ send_queued_mail() {   # <-- mail id
 ## run (flush) queue
 ##
 run_queue() {    # <- 'sm' mode      # run queue
+  # This will reset nullglob to its original value once the function
+  # ends. I could potentially enable nullglob for the entire script,
+  # but I have a feeling that doing so would break things.
+  #
+  # Credit goes to Robin A. Meade (https://stackoverflow.com/users/1157557/robin-a-meade)
+  # for the idea of using a trap to do this:
+  # <https://stackoverflow.com/a/50808490>
+  trap "$(shopt -p nullglob)" RETURN
+  # This will prevent the for loop from running if there’s no .mail
+  # files in the queue directory.
+  shopt -s nullglob
+
   local M LST
   local -i NDX=0
 
-  LST="$('ls' $Q/*.mail 2>/dev/null)"            # list of mails in queue
-  if [ -n "$LST" ] ; then            # something in queue
-    for M in $LST ; do               # process all mails
-      NDX=$((NDX + 1))
-      send_queued_mail "$(basename $M .mail)" "$NDX"     # send mail - pass {id} only
-    done
-  else                               # queue is empty
-    [ -z "$1" ] && \
-      dsp '' 'mail queue is empty (nothing to send)' ''
-  fi                                 # inform user (if not running in sendmail mode)
+  for M in "$Q"/*.mail ; do               # process all mails
+    NDX=$((NDX + 1))
+    send_queued_mail "$(basename "$M" .mail)" "$NDX"     # send mail - pass {id} only
+  done
+  if [ "$NDX" = 0 ] && [ -z "$1" ]; then  # queue is empty. inform user (if not running in sendmail mode)
+    dsp '' 'mail queue is empty (nothing to send)' ''
+  fi
 }
 
 ## display queue contents
 ##
 display_queue() {      # <-- { 'purge' | 'send' } (op label) ; { 'rec' } (record array of mail ids)
-  local M ID LST
+  # See the comments about the trap and shopt lines in run_queue().
+  trap "$(shopt -p nullglob)" RETURN
+  shopt -s nullglob
 
-  LST="$('ls' ${Q}/*.mail 2>/dev/null)"       # list of mail ids in queue
+  local M ID
+
   CNT=0
-  if [ -n "$LST" ] ; then            # list has contents (any mails in queue)
-    for M in $LST ; do               # cycle through each
-      ID="$(basename $M .mail)"      # take mail id from filename
-      CNT=$((CNT + 1))
-      dsp '' "mail  num=[ $CNT ]  id=[ $ID ]"                  # show mail id ## patch in
-      'grep' -E -s --colour -h -m 3 '(^From:|^To:|^Subject:)' "$M" # show mail info
-      [ -n "$2" ] && Q_LST[$CNT]="$ID" # bang mail id into array (note 1-based array indexing)
-    done
-    echo
-  else                               # no mails ; no contents
+  for M in "$Q"/*.mail ; do          # cycle through each
+    ID="$(basename "$M" .mail)"      # take mail id from filename
+    CNT="$((CNT + 1))"
+    dsp '' "mail  num=[ $CNT ]  id=[ $ID ]"                  # show mail id ## patch in
+    'grep' -E -s --colour -h -m 3 '(^From:|^To:|^Subject:)' "$M" # show mail info
+    [ -n "$2" ] && Q_LST["$CNT"]="$ID" # bang mail id into array (note 1-based array indexing)
+  done
+  echo
+  if [ "$CNT" = 0 ]; then            # no mails ; no contents
     if [ -z "$1" ]; then
       dsp '' 'no mail in queue' ''
     else

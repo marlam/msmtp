@@ -69,9 +69,9 @@ MSMTP=${MSMTP:-msmtp}
 ##            ( chmod 0700 msmtp.queue )
 ##
 ## the queue dir - export this variable to reflect where you'd like it to be  (no quotes !!)
-Q=${Q:-~/.msmtp.queue}
-[ -d "$Q" ] || mkdir -m 0700 -p "$Q" || \
-  err '' "msmtpq : can't find or create msmtp queue directory [ $Q ]" ''     # if not present - complain ; quit
+MSMTPQ_Q=${MSMTPQ_Q:-${Q:-~/.msmtp.queue}}
+[ -d "$MSMTPQ_Q" ] || mkdir -m 0700 -p "$MSMTPQ_Q" || \
+  err '' "msmtpq : can't find or create msmtp queue directory [ $MSMTPQ_Q ]" ''     # if not present - complain ; quit
 ##
 ## set the queue log file var to the location of the msmtp queue log file
 ##   where it is or where you'd like it to be
@@ -165,7 +165,7 @@ log() {
 ## write/remove queue lockfile for a queue op
 ##
 lock_queue() {        # <-- '-u' to remove lockfile
-  local LOK="${Q}/.lock"             # lock file name
+  local LOK="${MSMTPQ_Q}/.lock"      # lock file name
   local -i MAX=240 SEC=0             # max seconds to gain a lock ; seconds waiting
 
   if [ -z "$1" ] ; then              # lock queue
@@ -177,7 +177,7 @@ lock_queue() {        # <-- '-u' to remove lockfile
       'mkdir' "$LOK" 2>/dev/null && LKD='t'          # make lockdir ; lock queue ; set flag
     done                                             # try again while locked for MAX secs
     [ -z "$LKD" ] && \
-	    err '' "cannot use queue $Q : waited $MAX seconds for"\
+	    err '' "cannot use queue $MSMTPQ_Q : waited $MAX seconds for"\
 	           "  lockdir [ $LOK ] to vanish ; giving up"\
 	           'if you are certain that no other instance of this script'\
 	           "  is running, then 'rmdir' the lock dir manually" '' # lock file still there, give up
@@ -275,7 +275,7 @@ ok() {
 ## send a queued mail out via msmtp
 ##
 send_queued_mail() {   # <-- mail id
-  local FQP="${Q}/${1}"              # fully qualified path name
+  local FQP="${MSMTPQ_Q}/${1}"       # fully qualified path name
   local -i RC=0                      # for msmtp exit code
 
   if [ -f "${FQP}.msmtp" ] ; then    # corresponding .msmtp file found
@@ -321,7 +321,7 @@ run_queue() {    # <- 'sm' mode      # run queue
   local M LST
   local -i NDX=0
 
-  for M in "$Q"/*.mail ; do               # process all mails
+  for M in "$MSMTPQ_Q"/*.mail ; do        # process all mails
     NDX=$((NDX + 1))
     send_queued_mail "$(basename "$M" .mail)" "$NDX"     # send mail - pass {id} only
   done
@@ -339,8 +339,7 @@ display_queue() {      # <-- { 'purge' | 'send' } (op label) ; { 'rec' } (record
 
   local M ID
 
-  CNT=0
-  for M in "$Q"/*.mail ; do          # cycle through each
+  for M in "$MSMTPQ_Q"/*.mail ; do   # cycle through each
     ID="$(basename "$M" .mail)"      # take mail id from filename
     CNT="$((CNT + 1))"
     dsp '' "mail  num=[ $CNT ]  id=[ $ID ]"                  # show mail id ## patch in
@@ -364,7 +363,7 @@ purge_queue() {
   display_queue 'purge'              # show queue contents
   if ok -n 'remove (purge) all mail from the queue' ; then
     lock_queue                       # lock here
-    'rm' -f "$Q"/*.*
+    'rm' -f "$MSMTPQ_Q"/*.*
     log 'msmtp queue purged (all mail)'
     lock_queue -u                    # unlock here
   else
@@ -436,7 +435,7 @@ select_mail() {  # <-- < 'purge' | 'send' >
           "        id=[ $ID ]" '' ; then             # confirm mail op
       if [ "$1" = 'purge' ] ; then                   # purging
         lock_queue                                   # lock here
-        'rm' -f "$Q"/"$ID".*                         # msmtp - nukes single mail (both files) in queue
+        'rm' -f "$MSMTPQ_Q"/"$ID".*                  # msmtp - nukes single mail (both files) in queue
         log "mail [ $ID ] purged from queue"         # log op
         lock_queue -u                                # unlock here
         ALT='t'                                      # mark that a queue alteration has taken place
@@ -471,7 +470,7 @@ make_id() {
   local -i INC                       # increment counter for (possible) base fqp name collision
 
   ID="$(date +%Y-%m-%d-%H.%M.%S)"    # make filename id for queue    (global
-  FQP="${Q}/$ID"                     # make fully qualified pathname  vars)
+  FQP="${MSMTPQ_Q}/$ID"              # make fully qualified pathname  vars)
   ## Philipp Hartwig patch #1
   if [ -f "${FQP}.mail" ] || [ -f "${FQP}.msmtp" ] ; then    # ensure fqp name is unique
     INC=1                            # initial increment

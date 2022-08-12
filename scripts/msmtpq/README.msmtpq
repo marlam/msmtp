@@ -59,7 +59,7 @@ all config is done by exporting these environment variables
 
   set the MSMTP var to point to the location of the msmtp executable
     (set this only if necessary ; if it's not on the path)
-  set the Q var to point to the location of the queue directory
+  set the MSMTPQ_Q var to point to the location of the queue directory
   set the LOG var to point to the location of the queue log
 
 the MSMTP variable can have the location of the msmtp executable entered
@@ -68,9 +68,10 @@ circumstances, such as embedded systems, etc. ; otherwise, if you are
 running a normal Linux distribution you can leave it as is ; msmtp will
 by default be on the execution path
 
-the Q variable should have the location of the queue directory ; please
-note that it's preferable to create the queue directory (with 0700
-permissions) before using these routines
+the MSMTPQ_Q variable should have the location of the queue directory ;
+please note that it's preferable to create the queue directory (with
+0700 permissions) before using these routines ; the Q variable is a
+deprecated alias of MSMTPQ_Q
 
 the LOG variable should have the desired name & location of the queue
 log ; set it to an empty string (export LOG="") to disable logging

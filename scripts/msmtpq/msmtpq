@@ -75,7 +75,7 @@ MSMTPQ_Q=${MSMTPQ_Q:-${Q:-~/.msmtp.queue}}
 ##
 ## set the queue log file var to the location of the msmtp queue log file
 ##   where it is or where you'd like it to be
-##     ( note that the LOG setting could be the same as the )
+##     ( note that the MSMTPQ_LOG setting could be the same as the )
 ##     ( 'logfile' setting in .msmtprc - but there may be   )
 ##     ( some advantage in keeping the two logs separate    )
 ##   if you don't want the log at all set the var to an empty string
@@ -83,8 +83,14 @@ MSMTPQ_Q=${MSMTPQ_Q:-${Q:-~/.msmtp.queue}}
 ##
 ## the queue log file - export this variable to change where logs are stored  (but no quotes !!)
 ##                      Set it to "" (empty string) to disable logging.
-[ -v LOG ] || LOG=~/log/msmtp.queue.log
-[ -d "$(dirname "$LOG")" ] || mkdir -p "$(dirname "$LOG")"
+if [ ! -v MSMTPQ_LOG ] ; then
+  if [ -v LOG ] ; then
+    MSMTPQ_LOG="$LOG"
+  else
+    MSMTPQ_LOG=~/log/msmtp.queue.log
+  fi
+fi
+[ -d "$(dirname "$MSMTPQ_LOG")" ] || mkdir -p "$(dirname "$MSMTPQ_LOG")"
 ## ======================================================================================
 
 ## msmtpq can use the following environment variables :
@@ -147,17 +153,17 @@ log() {
 
   [ -z "$EMAIL_QUEUE_QUIET" ] && dsp "$@"  # display msg to user, as well as logging it
 
-  if [ -n "$LOG" ] ; then            # log is defined and in use
+  if [ -n "$MSMTPQ_LOG" ] ; then     # log is defined and in use
     for ARG ; do                     # each msg line out
       [ -n "$ARG" ] && \
-        echo "$PFX : $ARG" >> "$LOG" # line has content ; send it to log
+        echo "$PFX : $ARG" >> "$MSMTPQ_LOG" # line has content ; send it to log
     done
   fi
 
   if [ -n "$RC" ] ; then             # an error ; leave w/error return
     [ -n "$LKD" ] && lock_queue -u   # unlock here (if locked)
-    [ -n "$LOG" ] && \
-      echo "    exit code = $RC" >> "$LOG" # logging ok ; send exit code to log
+    [ -n "$MSMTPQ_LOG" ] && \
+      echo "    exit code = $RC" >> "$MSMTPQ_LOG" # logging ok ; send exit code to log
     exit "$RC"                       # exit w/return code
   fi
 }

@@ -298,6 +298,9 @@ Replace the current configuration file line with the first line of the output
 create them via scripts. For example, \fIeval echo host localhost\fP replaces
 the current line with \fIhost localhost\fP.
 .br
+Note that every \fBeval\fP line will be evaluated when the configuration
+file is read.
+.br
 The \fIcmd\fP command must not mess with standard input; if in doubt, append
 \fI< /dev/null\fP.
 .br

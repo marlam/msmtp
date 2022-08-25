@@ -58,7 +58,7 @@ err() { dsp '' "$@" '' ; exit 1 ; }
 ## only if necessary (in unusual circumstances - e.g. embedded systems),
 ##   export the location of the msmtp executable before running this script  (no quotes !!)
 ##   e.g. ( export MSMTP=/path/to/msmtp )
-MSMTP=${MSMTP:-msmtp}
+MSMTP="${MSMTP:-msmtp}"
 "$MSMTP" --version >/dev/null 2>&1 || \
   log -e 1 "msmtpq : can't run the msmtp executable [ $MSMTP ]"   # if not found - complain ; quit
 ##
@@ -514,7 +514,7 @@ send_mail() {    # <-- all mail args ; mail text via TMP
     }
   }
 
-  if $MSMTP "$@" < "${FQP}.mail" > /dev/null ; then      # send mail using queue .mail fil
+  if "$MSMTP" "$@" < "${FQP}.mail" > /dev/null ; then      # send mail using queue .mail fil
     log "mail for [ $* ] : send was successful"          # log it
     'rm' -f "${FQP}".*               # remove all queue mail files .mail & .msmtp file
     run_queue 'sm'                   # run/flush any other mails in queue

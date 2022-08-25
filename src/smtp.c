@@ -4,7 +4,7 @@
  * This file is part of msmtp, an SMTP client.
  *
  * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011,
- * 2014, 2016, 2018, 2019, 2020
+ * 2014, 2016, 2018, 2019, 2020, 2021, 2022
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -1027,6 +1027,21 @@ int smtp_auth_xoauth2(smtp_server_t *srv,
     int status;
 
     *error_msg = NULL;
+    if ((e = smtp_send_cmd(srv, errstr, "AUTH XOAUTH2")) != SMTP_EOK)
+    {
+        return e;
+    }
+    if ((e = smtp_get_msg(srv, &msg, errstr)) != SMTP_EOK)
+    {
+        return e;
+    }
+    if (smtp_msg_status(msg) != 334)
+    {
+        *error_msg = msg;
+        *errstr = xasprintf(_("command %s failed"), "AUTH XOAUTH2");
+        return SMTP_EPROTO;
+    }
+    list_xfree(msg, free);
 
     oa_len = 5 + /* "user=" */
              strlen(user) +
@@ -1039,7 +1054,7 @@ int smtp_auth_xoauth2(smtp_server_t *srv,
     b64_len = BASE64_LENGTH(oa_len) + 1;
     b64 = xmalloc(b64_len);
     base64_encode(oauth, oa_len, b64, b64_len);
-    e = smtp_send_cmd(srv, errstr, "AUTH XOAUTH2 %s", b64);
+    e = smtp_send_cmd(srv, errstr, "%s", b64);
     free(oauth);
     free(b64);
     if (e != SMTP_EOK)

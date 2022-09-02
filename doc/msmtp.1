@@ -681,6 +681,9 @@ The local address \fIdefault\fP has special significance and is matched if the
 local address is not found in the aliases file.  If no \fIdefault\fP alias is
 found, then the local address is left as is.
 .br
+Note that alias expansion only affects the mail envelope. The To and Cc headers
+are not modified.
+.br
 An empty argument to the aliases command disables the replacement of local
 addresses.  This is the default.
 .IP "auto_from [(\fIon\fP|\fIoff\fP)]

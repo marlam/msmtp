@@ -494,6 +494,8 @@ and continue to the end of the line.@*
 The local address @samp{default} has special significance and is matched if the
 local address is not found in the aliases file. If no @samp{default} alias is
 found, then the local address is left as is.@*
+Note that alias expansion only affects the mail envelope. The To and Cc headers
+are not modified.@*
 An empty argument to the aliases command disables the replacement of local
 addresses. This is the default.
 @anchor{auto_from}

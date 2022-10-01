@@ -3747,6 +3747,8 @@ void msmtp_print_conf(msmtp_cmdline_conf_t conf, account_t *account)
         printf("from = %s\n",
                 account->from ? account->from : conf.read_envelope_from
                 ? _("(read from mail)") : _("(not set)"));
+        printf("allow_from_override = %s\n",
+                account->allow_from_override ? _("on") : _("off"));
         printf("set_from_header = %s\n",
                 account->set_from_header == 2 ? _("auto")
                 : account->set_from_header == 1 ? _("on") : _("off"));

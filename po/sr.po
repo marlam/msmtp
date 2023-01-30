@@ -1,13 +1,14 @@
 # Serbian translation for msmtp.
 # Copyright © 2020 Martin Lambers <marlam@marlam.de>
 # This file is distributed under the same license as the msmtp package.
-# Мирослав Николић <miroslavnikolic@rocketmail.com>, 2020–2021.
+# Мирослав Николић <miroslavnikolic@rocketmail.com>, 2020–2022.
+#
 msgid ""
 msgstr ""
-"Project-Id-Version: msmtp 1.8.18\n"
+"Project-Id-Version: msmtp 1.8.21\n"
 "Report-Msgid-Bugs-To: marlam@marlam.de\n"
-"POT-Creation-Date: 2022-07-27 18:42+0200\n"
-"PO-Revision-Date: 2021-12-11 19:29+0200\n"
+"POT-Creation-Date: 2023-01-30 18:43+0100\n"
+"PO-Revision-Date: 2022-09-08 05:48+0200\n"
 "Last-Translator: Мирослав Николић <miroslavnikolic@rocketmail.com>\n"
 "Language-Team: Serbian <(nothing)>\n"
 "Language: sr\n"
@@ -839,11 +840,10 @@ msgstr ""
 "  --set-date-header[=(ауто|искљ)]  подешава руковање заглављем датума\n"
 
 #: src/msmtp.c:2382
-#, fuzzy, c-format
-#| msgid "  --set-date-header[=(auto|off)] set Date header handling\n"
+#, c-format
 msgid "  --set-msgid-header[=(auto|off)] set Message-ID header handling\n"
 msgstr ""
-"  --set-date-header[=(ауто|искљ)]  подешава руковање заглављем датума\n"
+"  --set-msgid-header[=(ауто|искљ)]  подешава руковање заглављем ИД-а поруке\n"
 
 #: src/msmtp.c:2383
 #, c-format
@@ -913,12 +913,12 @@ msgstr "не можете користити и „--from“ и „--read-envelo
 msgid "unsupported operation mode b%s"
 msgstr "неподржан режим радње „b%s“"
 
-#: src/msmtp.c:3424 src/msmtp.c:3904 src/msmtp.c:4204
+#: src/msmtp.c:3424 src/msmtp.c:3906 src/msmtp.c:4206
 #, c-format
 msgid "cannot create temporary file: %s"
 msgstr "не могу да направим привремену датотеку: %s"
 
-#: src/msmtp.c:3454 src/msmtp.c:3930 src/msmtp.c:4243
+#: src/msmtp.c:3454 src/msmtp.c:3932 src/msmtp.c:4245
 #, c-format
 msgid "cannot rewind temporary file: %s"
 msgstr "не могу да премотам привремену датотеку: %s"
@@ -952,8 +952,8 @@ msgstr "користим налог „%s“ са „%s“\n"
 #: src/msmtp.c:3692 src/msmtp.c:3693 src/msmtp.c:3695 src/msmtp.c:3697
 #: src/msmtp.c:3701 src/msmtp.c:3703 src/msmtp.c:3722 src/msmtp.c:3724
 #: src/msmtp.c:3726 src/msmtp.c:3736 src/msmtp.c:3739 src/msmtp.c:3741
-#: src/msmtp.c:3746 src/msmtp.c:3749 src/msmtp.c:3761 src/msmtp.c:3763
-#: src/msmtp.c:3765 src/msmtp.c:3768 src/msmtp.c:3770 src/msmtp.c:3772
+#: src/msmtp.c:3746 src/msmtp.c:3749 src/msmtp.c:3763 src/msmtp.c:3765
+#: src/msmtp.c:3767 src/msmtp.c:3770 src/msmtp.c:3772 src/msmtp.c:3774
 msgid "(not set)"
 msgstr "(није подешено)"
 
@@ -983,12 +983,13 @@ msgid "choose\n"
 msgstr "изабери\n"
 
 #: src/msmtp.c:3698 src/msmtp.c:3699 src/msmtp.c:3728 src/msmtp.c:3744
-#: src/msmtp.c:3752 src/msmtp.c:3757 src/msmtp.c:3759
+#: src/msmtp.c:3751 src/msmtp.c:3754 src/msmtp.c:3759 src/msmtp.c:3761
 msgid "on"
 msgstr "укљ"
 
 #: src/msmtp.c:3698 src/msmtp.c:3699 src/msmtp.c:3728 src/msmtp.c:3744
-#: src/msmtp.c:3752 src/msmtp.c:3755 src/msmtp.c:3757 src/msmtp.c:3759
+#: src/msmtp.c:3751 src/msmtp.c:3754 src/msmtp.c:3757 src/msmtp.c:3759
+#: src/msmtp.c:3761
 msgid "off"
 msgstr "искљ"
 
@@ -996,125 +997,125 @@ msgstr "искљ"
 msgid "(read from mail)"
 msgstr "(читам из поште)"
 
-#: src/msmtp.c:3751 src/msmtp.c:3754
+#: src/msmtp.c:3753 src/msmtp.c:3756
 msgid "auto"
 msgstr "самостално"
 
-#: src/msmtp.c:3775
+#: src/msmtp.c:3777
 #, c-format
 msgid "reading recipients from the command line and the mail\n"
 msgstr "читам примаоце са линије наредби и из поште\n"
 
-#: src/msmtp.c:3780
+#: src/msmtp.c:3782
 #, c-format
 msgid "reading recipients from the command line\n"
 msgstr "читам примаоце са линије наредби\n"
 
-#: src/msmtp.c:3894
+#: src/msmtp.c:3896
 msgid "too many arguments"
 msgstr "превише аргумената"
 
-#: src/msmtp.c:3924
+#: src/msmtp.c:3926
 #, c-format
 msgid "envelope from address extracted from mail: %s\n"
 msgstr "адреса за „коверту шаље“ извучена из поште: %s\n"
 
-#: src/msmtp.c:3939
+#: src/msmtp.c:3941
 msgid "no recipients found"
 msgstr "нисам нашао примаоце"
 
-#: src/msmtp.c:3969
+#: src/msmtp.c:3971
 #, c-format
 msgid "account chosen by envelope from address %s: %s\n"
 msgstr "налог који је изабран адресом за „коверту шаље“ „%s“: %s\n"
 
-#: src/msmtp.c:3983
+#: src/msmtp.c:3985
 #, c-format
 msgid "falling back to default account\n"
 msgstr "пребацујем се на основни налог\n"
 
-#: src/msmtp.c:4006
+#: src/msmtp.c:4008
 #, c-format
 msgid "using environment variables EMAIL and SMTPSERVER\n"
 msgstr "користим променљиве окружења „EMAIL“ и „SMTPSERVER“\n"
 
-#: src/msmtp.c:4014
+#: src/msmtp.c:4016
 #, c-format
 msgid "account %s not found in %s and %s"
 msgstr "нисам нашао налог „%s“ у „%s“ и „%s“"
 
-#: src/msmtp.c:4020 src/msmtp.c:4025
+#: src/msmtp.c:4022 src/msmtp.c:4027
 #, c-format
 msgid "account %s not found in %s"
 msgstr "нисам нашао налог „%s“ у „%s“"
 
-#: src/msmtp.c:4030
+#: src/msmtp.c:4032
 #, c-format
 msgid "account %s not found: no configuration file available"
 msgstr "нисам нашао налог „%s“: датотека подешавања није доступна"
 
-#: src/msmtp.c:4045
+#: src/msmtp.c:4047
 #, c-format
 msgid "using account specified on command line\n"
 msgstr "користим налог наведен на линији наредби\n"
 
-#: src/msmtp.c:4110
+#: src/msmtp.c:4112
 #, c-format
 msgid "account %s from %s: %s"
 msgstr "налог „%s“ из „%s“: %s"
 
-#: src/msmtp.c:4151
+#: src/msmtp.c:4153
 msgid "this platform does not support syslog logging"
 msgstr "ова платформа не подржава вођење системског дневника"
 
-#: src/msmtp.c:4160
+#: src/msmtp.c:4162
 #, c-format
 msgid "support for authentication method %s is not compiled in"
 msgstr "подршка за начин потврђивања идентитета „%s“ није преведена"
 
-#: src/msmtp.c:4168
+#: src/msmtp.c:4170
 #, c-format
 msgid "cannot initialize networking: %s"
 msgstr "не могу да покренем умрежавање: %s"
 
-#: src/msmtp.c:4179
+#: src/msmtp.c:4181
 #, c-format
 msgid "cannot initialize TLS library: %s"
 msgstr "не могу да покренем „TLS“ библиотеку: %s"
 
-#: src/msmtp.c:4186
+#: src/msmtp.c:4188
 msgid "support for TLS is not compiled in"
 msgstr "подршка за „TLS“ није преведена"
 
-#: src/msmtp.c:4272
+#: src/msmtp.c:4274
 #, c-format
 msgid "LMTP server message: %s"
 msgstr "порука „LMTP“ сервера: %s"
 
-#: src/msmtp.c:4283
+#: src/msmtp.c:4285
 #, c-format
 msgid "could not send mail to all recipients (account %s from %s)"
 msgstr "не могу да пошаљем пошту свим примаоцима (налог „%s“ са „%s“)"
 
-#: src/msmtp.c:4289
+#: src/msmtp.c:4291
 msgid "could not send mail to all recipients"
 msgstr "не могу да пошаљем пошту свим примаоцима"
 
-#: src/msmtp.c:4304 src/msmtp.c:4359 src/msmtp.c:4380
+#: src/msmtp.c:4306 src/msmtp.c:4361 src/msmtp.c:4382
 #, c-format
 msgid "server message: %s"
 msgstr "порука сервера: %s"
 
-#: src/msmtp.c:4310
+#: src/msmtp.c:4312
 #, c-format
 msgid "could not send mail (account %s from %s)"
 msgstr "не могу да пошаљем пошту (налог „%s“ са „%s“)"
 
-#: src/msmtp.c:4315
+#: src/msmtp.c:4317
 msgid "could not send mail"
 msgstr "не могу да пошаљем пошту"
 
-#: src/msmtp.c:4325
+#: src/msmtp.c:4327
 #, c-format
 msgid "delivery to one or more recipients failed"
 msgstr "испорука примаоцу или примаоцима није успела"
@@ -1682,14 +1683,14 @@ msgid "SMTP server does not accept EHLO or HELO commands"
 msgstr "„SMTP“ не прихвата „EHLO“ или „HELO“ наредбе"
 
 #: src/smtp.c:440 src/smtp.c:598 src/smtp.c:603 src/smtp.c:676 src/smtp.c:724
-#: src/smtp.c:814 src/smtp.c:905 src/smtp.c:2145
+#: src/smtp.c:814 src/smtp.c:905 src/smtp.c:1041 src/smtp.c:2160
 #, c-format
 msgid "command %s failed"
 msgstr "наредба „%s“ није успела"
 
 #: src/smtp.c:681 src/smtp.c:745 src/smtp.c:766 src/smtp.c:863 src/smtp.c:926
-#: src/smtp.c:1000 src/smtp.c:1068 src/smtp.c:1416 src/smtp.c:1459
-#: src/smtp.c:1496
+#: src/smtp.c:1000 src/smtp.c:1083 src/smtp.c:1431 src/smtp.c:1474
+#: src/smtp.c:1511
 #, c-format
 msgid "authentication failed (method %s)"
 msgstr "потврђивање идентитета није успело (начин „%s“)"
@@ -1700,91 +1701,89 @@ msgid "authentication method CRAM-MD5: server sent invalid challenge"
 msgstr ""
 "начин потврђивања идентитета „CRAM-MD5“: сервер је послао неисправан изазов"
 
-#: src/smtp.c:1186 src/smtp.c:1517
+#: src/smtp.c:1201 src/smtp.c:1532
 #, c-format
 msgid "the server does not support authentication method %s"
 msgstr "сервер не подржава „%s“ начин потврђивања идентитета"
 
-#: src/smtp.c:1192 src/smtp.c:1327 src/smtp.c:1370
+#: src/smtp.c:1207 src/smtp.c:1342 src/smtp.c:1385
 #, c-format
 msgid "GNU SASL: %s"
 msgstr "GNU SASL: %s"
 
-#: src/smtp.c:1199
+#: src/smtp.c:1214
 #, c-format
 msgid "GNU SASL: authentication method %s not supported"
 msgstr "GNU SASL: „%s“ начин потврђивања идентитета није подржан"
 
-#: src/smtp.c:1268 src/smtp.c:1548
+#: src/smtp.c:1283 src/smtp.c:1563
 #, c-format
 msgid "cannot use a secure authentication method"
 msgstr "не могу да користим безбедни начин потврђивања идентитета"
 
-#: src/smtp.c:1274 src/smtp.c:1554
+#: src/smtp.c:1289 src/smtp.c:1569
 #, c-format
 msgid "cannot find a usable authentication method"
 msgstr "не могу да нађем употребљив начин потврђивања идентитета"
 
-#: src/smtp.c:1287 src/smtp.c:1566
+#: src/smtp.c:1302 src/smtp.c:1581
 #, c-format
 msgid "authentication method %s needs a user name"
 msgstr "„%s“ начин потврђивања идентитета тражи корисничко име"
 
-#: src/smtp.c:1300 src/smtp.c:1576
+#: src/smtp.c:1315 src/smtp.c:1591
 #, c-format
 msgid "authentication method %s needs a password"
 msgstr "„%s“ начин потврђивања идентитета тражи лозинку"
 
-#: src/smtp.c:1475
+#: src/smtp.c:1490
 #, c-format
 msgid "authentication failed: %s (method %s)"
 msgstr "потврђивање идентитета није успело: %s (начин „%s“)"
 
-#: src/smtp.c:1611
+#: src/smtp.c:1626
 #, c-format
 msgid "authentication method %s not supported"
 msgstr "„%s“ начин потврђивања идентитета није подржан"
 
-#: src/smtp.c:1725
+#: src/smtp.c:1740
 #, c-format
 msgid "envelope from address %s not accepted by the server"
 msgstr "сервер није прихватио адресу за „коверту шаље“ „%s“"
 
-#: src/smtp.c:1744
+#: src/smtp.c:1759
 #, c-format
 msgid "recipient address %s not accepted by the server"
 msgstr "сервер није прихватио адресу примаоца „%s“"
 
-#: src/smtp.c:1763
+#: src/smtp.c:1778
 #, c-format
 msgid "the server does not accept mail data"
 msgstr "сервер не прихвата податке поште"
 
-#: src/smtp.c:2003
+#: src/smtp.c:2018
 #, c-format
 msgid "the server did not accept the mail"
 msgstr "сервер није прихватио пошту"
 
-#: src/smtp.c:2067
+#: src/smtp.c:2082
 #, c-format
 msgid "the server refuses to send the mail to %s"
 msgstr "сервер одбија да пошаље поштуза „%s“"
 
-#: src/smtp.c:2131
+#: src/smtp.c:2146
 #, c-format
 msgid "the server is unable to fulfill the request"
 msgstr "сервер није у могућности да испуни захтев"
 
-#: src/smtp.c:2139
+#: src/smtp.c:2154
 #, c-format
 msgid "invalid argument for Remote Message Queue Starting"
 msgstr "неисправан аргумент за започињање реда удаљене поруке"
 
-#, c-format
 #~ msgid "cannot evaluate '%s': %s"
 #~ msgstr "не могу да оценим „%s“: %s"
 
-#, c-format
 #~ msgid "cannot read output of '%s'"
 #~ msgstr "не могу да читам излаз од „%s“"
 

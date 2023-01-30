@@ -2,13 +2,13 @@
 # Copyright (C) 2018 Martin Lambers <marlam@marlam.de>
 # This file is distributed under the same license as the msmtp package.
 #
-# Yuri Chornoivan <yurchor@ukr.net>, 2018, 2019, 2020, 2021.
+# Yuri Chornoivan <yurchor@ukr.net>, 2018, 2019, 2020, 2021, 2022.
 msgid ""
 msgstr ""
-"Project-Id-Version: msmtp 1.8.18\n"
+"Project-Id-Version: msmtp 1.8.21\n"
 "Report-Msgid-Bugs-To: marlam@marlam.de\n"
-"POT-Creation-Date: 2022-07-27 18:42+0200\n"
-"PO-Revision-Date: 2021-10-23 19:08+0300\n"
+"POT-Creation-Date: 2023-01-30 18:43+0100\n"
+"PO-Revision-Date: 2022-08-07 18:31+0300\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <trans-uk@lists.fedoraproject.org>\n"
 "Language: uk\n"
@@ -849,10 +849,10 @@ msgid "  --set-date-header[=(auto|off)] set Date header handling\n"
 msgstr "  --set-date-header[=(auto|off)] встановити обробку заголовка «Дата»\n"
 
 #: src/msmtp.c:2382
-#, fuzzy, c-format
-#| msgid "  --set-date-header[=(auto|off)] set Date header handling\n"
+#, c-format
 msgid "  --set-msgid-header[=(auto|off)] set Message-ID header handling\n"
-msgstr "  --set-date-header[=(auto|off)] встановити обробку заголовка «Дата»\n"
+msgstr ""
+"  --set-msgid-header[=(auto|off)] встановити обробку заголовка «Message-ID»\n"
 
 #: src/msmtp.c:2383
 #, c-format
@@ -922,12 +922,12 @@ msgstr "не можна одночасно використовувати --from
 msgid "unsupported operation mode b%s"
 msgstr "непідтримуваний режим роботи b%s"
 
-#: src/msmtp.c:3424 src/msmtp.c:3904 src/msmtp.c:4204
+#: src/msmtp.c:3424 src/msmtp.c:3906 src/msmtp.c:4206
 #, c-format
 msgid "cannot create temporary file: %s"
 msgstr "не вдалося створити тимчасовий файл: %s"
 
-#: src/msmtp.c:3454 src/msmtp.c:3930 src/msmtp.c:4243
+#: src/msmtp.c:3454 src/msmtp.c:3932 src/msmtp.c:4245
 #, c-format
 msgid "cannot rewind temporary file: %s"
 msgstr "не вдалося виконати гортання назад тимчасового файла: %s"
@@ -961,8 +961,8 @@ msgstr "з використанням облікового запису %s з %s
 #: src/msmtp.c:3692 src/msmtp.c:3693 src/msmtp.c:3695 src/msmtp.c:3697
 #: src/msmtp.c:3701 src/msmtp.c:3703 src/msmtp.c:3722 src/msmtp.c:3724
 #: src/msmtp.c:3726 src/msmtp.c:3736 src/msmtp.c:3739 src/msmtp.c:3741
-#: src/msmtp.c:3746 src/msmtp.c:3749 src/msmtp.c:3761 src/msmtp.c:3763
-#: src/msmtp.c:3765 src/msmtp.c:3768 src/msmtp.c:3770 src/msmtp.c:3772
+#: src/msmtp.c:3746 src/msmtp.c:3749 src/msmtp.c:3763 src/msmtp.c:3765
+#: src/msmtp.c:3767 src/msmtp.c:3770 src/msmtp.c:3772 src/msmtp.c:3774
 msgid "(not set)"
 msgstr "(не встановлено)"
 
@@ -992,12 +992,13 @@ msgid "choose\n"
 msgstr "виберіть\n"
 
 #: src/msmtp.c:3698 src/msmtp.c:3699 src/msmtp.c:3728 src/msmtp.c:3744
-#: src/msmtp.c:3752 src/msmtp.c:3757 src/msmtp.c:3759
+#: src/msmtp.c:3751 src/msmtp.c:3754 src/msmtp.c:3759 src/msmtp.c:3761
 msgid "on"
 msgstr "увімкнено"
 
 #: src/msmtp.c:3698 src/msmtp.c:3699 src/msmtp.c:3728 src/msmtp.c:3744
-#: src/msmtp.c:3752 src/msmtp.c:3755 src/msmtp.c:3757 src/msmtp.c:3759
+#: src/msmtp.c:3751 src/msmtp.c:3754 src/msmtp.c:3757 src/msmtp.c:3759
+#: src/msmtp.c:3761
 msgid "off"
 msgstr "вимкнено"
 
@@ -1005,127 +1006,127 @@ msgstr "вимкнено"
 msgid "(read from mail)"
 msgstr "(прочитано з пошти)"
 
-#: src/msmtp.c:3751 src/msmtp.c:3754
+#: src/msmtp.c:3753 src/msmtp.c:3756
 msgid "auto"
 msgstr "авто"
 
-#: src/msmtp.c:3775
+#: src/msmtp.c:3777
 #, c-format
 msgid "reading recipients from the command line and the mail\n"
 msgstr "читаємо записи отримувачів з командного рядка і пошти\n"
 
-#: src/msmtp.c:3780
+#: src/msmtp.c:3782
 #, c-format
 msgid "reading recipients from the command line\n"
 msgstr "читаємо записи отримувачів з командного рядка\n"
 
-#: src/msmtp.c:3894
+#: src/msmtp.c:3896
 msgid "too many arguments"
 msgstr "забагато аргументів"
 
-#: src/msmtp.c:3924
+#: src/msmtp.c:3926
 #, c-format
 msgid "envelope from address extracted from mail: %s\n"
 msgstr "адреса відправника, яку видобуто з пошти: %s\n"
 
-#: src/msmtp.c:3939
+#: src/msmtp.c:3941
 msgid "no recipients found"
 msgstr "не знайдено отримувачів"
 
-#: src/msmtp.c:3969
+#: src/msmtp.c:3971
 #, c-format
 msgid "account chosen by envelope from address %s: %s\n"
 msgstr "обліковий запис, який вибрано за адресою відправника %s: %s\n"
 
-#: src/msmtp.c:3983
+#: src/msmtp.c:3985
 #, c-format
 msgid "falling back to default account\n"
 msgstr "повертаємося до типового облікового запису\n"
 
-#: src/msmtp.c:4006
+#: src/msmtp.c:4008
 #, c-format
 msgid "using environment variables EMAIL and SMTPSERVER\n"
 msgstr "з використанням змінних середовища EMAIL та SMTPSERVER\n"
 
-#: src/msmtp.c:4014
+#: src/msmtp.c:4016
 #, c-format
 msgid "account %s not found in %s and %s"
 msgstr "облікового запису %s у %s та %s не знайдено"
 
-#: src/msmtp.c:4020 src/msmtp.c:4025
+#: src/msmtp.c:4022 src/msmtp.c:4027
 #, c-format
 msgid "account %s not found in %s"
 msgstr "облікового запису %s у %s не знайдено"
 
-#: src/msmtp.c:4030
+#: src/msmtp.c:4032
 #, c-format
 msgid "account %s not found: no configuration file available"
 msgstr "обліковий запис %s не знайдено: немає доступного файла налаштувань"
 
-#: src/msmtp.c:4045
+#: src/msmtp.c:4047
 #, c-format
 msgid "using account specified on command line\n"
 msgstr "з використанням облікового запису, вказаного у рядку команди\n"
 
-#: src/msmtp.c:4110
+#: src/msmtp.c:4112
 #, c-format
 msgid "account %s from %s: %s"
 msgstr "обліковий запис %s з %s: %s"
 
-#: src/msmtp.c:4151
+#: src/msmtp.c:4153
 msgid "this platform does not support syslog logging"
 msgstr "на цій платформі не передбачено підтримки ведення журналу syslog"
 
-#: src/msmtp.c:4160
+#: src/msmtp.c:4162
 #, c-format
 msgid "support for authentication method %s is not compiled in"
 msgstr ""
 "під час збирання програми не було увімкнено підтримку способу розпізнавання "
 "%s"
 
-#: src/msmtp.c:4168
+#: src/msmtp.c:4170
 #, c-format
 msgid "cannot initialize networking: %s"
 msgstr "не вдалося ініціалізувати мережу: %s"
 
-#: src/msmtp.c:4179
+#: src/msmtp.c:4181
 #, c-format
 msgid "cannot initialize TLS library: %s"
 msgstr "не вдалося ініціалізувати бібліотеку TLS: %s"
 
-#: src/msmtp.c:4186
+#: src/msmtp.c:4188
 msgid "support for TLS is not compiled in"
 msgstr "підтримку TLS не було увімкнено під час збирання програми"
 
-#: src/msmtp.c:4272
+#: src/msmtp.c:4274
 #, c-format
 msgid "LMTP server message: %s"
 msgstr "Повідомлення сервера LMTP: %s"
 
-#: src/msmtp.c:4283
+#: src/msmtp.c:4285
 #, c-format
 msgid "could not send mail to all recipients (account %s from %s)"
 msgstr "не вдалося надіслати пошту усім отримувачам (обліковий запис %s з %s)"
 
-#: src/msmtp.c:4289
+#: src/msmtp.c:4291
 msgid "could not send mail to all recipients"
 msgstr "не вдалося надіслати пошту усім отримувачам"
 
-#: src/msmtp.c:4304 src/msmtp.c:4359 src/msmtp.c:4380
+#: src/msmtp.c:4306 src/msmtp.c:4361 src/msmtp.c:4382
 #, c-format
 msgid "server message: %s"
 msgstr "повідомлення сервера: %s"
 
-#: src/msmtp.c:4310
+#: src/msmtp.c:4312
 #, c-format
 msgid "could not send mail (account %s from %s)"
 msgstr "не вдалося надіслати пошту (обліковий запис %s з %s)"
 
-#: src/msmtp.c:4315
+#: src/msmtp.c:4317
 msgid "could not send mail"
 msgstr "не вдалося надіслати пошту"
 
-#: src/msmtp.c:4325
+#: src/msmtp.c:4327
 #, c-format
 msgid "delivery to one or more recipients failed"
 msgstr "не вдалося доставити пошту до одного або декількох отримувачів"
@@ -1694,14 +1695,14 @@ msgid "SMTP server does not accept EHLO or HELO commands"
 msgstr "команди EHLO або HELO є неприйнятними для сервера SMTP"
 
 #: src/smtp.c:440 src/smtp.c:598 src/smtp.c:603 src/smtp.c:676 src/smtp.c:724
-#: src/smtp.c:814 src/smtp.c:905 src/smtp.c:2145
+#: src/smtp.c:814 src/smtp.c:905 src/smtp.c:1041 src/smtp.c:2160
 #, c-format
 msgid "command %s failed"
 msgstr "помилка під час спроби виконати команду %s"
 
 #: src/smtp.c:681 src/smtp.c:745 src/smtp.c:766 src/smtp.c:863 src/smtp.c:926
-#: src/smtp.c:1000 src/smtp.c:1068 src/smtp.c:1416 src/smtp.c:1459
-#: src/smtp.c:1496
+#: src/smtp.c:1000 src/smtp.c:1083 src/smtp.c:1431 src/smtp.c:1474
+#: src/smtp.c:1511
 #, c-format
 msgid "authentication failed (method %s)"
 msgstr "не вдалося пройти розпізнавання (спосіб %s)"
@@ -1711,92 +1712,90 @@ msgstr "не вдалося пройти розпізнавання (спосі�
 msgid "authentication method CRAM-MD5: server sent invalid challenge"
 msgstr "спосіб розпізнавання CRAM-MD5: сервером надіслано некоректний запит"
 
-#: src/smtp.c:1186 src/smtp.c:1517
+#: src/smtp.c:1201 src/smtp.c:1532
 #, c-format
 msgid "the server does not support authentication method %s"
 msgstr "на сервері не передбачено способу розпізнавання %s"
 
-#: src/smtp.c:1192 src/smtp.c:1327 src/smtp.c:1370
+#: src/smtp.c:1207 src/smtp.c:1342 src/smtp.c:1385
 #, c-format
 msgid "GNU SASL: %s"
 msgstr "GNU SASL: %s"
 
-#: src/smtp.c:1199
+#: src/smtp.c:1214
 #, c-format
 msgid "GNU SASL: authentication method %s not supported"
 msgstr "GNU SASL: не передбачено підтримки способу розпізнавання %s"
 
-#: src/smtp.c:1268 src/smtp.c:1548
+#: src/smtp.c:1283 src/smtp.c:1563
 #, c-format
 msgid "cannot use a secure authentication method"
 msgstr "неможливо скористатися безпечним способом розпізнавання"
 
-#: src/smtp.c:1274 src/smtp.c:1554
+#: src/smtp.c:1289 src/smtp.c:1569
 #, c-format
 msgid "cannot find a usable authentication method"
 msgstr "не вдалося знайти придатний до використання спосіб розпізнавання"
 
-#: src/smtp.c:1287 src/smtp.c:1566
+#: src/smtp.c:1302 src/smtp.c:1581
 #, c-format
 msgid "authentication method %s needs a user name"
 msgstr ""
 "для використання способу розпізнавання %s слід вказати ім'я користувача"
 
-#: src/smtp.c:1300 src/smtp.c:1576
+#: src/smtp.c:1315 src/smtp.c:1591
 #, c-format
 msgid "authentication method %s needs a password"
 msgstr "для використання способу розпізнавання %s слід вказати пароль"
 
-#: src/smtp.c:1475
+#: src/smtp.c:1490
 #, c-format
 msgid "authentication failed: %s (method %s)"
 msgstr "помилка розпізнавання: %s (спосіб %s)"
 
-#: src/smtp.c:1611
+#: src/smtp.c:1626
 #, c-format
 msgid "authentication method %s not supported"
 msgstr "не передбачено підтримки способу розпізнавання %s"
 
-#: src/smtp.c:1725
+#: src/smtp.c:1740
 #, c-format
 msgid "envelope from address %s not accepted by the server"
 msgstr "обгортка із адресою відправника %s є неприйнятною для сервера"
 
-#: src/smtp.c:1744
+#: src/smtp.c:1759
 #, c-format
 msgid "recipient address %s not accepted by the server"
 msgstr "адреса отримувача %s є неприйнятною для сервера"
 
-#: src/smtp.c:1763
+#: src/smtp.c:1778
 #, c-format
 msgid "the server does not accept mail data"
 msgstr "сервер відмовився приймати поштові дані"
 
-#: src/smtp.c:2003
+#: src/smtp.c:2018
 #, c-format
 msgid "the server did not accept the mail"
 msgstr "сервер відмовився приймати пошту"
 
-#: src/smtp.c:2067
+#: src/smtp.c:2082
 #, c-format
 msgid "the server refuses to send the mail to %s"
 msgstr "сервером відмовлено у надсиланні пошти до %s"
 
-#: src/smtp.c:2131
+#: src/smtp.c:2146
 #, c-format
 msgid "the server is unable to fulfill the request"
 msgstr "серверу не вдалося виконати запит"
 
-#: src/smtp.c:2139
+#: src/smtp.c:2154
 #, c-format
 msgid "invalid argument for Remote Message Queue Starting"
 msgstr "некоректний аргумент Remote Message Queue Starting"
 
-#, c-format
 #~ msgid "cannot evaluate '%s': %s"
 #~ msgstr "не вдалося визначити «%s»: %s"
 
-#, c-format
 #~ msgid "cannot read output of '%s'"
 #~ msgstr "не вдалося прочитати дані, які виведено «%s»"
 

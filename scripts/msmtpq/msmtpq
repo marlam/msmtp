@@ -56,6 +56,10 @@ err() { dsp '' "$@" '' ; exit 1 ; }
 ##      !!!           before using the msmtpq or msmtp-queue scripts             !!!
 ## ======================================================================================
 ##
+## it is now possible to put the needed variables into a config file
+
+[ -f ~/.msmtpqrc ] && source ~/.msmtpqrc
+
 ## only if necessary (in unusual circumstances - e.g. embedded systems),
 ##   export the location of the msmtp executable before running this script  (no quotes !!)
 ##   e.g. ( export MSMTP=/path/to/msmtp )

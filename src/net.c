@@ -4,7 +4,7 @@
  * This file is part of msmtp, an SMTP client, and of mpop, a POP3 client.
  *
  * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2012, 2014, 2015,
- * 2018, 2019, 2020
+ * 2018, 2019, 2020, 2021, 2022, 2023
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -773,7 +773,7 @@ int net_open_socket(
                     : gai_strerror(error_code));
         }
 #endif
-        return NET_EHOSTNOTFOUND;
+        return (error_code == EAI_AGAIN ? NET_ETEMPFAIL : NET_EHOSTNOTFOUND);
     }
 
     fd = -1;
@@ -1175,6 +1175,7 @@ int net_exitcode(int net_error_code)
             return EX_NOHOST;
         case NET_ESOCKET:
             return EX_OSERR;
+        case NET_ETEMPFAIL:
         case NET_ECONNECT:
             return EX_TEMPFAIL;
         case NET_EIO:

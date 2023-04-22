@@ -4,7 +4,7 @@
  * This file is part of msmtp, an SMTP client, and of mpop, a POP3 client.
  *
  * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2014, 2018, 2019,
- * 2020
+ * 2020, 2021, 2022, 2023
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -43,6 +43,7 @@
 #define NET_EIO                 5       /* Input/output error */
 #define NET_EPROXY              6       /* Proxy failure */
 #define NET_ESRVNOTFOUND        7       /* SRV record not found */
+#define NET_ETEMPFAIL           8       /* Some temporary error condition */
 
 /*
  * net_lib_init()

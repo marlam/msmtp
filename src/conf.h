@@ -87,6 +87,7 @@
 #define ACC_LOGFILE_TIME_FORMAT         (1LL << 37LL)
 #define ACC_SOCKET                      (1LL << 38LL)
 #define ACC_FROM_FULL_NAME              (1LL << 39LL)
+#define ACC_ALLOW_FROM_OVERRIDE         (1LL << 40LL)
 
 typedef struct
 {

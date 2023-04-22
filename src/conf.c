@@ -610,7 +610,7 @@ void override_account(account_t *acc1, account_t *acc2)
     {
         acc1->auto_from = acc2->auto_from;
     }
-    if (acc1->allow_from_override && (acc2->mask & ACC_FROM))
+    if ((acc2->mask & ACC_FROM) && acc1->allow_from_override)
     {
         free(acc1->from);
         acc1->from = acc2->from ? xstrdup(acc2->from) : NULL;
@@ -618,6 +618,10 @@ void override_account(account_t *acc1, account_t *acc2)
     if (acc2->mask & ACC_FROM_FULL_NAME)
     {
         acc1->from_full_name = acc2->from_full_name ? xstrdup(acc2->from_full_name) : NULL;
+    }
+    if (acc2->mask & ACC_ALLOW_FROM_OVERRIDE)
+    {
+        acc1->allow_from_override = acc2->allow_from_override;
     }
     if (acc2->mask & ACC_MAILDOMAIN)
     {
@@ -1459,8 +1463,7 @@ int read_conffile(const char *conffile, FILE *f, list_t **acc_list,
         }
         else if (strcmp(cmd, "allow_from_override") == 0)
         {
-            /* There is no mask value for this command since it can only
-             * occur in the configuration file, not on the command line */
+            acc->mask |= ACC_ALLOW_FROM_OVERRIDE;
             if (is_on(arg))
             {
                 acc->allow_from_override = 1;

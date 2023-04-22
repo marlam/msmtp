@@ -24,7 +24,7 @@ syntax match msmtpOption /\<\(auth\|user\|password\|passwordeval\|ntlmdomain\)\>
 " TLS commands.
 syntax match msmtpOption /\<\(tls\|tls_starttls\|tls_trust_file\|tls_crl_file\|tls_fingerprint\|tls_key_file\|tls_cert_file\|tls_certcheck\|tls_priorities\|tls_host_override\|tls_min_dh_prime_bits\)\>/
 " Sendmail mode specific commands.
-syntax match msmtpOption /\<\(from\|allow_from_override\|dsn_notify\|dsn_return\|set_from_header\|set_date_header\|set_msgid_header\|remove_bcc_headers\|undisclosed_recipients\|logfile\|logfile_time_format\|syslog\|aliases\|auto_from\|maildomain\)\>/
+syntax match msmtpOption /\<\(from\|from_full_name\|allow_from_override\|dsn_notify\|dsn_return\|set_from_header\|set_date_header\|set_msgid_header\|remove_bcc_headers\|undisclosed_recipients\|logfile\|logfile_time_format\|syslog\|aliases\|auto_from\|maildomain\)\>/
 
 " Options which accept only an on/off value.
 syn match msmtpWrongOption /\<\(tls\|tls_starttls\|tls_certcheck\|allow_from_override\|remove_bcc_headers\|undisclosed_recipients\|auto_from\) \(on$\|off$\)\@!.*$/

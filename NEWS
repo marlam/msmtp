@@ -1,3 +1,6 @@
+Version 1.8.24:
+- Added a command from_full_name that does what -F does on the command line.
+
 Version 1.8.23:
 - The msmtpq script was updated.
 

@@ -2416,8 +2416,6 @@ typedef struct
     account_t *cmdline_account;
     const char *account_id;
     char *user_conffile;
-    /* additional information */
-    char *full_name;
     /* the list of recipients */
     list_t *recipients;
 } msmtp_cmdline_conf_t;
@@ -2572,8 +2570,6 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
     conf->cmdline_account = account_new(NULL, NULL);
     conf->account_id = NULL;
     conf->user_conffile = NULL;
-    /* additional information */
-    conf->full_name = NULL;
     /* the recipients */
     conf->recipients = NULL;
 
@@ -3350,8 +3346,8 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
                 break;
 
             case 'F':
-                free(conf->full_name);
-                conf->full_name = xstrdup(optarg);
+                free(conf->cmdline_account->from_full_name);
+                conf->cmdline_account->from_full_name = xstrdup(optarg);
                 break;
 
             case LONGONLYOPT_KEEPBCC:
@@ -3747,6 +3743,8 @@ void msmtp_print_conf(msmtp_cmdline_conf_t conf, account_t *account)
         printf("from = %s\n",
                 account->from ? account->from : conf.read_envelope_from
                 ? _("(read from mail)") : _("(not set)"));
+        printf("from_full_name = %s\n",
+                account->from_full_name ? account->from_full_name : _("(not set)"));
         printf("allow_from_override = %s\n",
                 account->allow_from_override ? _("on") : _("off"));
         printf("set_from_header = %s\n",
@@ -4212,10 +4210,10 @@ int main(int argc, char *argv[])
         if (account->set_from_header == 1
                 || (!have_from_header && account->set_from_header == 2))
         {
-            if (conf.full_name)
+            if (account->from_full_name)
             {
                 fprintf(prepend_header_tmpfile, "From: %s <%s>\n",
-                        conf.full_name, account->from);
+                        account->from_full_name, account->from);
             }
             else
             {

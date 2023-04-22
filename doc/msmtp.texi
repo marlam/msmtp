@@ -14,7 +14,7 @@
 This manual was last updated @value{UPDATED} for version
 @value{VERSION} of msmtp.
 
-Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022
+Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023
 Martin Lambers@*
 Copyright (C) 2011
 Scott Shumate
@@ -393,6 +393,10 @@ see @ref{allow_from_override}.@*
 Furthermore, the envelope-from address may be a wildcard pattern as used for file name matching
 in the shell. This is the case if it contains one of the characters @code{?}, @code{*} or @code{[}.
 This allows a variety of envelope-from addresses given with the @samp{--from} option to match a single account.
+@anchor{from_full_name}
+@item from_full_name @var{name}
+@cmindex from_full_name
+Set a full name to be used in a From header if msmtp adds one. @xref{set_from_header}.
 @anchor{allow_from_override}
 @item allow_from_override (on|off)
 By default, the @ref{--from} option overrides the @ref{from} command.
@@ -779,8 +783,7 @@ Read the envelope from address from the From header of the mail.
 @opindex --aliases
 Set or unset an aliases file. @xref{aliases}.
 @item -F@var{name}
-Msmtp adds a From header to mails that lack it, using the envelope from
-address. This option allows to set a full name to be used in that header.
+Set a full name to be used in a From header if msmtp adds one. @xref{from_full_name}.
 @anchor{--auto-from}
 @item --auto-from[=(on|off)]
 @opindex --auto-from

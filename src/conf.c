@@ -4,7 +4,7 @@
  * This file is part of msmtp, an SMTP client.
  *
  * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2010, 2011, 2012,
- * 2014, 2015, 2016, 2018, 2019, 2020, 2021, 2022
+ * 2014, 2015, 2016, 2018, 2019, 2020, 2021, 2022, 2023
  * Martin Lambers <marlam@marlam.de>
  * Martin Stenberg <martin@gnutiken.se> (passwordeval support)
  * Scott Shumate <sshumate@austin.rr.com> (aliases support)
@@ -74,6 +74,7 @@ account_t *account_new(const char *conffile, const char *id)
     a->allow_from_override = 1;
     a->auto_from = 0;
     a->from = NULL;
+    a->from_full_name = NULL;
     a->maildomain = NULL;
     a->dsn_return = NULL;
     a->dsn_notify = NULL;
@@ -136,6 +137,7 @@ account_t *account_copy(account_t *acc)
         a->allow_from_override = acc->allow_from_override;
         a->auto_from = acc->auto_from;
         a->from = acc->from ? xstrdup(acc->from) : NULL;
+        a->from_full_name = acc->from_full_name ? xstrdup(acc->from_full_name) : NULL;
         a->maildomain = acc->maildomain ? xstrdup(acc->maildomain) : NULL;
         a->dsn_return = acc->dsn_return ? xstrdup(acc->dsn_return) : NULL;
         a->dsn_notify = acc->dsn_notify ? xstrdup(acc->dsn_notify) : NULL;
@@ -221,6 +223,7 @@ void account_free(void *a)
         free(p->host);
         free(p->domain);
         free(p->from);
+        free(p->from_full_name);
         free(p->maildomain);
         free(p->auth_mech);
         free(p->username);
@@ -611,6 +614,10 @@ void override_account(account_t *acc1, account_t *acc2)
     {
         free(acc1->from);
         acc1->from = acc2->from ? xstrdup(acc2->from) : NULL;
+    }
+    if (acc2->mask & ACC_FROM_FULL_NAME)
+    {
+        acc1->from_full_name = acc2->from_full_name ? xstrdup(acc2->from_full_name) : NULL;
     }
     if (acc2->mask & ACC_MAILDOMAIN)
     {
@@ -1443,6 +1450,12 @@ int read_conffile(const char *conffile, FILE *f, list_t **acc_list,
             acc->mask |= ACC_FROM;
             free(acc->from);
             acc->from = xstrdup(arg);
+        }
+        else if (strcmp(cmd, "from_full_name") == 0)
+        {
+            acc->mask |= ACC_FROM_FULL_NAME;
+            free(acc->from_full_name);
+            acc->from_full_name = xstrdup(arg);
         }
         else if (strcmp(cmd, "allow_from_override") == 0)
         {

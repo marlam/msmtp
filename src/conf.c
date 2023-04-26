@@ -610,7 +610,7 @@ void override_account(account_t *acc1, account_t *acc2)
     {
         acc1->auto_from = acc2->auto_from;
     }
-    if ((acc2->mask & ACC_FROM) && acc1->allow_from_override)
+    if (acc2->mask & ACC_FROM)
     {
         free(acc1->from);
         acc1->from = acc2->from ? xstrdup(acc2->from) : NULL;

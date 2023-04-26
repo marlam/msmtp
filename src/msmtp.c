@@ -4035,6 +4035,13 @@ int main(int argc, char *argv[])
                 goto exit;
             }
         }
+        /* Override the account with command line settings. Take special care
+         * of the envelope-from address: only take it from the command line
+         * if allow_from_override is set. */
+        if (!account->allow_from_override)
+        {
+            conf.cmdline_account->mask &= ~ACC_FROM;
+        }
         override_account(account, conf.cmdline_account);
     }
     else

@@ -42,20 +42,19 @@ void md5_hmac(const char *secret, size_t secret_len,
 
     memset(digest, 0, (size_t)16);
     memset(ipad, 0, sizeof(ipad));
-    memset(opad, 0, sizeof(opad));
 
     if (secret_len > 64)
     {
         MD5_Init(&context);
         MD5_Update(&context, (unsigned char *)secret, secret_len);
         MD5_Final(ipad, &context);
-        MD5_Final(opad, &context);
     }
     else
     {
         memcpy(ipad, secret, secret_len);
-        memcpy(opad, secret, secret_len);
     }
+
+    memcpy(opad, ipad, sizeof(ipad));
 
     for (i = 0; i < 64; i++)
     {

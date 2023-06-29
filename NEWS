@@ -1,5 +1,7 @@
 Version 1.8.24:
-- Added a command from_full_name that does what -F does on the command line.
+- Added a new configuration command 'from_full_name' to set a full name for the
+  From header (like -F on the command line)
+- Fixed the allow_from_override command
 
 Version 1.8.23:
 - The msmtpq script was updated.

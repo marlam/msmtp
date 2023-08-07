@@ -391,12 +391,15 @@ int msmtpd_session(log_t* log,
         size_t buf2_len = SMTP_BUFSIZE;
         bool r = base64_decode_ctx(NULL, b64, strlen(b64), buf2, &buf2_len);
         int authenticated = 0;
-        if (r && buf2_len == 1 + strlen(user) + 1 + strlen(password)
-                && buf2[0] == '\0'
-                && strncmp(buf2 + 1, user, strlen(user)) == 0
-                && buf2[1 + strlen(user)] == '\0'
-                && strncmp(buf2 + 1 + strlen(user) + 1, password, strlen(password)) == 0) {
-            authenticated = 1;
+        if (r) {
+            size_t authzid_len = strnlen(buf2, buf2_len);
+            if (buf2_len == authzid_len + 1 + strlen(user) + 1 + strlen(password)
+                    && buf2[authzid_len] == '\0'
+                    && strncmp(buf2 + authzid_len + 1, user, strlen(user)) == 0
+                    && buf2[authzid_len + 1 + strlen(user)] == '\0'
+                    && strncmp(buf2 + authzid_len + 1 + strlen(user) + 1, password, strlen(password)) == 0) {
+                authenticated = 1;
+            }
         }
         if (impose_auth_delay)
             sleep(AUTH_DELAY_SECONDS);

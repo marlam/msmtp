@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2022  Martin Lambers <marlam@marlam.de>
+ * Copyright (C) 2022, 2023  Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -26,8 +26,13 @@
  * allocated buffer.
  *
  * The id will contain the hash over some unique identifiying information
- * prepended to the envelope from address local@domain: <hash.local@domain>
+ * and a domain part (<hash@domain>).
+ *
+ * The domain part will be:
+ * 1. The value of "domain", unless it is "localhost"
+ * 2. Otherwise: the domain part of the envelope from address, if available
+ * 3. Otherwise: the value of "host"
  */
-char* create_msgid(const char* envelope_from);
+char* create_msgid(const char* host, const char* domain, const char* envelope_from);
 
 #endif

@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2022  Martin Lambers <marlam@marlam.de>
+ * Copyright (C) 2022, 2023  Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -33,19 +33,22 @@
 # define CLOCK_BOOTTIME CLOCK_MONOTONIC
 #endif
 
-char* create_msgid(const char* envelope_from)
+char* create_msgid(const char* host, const char* domain, const char* envelope_from)
 {
     struct timespec ts_real;
     struct timespec ts_boot;
     pid_t pid;
     char* hostname;
     size_t hostname_len;
-    unsigned char* data;
+    size_t envelope_from_len;
     size_t data_size;
+    unsigned char* data;
+    size_t data_index;
     char digest[33];
-    char *msgid;
+    const char* dom;
 
-    /* The following information should unqiuely identify this mail:
+    /* The following information should unqiuely identify this mail
+     * for this particular envelope from address:
      * the system is identified via hostname and boot time, and
      * the mail on this system via real time and pid. */
     clock_gettime(CLOCK_REALTIME, &ts_real);
@@ -53,21 +56,40 @@ char* create_msgid(const char* envelope_from)
     pid = getpid();
     hostname = net_get_canonical_hostname(NULL);
     hostname_len = strlen(hostname);
+    envelope_from_len = strlen(envelope_from);
 
     /* Compute a hash over this data so that it cannot be recovered. */
-    data_size = sizeof(ts_real) + sizeof(ts_boot) + sizeof(pid) + hostname_len;
+    data_size = sizeof(ts_real) + sizeof(ts_boot) + sizeof(pid)
+        + hostname_len + envelope_from_len;
     data = xmalloc(data_size);
-    memcpy(data, &ts_real, sizeof(ts_real));
-    memcpy(data + sizeof(ts_real), &ts_boot, sizeof(ts_boot));
-    memcpy(data + sizeof(ts_real) + sizeof(ts_boot), &pid, sizeof(pid));
-    memcpy(data + sizeof(ts_real) + sizeof(ts_boot) + sizeof(pid), hostname, hostname_len);
+    data_index = 0;
+    memcpy(data + data_index, &ts_real, sizeof(ts_real));
+    data_index += sizeof(ts_real);
+    memcpy(data + data_index, &ts_boot, sizeof(ts_boot));
+    data_index += sizeof(ts_boot);
+    memcpy(data + data_index, &pid, sizeof(pid));
+    data_index += sizeof(pid);
+    memcpy(data + data_index, hostname, hostname_len);
+    data_index += hostname_len;
+    memcpy(data + data_index, envelope_from, envelope_from_len);
+    free(hostname);
     md5_digest(data, data_size, digest);
     free(data);
 
-    if (strchr(envelope_from, '@'))
-        msgid = xasprintf("<%s.%s>", digest, envelope_from);
+    /* Find the domain part to use */
+    if (strcmp(domain, "localhost") != 0)
+    {
+        dom = domain;
+    }
+    else if ((dom = strchr(envelope_from, '@')))
+    {
+        dom = dom + 1;
+    }
     else
-        msgid = xasprintf("<%s.%s@%s>", digest, envelope_from, hostname);
-    free(hostname);
-    return msgid;
+    {
+        dom = host;
+    }
+
+    /* Create the Message ID */
+    return xasprintf("<%s@%s>", digest, dom);
 }

@@ -101,8 +101,8 @@ Set or unset a network timeout, in seconds. See the \fBtimeout\fP command.
 .IP "\-\-protocol=(\fIsmtp\fP|\fIlmtp\fP)
 Set the protocol. See the \fBprotocol\fP command.
 .IP "\-\-domain=[\fIstring\fP]"
-Set the argument of the SMTP EHLO (or LMTP LHLO) command. See the \fBdomain\fP
-command.
+Set the argument of the SMTP EHLO (or LMTP LHLO) command, and the domain part for the
+Message-ID header. See the \fBdomain\fP command.
 .IP "\-\-auth[=(\fIon\fP|\fIoff\fP|\fImethod\fP)]"
 Enable or disable authentication and optionally choose the method.
 See the \fBauth\fP command.
@@ -338,10 +338,17 @@ timeout will be set, which means that the operating system default will be used.
 Set the protocol to use. Currently only SMTP and LMTP are supported. SMTP is
 the default. See the \fBport\fP command above for default ports.
 .IP "domain \fIargument\fP"
-Use this command to set the argument of the SMTP EHLO (or LMTP LHLO) command.
-The default is \fIlocalhost\fP, which is stupid but usually works. Try to
-change the default if mails get rejected due to anti-SPAM measures. Possible
-choices are the domain part of your mail address (provider.example for
+Use this command to set the argument of the SMTP EHLO (or LMTP LHLO) command,
+and the domain part of Message-ID headers if msmtp generates them (see the
+\fBset_msgid_header\fP command).
+.br
+The default value @samp{localhost} is stupid but usually works for EHLO. However
+it does not make sense for Message-ID headers. @xref{set_msgid_header} for details.@*
+The default value \fIlocalhost\fP is stupid but usually works for EHLO. However
+it does not make sense for Message-ID headers. See the \fBset_msgid_header\fP command
+for details.
+.br
+Possible choices are the domain part of your mail address (provider.example for
 joe@provider.example) or the fully qualified domain name of your host (if
 available).
 .br
@@ -628,6 +635,12 @@ is still supported and corresponds to the \fIauto\fP and \fIoff\fP settings.
 .IP "set_msgid_header [(\fIauto\fP|\fIoff\fP)]"
 When to set a Message-ID header: \fIauto\fP adds a Message-ID header if the mail does not
 have one (this is the default), and \fIoff\fP never sets a Message-ID header.
+.br
+Message-IDs have the form \fIhash@domain\fP, where \fIhash\fP is a hash over
+some values that uniquely identify the mail, and \fIdomain\fP is either the
+value of the \fBdomain\fP command (unless that is the default value
+\fIlocalhost\fP), or the domain part of the envelope-from address (if available),
+or the host name of the SMTP server.
 .IP "remove_bcc_headers [(\fIon\fP|\fIoff\fP)]"
 This command controls whether to remove Bcc headers. The default is to remove them.
 .IP "undisclosed_recipients [(\fIon\fP|\fIoff\fP)]"

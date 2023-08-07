@@ -4240,7 +4240,8 @@ int main(int argc, char *argv[])
         }
         if (!have_msgid_header && account->set_msgid_header == 2)
         {
-            char *msgid = create_msgid(account->from);
+            char *msgid = create_msgid(
+                    account->host, account->domain, account->from);
             fprintf(prepend_header_tmpfile, "Message-ID: %s\n", msgid);
             free(msgid);
         }

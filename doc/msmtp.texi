@@ -222,12 +222,14 @@ the default. See @ref{port} for default ports.
 @anchor{domain}
 @item domain @var{argument}
 @cmindex domain
-This command sets the argument of the SMTP EHLO (or LMTP LHLO) command. The
-default is @samp{localhost}, which is stupid but usually works. Try to change
-the default if mails get rejected due to anti-SPAM measures. Possible choices
-are the domain part of your mail address (@code{provider.example} for
-@code{joe@@provider.example}) or the fully qualified domain name of your host
-(if available).@*
+This command sets the argument of the SMTP EHLO (or LMTP LHLO) command,
+and the domain part of Message-ID headers if msmtp generates them (see
+@ref{set_msgid_header}).@*
+The default value @samp{localhost} is stupid but usually works for EHLO. However
+it does not make sense for Message-ID headers. @xref{set_msgid_header} for details.@*
+Possible choices are the domain part of your mail address
+(@code{provider.example} for @code{joe@@provider.example}) or the fully
+qualified domain name of your host (if available).@*
 The following substitution patterns are supported:
 @itemize
 @item @code{%H} will be replaced by @code{$HOSTNAME}, or if that fails by the host name of the system.
@@ -453,6 +455,11 @@ is still supported and corresponds to the @samp{auto} and @samp{off} settings.@*
 @cmindex set_msgid_header
 When to set a Message-ID header: @samp{auto} adds a Message-ID header if the mail does not
 have one (this is the default), and @samp{off} never sets a Message-ID header.@*
+Message-IDs have the form @samp{hash@@domain}, where @samp{hash} is a hash over
+some values that uniquely identify the mail, and @samp{domain} is either the
+value of the @ref{domain} command (unless that is the default value
+@samp{localhost}), or the domain part of the envelope-from address (if available),
+or the host name of the SMTP server.
 @xref{Header handling}.
 @anchor{remove_bcc_headers}
 @item remove_bcc_headers [(on|off)]
@@ -643,7 +650,8 @@ Set or unset a network timeout, in seconds. @xref{timeout}.
 Set the protocol. @xref{protocol}.
 @item --domain=[@var{argument}]
 @opindex --domain
-Set the argument of the SMTP EHLO (or LMTP LHLO) command. @xref{domain}.
+Set the argument of the SMTP EHLO (or LMTP LHLO) command, and the domain part
+for the Message-ID header. @xref{domain}.
 @anchor{--auth}
 @item --auth[=(on|off|@var{method})]
 @opindex --auth

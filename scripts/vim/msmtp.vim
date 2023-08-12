@@ -27,13 +27,13 @@ syntax match msmtpOption /\<\(tls\|tls_starttls\|tls_trust_file\|tls_crl_file\|t
 syntax match msmtpOption /\<\(from\|from_full_name\|allow_from_override\|dsn_notify\|dsn_return\|set_from_header\|set_date_header\|set_msgid_header\|remove_bcc_headers\|undisclosed_recipients\|logfile\|logfile_time_format\|syslog\|aliases\|auto_from\|maildomain\)\>/
 
 " Options which accept only an on/off value.
-syn match msmtpWrongOption /\<\(tls\|tls_starttls\|tls_certcheck\|allow_from_override\|remove_bcc_headers\|undisclosed_recipients\|auto_from\) \(on$\|off$\)\@!.*$/
+syn match msmtpWrongOption /\<\(tls\|tls_starttls\|tls_certcheck\|allow_from_override\|remove_bcc_headers\|undisclosed_recipients\|auto_from\)\s+\(on$\|off$\)\@!.*$/
 " Options which accept only an on/off/auto value.
-syn match msmtpWrongOption /\<\(set_from_header\) \(on$\|off$\|auto$\)\@!.*$/
+syn match msmtpWrongOption /\<\(set_from_header\)\s+\(on$\|off$\|auto$\)\@!.*$/
 " Options which accept only an off/auto value.
-syn match msmtpWrongOption /\<\(set_date_header\|set_msgid_header\) \(auto$\|off$\)\@!.*$/
+syn match msmtpWrongOption /\<\(set_date_header\|set_msgid_header\)\s+\(auto$\|off$\)\@!.*$/
 " Option port accepts numeric values.
-syn match msmtpWrongOption /\<\(port\|proxy_port\) \(\d\+$\)\@!.*$/
+syn match msmtpWrongOption /\<\(port\|proxy_port\)\s+\(\d\+$\)\@!.*$/
 " Option timeout accepts off and numeric values.
 syn match msmtpWrongOption /\<timeout \(off$\|\d\+$\)\@!.*$/
 " Option protocol accepts smtp and lmtp.

@@ -2384,7 +2384,7 @@ void msmtp_print_help(void)
     printf(_("  --undisclosed-recipients[=(on|off)] enable/disable replacement of To/Cc/Bcc\n"
              "                               with To: undisclosed-recipients:;\n"));
     printf(_("  --                           end of options\n"));
-    printf(_("Accepted but ignored: -A, -B, -bm, -F, -G, -h, -i, -L, -m, -n, -O, -o, -v\n"));
+    printf(_("Accepted but ignored: -A, -B, -bm, -G, -h, -i, -L, -m, -n, -O, -o\n"));
     printf(_("\nReport bugs to <%s>.\n"), PACKAGE_BUGREPORT);
 }
 

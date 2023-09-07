@@ -806,7 +806,7 @@ recipient addresses, even if they start with a '-'.
 @end table
 
 The following options are accepted but ignored for sendmail compatibility:
-@samp{-B@var{type}}, @samp{-bm}, @samp{-G}, @samp{-hN},
+@samp{-A@var{mode}}, @samp{-B@var{type}}, @samp{-bm}, @samp{-G}, @samp{-hN},
 @samp{-i}, @samp{-L @var{tag}}, @samp{-m}, @samp{-n},
 @samp{-O option=@var{value}}, @samp{-ox @var{value}}
 

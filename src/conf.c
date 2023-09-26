@@ -34,6 +34,7 @@
 #include <strings.h>
 #include <ctype.h>
 #include <errno.h>
+#include <stdbool.h>
 #ifdef HAVE_FNMATCH_H
 # include <fnmatch.h>
 #endif
@@ -278,6 +279,18 @@ account_t *find_account(list_t *acc_list, const char *id)
     return a;
 }
 
+static bool from_matches_account_from(const char *from, const char *acc_from)
+{
+#ifdef HAVE_FNMATCH_H
+    if (strchr(acc_from, '?') || strchr(acc_from, '*') || strchr(acc_from, '['))
+    {
+        /* This is a wildcard pattern according to glob(7) */
+        return fnmatch(acc_from, from, 0) != FNM_NOMATCH;
+    }
+#endif
+    /* simple matching */
+    return strcasecmp(from, acc_from) == 0;
+}
 
 /*
  * find_account_by_envelope_from()
@@ -291,6 +304,7 @@ account_t *find_account_by_envelope_from(list_t *acc_list, const char *from)
     const char *from_detail = strchr(from, '+');
     const char *from_domain = strchr(from, '@');
     const char *acc_from, *acc_domain;
+    char *from_without_detail = NULL;
 
     while (!list_is_empty(acc_list))
     {
@@ -300,43 +314,31 @@ account_t *find_account_by_envelope_from(list_t *acc_list, const char *from)
         {
             continue;
         }
-        if (from_detail && from_domain && !strchr(acc_from, '+'))
+        if (from_matches_account_from(from, acc_from))
+        {
+            a = acc_list->data;
+            break;
+        }
+        else if (from_detail && from_domain && !strchr(acc_from, '+'))
         {
             /*
              * Subaddressing matches the pattern /user+detail@domain/. Take `from` to
              * match `acc_from` iff both user and domain match; i.e., ignore the detail.
              */
-            acc_domain = strchr(acc_from, '@');
-            if (acc_domain
-                    && (acc_domain - acc_from == from_detail - from)
-                    && strncasecmp(from, acc_from, from_detail - from) == 0
-                    && strcasecmp(from_domain, acc_domain) == 0)
+            if (!from_without_detail)
             {
-                a = acc_list->data;
-                break;
+                from_without_detail = xstrdup(from);
+                size_t pos = from_detail - from;
+                strcpy(from_without_detail + pos, from_domain);
             }
-        }
-#ifdef HAVE_FNMATCH_H
-        else if (strchr(acc_from, '?') || strchr(acc_from, '*') || strchr(acc_from, '['))
-        {
-            /* This is a wildcard pattern according to glob(7) */
-            if (fnmatch(acc_from, from, 0) != FNM_NOMATCH)
-            {
-                a = acc_list->data;
-                break;
-            }
-        }
-#endif
-        else
-        {
-            /* simple matching */
-            if (strcasecmp(from, acc_from) == 0)
+            if (from_matches_account_from(from_without_detail, acc_from))
             {
                 a = acc_list->data;
                 break;
             }
         }
     }
+    free(from_without_detail);
 
     return a;
 }

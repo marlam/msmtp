@@ -47,7 +47,7 @@ char* create_msgid(const char* host, const char* domain, const char* envelope_fr
     char digest[33];
     const char* dom;
 
-    /* The following information should unqiuely identify this mail
+    /* The following information should uniquely identify this mail
      * for this particular envelope from address:
      * the system is identified via hostname and boot time, and
      * the mail on this system via real time and pid. */

@@ -303,7 +303,7 @@ account_t *find_account_by_envelope_from(list_t *acc_list, const char *from)
     account_t *a = NULL;
     const char *from_detail = strchr(from, '+');
     const char *from_domain = strchr(from, '@');
-    const char *acc_from, *acc_domain;
+    const char *acc_from;
     char *from_without_detail = NULL;
 
     while (!list_is_empty(acc_list))

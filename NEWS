@@ -1,3 +1,6 @@
+Version 1.8.25:
+- No significant changes, just bug fixes.
+
 Version 1.8.24:
 - Added a new configuration command 'from_full_name' to set a full name for the
   From header (like -F on the command line)

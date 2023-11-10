@@ -191,6 +191,11 @@ int smtp_get_msg(smtp_server_t *srv, list_t **msg, char **errstr)
 #ifdef HAVE_TLS
         }
 #endif /* HAVE_TLS */
+        if (srv->debug)
+        {
+            fputs("<-- ", srv->debug);
+            fwrite(line, sizeof(char), len, srv->debug);
+        }
         if (len < 4
                 || !(isdigit((unsigned char)line[0])
                     && isdigit((unsigned char)line[1])
@@ -212,11 +217,6 @@ int smtp_get_msg(smtp_server_t *srv, list_t **msg, char **errstr)
                 *errstr = xasprintf(_("the server sent an invalid reply"));
             }
             return SMTP_EPROTO;
-        }
-        if (srv->debug)
-        {
-            fputs("<-- ", srv->debug);
-            fwrite(line, sizeof(char), len, srv->debug);
         }
         /* kill CRLF */
         line[--len] = '\0';

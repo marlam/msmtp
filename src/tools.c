@@ -3,7 +3,8 @@
  *
  * This file is part of msmtp, an SMTP client, and of mpop, a POP3 client.
  *
- * Copyright (C) 2004, 2005, 2006, 2007, 2009, 2011, 2014, 2018, 2019, 2020
+ * Copyright (C) 2004, 2005, 2006, 2007, 2009, 2011, 2014, 2018, 2019, 2020,
+ * 2021, 2022, 2023
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -761,6 +762,36 @@ char *sanitize_string(char *str)
     }
 
     return str;
+}
+
+/*
+ * token_in_string()
+ *
+ * see tools.h
+ */
+
+int token_in_string(const char *string, const char *token)
+{
+    size_t token_len = strlen(token);
+    const char *oldstring = string;
+    const char *newstring;
+    int found = 0;
+
+    while ((newstring = strstr(oldstring, token)))
+    {
+        size_t i = newstring - string;
+        if (i == 0 || string[i - 1] == ' ') /* valid start of token */
+        {
+            if (string[i + token_len] == ' '
+                    || string[i + token_len] == '\0') /* valid end of token */
+            {
+                found = 1;
+                break;
+            }
+        }
+        oldstring = newstring + 1;
+    }
+    return found;
 }
 
 

@@ -4,7 +4,7 @@
  * This file is part of msmtp, an SMTP client, and of mpop, a POP3 client.
  *
  * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011,
- * 2012, 2014, 2016, 2018, 2019, 2020
+ * 2012, 2014, 2016, 2018, 2019, 2020, 2021, 2022, 2023
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -58,6 +58,8 @@ void mtls_clear(mtls_t *mtls)
     mtls->have_md5_fingerprint = 0;
     mtls->no_certcheck = 0;
     mtls->hostname = NULL;
+    mtls->is_tls_1_3_or_newer = 0;
+    mtls->channel_binding = NULL;
     mtls->internals = NULL;
 }
 

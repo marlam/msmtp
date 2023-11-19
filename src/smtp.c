@@ -4,7 +4,7 @@
  * This file is part of msmtp, an SMTP client.
  *
  * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011,
- * 2014, 2016, 2018, 2019, 2020, 2021, 2022
+ * 2014, 2016, 2018, 2019, 2020, 2021, 2022, 2023
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -487,51 +487,34 @@ int smtp_init(smtp_server_t *srv, const char *ehlo_domain, list_t **errmsg,
         else if (strncmp(s + 4, "AUTH", 4) == 0
                 && (*(s + 8) == ' ' || *(s + 8) == '='))
         {
+            const char* authstring = s + 9;
             srv->cap.flags |= SMTP_CAP_AUTH;
-            if (strstr(s + 9, "PLAIN"))
-            {
-                srv->cap.flags |= SMTP_CAP_AUTH_PLAIN;
-            }
-            if (strstr(s + 9, "CRAM-MD5"))
-            {
-                srv->cap.flags |= SMTP_CAP_AUTH_CRAM_MD5;
-            }
-            if (strstr(s + 9, "DIGEST-MD5"))
-            {
-                srv->cap.flags |= SMTP_CAP_AUTH_DIGEST_MD5;
-            }
-            if (strstr(s + 9, "SCRAM-SHA-1"))
-            {
-                srv->cap.flags |= SMTP_CAP_AUTH_SCRAM_SHA_1;
-            }
-            if (strstr(s + 9, "SCRAM-SHA-256"))
-            {
+            if (token_in_string(authstring, "SCRAM-SHA-256-PLUS"))
+                srv->cap.flags |= SMTP_CAP_AUTH_SCRAM_SHA_256_PLUS;
+            if (token_in_string(authstring, "SCRAM-SHA-1-PLUS"))
+                srv->cap.flags |= SMTP_CAP_AUTH_SCRAM_SHA_1_PLUS;
+            if (token_in_string(authstring, "SCRAM-SHA-256"))
                 srv->cap.flags |= SMTP_CAP_AUTH_SCRAM_SHA_256;
-            }
-            if (strstr(s + 9, "GSSAPI"))
-            {
+            if (token_in_string(authstring, "SCRAM-SHA-1"))
+                srv->cap.flags |= SMTP_CAP_AUTH_SCRAM_SHA_1;
+            if (token_in_string(authstring, "PLAIN"))
+                srv->cap.flags |= SMTP_CAP_AUTH_PLAIN;
+            if (token_in_string(authstring, "GSSAPI"))
                 srv->cap.flags |= SMTP_CAP_AUTH_GSSAPI;
-            }
-            if (strstr(s + 9, "EXTERNAL"))
-            {
+            if (token_in_string(authstring, "EXTERNAL"))
                 srv->cap.flags |= SMTP_CAP_AUTH_EXTERNAL;
-            }
-            if (strstr(s + 9, "LOGIN"))
-            {
-                srv->cap.flags |= SMTP_CAP_AUTH_LOGIN;
-            }
-            if (strstr(s + 9, "NTLM"))
-            {
-                srv->cap.flags |= SMTP_CAP_AUTH_NTLM;
-            }
-            if (strstr(s + 9, "OAUTHBEARER"))
-            {
+            if (token_in_string(authstring, "OAUTHBEARER"))
                 srv->cap.flags |= SMTP_CAP_AUTH_OAUTHBEARER;
-            }
-            if (strstr(s + 9, "XOAUTH2"))
-            {
+            if (token_in_string(authstring, "CRAM-MD5"))
+                srv->cap.flags |= SMTP_CAP_AUTH_CRAM_MD5;
+            if (token_in_string(authstring, "DIGEST-MD5"))
+                srv->cap.flags |= SMTP_CAP_AUTH_DIGEST_MD5;
+            if (token_in_string(authstring, "LOGIN"))
+                srv->cap.flags |= SMTP_CAP_AUTH_LOGIN;
+            if (token_in_string(authstring, "NTLM"))
+                srv->cap.flags |= SMTP_CAP_AUTH_NTLM;
+            if (token_in_string(authstring, "XOAUTH2"))
                 srv->cap.flags |= SMTP_CAP_AUTH_XOAUTH2;
-            }
         }
         else if (strncmp(s + 4, "ETRN", 4) == 0)
         {
@@ -1099,14 +1082,18 @@ int smtp_server_supports_authmech(smtp_server_t *srv, const char *mech)
 {
     return (((srv->cap.flags & SMTP_CAP_AUTH_PLAIN)
                 && strcmp(mech, "PLAIN") == 0)
+            || ((srv->cap.flags & SMTP_CAP_AUTH_SCRAM_SHA_1_PLUS)
+                && strcmp(mech, "SCRAM-SHA-1-PLUS") == 0)
+            || ((srv->cap.flags & SMTP_CAP_AUTH_SCRAM_SHA_1)
+                && strcmp(mech, "SCRAM-SHA-1") == 0)
+            || ((srv->cap.flags & SMTP_CAP_AUTH_SCRAM_SHA_256_PLUS)
+                && strcmp(mech, "SCRAM-SHA-256-PLUS") == 0)
+            || ((srv->cap.flags & SMTP_CAP_AUTH_SCRAM_SHA_256)
+                && strcmp(mech, "SCRAM-SHA-256") == 0)
             || ((srv->cap.flags & SMTP_CAP_AUTH_CRAM_MD5)
                 && strcmp(mech, "CRAM-MD5") == 0)
             || ((srv->cap.flags & SMTP_CAP_AUTH_DIGEST_MD5)
                 && strcmp(mech, "DIGEST-MD5") == 0)
-            || ((srv->cap.flags & SMTP_CAP_AUTH_SCRAM_SHA_1)
-                && strcmp(mech, "SCRAM-SHA-1") == 0)
-            || ((srv->cap.flags & SMTP_CAP_AUTH_SCRAM_SHA_256)
-                && strcmp(mech, "SCRAM-SHA-256") == 0)
             || ((srv->cap.flags & SMTP_CAP_AUTH_EXTERNAL)
                 && strcmp(mech, "EXTERNAL") == 0)
             || ((srv->cap.flags & SMTP_CAP_AUTH_GSSAPI)
@@ -1222,10 +1209,17 @@ int smtp_auth(smtp_server_t *srv,
 #ifdef HAVE_TLS
         if (mtls_is_active(&srv->mtls))
         {
-            if (gsasl_client_support_p(ctx, "PLAIN")
-                    && (srv->cap.flags & SMTP_CAP_AUTH_PLAIN))
+            if (gsasl_client_support_p(ctx, "SCRAM-SHA-256-PLUS")
+                    && (srv->cap.flags & SMTP_CAP_AUTH_SCRAM_SHA_256_PLUS)
+                    && srv->mtls.channel_binding)
             {
-                auth_mech = "PLAIN";
+                auth_mech = "SCRAM-SHA-256-PLUS";
+            }
+            else if (gsasl_client_support_p(ctx, "SCRAM-SHA-1-PLUS")
+                    && (srv->cap.flags & SMTP_CAP_AUTH_SCRAM_SHA_1_PLUS)
+                    && srv->mtls.channel_binding)
+            {
+                auth_mech = "SCRAM-SHA-1-PLUS";
             }
             else if (gsasl_client_support_p(ctx, "SCRAM-SHA-256")
                     && (srv->cap.flags & SMTP_CAP_AUTH_SCRAM_SHA_256))
@@ -1236,6 +1230,11 @@ int smtp_auth(smtp_server_t *srv,
                     && (srv->cap.flags & SMTP_CAP_AUTH_SCRAM_SHA_1))
             {
                 auth_mech = "SCRAM-SHA-1";
+            }
+            else if (gsasl_client_support_p(ctx, "PLAIN")
+                    && (srv->cap.flags & SMTP_CAP_AUTH_PLAIN))
+            {
+                auth_mech = "PLAIN";
             }
             else if (gsasl_client_support_p(ctx, "CRAM-MD5")
                     && (srv->cap.flags & SMTP_CAP_AUTH_CRAM_MD5))
@@ -1303,7 +1302,7 @@ int smtp_auth(smtp_server_t *srv,
                     auth_mech);
             return SMTP_EUNAVAIL;
         }
-        /* SCRAM-SHA-256, SCRAM-SHA-1, DIGEST-MD5, CRAM-MD5, PLAIN, LOGIN, NTLM, OAUTHBEARER, XOAUTH2
+        /* SCRAM-*, DIGEST-MD5, CRAM-MD5, PLAIN, LOGIN, NTLM, OAUTHBEARER, XOAUTH2
          * all need a password */
         if (strcmp(auth_mech, "GSSAPI") != 0 && !password)
         {
@@ -1317,6 +1316,16 @@ int smtp_auth(smtp_server_t *srv,
                 return SMTP_EUNAVAIL;
             }
             password = callback_password;
+        }
+        /* SCRAM-*-PLUS need TLS channel binding info */
+        if ((strcmp(auth_mech, "SCRAM-SHA-256-PLUS") == 0
+                    || strcmp(auth_mech, "SCRAM-SHA-1-PLUS") == 0)
+                && !srv->mtls.channel_binding)
+        {
+            gsasl_done(ctx);
+            *errstr = xasprintf(_("authentication method %s needs TLS channel binding information"),
+                    auth_mech);
+            return SMTP_EUNAVAIL;
         }
     }
 
@@ -1371,6 +1380,13 @@ int smtp_auth(smtp_server_t *srv,
     if (ntlmdomain)
     {
         gsasl_property_set(sctx, GSASL_REALM, ntlmdomain);
+    }
+    /* For SCRAM-*-PLUS */
+    if (srv->mtls.channel_binding)
+    {
+        gsasl_property_set(sctx, srv->mtls.is_tls_1_3_or_newer
+                ? GSASL_CB_TLS_EXPORTER : GSASL_CB_TLS_UNIQUE,
+                srv->mtls.channel_binding);
     }
 
     /* Bigg authentication loop */
@@ -1443,10 +1459,12 @@ int smtp_auth(smtp_server_t *srv,
             }
         }
         /* Some methods (at least CRAM-MD5) must not send an empty outbuf,
-         * while others (SCRAM-SHA-1, GSSAPI) must. Confirmed
+         * while others (SCRAM-*, GSSAPI) must. Confirmed
          * with mpop on 2011-01-17 with one POP3 server and the methods CRAM-MD5
          * and SCRAM-SHA-1. */
         if (outbuf[0]
+                || strcmp(auth_mech, "SCRAM-SHA-256-PLUS") == 0
+                || strcmp(auth_mech, "SCRAM-SHA-1-PLUS") == 0
                 || strcmp(auth_mech, "SCRAM-SHA-256") == 0
                 || strcmp(auth_mech, "SCRAM-SHA-1") == 0
                 || strcmp(auth_mech, "GSSAPI") == 0)

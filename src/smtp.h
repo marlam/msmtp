@@ -4,7 +4,7 @@
  * This file is part of msmtp, an SMTP client.
  *
  * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2008, 2010, 2012, 2014, 2016,
- * 2018, 2019, 2020
+ * 2018, 2019, 2020, 2021, 2022, 2023
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -58,23 +58,25 @@
 
 /* SMTP capabilities */
 
-#define SMTP_CAP_STARTTLS               (1 << 0)
-#define SMTP_CAP_DSN                    (1 << 1)
-#define SMTP_CAP_PIPELINING             (1 << 2)
-#define SMTP_CAP_SIZE                   (1 << 3)
-#define SMTP_CAP_AUTH                   (1 << 4)
-#define SMTP_CAP_AUTH_PLAIN             (1 << 5)
-#define SMTP_CAP_AUTH_LOGIN             (1 << 6)
-#define SMTP_CAP_AUTH_CRAM_MD5          (1 << 7)
-#define SMTP_CAP_AUTH_DIGEST_MD5        (1 << 8)
-#define SMTP_CAP_AUTH_SCRAM_SHA_1       (1 << 9)
-#define SMTP_CAP_AUTH_GSSAPI            (1 << 10)
-#define SMTP_CAP_AUTH_EXTERNAL          (1 << 11)
-#define SMTP_CAP_AUTH_NTLM              (1 << 12)
-#define SMTP_CAP_AUTH_OAUTHBEARER       (1 << 13)
-#define SMTP_CAP_AUTH_XOAUTH2           (1 << 14)
-#define SMTP_CAP_ETRN                   (1 << 15)
-#define SMTP_CAP_AUTH_SCRAM_SHA_256     (1 << 16)
+#define SMTP_CAP_STARTTLS                (1 << 0)
+#define SMTP_CAP_DSN                     (1 << 1)
+#define SMTP_CAP_PIPELINING              (1 << 2)
+#define SMTP_CAP_SIZE                    (1 << 3)
+#define SMTP_CAP_AUTH                    (1 << 4)
+#define SMTP_CAP_AUTH_PLAIN              (1 << 5)
+#define SMTP_CAP_AUTH_LOGIN              (1 << 6)
+#define SMTP_CAP_AUTH_CRAM_MD5           (1 << 7)
+#define SMTP_CAP_AUTH_DIGEST_MD5         (1 << 8)
+#define SMTP_CAP_AUTH_GSSAPI             (1 << 9)
+#define SMTP_CAP_AUTH_EXTERNAL           (1 << 10)
+#define SMTP_CAP_AUTH_NTLM               (1 << 11)
+#define SMTP_CAP_AUTH_OAUTHBEARER        (1 << 12)
+#define SMTP_CAP_AUTH_XOAUTH2            (1 << 13)
+#define SMTP_CAP_AUTH_SCRAM_SHA_1_PLUS   (1 << 14)
+#define SMTP_CAP_AUTH_SCRAM_SHA_1        (1 << 15)
+#define SMTP_CAP_AUTH_SCRAM_SHA_256_PLUS (1 << 16)
+#define SMTP_CAP_AUTH_SCRAM_SHA_256      (1 << 17)
+#define SMTP_CAP_ETRN                    (1 << 18)
 
 
 /*

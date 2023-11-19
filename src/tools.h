@@ -3,7 +3,8 @@
  *
  * This file is part of msmtp, an SMTP client, and of mpop, a POP3 client.
  *
- * Copyright (C) 2004, 2005, 2006, 2007, 2011, 2014, 2018, 2019, 2020
+ * Copyright (C) 2004, 2005, 2006, 2007, 2011, 2014, 2018, 2019, 2020, 2021,
+ * 2022, 2023
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -216,6 +217,15 @@ char *string_replace(char *str, const char *s, const char *r);
  * Replaces all control characters in the string with a question mark
  */
 char *sanitize_string(char *str);
+
+/*
+ * token_in_string()
+ *
+ * Checks if a given token can be found in a list of space-separated tokens.
+ * This function makes sure that the token is nt just found as a substring of
+ * another token.
+ */
+int token_in_string(const char *string, const char *token);
 
 /*
  * print_fingerprint()

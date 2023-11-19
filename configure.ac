@@ -352,7 +352,7 @@ elif test "$libidn" = "yes"; then
 else
     echo "IDN support ............ : no"
 fi
-echo "GNU SASL support ....... : $libgsasl (most likely unnecessary)"
+echo "GNU SASL support ....... : $libgsasl"
 echo "Libsecret support (GNOME): $libsecret"
 echo "MacOS X Keychain support : $macosx_keyring"
 echo "Build msmtpd ............: $build_msmtpd"

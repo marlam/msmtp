@@ -22,7 +22,7 @@ but it can use the following to enhance its feature set:
 - GnuTLS. The GnuTLS library provides TLS support.
   Alternatively, libtls from the LibreSSL project can be used.
 - GNU SASL. Using the GNU SASL library adds support for some additional
-  authentication methods. You only need it for SCRAM-SHA-* and GSSAPI.
+  authentication methods, including SCRAM-* and GSSAPI.
 - GNU libidn2. On modern Linux systems with recent glibc and GnuTLS
   libraries, msmtp has automatic support for Internationalized Domain Names
   (IDN). On other systems, IDN support is available via libidn2.

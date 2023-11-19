@@ -455,16 +455,18 @@ int check_auth_arg(char *arg)
     {
         return 0;
     }
-    else if (strcmp(arg, "plain") == 0
-            || strcmp(arg, "cram-md5") == 0
-            || strcmp(arg, "digest-md5") == 0
-            || strcmp(arg, "scram-sha-1") == 0
+    else if (  strcmp(arg, "scram-sha-256-plus") == 0
+            || strcmp(arg, "scram-sha-1-plus") == 0
             || strcmp(arg, "scram-sha-256") == 0
+            || strcmp(arg, "scram-sha-1") == 0
+            || strcmp(arg, "plain") == 0
             || strcmp(arg, "gssapi") == 0
             || strcmp(arg, "external") == 0
+            || strcmp(arg, "oauthbearer") == 0
+            || strcmp(arg, "cram-md5") == 0
+            || strcmp(arg, "digest-md5") == 0
             || strcmp(arg, "login") == 0
             || strcmp(arg, "ntlm") == 0
-            || strcmp(arg, "oauthbearer") == 0
             || strcmp(arg, "xoauth2") == 0)
     {
         l = strlen(arg);

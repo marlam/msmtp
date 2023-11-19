@@ -10,7 +10,7 @@
 .\" under the terms of the GNU Free Documentation License, Version 1.2 or
 .\" any later version published by the Free Software Foundation; with no
 .\" Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
-.TH MSMTP 1 2023-04
+.TH MSMTP 1 2023-11
 .SH NAME
 msmtp \- An SMTP client
 .SH SYNOPSIS
@@ -391,17 +391,15 @@ If you do it anyway, you must make sure that the file can only be read by yourse
 It is recommended to use method 1 or 2.
 .br
 Multiple authentication methods exist. Most servers support only some of them.
-Historically, sophisticated methods were developed to protect passwords from
-being sent unencrypted to the server, but nowadays everybody needs TLS anyway,
-so the simple methods suffice since the whole session is protected. A suitable
-authentication method is chosen automatically, and when TLS is disabled for
-some reason, only methods that avoid sending cleartext passwords are
-considered.
 .br
 The following user / password methods are supported: \fIplain\fP (a simple
 cleartext method, with base64 encoding, supported by almost all servers),
-\fIscram\-sha\-1\fP (a method that avoids cleartext passwords),
-\fIscram\-sha\-256\fP (same but with stronger hash),
+\fIscram\-sha\-1\fP and \fIscram\-sha\-1\-plus\fP (a method that avoids cleartext
+passwords and requires the server to prove that it is in posession of the
+(hashed and salted) password, which prevents some man-in-the-middle-attacks.
+The \fI-plus\fP variant additionally uses TLS channel binding information for even
+better security guarantees),
+\fIscram\-sha\-256\fP and \fIscram\-sha\-256\-plus\fP (same but with a stronger hash function),
 \fIcram\-md5\fP (an obsolete method that avoids cleartext passwords, but is not
 considered secure anymore),
 \fIdigest\-md5\fP (an overcomplicated
@@ -410,6 +408,13 @@ anymore), \fIlogin\fP (a non-standard cleartext method similar to but worse
 than the plain method), \fIntlm\fP (an obscure non-standard method that is now
 considered broken; it sometimes requires a special domain parameter passed via
 \fBntlmdomain\fP).
+.br
+If no method is specified, msmtp will autoselect one based on security
+benefits.  With TLS, the order is \fIscram\-sha\-256\-plus\fP, \fIscram\-sha\-1\-plus\fP,
+\fIscram\-sha\-256\fP, \fIscram\-sha\-1\fP, \fIplain\fP,
+followed by some of the obsolete methods if nothing else is
+available. Without TLS, only \fIscram\-sha\-256\fP and \fIscram\-sha\-1\fP
+are considered.
 .br
 There are currently three authentication methods that are not based on user /
 password information and have to be chosen manually: \fIoauthbearer\fP or its

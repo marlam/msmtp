@@ -539,50 +539,32 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
         {
             printf("    AUTH:\n        %s\n        ",
                     _("Supported authentication methods:"));
-            if (srv.cap.flags & SMTP_CAP_AUTH_PLAIN)
-            {
-                printf("PLAIN ");
-            }
-            if (srv.cap.flags & SMTP_CAP_AUTH_SCRAM_SHA_1)
-            {
-                printf("SCRAM-SHA-1 ");
-            }
+            if (srv.cap.flags & SMTP_CAP_AUTH_SCRAM_SHA_256_PLUS)
+                printf("SCRAM-SHA-256-PLUS ");
+            if (srv.cap.flags & SMTP_CAP_AUTH_SCRAM_SHA_1_PLUS)
+                printf("SCRAM-SHA-1-PLUS ");
             if (srv.cap.flags & SMTP_CAP_AUTH_SCRAM_SHA_256)
-            {
                 printf("SCRAM-SHA-256 ");
-            }
-            if (srv.cap.flags & SMTP_CAP_AUTH_EXTERNAL)
-            {
-                printf("EXTERNAL ");
-            }
+            if (srv.cap.flags & SMTP_CAP_AUTH_SCRAM_SHA_1)
+                printf("SCRAM-SHA-1 ");
+            if (srv.cap.flags & SMTP_CAP_AUTH_PLAIN)
+                printf("PLAIN ");
             if (srv.cap.flags & SMTP_CAP_AUTH_GSSAPI)
-            {
                 printf("GSSAPI ");
-            }
-            if (srv.cap.flags & SMTP_CAP_AUTH_CRAM_MD5)
-            {
-                printf("CRAM-MD5 ");
-            }
-            if (srv.cap.flags & SMTP_CAP_AUTH_DIGEST_MD5)
-            {
-                printf("DIGEST-MD5 ");
-            }
-            if (srv.cap.flags & SMTP_CAP_AUTH_LOGIN)
-            {
-                printf("LOGIN ");
-            }
-            if (srv.cap.flags & SMTP_CAP_AUTH_NTLM)
-            {
-                printf("NTLM ");
-            }
+            if (srv.cap.flags & SMTP_CAP_AUTH_EXTERNAL)
+                printf("EXTERNAL ");
             if (srv.cap.flags & SMTP_CAP_AUTH_OAUTHBEARER)
-            {
                 printf("OAUTHBEARER ");
-            }
+            if (srv.cap.flags & SMTP_CAP_AUTH_CRAM_MD5)
+                printf("CRAM-MD5 ");
+            if (srv.cap.flags & SMTP_CAP_AUTH_DIGEST_MD5)
+                printf("DIGEST-MD5 ");
+            if (srv.cap.flags & SMTP_CAP_AUTH_LOGIN)
+                printf("LOGIN ");
+            if (srv.cap.flags & SMTP_CAP_AUTH_NTLM)
+                printf("NTLM ");
             if (srv.cap.flags & SMTP_CAP_AUTH_XOAUTH2)
-            {
                 printf("XOAUTH2 ");
-            }
             printf("\n");
         }
 #ifdef HAVE_TLS
@@ -2207,50 +2189,32 @@ void msmtp_print_version(void)
             _("built-in")
 #endif /* HAVE_LIBGSASL */
           );
-    if (smtp_client_supports_authmech("PLAIN"))
-    {
-        printf("plain ");
-    }
-    if (smtp_client_supports_authmech("SCRAM-SHA-1"))
-    {
-        printf("scram-sha-1 ");
-    }
+    if (smtp_client_supports_authmech("SCRAM-SHA-256-PLUS"))
+        printf("scram-sha-256-plus ");
+    if (smtp_client_supports_authmech("SCRAM-SHA-1-PLUS"))
+        printf("scram-sha-1-plus ");
     if (smtp_client_supports_authmech("SCRAM-SHA-256"))
-    {
         printf("scram-sha-256 ");
-    }
-    if (smtp_client_supports_authmech("EXTERNAL"))
-    {
-        printf("external ");
-    }
+    if (smtp_client_supports_authmech("SCRAM-SHA-1"))
+        printf("scram-sha-1 ");
+    if (smtp_client_supports_authmech("PLAIN"))
+        printf("plain ");
     if (smtp_client_supports_authmech("GSSAPI"))
-    {
         printf("gssapi ");
-    }
-    if (smtp_client_supports_authmech("CRAM-MD5"))
-    {
-        printf("cram-md5 ");
-    }
-    if (smtp_client_supports_authmech("DIGEST-MD5"))
-    {
-        printf("digest-md5 ");
-    }
-    if (smtp_client_supports_authmech("LOGIN"))
-    {
-        printf("login ");
-    }
-    if (smtp_client_supports_authmech("NTLM"))
-    {
-        printf("ntlm ");
-    }
+    if (smtp_client_supports_authmech("EXTERNAL"))
+        printf("external ");
     if (smtp_client_supports_authmech("OAUTHBEARER"))
-    {
         printf("oauthbearer ");
-    }
+    if (smtp_client_supports_authmech("CRAM-MD5"))
+        printf("cram-md5 ");
+    if (smtp_client_supports_authmech("DIGEST-MD5"))
+        printf("digest-md5 ");
+    if (smtp_client_supports_authmech("LOGIN"))
+        printf("login ");
+    if (smtp_client_supports_authmech("NTLM"))
+        printf("ntlm ");
     if (smtp_client_supports_authmech("XOAUTH2"))
-    {
         printf("xoauth2 ");
-    }
     printf("\n");
     /* Internationalized Domain Names support */
     printf(_("IDN support: "));

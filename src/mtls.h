@@ -4,7 +4,7 @@
  * This file is part of msmtp, an SMTP client, and of mpop, a POP3 client.
  *
  * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2010, 2014, 2016,
- * 2018, 2019, 2020
+ * 2018, 2019, 2020, 2021, 2022, 2023
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -65,6 +65,14 @@ typedef struct
     unsigned char fingerprint[32];
     int no_certcheck;
     char *hostname;
+    int is_tls_1_3_or_newer; /* flag that is set if the
+                                protocol version is known to be TLS >= 1.3
+                                (available only when is_active is true) */
+    char *channel_binding; /* this is NULL if unavailable
+                              or of type "unique" for TLS < 1.3,
+                              or of type "exporter" for TLS >= 1.3,
+                              as a base64 encoded string
+                              (available only when is_active is true) */
     struct mtls_internals_t *internals;
 } mtls_t;
 

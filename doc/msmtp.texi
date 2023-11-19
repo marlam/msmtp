@@ -250,7 +250,8 @@ directory is used depending on the build configuration; see the output of
 @cmindex auth
 Enable or disable authentication and optionally choose a method to use. The
 argument @samp{on} chooses a method automatically.
-Accepted methods are @samp{plain}, @samp{scram-sha-1}, @samp{scram-sha-256}, @samp{oauthbearer}, @samp{xoauth2}, @samp{cram-md5},
+Accepted methods are @samp{plain}, @samp{scram-sha-256-plus}, @samp{scram-sha-1-plus},
+@samp{scram-sha-256}, @samp{scram-sha-1}, @samp{oauthbearer}, @samp{xoauth2}, @samp{cram-md5},
 @samp{gssapi}, @samp{external}, @samp{digest-md5}, @samp{login}, and
 @samp{ntlm}.
 @xref{Authentication}.@*
@@ -1003,22 +1004,18 @@ If you do it anyway, you must make sure that the file can only be read by yourse
 It is recommended to use method 1 or 2.
 
 Multiple authentication methods exist. Most servers support only some of them.
-Historically, sophisticated methods were developed to protect passwords from
-being sent unencrypted to the server, but nowadays everybody needs
-@ref{Transport Layer Security} anyway, so the simple methods suffice since the
-whole session is protected. A suitable authentication method is chosen
-automatically, and when TLS is disabled for some reason, only methods that avoid
-sending cleartext passwords are considered.
 
 The following user / password methods are supported:
 @itemize
 @item @samp{PLAIN}@*
 A simple cleartext method supported by almost all servers.
-@item @samp{SCRAM-SHA-1}@*
-A method that avoids cleartext passwords.
-@item @samp{SCRAM-SHA-256}@*
-A method that avoids cleartext passwords.  Same family as SCRAM-SHA-1
-but with stronger hash function.
+@item @samp{SCRAM-SHA-1} and @samp{SCRAM-SHA-1-PLUS}@*
+A method that avoids cleartext passwords and requires the server to prove that
+it is in posession of the (hashed and salted) password, which prevents some
+man-in-the-middle-attacks. The @samp{-PLUS} variant additionally uses TLS channel
+binding information for even better security guarantees.
+@item @samp{SCRAM-SHA-256} and @samp{SCRAM-SHA-256-PLUS}@*
+Same as the SCRAM-SHA-1 methods, but with a stronger hash function.
 @item @samp{CRAM-MD5}@*
 An obsolete method that avoids cleartext passwords, but is not considered
 secure anymore.
@@ -1031,6 +1028,13 @@ A non-standard cleartext method similar to (but worse than) PLAIN.
 An obscure non-standard method that is now considered broken. It sometimes requires
 a special domain parameter passed via @ref{ntlmdomain}. Do not use it.
 @end itemize
+
+If no method is specified, msmtp will autoselect one based on security
+benefits.  With TLS, the order is @samp{SCRAM-SHA-256-PLUS},
+@samp{SCRAM-SHA-1-PLUS}, @samp{SCRAM-SHA-256}, @samp{SCRAM-SHA-1},
+@samp{PLAIN}, followed by some of the obsolete methods if nothing else is
+available. Without TLS, only @samp{SCRAM-SHA-256} and @samp{SCRAM-SHA-1}
+are considered.
 
 There are currently three authentication methods that are not based on user /
 password information and have to be chosen manually:

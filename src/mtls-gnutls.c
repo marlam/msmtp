@@ -4,7 +4,7 @@
  * This file is part of msmtp, an SMTP client, and of mpop, a POP3 client.
  *
  * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011,
- * 2012, 2014, 2016, 2018, 2019, 2020
+ * 2012, 2014, 2016, 2018, 2019, 2020, 2021, 2022, 2023
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -44,6 +44,7 @@
 #include "xalloc.h"
 #include "readbuf.h"
 #include "tools.h"
+#include "base64.h"
 #include "mtls.h"
 
 
@@ -593,6 +594,30 @@ int mtls_start(mtls_t *mtls, int fd,
         }
     }
     mtls->is_active = 1;
+
+    /* Get the protocol version */
+    {
+        gnutls_protocol_t version = gnutls_protocol_get_version(mtls->internals->session);
+        if (version <= GNUTLS_TLS_VERSION_MAX && version >= GNUTLS_TLS1_3)
+            mtls->is_tls_1_3_or_newer = 1;
+    }
+
+    /* Get channel binding in base64-encoded form, if available */
+    {
+        /* For TLS <= 1.2, get type "unique",
+         * for TLS >= 1.3, get type "exporter". */
+        gnutls_datum_t cb;
+        error_code = gnutls_session_channel_binding(mtls->internals->session,
+                mtls->is_tls_1_3_or_newer ? GNUTLS_CB_TLS_EXPORTER
+                : GNUTLS_CB_TLS_UNIQUE, &cb);
+        if (error_code == 0)
+        {
+            size_t b64_len = BASE64_LENGTH(cb.size);
+            mtls->channel_binding = xmalloc(b64_len + 1);
+            base64_encode((const char *)cb.data, cb.size, mtls->channel_binding, b64_len + 1);
+        }
+    }
+
     return TLS_EOK;
 }
 
@@ -710,10 +735,8 @@ void mtls_close(mtls_t *mtls)
     }
     free(mtls->internals);
     mtls->internals = NULL;
-    if (mtls->hostname)
-    {
-        free(mtls->hostname);
-    }
+    free(mtls->hostname);
+    free(mtls->channel_binding);
     mtls_clear(mtls);
 }
 

@@ -250,10 +250,10 @@ directory is used depending on the build configuration; see the output of
 @cmindex auth
 Enable or disable authentication and optionally choose a method to use. The
 argument @samp{on} chooses a method automatically.
-Accepted methods are @samp{plain}, @samp{scram-sha-256-plus}, @samp{scram-sha-1-plus},
-@samp{scram-sha-256}, @samp{scram-sha-1}, @samp{oauthbearer}, @samp{xoauth2}, @samp{cram-md5},
-@samp{gssapi}, @samp{external}, @samp{digest-md5}, @samp{login}, and
-@samp{ntlm}.
+Accepted methods are
+@samp{scram-sha-256-plus}, @samp{scram-sha-1-plus}, @samp{scram-sha-256}, @samp{scram-sha-1},
+@samp{plain}, @samp{gssapi}, @samp{external}, @samp{oauthbearer},
+@samp{cram-md5}, @samp{digest-md5}, @samp{login}, @samp{ntlm}, and @samp{xoauth2}.
 @xref{Authentication}.@*
 @anchor{user}
 @item user [@var{username}]
@@ -1007,8 +1007,6 @@ Multiple authentication methods exist. Most servers support only some of them.
 
 The following user / password methods are supported:
 @itemize
-@item @samp{PLAIN}@*
-A simple cleartext method supported by almost all servers.
 @item @samp{SCRAM-SHA-1} and @samp{SCRAM-SHA-1-PLUS}@*
 A method that avoids cleartext passwords and requires the server to prove that
 it is in posession of the (hashed and salted) password, which prevents some
@@ -1016,6 +1014,8 @@ man-in-the-middle-attacks. The @samp{-PLUS} variant additionally uses TLS channe
 binding information for even better security guarantees.
 @item @samp{SCRAM-SHA-256} and @samp{SCRAM-SHA-256-PLUS}@*
 Same as the SCRAM-SHA-1 methods, but with a stronger hash function.
+@item @samp{PLAIN}@*
+A simple cleartext method supported by almost all servers.
 @item @samp{CRAM-MD5}@*
 An obsolete method that avoids cleartext passwords, but is not considered
 secure anymore.

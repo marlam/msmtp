@@ -1320,7 +1320,10 @@ int smtp_auth(smtp_server_t *srv,
         /* SCRAM-*-PLUS need TLS channel binding info */
         if ((strcmp(auth_mech, "SCRAM-SHA-256-PLUS") == 0
                     || strcmp(auth_mech, "SCRAM-SHA-1-PLUS") == 0)
-                && !srv->mtls.channel_binding)
+#ifdef HAVE_TLS
+                && !srv->mtls.channel_binding
+#endif
+           )
         {
             gsasl_done(ctx);
             *errstr = xasprintf(_("authentication method %s needs TLS channel binding information"),
@@ -1382,12 +1385,14 @@ int smtp_auth(smtp_server_t *srv,
         gsasl_property_set(sctx, GSASL_REALM, ntlmdomain);
     }
     /* For SCRAM-*-PLUS */
+#ifdef HAVE_TLS
     if (srv->mtls.channel_binding)
     {
         gsasl_property_set(sctx, srv->mtls.is_tls_1_3_or_newer
                 ? GSASL_CB_TLS_EXPORTER : GSASL_CB_TLS_UNIQUE,
                 srv->mtls.channel_binding);
     }
+#endif
 
     /* Bigg authentication loop */
     input = NULL;

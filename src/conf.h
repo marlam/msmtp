@@ -29,6 +29,7 @@
 #include <stddef.h>
 
 #include "list.h"
+#include "inet.h"
 
 /*
  * If a function with an 'errstr' argument returns a value != CONF_EOK,
@@ -88,6 +89,7 @@
 #define ACC_SOCKET                      (1LL << 38LL)
 #define ACC_FROM_FULL_NAME              (1LL << 39LL)
 #define ACC_ALLOW_FROM_OVERRIDE         (1LL << 40LL)
+#define ACC_INET_PROTOCOLS              (1LL << 41LL)
 
 typedef struct
 {
@@ -101,6 +103,7 @@ typedef struct
     char *host;                 /* hostname of SMTP server */
     int port;                   /* port number */
     int timeout;                /* network timeout in seconds */
+    int inet_protocols;         /* which Internet protocols? One of INET_PROTOCOLS_* (See inet.h) */
     /* SMTP settings */
     int protocol;               /* which SMTP sub protocol? */
     char *domain;               /* argument to EHLO command */

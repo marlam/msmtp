@@ -69,6 +69,7 @@ account_t *account_new(const char *conffile, const char *id)
     a->mask = 0LL;
     a->host = NULL;
     a->port = 0;                /* this must be set later */
+    a->inet_protocols = INET_PROTOCOLS_ALL;
     a->timeout = 0;
     a->protocol = SMTP_PROTO_SMTP;
     a->domain = xstrdup("localhost");
@@ -133,6 +134,7 @@ account_t *account_copy(account_t *acc)
         a->host = acc->host ? xstrdup(acc->host) : NULL;
         a->port = acc->port;
         a->timeout = acc->timeout;
+        a->inet_protocols = acc->inet_protocols;
         a->protocol = acc->protocol;
         a->domain = acc->domain ? xstrdup(acc->domain) : NULL;
         a->allow_from_override = acc->allow_from_override;
@@ -600,6 +602,10 @@ void override_account(account_t *acc1, account_t *acc2)
     if (acc2->mask & ACC_TIMEOUT)
     {
         acc1->timeout = acc2->timeout;
+    }
+    if (acc2->mask & ACC_INET_PROTOCOLS)
+    {
+        acc1->inet_protocols = acc2->inet_protocols;
     }
     if (acc2->mask & ACC_PROTOCOL)
     {
@@ -1414,6 +1420,40 @@ int read_conffile(const char *conffile, FILE *f, list_t **acc_list,
                         e = CONF_ESYNTAX;
                         break;
                     }
+                }
+            }
+        }
+        else if (strcmp(cmd, "inet_protocols") == 0)
+        {
+            acc->mask |= ACC_INET_PROTOCOLS;
+            if (*arg == '\0')
+            {
+                *errstr = xasprintf(_("line %d: command %s needs an argument"),
+                        line, cmd);
+                e = CONF_ESYNTAX;
+                break;
+            }
+            else
+            {
+                if (strcmp(arg, "ipv4") == 0)
+                {
+                    acc->inet_protocols = INET_PROTOCOLS_IPV4;
+                }
+                else if (strcmp(arg, "ipv6") == 0)
+                {
+                    acc->inet_protocols = INET_PROTOCOLS_IPV6;
+                }
+                else if (strcmp(arg, "all") == 0)
+                {
+                    acc->inet_protocols = INET_PROTOCOLS_ALL;
+                }
+                else
+                {
+                    *errstr = xasprintf(
+                            _("line %d: invalid argument %s for command %s"),
+                            line, arg, cmd);
+                    e = CONF_ESYNTAX;
+                    break;
                 }
             }
         }

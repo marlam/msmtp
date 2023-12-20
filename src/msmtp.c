@@ -153,7 +153,7 @@ int msmtp_rmqs(account_t *acc, int debug, const char *rmqs_argument,
 
     /* connect */
     if ((e = smtp_connect(&srv, acc->socketname, acc->proxy_host, acc->proxy_port,
-                    acc->host, acc->port, acc->source_ip, acc->timeout,
+                    acc->host, acc->port, acc->source_ip, acc->timeout, acc->inet_protocols,
                     NULL, NULL, errstr)) != NET_EOK)
     {
         return net_exitcode(e);
@@ -338,7 +338,7 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
 
     /* connect */
     if ((e = smtp_connect(&srv, acc->socketname, acc->proxy_host, acc->proxy_port,
-                    acc->host, acc->port, acc->source_ip, acc->timeout,
+                    acc->host, acc->port, acc->source_ip, acc->timeout, acc->inet_protocols,
                     &server_canonical_name, &server_address, errstr))
             != NET_EOK)
     {
@@ -1443,7 +1443,7 @@ int msmtp_sendmail(account_t *acc, list_t *recipients,
 
     /* connect */
     if ((e = smtp_connect(&srv, acc->socketname, acc->proxy_host, acc->proxy_port,
-                    acc->host, acc->port, acc->source_ip, acc->timeout,
+                    acc->host, acc->port, acc->source_ip, acc->timeout, acc->inet_protocols,
                     NULL, NULL, errstr)) != NET_EOK)
     {
         e = net_exitcode(e);
@@ -3609,6 +3609,10 @@ void msmtp_print_conf(msmtp_cmdline_conf_t conf, account_t *account)
     printf("host = %s\n",
             account->host ? account->host : _("(not set)"));
     printf("port = %d\n", account->port);
+    printf("inet protocols = %s\n",
+        account->inet_protocols == INET_PROTOCOLS_IPV4 ? "ipv4" :
+        account->inet_protocols == INET_PROTOCOLS_IPV6 ? "ipv6" :
+        "all");
     printf("source ip = %s\n",
             account->source_ip ? account->source_ip : _("(not set)"));
     printf("proxy host = %s\n",

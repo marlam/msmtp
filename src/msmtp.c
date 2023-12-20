@@ -2532,6 +2532,7 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
     conf->rmqs_argument = NULL;
     /* account information from the command line */
     conf->cmdline_account = account_new(NULL, NULL);
+    conf->cmdline_account->inet_protocols = 0;
     conf->account_id = NULL;
     conf->user_conffile = NULL;
     /* the recipients */
@@ -2541,7 +2542,7 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
     error_code = 0;
     for (;;)
     {
-        c = getopt_long(argc, argv, "Pd::SC:a:f:N:R:X:tA:B:b:F:Gh:iL:mnO:o:v",
+        c = getopt_long(argc, argv, "Pd::SC:a:f:N:R:X:tA:B:b:F:Gh:iL:mnO:o:v46",
                 options, NULL);
         if (c == -1)
         {
@@ -3333,6 +3334,15 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
                 conf->cmdline_account->mask |= ACC_REMOVE_BCC_HEADERS;
                 break;
 
+            case '4':
+                conf->cmdline_account->mask |= ACC_INET_PROTOCOLS;
+                conf->cmdline_account->inet_protocols |= INET_PROTOCOLS_IPV4;
+                break;
+            case '6':
+                conf->cmdline_account->mask |= ACC_INET_PROTOCOLS;
+                conf->cmdline_account->inet_protocols |= INET_PROTOCOLS_IPV6;
+                break;
+
             case 'A':
             case 'B':
             case 'G':
@@ -3354,6 +3364,10 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
         {
             break;
         }
+    }
+    if (conf->cmdline_account->inet_protocols == 0)
+    {
+        conf->cmdline_account->inet_protocols = INET_PROTOCOLS_ALL;
     }
     if (error_code)
     {

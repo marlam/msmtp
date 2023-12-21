@@ -100,6 +100,10 @@ Set or unset a local unix domain socket name to connect to. See the \fBsocket\fP
 Set or unset a network timeout, in seconds. See the \fBtimeout\fP command.
 .IP "\-\-protocol=(\fIsmtp\fP|\fIlmtp\fP)
 Set the protocol. See the \fBprotocol\fP command.
+.IP "-4"
+Force IPv4 address resolution.
+.IP "-6"
+Force IPv6 address resolution.
 .IP "\-\-domain=[\fIstring\fP]"
 Set the argument of the SMTP EHLO (or LMTP LHLO) command, and the domain part for the
 Message-ID header. See the \fBdomain\fP command.
@@ -337,6 +341,9 @@ timeout will be set, which means that the operating system default will be used.
 .IP "protocol (\fIsmtp\fP|\fIlmtp\fP)"
 Set the protocol to use. Currently only SMTP and LMTP are supported. SMTP is
 the default. See the \fBport\fP command above for default ports.
+.IP "inet_protocols (\fIipv4\fP|\fIipv6\fP|\fIall\fP)"
+Forces IPv4 or IPv6 address resolution. The argument \fIall\fP means
+that both IPv4 and IPv6 are used. This is the default.
 .IP "domain \fIargument\fP"
 Use this command to set the argument of the SMTP EHLO (or LMTP LHLO) command,
 and the domain part of Message-ID headers if msmtp generates them (see the

@@ -2,6 +2,9 @@ Version 1.8.26:
 - Add support for SCRAM-SHA-256-PLUS and SCRAM-SHA-1-PLUS authentication, and
   prefer SCRAM methods over the PLAIN method because of their superior
   properties.
+- A new command 'passwordfd' with a corresponding '--passwordfd' option
+  allows to read the password from a file descriptor inherited from
+  a parent process.
 
 Version 1.8.25:
 - No significant changes, just bug fixes.

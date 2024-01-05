@@ -277,6 +277,10 @@ rings, and thus to avoid storing cleartext passwords.@*
 The @var{cmd} command must not mess with standard input; if in doubt, append
 @code{< /dev/null}.@*
 @xref{Authentication}.
+@anchor{passwordfd}
+@item passwordfd [@var{number}]
+Read the password from the file descriptor @var{number} inherited from
+a parent process.
 @anchor{ntlmdomain}
 @item ntlmdomain [@var{ntlmdomain}]
 @cmindex ntlmdomain

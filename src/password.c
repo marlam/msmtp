@@ -223,3 +223,66 @@ char *password_get(const char *hostname, const char *user,
 
     return password;
 }
+
+#define LINEBUFSIZE 501
+int password_get_fd(int fd, char **buf, char **errstr)
+{
+    int oldfd;
+    FILE *f;
+    size_t bufsize;
+    size_t len;
+
+    *buf = NULL;
+    *errstr = NULL;
+    errno = 0;
+    bufsize = 1; /* Account for the null character. */
+
+
+    oldfd = fd;
+    fd = dup(fd);
+    if (fd < 0)
+    {
+        *errstr = xasprintf("dup(): %m");
+        return 1;
+    }
+
+    f = fdopen(fd, "r");
+    if (!f)
+    {
+        *errstr = xasprintf("fdopen(): %m");
+        return 1;;
+    }
+
+    do
+    {
+        bufsize += LINEBUFSIZE;
+        *buf = xrealloc(*buf, bufsize);
+        if (!fgets(&(*buf)[bufsize - LINEBUFSIZE - 1], LINEBUFSIZE + 1, f))
+        {
+            *errstr = xasprintf(_("cannot read password from file descriptor '%d'"), oldfd);
+            fclose(f);
+            free(*buf);
+            *buf = NULL;
+            return 1;
+        }
+        len = strlen(*buf);
+        if (len > 0 && (*buf)[len - 1] == '\n')
+        {
+            /* Read only the first line. */
+            break;
+        }
+    }
+    while (!feof(f));
+    fclose(f);
+
+    if (len > 0 && (*buf)[len - 1] == '\n')
+    {
+        (*buf)[len - 1] = '\0';
+        if (len - 1 > 0 && (*buf)[len - 2] == '\r')
+        {
+            (*buf)[len - 2] = '\0';
+        }
+    }
+
+    return 0;
+}

@@ -88,6 +88,7 @@
 #define ACC_SOCKET                      (1LL << 38LL)
 #define ACC_FROM_FULL_NAME              (1LL << 39LL)
 #define ACC_ALLOW_FROM_OVERRIDE         (1LL << 40LL)
+#define ACC_PASSWORDFD                  (1LL << 41LL)
 
 typedef struct
 {
@@ -117,6 +118,7 @@ typedef struct
     char *username;             /* username for authentication */
     char *password;             /* password for authentication */
     char *passwordeval;         /* command for password evaluation */
+    int passwordfd;             /* file descriptor to read the password from */
     char *ntlmdomain;           /* domain for NTLM authentication */
     /* TLS / SSL */
     int tls;                    /* flag: use TLS? */

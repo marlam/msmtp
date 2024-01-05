@@ -8,6 +8,7 @@
  * Martin Lambers <marlam@marlam.de>
  * Martin Stenberg <martin@gnutiken.se> (passwordeval support)
  * Scott Shumate <sshumate@austin.rr.com> (aliases support)
+ * Łukasz stelmach <stlman@poczta.fm> (passwordfd support)
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -83,6 +84,7 @@ account_t *account_new(const char *conffile, const char *id)
     a->username = NULL;
     a->password = NULL;
     a->passwordeval = NULL;
+    a->passwordfd = -1;
     a->ntlmdomain = NULL;
     a->tls = 0;
     a->tls_nostarttls = 0;
@@ -146,6 +148,7 @@ account_t *account_copy(account_t *acc)
         a->username = acc->username ? xstrdup(acc->username) : NULL;
         a->password = acc->password ? xstrdup(acc->password) : NULL;
         a->passwordeval = acc->passwordeval ? xstrdup(acc->passwordeval) : NULL;
+        a->passwordfd = acc->passwordfd;
         a->ntlmdomain = acc->ntlmdomain ? xstrdup(acc->ntlmdomain) : NULL;
         a->tls = acc->tls;
         a->tls_nostarttls = acc->tls_nostarttls;
@@ -652,6 +655,10 @@ void override_account(account_t *acc1, account_t *acc2)
         free(acc1->passwordeval);
         acc1->passwordeval =
             acc2->passwordeval ? xstrdup(acc2->passwordeval) : NULL;
+    }
+    if (acc2->mask & ACC_PASSWORDFD)
+    {
+        acc1->passwordfd = acc2->passwordfd;
     }
     if (acc2->mask & ACC_NTLMDOMAIN)
     {
@@ -1530,6 +1537,11 @@ int read_conffile(const char *conffile, FILE *f, list_t **acc_list,
             acc->mask |= ACC_PASSWORDEVAL;
             free(acc->passwordeval);
             acc->passwordeval = (*arg == '\0') ? NULL : xstrdup(arg);
+        }
+        else if (strcmp(cmd, "passwordfd") == 0)
+        {
+            acc->mask |= ACC_PASSWORDFD;
+            acc->passwordfd = (*arg == '\0') ? -1 : strtol(arg, NULL, 10);
         }
         else if (strcmp(cmd, "ntlmdomain") == 0)
         {

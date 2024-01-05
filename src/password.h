@@ -44,4 +44,13 @@ char *password_get(const char *hostname, const char *user,
         int consult_netrc,
         int getpass_only_via_tty);
 
+/*
+ * password_get_fd()
+ *
+ * Reads the password from the file descriptor 'fd' and stores result in
+ * 'buf' (which is allocated).  Returns non-zero if the operation fails,
+ * otherwise zero. On error, *errstr will contain an error string.
+ */
+int password_get_fd(int fd, char **buf, char **errstr);
+
 #endif

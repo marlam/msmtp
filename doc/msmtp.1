@@ -110,6 +110,8 @@ See the \fBauth\fP command.
 Set or unset the user name for authentication. See the \fBuser\fP command.
 .IP "\-\-passwordeval=[\fIcmd\fP]"
 Evaluate password for authentication. See the \fBpasswordeval\fP command.
+.IP "\-\-passwordfd=[\fInumber\fP]"
+Read password from a file descriptor. See the \fBpasswordfd\fP command.
 .IP "\-\-tls[=(\fIon\fP|\fIoff\fP)]"
 Enable or disable TLS/SSL. See the \fBtls\fP command.
 .IP "\-\-tls\-starttls[=(\fIon\fP|\fIoff\fP)]"
@@ -381,13 +383,15 @@ joe.smith with your user name.
 2. Store the password in an encrypted files, and use \fBpasswordeval\fP
 to specify a command to decrypt that file, e.g. using GnuPG. See EXAMPLES.
 .br
-3. Store the password in the configuration file using the \fBpassword\fP command.
+3. Pass the password via a file descriptor inherited from a parent process.
+.br
+4. Store the password in the configuration file using the \fBpassword\fP command.
 (Usually it is not considered a good idea to store passwords in cleartext files.
 If you do it anyway, you must make sure that the file can only be read by yourself.)
 .br
-4. Store the password in ~/.netrc. This method is probably obsolete.
+5. Store the password in ~/.netrc. This method is probably obsolete.
 .br
-5. Type the password into the terminal when it is required.
+6. Type the password into the terminal when it is required.
 .br
 It is recommended to use method 1 or 2.
 .br
@@ -422,9 +426,9 @@ password information and have to be chosen manually: \fIoauthbearer\fP or its
 predecessor \fIxoauth2\fP (an OAuth2
 token from the mail provider is used as the password.
 See the documentation of your mail provider for details on how to get this
-token. The \fBpasswordeval\fP command can be used to pass the regularly changing
-tokens into msmtp from a script or an environment variable),
-\fIexternal\fP (the
+token. The \fBpasswordeval\fP or \fBpasswordfd\fP command can be used
+to pass the regularly changing tokens into msmtp from a script or an
+environment variable), \fIexternal\fP (the
 authentication happens outside of the protocol, typically by sending a TLS
 client certificate, and the method merely confirms that this authentication
 succeeded), and \fIgssapi\fP (the Kerberos framework takes care of secure
@@ -437,8 +441,9 @@ methods are supported.
 Set the user name for authentication. An empty argument unsets the user name.
 .IP "password \fIsecret\fP"
 Set the password for authentication. An empty argument unsets the password.
-Consider using the \fBpasswordeval\fP command or a key ring instead of this
-command, to avoid storing cleartext passwords in the configuration file.
+Consider using the \fBpasswordeval\fP or \fBpasswordfd\fP command or a
+key ring instead of this command, to avoid storing cleartext passwords
+in the configuration file.
 .IP "passwordeval [\fIcmd\fP]"
 Set the password for authentication to the output (stdout) of the command
 \fIcmd\fP.
@@ -447,6 +452,9 @@ rings, and thus to avoid storing cleartext passwords.
 .br
 The \fIcmd\fP command must not mess with standard input; if in doubt, append
 \fI< /dev/null\fP.
+.IP "passwordfd [\fInumber\fP]"
+Read the password from the file descriptor \fInumber\fP inherited from
+a parent process.
 .IP "ntlmdomain [\fIdomain\fP]"
 Set a domain for the \fBntlm\fP authentication method. This is obsolete.
 .IP "tls [(\fIon\fP|\fIoff\fP)]"
@@ -510,7 +518,7 @@ device by specifying GnuTLS device URIs in \fBtls_cert_file\fP and
 \fBtls_key_file\fP. You can find the correct URIs using \fBp11tool
 \-\-list-privkeys \-\-login\fP (p11tool is bundled with GnuTLS). If your device
 requires a PIN to access the data, you can specify that using one of the
-password mechanisms (e.g. \fBpasswordeval\fP, \fBpassword\fP). 
+password mechanisms (e.g. \fBpasswordeval\fP, \fBpasswordfd\fP, \fBpassword\fP).
 .IP "tls_starttls [(\fIon\fP|\fIoff\fP)]"
 Choose the TLS variant: start TLS from within the session (\fIon\fP, default),
 or tunnel the session through TLS (\fIoff\fP).

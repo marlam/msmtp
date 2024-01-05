@@ -8,6 +8,7 @@
  * Martin Lambers <marlam@marlam.de>
  * Martin Stenberg <martin@gnutiken.se> (passwordeval support)
  * Scott Shumate <sshumate@austin.rr.com> (aliases support)
+ * Łukasz Stelmach <stlman@poczta.fm> (passwordfd support)
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -65,6 +66,9 @@ extern int optind;
 #ifdef HAVE_TLS
 # include "mtls.h"
 #endif /* HAVE_TLS */
+
+/* buffer size for password */
+#define LINEBUFSIZE 501
 
 /* Default file names. */
 #ifdef W32_NATIVE
@@ -2321,6 +2325,7 @@ void msmtp_print_help(void)
              "                               choose the method\n"));
     printf(_("  --user=[username]            set/unset user name for authentication\n"));
     printf(_("  --passwordeval=[eval]        evaluate password for authentication\n"));
+    printf(_("  --passwordfd=[fd]            read the password from the file descriptor\n"));
     printf(_("  --tls[=(on|off)]             enable/disable TLS encryption\n"));
     printf(_("  --tls-starttls[=(on|off)]    enable/disable STARTTLS for TLS\n"));
     printf(_("  --tls-trust-file=[file]      set/unset trust file for TLS\n"));
@@ -2431,6 +2436,7 @@ typedef struct
 #define LONGONLYOPT_SET_FROM_HEADER             (256 + 39)
 #define LONGONLYOPT_SET_DATE_HEADER             (256 + 40)
 #define LONGONLYOPT_SET_MSGID_HEADER            (256 + 41)
+#define LONGONLYOPT_PASSWORDFD                  (256 + 42)
 
 int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
 {
@@ -2457,6 +2463,7 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
         { "auth", optional_argument, 0, LONGONLYOPT_AUTH },
         { "user", required_argument, 0, LONGONLYOPT_USER },
         { "passwordeval", required_argument, 0, LONGONLYOPT_PASSWORDEVAL },
+        { "passwordfd", required_argument, 0, LONGONLYOPT_PASSWORDFD },
         { "tls", optional_argument, 0, LONGONLYOPT_TLS },
         { "tls-starttls", optional_argument, 0, LONGONLYOPT_TLS_STARTTLS },
         { "tls-trust-file", required_argument, 0, LONGONLYOPT_TLS_TRUST_FILE },
@@ -2767,6 +2774,12 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
                 conf->cmdline_account->passwordeval =
                     (*optarg == '\0') ? NULL : xstrdup(optarg);
                 conf->cmdline_account->mask |= ACC_PASSWORDEVAL;
+                break;
+
+            case LONGONLYOPT_PASSWORDFD:
+                conf->cmdline_account->passwordfd =
+                    (*optarg == '\0') ? -1 : strtol(optarg, NULL, 10);
+                conf->cmdline_account->mask |= ACC_PASSWORDFD;
                 break;
 
             case LONGONLYOPT_TLS:
@@ -3657,6 +3670,14 @@ void msmtp_print_conf(msmtp_cmdline_conf_t conf, account_t *account)
     printf("password = %s\n", account->password ? "*" : _("(not set)"));
     printf("passwordeval = %s\n",
             account->passwordeval ? account->passwordeval : _("(not set)"));
+    if (account->passwordfd < 0)
+    {
+        printf("passwordfd = %s\n", _("(not set)"));
+    }
+    else
+    {
+        printf("passwordfd = %d\n", account->passwordfd);
+    }
     printf("ntlmdomain = %s\n",
             account->ntlmdomain ? account->ntlmdomain : _("(not set)"));
     printf("tls = %s\n", account->tls ? _("on") : _("off"));
@@ -4023,9 +4044,12 @@ int main(int argc, char *argv[])
 
     /* OK, we're using the settings in 'account'. Complete them and check
      * them. */
-    if (account->auth_mech && !account->password && account->passwordeval)
+    if (account->auth_mech && !account->password)
     {
-        if (eval(account->passwordeval, &account->password, &errstr) != 0)
+        if ((account->passwordeval
+                && eval(account->passwordeval, &account->password, &errstr) != 0)
+            || ((account->passwordfd >= 0)
+                && password_get_fd(account->passwordfd, &account->password, &errstr) != 0))
         {
             print_error("%s", sanitize_string(errstr));
             error_code = EX_CONFIG;

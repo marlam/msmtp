@@ -62,6 +62,13 @@ all config is done by exporting these environment variables
   set the MSMTPQ_Q var to point to the location of the queue directory
   set the MSMTPQ_LOG var to point to the location of the queue log
 
+you can put this variables into a config file msmtpq is considering now ;
+see as example:
+cat << EOF > ~/.msmtpqrc
+MSMTPQ_Q=~/.msmtp.queue
+MSMTPQ_LOG=~/log/msmtp.queue.log
+EOF
+
 the MSMTP variable can have the location of the msmtp executable entered
 into it if it is not on the path ; this might be useful in unusual
 circumstances, such as embedded systems, etc. ; otherwise, if you are

@@ -2,6 +2,8 @@ Version 1.8.26:
 - Add support for SCRAM-SHA-256-PLUS and SCRAM-SHA-1-PLUS authentication, and
   prefer SCRAM methods over the PLAIN method because of their superior
   properties.
+- With --read-envelope-from, a Resent-From header is now used if it is present
+  and appears before any From header
 
 Version 1.8.25:
 - No significant changes, just bug fixes.

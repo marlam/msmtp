@@ -4,7 +4,7 @@
  * This file is part of msmtp, an SMTP client.
  *
  * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011,
- * 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023
+ * 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024
  * Martin Lambers <marlam@marlam.de>
  * Martin Stenberg <martin@gnutiken.se> (passwordeval support)
  * Scott Shumate <sshumate@austin.rr.com> (aliases support)
@@ -608,6 +608,8 @@ error_exit:
  *
  * If 'from' is not NULL: extracts the address from the From header and stores
  * it in an allocated string. A pointer to this string is stored in 'from'.
+ * If a Resent-From header is present (and appears before any From header), the
+ * first sucher header is used instead.
  *
  * If 'have_date' is not NULL: set this flag to 1 if a Date header is present,
  * and to 0 otherwise.
@@ -758,7 +760,7 @@ int msmtp_read_headers(FILE *mailf, FILE *tmpf,
                         state = STATE_CC;
                     else if (recipients && (c == 'b' || c == 'B'))
                         state = STATE_BCC1;
-                    else if (recipients && resent_block <= 0
+                    else if ((from || recipients) && resent_block <= 0
                             && (c == 'r' || c == 'R'))
                     {
                         resent_index = 0;
@@ -829,6 +831,8 @@ int msmtp_read_headers(FILE *mailf, FILE *tmpf,
                             resent_block = 0;
                         resent_index++;
                     }
+                    else if (resent_index == 6 && (c == 'f' || c == 'F'))
+                        state = STATE_FROM1;
                     else if (resent_index == 6 && (c == 't' || c == 'T'))
                         state = STATE_TO;
                     else if (resent_index == 6 && (c == 'c' || c == 'C'))

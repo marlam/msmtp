@@ -787,7 +787,8 @@ Resent-Cc, and Resent-Bcc headers in the first block of Resent- headers are
 used instead.
 @item --read-envelope-from
 @opindex --read-envelope-from
-Read the envelope from address from the From header of the mail.
+Read the envelope from address from the From header of the mail, or from Resent-From
+if such a header is present and appears before any From header.
 @item --aliases=[@var{file}]
 @opindex --aliases
 Set or unset an aliases file. @xref{aliases}.

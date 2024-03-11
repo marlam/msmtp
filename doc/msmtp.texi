@@ -219,6 +219,11 @@ used.
 @cmindex protocol
 Set the protocol to use. Currently only SMTP and LMTP are supported. SMTP is
 the default. See @ref{port} for default ports.
+@anchor {inet_protocols}
+@item inet_protocols (ipv4|ipv6|all)
+@cmindex inet_protocols
+Forces IPv4 or IPv6 address resolution. The argument @samp{all} means
+that both IPv4 and IPv6 are used. This is the default.
 @anchor{domain}
 @item domain @var{argument}
 @cmindex domain
@@ -649,6 +654,12 @@ Set or unset a network timeout, in seconds. @xref{timeout}.
 @item --protocol=(smtp|lmtp)
 @opindex --protocol
 Set the protocol. @xref{protocol}.
+@item -4
+@opindex -4
+Force IPv4 address resolution. @xref{inet_protocols}.
+@item -6
+@opindex -6
+Force IPv6 address resolution. @xref{inet_protocols}.
 @item --domain=[@var{argument}]
 @opindex --domain
 Set the argument of the SMTP EHLO (or LMTP LHLO) command, and the domain part

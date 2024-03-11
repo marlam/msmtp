@@ -130,12 +130,12 @@ smtp_server_t smtp_new(FILE *debug, int protocol)
 int smtp_connect(smtp_server_t *srv,
         const char *socketname,
         const char *proxy_host, int proxy_port,
-        const char *host, int port, const char *source_ip, int timeout,
+        const char *host, int port, const char *source_ip, int timeout, int inet_protocols,
         char **server_canonical_name, char **server_address,
         char **errstr)
 {
     return net_open_socket(socketname, proxy_host, proxy_port, host, port,
-            source_ip, timeout, &srv->fd,
+            source_ip, timeout, inet_protocols, &srv->fd,
             server_canonical_name, server_address, errstr);
 }
 

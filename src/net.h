@@ -86,6 +86,7 @@ int net_open_socket(
         const char *hostname, int port,
         const char *source_ip,
         int timeout,
+        int inet_protocols,
         int *fd, char **canonical_name, char **address,
         char **errstr);
 
@@ -166,5 +167,13 @@ void net_lib_deinit(void);
  * Translate NET_* error code to an error code from sysexits.h
  */
 int net_exitcode(int net_error_code);
+
+/**
+ * net_to_address_family()
+ *
+ * Translates one of the INET_PROTOCOLS_* values to an ai_family
+ * that can be passed to getaddrinfo().
+ */
+int net_to_address_family(int inet_protocols);
 
 #endif

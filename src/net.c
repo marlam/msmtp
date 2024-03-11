@@ -73,6 +73,7 @@
 #include "readbuf.h"
 #include "tools.h"
 #include "net.h"
+#include "inet.h"
 
 
 /*
@@ -656,6 +657,7 @@ int net_open_socket(
         const char *hostname, int port,
         const char *source_ip,
         int timeout,
+        int inet_protocols,
         int *ret_fd, char **canonical_name, char **address,
         char **errstr)
 {
@@ -714,7 +716,7 @@ int net_open_socket(
     if (proxy_hostname)
     {
         error_code = net_open_socket(NULL, NULL, -1, proxy_hostname, proxy_port,
-                source_ip, timeout, &fd, NULL, NULL, errstr);
+                source_ip, timeout, inet_protocols, &fd, NULL, NULL, errstr);
         if (error_code != NET_EOK)
         {
             return error_code;
@@ -736,7 +738,7 @@ int net_open_socket(
         return NET_EOK;
     }
 
-    hints.ai_family = PF_UNSPEC;
+    hints.ai_family = net_to_address_family(inet_protocols);
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_flags = 0;
     hints.ai_protocol = 0;
@@ -912,6 +914,16 @@ int net_open_socket(
     return NET_EOK;
 }
 
+int net_to_address_family(int inet_protocols) {
+    switch (inet_protocols) {
+        case INET_PROTOCOLS_IPV4:
+            return AF_INET;
+        case INET_PROTOCOLS_IPV6:
+            return AF_INET6;
+        default:
+            return PF_UNSPEC;
+    }
+}
 
 /*
  * net_readbuf_read()

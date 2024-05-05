@@ -329,7 +329,7 @@ run_queue() {    # <- 'sm' mode      # run queue
   # files in the queue directory.
   shopt -s nullglob
 
-  local M LST
+  local M
   local -i NDX=0
 
   for M in "$MSMTPQ_Q"/*.mail ; do        # process all mails

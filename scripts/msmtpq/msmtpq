@@ -190,7 +190,8 @@ log() {
   if [ -n "$MSMTPQ_LOG" ] ; then     # log is defined and in use
     for ARG ; do                     # each msg line out
       [ -n "$ARG" ] && \
-        echo "$PFX : $ARG" >> "$MSMTPQ_LOG" # line has content ; send it to log
+        # line has content ; send it to log but avoid command injection
+        printf "%s : %s\n" "$PFX" "$ARG" >> "$MSMTPQ_LOG"
     done
   fi
 
@@ -216,15 +217,18 @@ lock_queue() {        # <-- '-u' to remove lockfile
       SEC=$((SEC + 1))                               # accumulate seconds
       'mkdir' "$LOK" 2>/dev/null && LKD='t'          # make lockdir ; lock queue ; set flag
     done                                             # try again while locked for MAX secs
-    [ -z "$LKD" ] && \
+    if [ -z "$LKD" ]; then
       err ''  "cannot use queue $MSMTPQ_Q : waited $MAX seconds for"\
               "  lockdir [ $LOK ] to vanish ; giving up"\
               'if you are certain that no other instance of this script'\
               "  is running, then 'rmdir' the lock dir manually" '' # lock file still there, give up
-
-  elif [ "$1" = '-u' ] ; then        # unlock queue
-    'rmdir' "$LOK"                   # remove the lock
-    unset LKD                        # unset flag
+    else
+      return 0
+    fi
+  elif [ "$1" = '-u' ] ; then                   # unlock queue
+    if [ -d "$LOK" ]; then 'rmdir' "$LOK"; fi   # remove the lock
+    if -v $LKD; then unset LKD; fi             # unset flag
+    return 0
   fi
 }
 
@@ -323,7 +327,7 @@ send_queued_mail() {   # <-- mail id
     [ -z "$EMAIL_CONN_NOTEST" ] && { # do connection test
       connect_test || {
         log "mail [ $2 ] [ $1 ] from queue ; couldn't be sent - host not connected"
-        return
+        return 0
       }
     }
 

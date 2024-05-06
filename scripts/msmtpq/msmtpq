@@ -46,8 +46,8 @@
 ##   if more than one mail per second is sent
 ##--------------------------------------------------------------
 
-# exit on error or use of undeclared variable or pipe error:
-set -o errtrace -o errexit -o nounset -o pipefail
+# exit             on error            or pipe error:
+set -o errtrace -o errexit            -o pipefail
 # optionally debug output by supplying TRACE=1
 [[ "${TRACE:-0}" == "1" ]] && set -o xtrace
 

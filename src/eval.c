@@ -41,7 +41,7 @@
  * see eval.h
  */
 
-#define LINEBUFSIZE 501
+#define LINEBUFSIZE 2049
 int eval(const char *arg, char **buf, char **errstr)
 {
     FILE *f;

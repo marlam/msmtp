@@ -46,10 +46,30 @@
 ##   if more than one mail per second is sent
 ##--------------------------------------------------------------
 
+# exit             on error            or pipe error:
+set -o errtrace -o errexit            -o pipefail
+# optionally debug output by supplying TRACE=1
+[[ "${TRACE:-0}" == "1" ]] && set -o xtrace
+
+shopt -s inherit_errexit
+IFS=$' \n\t'
+PS4='+\t '
+
+[[ ! -t 0 ]] && [[ -n "$DISPLAY" ]] && command -v notify-send >/dev/null 2>&1 && \
+  notify=1
 
 log_later() { LOG_LATER_ARGS=( "$@" ) ; }
-dsp() { local L ; for L ; do [ -n "$L" ] && echo "  $L" || echo ; done ; }
+dsp() {
+  local L
+  local msg=""
+  for L; do
+    [ -n "$L" ] && msg+="  $L" || msg+="\n"
+  done
+  echo -e "$msg" && \
+    [ -n "$notify" ] && notify-send "${BASH_SOURCE[0]}:" "$msg"
+}
 err() { dsp '' "$@" '' ; exit 1 ; }
+
 
 ## ======================================================================================
 ##      !!!          please define or confirm the following three vars           !!!
@@ -127,6 +147,15 @@ umask 077                            # set secure permissions on created directo
 declare -i CNT                       # a count of mail(s) currently in the queue
 declare -a Q_LST                     # queue list array ; used selecting a mail (to send or remove)
 
+error_handler() {
+  summary="Error: In ${BASH_SOURCE[0]}, Lines $1 and $2, Command $3 exited with Status $4"
+  body=$(pr -tn "${BASH_SOURCE[0]}" | tail -n+$(($1 - 3)) | head -n7 | sed '4s/^\s*/>> /')
+  echo >&2 -en "$summary\n$body" &&
+    [ -n "$notify" ] && notify-send --critical "$summary" "$body"
+  exit "$4"
+}
+trap 'error_handler $LINENO "$BASH_LINENO" "$BASH_COMMAND" $?' ERR
+
 ## do ; test this !
 #for sig in INT TERM EXIT; do
 #  trap "rm -f \"\$TMPFILE\"; [[ $sig == EXIT ]] || kill -$sig $$" $sig
@@ -161,7 +190,8 @@ log() {
   if [ -n "$MSMTPQ_LOG" ] ; then     # log is defined and in use
     for ARG ; do                     # each msg line out
       [ -n "$ARG" ] && \
-        echo "$PFX : $ARG" >> "$MSMTPQ_LOG" # line has content ; send it to log
+        # line has content ; send it to log but avoid command injection
+        printf "%s : %s\n" "$PFX" "$ARG" >> "$MSMTPQ_LOG"
     done
   fi
 
@@ -179,7 +209,7 @@ lock_queue() {        # <-- '-u' to remove lockfile
   local LOK="${MSMTPQ_Q}/.lock"      # lock file name
   local -i MAX=240 SEC=0             # max seconds to gain a lock ; seconds waiting
 
-  if [ -z "$1" ] ; then              # lock queue
+  if [ -z "$1" ]; then              # lock queue
     ## Philipp Hartwig patch #2
     'mkdir' "$LOK" 2>/dev/null && LKD='t'
     while [ -z "$LKD" ] && [ "$SEC" -lt "$MAX" ]; do # lock file present
@@ -187,15 +217,18 @@ lock_queue() {        # <-- '-u' to remove lockfile
       SEC=$((SEC + 1))                               # accumulate seconds
       'mkdir' "$LOK" 2>/dev/null && LKD='t'          # make lockdir ; lock queue ; set flag
     done                                             # try again while locked for MAX secs
-    [ -z "$LKD" ] && \
-	    err '' "cannot use queue $MSMTPQ_Q : waited $MAX seconds for"\
-	           "  lockdir [ $LOK ] to vanish ; giving up"\
-	           'if you are certain that no other instance of this script'\
-	           "  is running, then 'rmdir' the lock dir manually" '' # lock file still there, give up
-
-  elif [ "$1" = '-u' ] ; then        # unlock queue
-    'rmdir' "$LOK"                   # remove the lock
-    unset LKD                        # unset flag
+    if [ -z "$LKD" ]; then
+      err ''  "cannot use queue $MSMTPQ_Q : waited $MAX seconds for"\
+              "  lockdir [ $LOK ] to vanish ; giving up"\
+              'if you are certain that no other instance of this script'\
+              "  is running, then 'rmdir' the lock dir manually" '' # lock file still there, give up
+    else
+      return 0
+    fi
+  elif [ "$1" = '-u' ] ; then                   # unlock queue
+    if [ -d "$LOK" ]; then 'rmdir' "$LOK"; fi   # remove the lock
+    if -v $LKD; then unset LKD; fi             # unset flag
+    return 0
   fi
 }
 
@@ -294,7 +327,7 @@ send_queued_mail() {   # <-- mail id
     [ -z "$EMAIL_CONN_NOTEST" ] && { # do connection test
       connect_test || {
         log "mail [ $2 ] [ $1 ] from queue ; couldn't be sent - host not connected"
-        return
+        return 0
       }
     }
 
@@ -329,7 +362,7 @@ run_queue() {    # <- 'sm' mode      # run queue
   # files in the queue directory.
   shopt -s nullglob
 
-  local M LST
+  local M
   local -i NDX=0
 
   for M in "$MSMTPQ_Q"/*.mail ; do        # process all mails

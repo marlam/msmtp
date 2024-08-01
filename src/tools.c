@@ -786,6 +786,7 @@ int token_in_string(const char *string, const char *token)
         if (i == 0 || string[i - 1] == ' ') /* valid start of token */
         {
             if (string[i + token_len] == ' '
+                    || string[i + token_len] == '\r'
                     || string[i + token_len] == '\0') /* valid end of token */
             {
                 found = 1;

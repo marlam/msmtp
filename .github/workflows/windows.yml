@@ -31,6 +31,15 @@ jobs:
         make
         make install-strip DESTDIR=/d/a/msmtp/tmp
         cp `ldd src/msmtp | awk '/\/ucrt64/ {print $3}' | uniq` /d/a/msmtp/tmp/bin/
+    - name: Upload release to GitHub
+      if: github.ref_type == 'tag'
+      shell: pwsh
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        7z a msmtp.zip D:\a\msmtp\tmp\*
+        gh release create ${{ github.ref_name }} --generate-notes || echo "Release already exists!"
+        gh release upload ${{ github.ref_name }} msmtp.zip
     - name: Artifacts
       uses: actions/upload-artifact@v4
       with:

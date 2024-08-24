@@ -445,7 +445,7 @@ int net_connect(int fd, const struct sockaddr *serv_addr, socklen_t addrlen,
 
             /* test for success, set errno */
             optlen = sizeof(err);
-            if (getsockopt(fd, SOL_SOCKET, SO_ERROR, &err, &optlen) < 0)
+            if (getsockopt(fd, SOL_SOCKET, SO_ERROR, (void*)&err, &optlen) < 0)
             {
                 return -1;
             }
@@ -490,8 +490,8 @@ void net_set_io_timeout(int socket, int seconds)
     if (seconds > 0)
     {
         milliseconds = seconds * 1000;
-        (void)setsockopt(socket, SOL_SOCKET, SO_RCVTIMEO, &milliseconds, sizeof(int));
-        (void)setsockopt(socket, SOL_SOCKET, SO_SNDTIMEO, &milliseconds, sizeof(int));
+        (void)setsockopt(socket, SOL_SOCKET, SO_RCVTIMEO, (void*)&milliseconds, sizeof(int));
+        (void)setsockopt(socket, SOL_SOCKET, SO_SNDTIMEO, (void*)&milliseconds, sizeof(int));
     }
 #else /* UNIX */
     struct timeval tv;

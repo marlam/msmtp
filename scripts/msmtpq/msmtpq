@@ -55,6 +55,7 @@ shopt -s inherit_errexit
 IFS=$' \n\t'
 PS4='+\t '
 
+notify=0
 [[ ! -t 0 ]] && [[ -n "$DISPLAY" ]] && command -v notify-send >/dev/null 2>&1 && \
   notify=1
 
@@ -156,13 +157,10 @@ error_handler() {
 }
 trap 'error_handler $LINENO "$BASH_LINENO" "$BASH_COMMAND" $?' ERR
 
-## do ; test this !
-#for sig in INT TERM EXIT; do
-#  trap "rm -f \"\$TMPFILE\"; [[ $sig == EXIT ]] || kill -$sig $$" $sig
-#done
+LKD=                                 # lock flag
 trap on_exit INT TERM EXIT           # run 'on_exit' on exit
 on_exit() {                          # unlock the queue on exit if the lock was set here
-  [ -n "$LKD" ] && lock_queue -u 2>/dev/null
+  if [ -n "$LKD" ]; then lock_queue -u 2>/dev/null; fi
 }
 
 #
@@ -227,7 +225,7 @@ lock_queue() {        # <-- '-u' to remove lockfile
     fi
   elif [ "$1" = '-u' ] ; then                   # unlock queue
     if [ -d "$LOK" ]; then 'rmdir' "$LOK"; fi   # remove the lock
-    if -v $LKD; then unset LKD; fi             # unset flag
+    if [ -n "$LKD" ]; then unset LKD; fi             # unset flag
     return 0
   fi
 }
@@ -350,17 +348,10 @@ send_queued_mail() {   # <-- mail id
 ## run (flush) queue
 ##
 run_queue() {    # <- 'sm' mode      # run queue
-  # This will reset nullglob to its original value once the function
-  # ends. I could potentially enable nullglob for the entire script,
-  # but I have a feeling that doing so would break things.
-  #
-  # Credit goes to Robin A. Meade (https://stackoverflow.com/users/1157557/robin-a-meade)
-  # for the idea of using a trap to do this:
-  # <https://stackoverflow.com/a/50808490>
-  trap "$(shopt -p nullglob)" RETURN
-  # This will prevent the for loop from running if there’s no .mail
-  # files in the queue directory.
-  shopt -s nullglob
+  if [ -z "$(ls -A "$MSMTPQ_Q"/*.mail 2>/dev/null)" ] && [ -z "$1" ]; then
+    dsp '' 'mail queue is empty (nothing to send)' ''
+    return
+  fi
 
   local M
   local -i NDX=0
@@ -377,9 +368,14 @@ run_queue() {    # <- 'sm' mode      # run queue
 ## display queue contents
 ##
 display_queue() {      # <-- { 'purge' | 'send' } (op label) ; { 'rec' } (record array of mail ids)
-  # See the comments about the trap and shopt lines in run_queue().
-  trap "$(shopt -p nullglob)" RETURN
-  shopt -s nullglob
+  if [ -z "$(ls -A "$MSMTPQ_Q"/*.mail 2>/dev/null)" ]; then
+    if [ -z "$1" ]; then
+      dsp '' 'no mail in queue' ''
+    else
+      dsp '' "mail queue is empty (nothing to $1)" ''    # inform user
+    fi
+    exit 0
+  fi
 
   local M ID
 

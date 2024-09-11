@@ -2177,7 +2177,7 @@ void msmtp_print_version(void)
 #ifdef HAVE_LIBGNUTLS
             "GnuTLS"
 #elif defined (HAVE_LIBSSL)
-            "OpenSSL"
+            TLS_LIB
 #elif defined (HAVE_LIBTLS)
             "libtls"
 #else

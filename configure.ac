@@ -94,11 +94,12 @@ want_tls="yes"
 want_gnutls="yes"
 want_openssl="no"
 want_libtls="no"
+want_sspi="no"
 tls_CFLAGS=""
 tls_LIBS=""
 with_ssl_was_used=no
-AC_ARG_WITH([tls], [AS_HELP_STRING([--with-tls=[gnutls|openssl|libtls|no]],
-    [TLS support: GnuTLS (default), OpenSSL (discouraged), libtls, or none.])],
+AC_ARG_WITH([tls], [AS_HELP_STRING([--with-tls=[gnutls|openssl|libtls|sspi|no]],
+    [TLS support: GnuTLS (default), OpenSSL (discouraged), libtls, SSPI (Schannel), or none.])],
     if test "$withval" = "gnutls"; then
 	want_tls=yes
 	want_gnutls=yes
@@ -114,13 +115,17 @@ AC_ARG_WITH([tls], [AS_HELP_STRING([--with-tls=[gnutls|openssl|libtls|no]],
 	want_gnutls=no
 	want_openssl=no
 	want_libtls=yes
+    elif test "$withval" = "sspi"; then
+	want_tls=yes
+	want_gnutls=no
+        want_sspi=yes
     elif test "$withval" = "no"; then
 	want_tls=no
 	want_gnutls=no
 	want_openssl=no
 	want_libtls=no
     else
-	AC_MSG_ERROR([Use --with-tls=gnutls or --with-tls=openssl or --with-tls=libtls or --with-tls=no])
+        [AC_MSG_ERROR([Invalid --with-tls=$withval. Use --with-tls=gnutls|openssl|libtls|sspi|no])]
     fi)
 if test "$want_gnutls" = "yes"; then
     PKG_CHECK_MODULES([libgnutls], [gnutls >= 3.7.2], [HAVE_LIBGNUTLS=1], [HAVE_LIBGNUTLS=0])
@@ -165,15 +170,23 @@ if test "$want_libtls" = "yes" -a "$have_tls" = "no"; then
 	AC_DEFINE([HAVE_LIBTLS], [1], [Define to 1 if libtls is available])
     fi
 fi
+if test "$want_sspi" = "yes"; then
+   have_tls="yes"
+   tls_lib="Schannel"
+   tls_LIBS="-lsecur32 -lcrypt32"
+   AC_DEFINE([HAVE_LIBSSL], [1], [Define to 1 if libssl is available])
+fi
 if test "$have_tls" = "yes"; then
     AC_DEFINE([HAVE_TLS], [1], [Define to 1 to build with TLS/SSL support])
 elif test "$want_tls" = "yes"; then
     AC_MSG_WARN([Disabling TLS support, which is very bad. Consider using GnuTLS!])
 fi
+AC_DEFINE_UNQUOTED([TLS_LIB], ["$tls_lib"], [TLS library used])
 AM_CONDITIONAL([HAVE_TLS], [test "$have_tls" = "yes"])
 AM_CONDITIONAL([HAVE_GNUTLS], [test "$tls_lib" = "GnuTLS"])
 AM_CONDITIONAL([HAVE_OPENSSL], [test "$tls_lib" = "OpenSSL"])
 AM_CONDITIONAL([HAVE_LIBTLS], [test "$tls_lib" = "libtls"])
+AM_CONDITIONAL([HAVE_SSPI], [test "$tls_lib" = "Schannel"])
 AC_SUBST([tls_CFLAGS])
 AC_SUBST([tls_LIBS])
 

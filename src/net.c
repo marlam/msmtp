@@ -64,6 +64,9 @@
 #ifdef HAVE_LIBRESOLV
 # include <arpa/nameser.h>
 # include <resolv.h>
+#elif defined(W32_NATIVE)
+# include <windns.h>
+# pragma comment(lib, "dnsapi.lib")
 #endif
 
 #include "gettext.h"
@@ -1090,16 +1093,15 @@ char* net_get_srv_query(const char *domain, const char *service)
  */
 int net_get_srv_record(const char* query, char **hostname, int *port)
 {
-#ifdef HAVE_LIBRESOLV
-
-    unsigned char buffer[NS_PACKETSZ];
-    int response_len;
-    ns_msg msg;
-    int i;
     int current_prio = INT_MAX;
     int current_weight = -1;
     char *current_hostname = NULL;
     int current_port = 0;
+#ifdef HAVE_LIBRESOLV
+    unsigned char buffer[NS_PACKETSZ];
+    int response_len;
+    ns_msg msg;
+    int i;
 
     response_len = res_query(query, ns_c_in, ns_t_srv, buffer, sizeof(buffer));
     if (response_len < 0) {
@@ -1139,6 +1141,36 @@ int net_get_srv_record(const char* query, char **hostname, int *port)
         return NET_EOK;
     }
 
+#elif defined(W32_NATIVE)
+    int error_code = NET_EIO;
+    PDNS_RECORD record;
+    DNS_STATUS status = DnsQuery_A(query, DNS_TYPE_SRV, DNS_QUERY_STANDARD, NULL,  &record, NULL);
+    if (status != ERROR_SUCCESS)
+        return NET_ESRVNOTFOUND;
+    for (PDNS_RECORD r = record; r; r = r->pNext)
+    {
+        if (r->wType != DNS_TYPE_SRV)
+            continue;
+        int prio, weight;
+        prio = r->Data.SRV.wPriority;
+        weight = r->Data.SRV.wWeight;
+        if (prio < current_prio || (prio == current_prio && weight > current_weight))
+        {
+            current_hostname = r->Data.SRV.pNameTarget;
+            current_port = r->Data.SRV.wPort;
+            current_prio = prio;
+            current_weight = weight;
+        }
+    }
+    if (current_hostname)
+    {
+        *hostname = xstrdup(current_hostname);
+        *port = current_port;
+        error_code = NET_EOK;
+    }
+    DnsRecordListFree(record, DnsFreeRecordList);
+
+    return error_code;
 #else
 
     return NET_ELIBFAILED;

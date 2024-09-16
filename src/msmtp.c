@@ -1682,7 +1682,7 @@ void print_error(const char *format, ...)
 
 int msmtp_configure(const char *address, const char *conffile)
 {
-#ifdef HAVE_LIBRESOLV
+#if defined(HAVE_LIBRESOLV) || defined(W32_NATIVE)
 
     int e;
 

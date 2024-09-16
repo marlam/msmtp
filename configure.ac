@@ -79,6 +79,8 @@ else
 fi
 if test "$found_res_query" = "yes"; then
     AC_DEFINE([HAVE_LIBRESOLV], [1], [Define to 1 if libresolv is available])
+else
+    case "${target}" in *-*-mingw*) LIBS="$LIBS -ldnsapi" ;; esac
 fi
 
 dnl pkg-config (required to detect libraries)

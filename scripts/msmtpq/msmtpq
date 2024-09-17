@@ -350,8 +350,8 @@ send_queued_mail() {   # <-- mail id
 ## run (flush) queue
 ##
 run_queue() {    # <- 'sm' mode      # run queue
-  if [ -z "$(ls -A "$MSMTPQ_Q"/*.mail 2>/dev/null)" ] && [ -z "$1" ]; then
-    dsp '' 'mail queue is empty (nothing to send)' ''
+  if [ -z "$(ls -A "$MSMTPQ_Q"/*.mail 2>/dev/null)" ]; then
+    [ -n "$1" ] || dsp '' 'mail queue is empty (nothing to send)' ''
     return
   fi
 

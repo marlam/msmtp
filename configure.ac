@@ -295,6 +295,10 @@ if test "$libidn" != "no"; then
 	AC_MSG_WARN([$libidn_PKG_ERRORS])
 	AC_MSG_WARN([libidn is provided by GNU Libidn])
 	libidn="no"
+	case "${target}" in *-*-mingw*)
+             AC_MSG_WARN([Using Windows native IDN support])
+             want_libidn=no
+        esac
     else
 	libidn="yes"
 	AC_DEFINE([HAVE_LIBIDN], [1], [Define to 1 if libidn is available])

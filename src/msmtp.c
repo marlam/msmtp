@@ -70,6 +70,7 @@ extern int optind;
 #ifdef W32_NATIVE
 #define SYSCONFFILE     "msmtprc.txt"
 #define USERCONFFILE    "msmtprc.txt"
+#include <locale.h>     /* setlocale for native IDN */
 #else /* UNIX */
 #define SYSCONFFILE     "msmtprc"
 #define USERCONFFILE    ".msmtprc"
@@ -2222,7 +2223,7 @@ void msmtp_print_version(void)
     printf("\n");
     /* Internationalized Domain Names support */
     printf(_("IDN support: "));
-#if defined(HAVE_LIBIDN) \
+#if defined(HAVE_LIBIDN) || defined(W32_NATIVE) && !defined(_UNICODE) \
         || (defined(HAVE_GAI_IDN) && (!defined(HAVE_TLS) \
             || (defined(HAVE_LIBGNUTLS) && GNUTLS_VERSION_NUMBER >= 0x030400)))
     printf(_("enabled"));
@@ -3762,6 +3763,15 @@ void msmtp_print_conf(msmtp_cmdline_conf_t conf, account_t *account)
 
 int main(int argc, char *argv[])
 {
+#if defined(W32_NATIVE) && !defined(_UNICODE) && !defined(HAVE_LIBIDN)// && !defined(ENABLE_NLS)
+    /* We need this for proper IDN conversion later on using Windows native way
+     * AND proper console output.
+     * > At program startup, the equivalent of the following statement is executed :
+     * > setlocale(LC_ALL, "C");
+     * https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/setlocale-wsetlocale
+     */
+    setlocale(LC_ALL, "");
+#endif
     msmtp_cmdline_conf_t conf;
     /* account information from the configuration file(s) */
     list_t *account_list = NULL;

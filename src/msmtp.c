@@ -3763,7 +3763,7 @@ void msmtp_print_conf(msmtp_cmdline_conf_t conf, account_t *account)
 
 int main(int argc, char *argv[])
 {
-#if defined(W32_NATIVE) && !defined(_UNICODE) && !defined(HAVE_LIBIDN)// && !defined(ENABLE_NLS)
+#if defined(W32_NATIVE) && !defined(_UNICODE) && !defined(HAVE_LIBIDN) && !defined(ENABLE_NLS)
     /* We need this for proper IDN conversion later on using Windows native way
      * AND proper console output.
      * > At program startup, the equivalent of the following statement is executed :

@@ -36,6 +36,54 @@ jobs:
       with:
         name: msmtp-libressl
         path: D:\a\msmtp\tmp\
+  nls:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+    - name: Check out repository code
+      uses: actions/checkout@v4
+    - name: Install build dependencies
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: UCRT64
+        update: true
+        install: >-
+          mingw-w64-ucrt-x86_64-gcc
+          pkgconf
+          automake
+          autoconf
+          make
+          texinfo
+    - name: Build
+      run: |
+        autoreconf -i
+        mkdir nls && cd nls
+        # The only function from libwinpthread is clock_gettime()
+        ../configure --with-tls=sspi LDFLAGS=-Wl,-Bstatic,-lwinpthread CFLAGS=-DFIXME1
+        make
+        cd .. && mkdir norm && cd norm
+        ../configure --with-tls=sspi LDFLAGS=-Wl,-Bstatic,-lwinpthread
+        make
+    - name: Set locale
+      shell: pwsh
+      run: |
+        Set-WinSystemLocale -SystemLocale ru-RU
+    - name: Test IDN fixme
+      continue-on-error: true
+      run: |
+        nls/src/msmtp --debug --serverinfo --tls --host=mx3.почта.рус --port=1234 > output.log 2>&1 || true
+        cat output.log | iconv -f cp1251 -t utf-8
+        grep -q 'connection refused' output.log && echo 🎉 The host was found successfully but the connection was refused.
+    - name: Test IDN fixme 2
+      continue-on-error: true
+      run: |
+        nls/src/msmtp --debug --serverinfo --tls --host=mx3.почта.рус --port=1234
+    - name: Test IDN norm 2
+      continue-on-error: true
+      run: |
+        norm/src/msmtp --debug --serverinfo --tls --host=mx3.почта.рус --port=1234
   native:
     runs-on: windows-latest
     defaults:

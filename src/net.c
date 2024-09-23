@@ -761,22 +761,21 @@ int net_open_socket(
     size_t conv;
     WCHAR hostname_wide[NI_MAXHOST];
     /* We rely on a proper setlocale earlier that was NOT "C" as set default by MS C runtime. */
-#ifdef ENABLE_NLS
+#if defined(ENABLE_NLS) && defined(FIXME1)
     /* FIXME: Something messes up locale (at least on MSYS2/UCRT64) and setlocale(LC_ALL, "") won't fix it.
      * The commented code below is the way to get proper console output for hostname.
      * Otherwise let's make sure we get proper IDN conversion and that is it. */
-    /*
     char locale_name[LOCALE_NAME_MAX_LENGTH * sizeof(WCHAR)];
     GetSystemDefaultLocaleName((LPWSTR)locale_name, LOCALE_NAME_MAX_LENGTH);
     size_t len = wcsnlen_s((LPWSTR)locale_name, LOCALE_NAME_MAX_LENGTH);
     for (int i = 1; i <= len; ++i)
         locale_name[i] = locale_name[i * 2];
     setlocale(LC_ALL, locale_name);
-    */
     _locale_t locale = _create_locale(LC_ALL, "");
     errno_t err = _mbstowcs_s_l(&conv, hostname_wide, ARRAYSIZE(hostname_wide), hostname, _TRUNCATE, locale);
     _free_locale(locale);
 #else
+    setlocale(LC_ALL, "");
     errno_t err = mbstowcs_s(&conv, hostname_wide, ARRAYSIZE(hostname_wide), hostname, _TRUNCATE);
 #endif
     if (!err)

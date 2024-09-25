@@ -108,7 +108,7 @@ jobs:
       run: |
         autoreconf -i
         # The only function from libwinpthread is clock_gettime()
-        ./configure --with-tls=sspi --disable-nls LDFLAGS=-Wl,-Bstatic,-lwinpthread
+        ./configure --with-tls=sspi --with-vault=credman --disable-nls LDFLAGS=-Wl,-Bstatic,-lwinpthread
     - name: Build
       run: |
         make

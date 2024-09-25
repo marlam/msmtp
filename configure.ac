@@ -305,11 +305,11 @@ if test "$libidn" != "no"; then
     fi
 fi
 
-dnl libsecret support (requires pkg-config).
-AC_ARG_WITH([libsecret], [AS_HELP_STRING([--with-libsecret],
-	[Support libsecret (GNOME password management)])],
-    [libsecret=$withval],[libsecret=yes])
-if test "$libsecret" != "no"; then
+AC_ARG_WITH([vault], [AS_HELP_STRING([--with-vault=libsecret|macosx-keyring|credman|no],
+    [Password vault support: libsecret (GNOME password management), Mac OS X Keyring, Windows Credential Manager, or none.])],
+    [vault=$withval], [vault=no])
+AS_CASE([$vault],
+[libsecret], [
     PKG_CHECK_MODULES([libsecret], [libsecret-1], [HAVE_LIBSECRET=1], [HAVE_LIBSECRET=0])
     if test "$HAVE_LIBSECRET" != "1"; then
 	AC_MSG_WARN([library libsecret not found:])
@@ -320,13 +320,7 @@ if test "$libsecret" != "no"; then
 	libsecret="yes"
 	AC_DEFINE([HAVE_LIBSECRET], [1], [Define to 1 if libsecret is available])
     fi
-fi
-
-dnl MacOS X Keychain Services (Security Framework)
-AC_ARG_WITH([macosx-keyring], [AS_HELP_STRING([--with-macosx-keyring],
-	[Support Mac OS X Keyring])],
-    [macosx_keyring=$withval],[macosx_keyring=yes])
-if test "$macosx_keyring" != "no"; then
+], [macosx_keyring], [
     AC_CACHE_CHECK([for SecKeychainGetVersion],
 	ac_cv_func_SecKeychainGetVersion,
 	[ac_save_LIBS="$LIBS"
@@ -341,7 +335,17 @@ if test "$macosx_keyring" != "no"; then
     else
 	macosx_keyring=no
     fi
-fi
+], [credman], [
+    credman=yes
+    LIBS="$LIBS -lcredui -lole32"
+    AC_DEFINE([USE_CREDMAN], [1], [Define to 1 if you want to use Windows Credential Manager])
+], [no], [
+    libsecret="no"
+    macosx_keyring=no
+    credman=no
+],
+    [AC_MSG_ERROR([Invalid --with-vault=$withval. Use --with-vault=libsecret|macosx-keyring|credman|no])]
+)
 
 dnl Check if msmtpd should be built
 AC_ARG_WITH([msmtpd],
@@ -372,6 +376,5 @@ else
     echo "IDN support ............ : no"
 fi
 echo "GNU SASL support ....... : $libgsasl"
-echo "Libsecret support (GNOME): $libsecret"
-echo "MacOS X Keychain support : $macosx_keyring"
-echo "Build msmtpd ............: $build_msmtpd"
+echo "Password vault ......... : $vault"
+echo "Build msmtpd ........... : $build_msmtpd"

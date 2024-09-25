@@ -307,7 +307,7 @@ fi
 
 AC_ARG_WITH([vault], [AS_HELP_STRING([--with-vault=libsecret|macosx-keyring|credman|no],
     [Password vault support: libsecret (GNOME password management), Mac OS X Keyring, Windows Credential Manager, or none.])],
-    [vault=$withval], [vault=no])
+    [vault=$withval], [vault=none])
 AS_CASE([$vault],
 [libsecret], [
     PKG_CHECK_MODULES([libsecret], [libsecret-1], [HAVE_LIBSECRET=1], [HAVE_LIBSECRET=0])
@@ -339,12 +339,12 @@ AS_CASE([$vault],
     credman=yes
     LIBS="$LIBS -lcredui -lole32"
     AC_DEFINE([USE_CREDMAN], [1], [Define to 1 if you want to use Windows Credential Manager])
-], [no], [
+], [none], [
     libsecret="no"
     macosx_keyring=no
     credman=no
 ],
-    [AC_MSG_ERROR([Invalid --with-vault=$withval. Use --with-vault=libsecret|macosx-keyring|credman|no])]
+    [AC_MSG_ERROR([Invalid --with-vault=$vault. Use --with-vault=libsecret|macosx-keyring|credman|no])]
 )
 
 dnl Check if msmtpd should be built

@@ -2245,15 +2245,14 @@ void msmtp_print_version(void)
 #endif
     printf("\n");
     printf(_("Keyring support: "));
-#if !defined HAVE_LIBSECRET && !defined HAVE_MACOSXKEYRING
-    printf(_("none"));
-#else
-# ifdef HAVE_LIBSECRET
+#if defined HAVE_LIBSECRET
     printf(_("Gnome "));
-# endif
-# ifdef HAVE_MACOSXKEYRING
+#elif defined HAVE_MACOSXKEYRING
     printf(_("MacOS "));
-# endif
+#elif defined USE_CREDMAN
+    printf(_("Windows Credential Manager"));
+#else
+    printf(_("none"));
 #endif
     printf("\n");
     sysconfdir = get_sysconfdir();

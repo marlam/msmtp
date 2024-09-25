@@ -1749,6 +1749,10 @@ int msmtp_configure(const char *address, const char *conffile)
     tmpstr = xasprintf("security add-internet-password -s %s -r smtp -a %s -w", hostname, local_part);
     printf("# - %s\n#   %s\n", _("add your password to the key ring:"), tmpstr);
     free(tmpstr);
+#elif defined USE_CREDMAN
+    tmpstr = xasprintf("cmdkey /add:" PACKAGE_NAME "_%s /user:%s /pass", hostname, address);
+    printf("# - %s\n#   %s\n", _("add your password to the key ring:"), tmpstr);
+    free(tmpstr);
 #else
     printf("# - %s\n#   %s\n", _("encrypt your password:"), "gpg -e -o ~/.msmtp-password.gpg");
 #endif
@@ -1761,7 +1765,7 @@ int msmtp_configure(const char *address, const char *conffile)
     printf("tls_starttls %s\n", starttls ? "on" : "off");
     printf("auth on\n");
     printf("user %s\n", local_part);
-#if !defined HAVE_LIBSECRET && !defined HAVE_MACOSXKEYRING
+#if !defined HAVE_LIBSECRET && !defined HAVE_MACOSXKEYRING && !defined USE_CREDMAN
     printf("passwordeval gpg --no-tty -q -d ~/.msmtp-password.gpg\n");
 #endif
     printf("from %s\n", address);

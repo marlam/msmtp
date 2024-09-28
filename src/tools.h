@@ -259,4 +259,12 @@ void split_mail_address(const char *address, char **local_part, char **domain_pa
  */
 int check_hostname_matches_domain(const char *hostname, const char *domain);
 
+/*
+ * encode_for_header()
+ *
+ * Encode a string so that it can be used in a mail header.
+ * The result is allocated and needs to be freed.
+ */
+char *encode_for_header(const char *s);
+
 #endif

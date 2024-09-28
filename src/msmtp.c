@@ -4187,8 +4187,10 @@ int main(int argc, char *argv[])
         {
             if (account->from_full_name)
             {
+                char *enc_name = encode_for_header(account->from_full_name);
                 fprintf(prepend_header_tmpfile, "From: %s <%s>\n",
-                        account->from_full_name, account->from);
+                        enc_name, account->from);
+                free(enc_name);
             }
             else
             {

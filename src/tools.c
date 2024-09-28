@@ -50,9 +50,11 @@
 #include <unistd.h>
 #ifdef ENABLE_NLS
 # include <locale.h>
+# include <langinfo.h>
 #endif
 
 #include "xalloc.h"
+#include "base64.h"
 #include "tools.h"
 
 
@@ -906,4 +908,58 @@ int check_hostname_matches_domain(const char *hostname, const char *domain)
      * (so that hostname="xxexample.com" does not match "example.com") */
     return (hostname[hostname_len - 1 - domain_len] == '.'
             && strcasecmp(hostname + (hostname_len - domain_len), domain) == 0) ? 1 : 0;
+}
+
+
+/*
+ * encode_for_header()
+ *
+ * see tools.h
+ */
+
+char *encode_for_header(const char *s)
+{
+    int needsEncoding = 0;
+    for (int i = 0; s[i]; i++)
+    {
+        if (s[i] < 32 || s[i] >= 127)
+        {
+            needsEncoding = 1;
+            break;
+        }
+    }
+    if (needsEncoding)
+    {
+        /* create a string of the form "=?ENCODING?B?BASE64STRING?=" */
+        size_t s_len = strlen(s);
+        size_t b64_s_len = BASE64_LENGTH(s_len);
+        char* encoding = xstrdup(
+#ifdef ENABLE_NLS
+                nl_langinfo(CODESET)
+#else
+                "UTF-8";
+#endif
+                );
+        size_t e_len = strlen(encoding);
+        size_t enc_len = 2 + e_len + 3 + b64_s_len + 3;
+        char *enc = xmalloc(enc_len + 1);
+        size_t i = 0;
+        enc[i++] = '=';
+        enc[i++] = '?';
+        for (size_t j = 0; j < e_len; j++)
+        {
+            enc[i++] = tolower(encoding[j]);
+        }
+        free(encoding);
+        enc[i++] = '?';
+        enc[i++] = 'B';
+        enc[i++] = '?';
+        base64_encode(s, s_len, enc + i, enc_len - i + 1);
+        strcat(enc, "?=");
+        return enc;
+    }
+    else
+    {
+        return xstrdup(s);
+    }
 }

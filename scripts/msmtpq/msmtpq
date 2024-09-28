@@ -154,7 +154,7 @@ error_handler() {
   summary="Error: In ${BASH_SOURCE[0]}, Lines $1 and $2, Command $3 exited with Status $4"
   body=$(pr -tn "${BASH_SOURCE[0]}" | tail -n+$(($1 - 3)) | head -n7 | sed '4s/^\s*/>> /')
   echo >&2 -en "$summary\n$body" &&
-    [ "$NOTIFY_SEND" = 1 ] && notify-send --critical "$summary" "$body"
+    [ "$NOTIFY_SEND" = 1 ] && notify-send --urgency=critical "$summary" "$body"
   exit "$4"
 }
 trap 'error_handler $LINENO "$BASH_LINENO" "$BASH_COMMAND" $?' ERR

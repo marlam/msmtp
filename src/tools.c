@@ -933,13 +933,12 @@ char *encode_for_header(const char *s)
         /* create a string of the form "=?ENCODING?B?BASE64STRING?=" */
         size_t s_len = strlen(s);
         size_t b64_s_len = BASE64_LENGTH(s_len);
-        char* encoding = xstrdup(
+        char* encoding =
 #ifdef ENABLE_NLS
-                nl_langinfo(CODESET)
+                nl_langinfo(CODESET);
 #else
                 "UTF-8";
 #endif
-                );
         size_t e_len = strlen(encoding);
         size_t enc_len = 2 + e_len + 3 + b64_s_len + 3;
         char *enc = xmalloc(enc_len + 1);
@@ -950,7 +949,6 @@ char *encode_for_header(const char *s)
         {
             enc[i++] = tolower(encoding[j]);
         }
-        free(encoding);
         enc[i++] = '?';
         enc[i++] = 'B';
         enc[i++] = '?';

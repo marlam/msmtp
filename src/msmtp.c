@@ -3316,6 +3316,7 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
             case 'F':
                 free(conf->cmdline_account->from_full_name);
                 conf->cmdline_account->from_full_name = xstrdup(optarg);
+                conf->cmdline_account->mask |= ACC_FROM_FULL_NAME;
                 break;
 
             case LONGONLYOPT_KEEPBCC:

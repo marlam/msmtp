@@ -1,3 +1,7 @@
+Version 1.8.27:
+- Add a testing infrastructure ('make check')
+- Many improvements in the msmtpq script
+
 Version 1.8.26:
 - Add support for SCRAM-SHA-256-PLUS and SCRAM-SHA-1-PLUS authentication, and
   prefer SCRAM methods over the PLAIN method because of their superior

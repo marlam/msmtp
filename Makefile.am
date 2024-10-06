@@ -1,4 +1,4 @@
-SUBDIRS = src po doc scripts
+SUBDIRS = src po tests doc scripts
 EXTRA_DIST = ChangeLog.old
 
 # Create the ChangeLog file from the git log

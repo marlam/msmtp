@@ -338,7 +338,7 @@ AH_VERBATIM([W32_NATIVE],
 #endif])
 
 dnl End.
-AC_CONFIG_FILES([Makefile src/Makefile po/Makefile.in doc/Makefile scripts/Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile po/Makefile.in tests/Makefile doc/Makefile scripts/Makefile])
 AC_OUTPUT
 
 echo

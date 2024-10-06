@@ -12,6 +12,7 @@ build-aux/install-sh
 build-aux/ltmain.sh
 build-aux/mdate-sh
 build-aux/missing
+build-aux/test-driver
 config.h
 config.h.in
 config.log

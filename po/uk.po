@@ -2,13 +2,13 @@
 # Copyright (C) 2018 Martin Lambers <marlam@marlam.de>
 # This file is distributed under the same license as the msmtp package.
 #
-# Yuri Chornoivan <yurchor@ukr.net>, 2018, 2019, 2020, 2021, 2022, 2023.
+# Yuri Chornoivan <yurchor@ukr.net>, 2018, 2019, 2020, 2021, 2022, 2023, 2024.
 msgid ""
 msgstr ""
-"Project-Id-Version: msmtp 1.8.25\n"
+"Project-Id-Version: msmtp 1.8.26\n"
 "Report-Msgid-Bugs-To: marlam@marlam.de\n"
-"POT-Creation-Date: 2024-03-05 10:41+0100\n"
-"PO-Revision-Date: 2023-10-30 17:17+0200\n"
+"POT-Creation-Date: 2024-10-06 14:18+0200\n"
+"PO-Revision-Date: 2024-06-05 20:49+0300\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <trans-uk@lists.fedoraproject.org>\n"
 "Language: uk\n"
@@ -18,7 +18,7 @@ msgstr ""
 "X-Bugs: Report translation errors to the Language-Team address.\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Lokalize 20.12.0\n"
+"X-Generator: Lokalize 23.04.3\n"
 
 #: src/aliases.c:121
 #, c-format
@@ -261,7 +261,7 @@ msgid ""
 "This server might advertise more or other capabilities when TLS is active.\n"
 msgstr "Можливості цього сервера можуть бути ширшими, якщо увімкнено TLS.\n"
 
-#: src/msmtp.c:1260 src/msmtp.c:3411
+#: src/msmtp.c:1260 src/msmtp.c:3412
 #, c-format
 msgid "cannot write mail headers to temporary file: output error"
 msgstr ""
@@ -906,7 +906,7 @@ msgstr "не можна одночасно використовувати --host
 #: src/msmtp.c:2931 src/msmtp.c:2977 src/msmtp.c:3002 src/msmtp.c:3021
 #: src/msmtp.c:3074 src/msmtp.c:3119 src/msmtp.c:3146 src/msmtp.c:3164
 #: src/msmtp.c:3182 src/msmtp.c:3201 src/msmtp.c:3220 src/msmtp.c:3238
-#: src/msmtp.c:3256 src/msmtp.c:3333
+#: src/msmtp.c:3256 src/msmtp.c:3334
 #, c-format
 msgid "invalid argument %s for %s"
 msgstr "некоректний аргумент %s %s"
@@ -920,212 +920,212 @@ msgstr "не можна одночасно використовувати --from
 msgid "unsupported operation mode b%s"
 msgstr "непідтримуваний режим роботи b%s"
 
-#: src/msmtp.c:3388 src/msmtp.c:3872 src/msmtp.c:4179
+#: src/msmtp.c:3389 src/msmtp.c:3873 src/msmtp.c:4180
 #, c-format
 msgid "cannot create temporary file: %s"
 msgstr "не вдалося створити тимчасовий файл: %s"
 
-#: src/msmtp.c:3418 src/msmtp.c:3898 src/msmtp.c:4219
+#: src/msmtp.c:3419 src/msmtp.c:3899 src/msmtp.c:4222
 #, c-format
 msgid "cannot rewind temporary file: %s"
 msgstr "не вдалося виконати гортання назад тимчасового файла: %s"
 
-#: src/msmtp.c:3484
+#: src/msmtp.c:3485
 #, c-format
 msgid "ignoring system configuration file %s: %s\n"
 msgstr "ігноруємо загальносистемний файл налаштувань %s: %s\n"
 
-#: src/msmtp.c:3499
+#: src/msmtp.c:3500
 #, c-format
 msgid "loaded system configuration file %s\n"
 msgstr "завантажено загальносистемний файл налаштувань %s\n"
 
-#: src/msmtp.c:3538
+#: src/msmtp.c:3539
 #, c-format
 msgid "ignoring user configuration file %s: %s\n"
 msgstr "ігноруємо файл налаштувань користувача %s: %s\n"
 
-#: src/msmtp.c:3553
+#: src/msmtp.c:3554
 #, c-format
 msgid "loaded user configuration file %s\n"
 msgstr "завантажено файл налаштувань користувача %s\n"
 
-#: src/msmtp.c:3610
+#: src/msmtp.c:3611
 #, c-format
 msgid "using account %s from %s\n"
 msgstr "з використанням облікового запису %s з %s\n"
 
-#: src/msmtp.c:3614 src/msmtp.c:3617 src/msmtp.c:3619 src/msmtp.c:3622
-#: src/msmtp.c:3656 src/msmtp.c:3657 src/msmtp.c:3659 src/msmtp.c:3661
-#: src/msmtp.c:3665 src/msmtp.c:3667 src/msmtp.c:3686 src/msmtp.c:3688
-#: src/msmtp.c:3690 src/msmtp.c:3700 src/msmtp.c:3703 src/msmtp.c:3705
-#: src/msmtp.c:3710 src/msmtp.c:3713 src/msmtp.c:3715 src/msmtp.c:3729
-#: src/msmtp.c:3731 src/msmtp.c:3733 src/msmtp.c:3736 src/msmtp.c:3738
-#: src/msmtp.c:3740
+#: src/msmtp.c:3615 src/msmtp.c:3618 src/msmtp.c:3620 src/msmtp.c:3623
+#: src/msmtp.c:3657 src/msmtp.c:3658 src/msmtp.c:3660 src/msmtp.c:3662
+#: src/msmtp.c:3666 src/msmtp.c:3668 src/msmtp.c:3687 src/msmtp.c:3689
+#: src/msmtp.c:3691 src/msmtp.c:3701 src/msmtp.c:3704 src/msmtp.c:3706
+#: src/msmtp.c:3711 src/msmtp.c:3714 src/msmtp.c:3716 src/msmtp.c:3730
+#: src/msmtp.c:3732 src/msmtp.c:3734 src/msmtp.c:3737 src/msmtp.c:3739
+#: src/msmtp.c:3741
 msgid "(not set)"
 msgstr "(не встановлено)"
 
-#: src/msmtp.c:3626
+#: src/msmtp.c:3627
 #, c-format
 msgid "off\n"
 msgstr "вимкнено\n"
 
-#: src/msmtp.c:3632
+#: src/msmtp.c:3633
 #, c-format
 msgid "%d seconds\n"
 msgstr "%d секунд\n"
 
-#: src/msmtp.c:3636
+#: src/msmtp.c:3637
 #, c-format
 msgid "1 second\n"
 msgstr "1 секунда\n"
 
-#: src/msmtp.c:3645
+#: src/msmtp.c:3646
 #, c-format
 msgid "none\n"
 msgstr "немає\n"
 
-#: src/msmtp.c:3649
+#: src/msmtp.c:3650
 #, c-format
 msgid "choose\n"
 msgstr "виберіть\n"
 
-#: src/msmtp.c:3662 src/msmtp.c:3663 src/msmtp.c:3692 src/msmtp.c:3708
-#: src/msmtp.c:3717 src/msmtp.c:3720 src/msmtp.c:3725 src/msmtp.c:3727
+#: src/msmtp.c:3663 src/msmtp.c:3664 src/msmtp.c:3693 src/msmtp.c:3709
+#: src/msmtp.c:3718 src/msmtp.c:3721 src/msmtp.c:3726 src/msmtp.c:3728
 msgid "on"
 msgstr "увімкнено"
 
-#: src/msmtp.c:3662 src/msmtp.c:3663 src/msmtp.c:3692 src/msmtp.c:3708
-#: src/msmtp.c:3717 src/msmtp.c:3720 src/msmtp.c:3723 src/msmtp.c:3725
-#: src/msmtp.c:3727
+#: src/msmtp.c:3663 src/msmtp.c:3664 src/msmtp.c:3693 src/msmtp.c:3709
+#: src/msmtp.c:3718 src/msmtp.c:3721 src/msmtp.c:3724 src/msmtp.c:3726
+#: src/msmtp.c:3728
 msgid "off"
 msgstr "вимкнено"
 
-#: src/msmtp.c:3713
+#: src/msmtp.c:3714
 msgid "(read from mail)"
 msgstr "(прочитано з пошти)"
 
-#: src/msmtp.c:3719 src/msmtp.c:3722
+#: src/msmtp.c:3720 src/msmtp.c:3723
 msgid "auto"
 msgstr "авто"
 
-#: src/msmtp.c:3743
+#: src/msmtp.c:3744
 #, c-format
 msgid "reading recipients from the command line and the mail\n"
 msgstr "читаємо записи отримувачів з командного рядка і пошти\n"
 
-#: src/msmtp.c:3748
+#: src/msmtp.c:3749
 #, c-format
 msgid "reading recipients from the command line\n"
 msgstr "читаємо записи отримувачів з командного рядка\n"
 
-#: src/msmtp.c:3862
+#: src/msmtp.c:3863
 msgid "too many arguments"
 msgstr "забагато аргументів"
 
-#: src/msmtp.c:3892
+#: src/msmtp.c:3893
 #, c-format
 msgid "envelope from address extracted from mail: %s\n"
 msgstr "адреса відправника, яку видобуто з пошти: %s\n"
 
-#: src/msmtp.c:3907
+#: src/msmtp.c:3908
 msgid "no recipients found"
 msgstr "не знайдено отримувачів"
 
-#: src/msmtp.c:3937
+#: src/msmtp.c:3938
 #, c-format
 msgid "account chosen by envelope from address %s: %s\n"
 msgstr "обліковий запис, який вибрано за адресою відправника %s: %s\n"
 
-#: src/msmtp.c:3951
+#: src/msmtp.c:3952
 #, c-format
 msgid "falling back to default account\n"
 msgstr "повертаємося до типового облікового запису\n"
 
-#: src/msmtp.c:3974
+#: src/msmtp.c:3975
 #, c-format
 msgid "using environment variables EMAIL and SMTPSERVER\n"
 msgstr "з використанням змінних середовища EMAIL та SMTPSERVER\n"
 
-#: src/msmtp.c:3982
+#: src/msmtp.c:3983
 #, c-format
 msgid "account %s not found in %s and %s"
 msgstr "облікового запису %s у %s та %s не знайдено"
 
-#: src/msmtp.c:3988 src/msmtp.c:3993
+#: src/msmtp.c:3989 src/msmtp.c:3994
 #, c-format
 msgid "account %s not found in %s"
 msgstr "облікового запису %s у %s не знайдено"
 
-#: src/msmtp.c:3998
+#: src/msmtp.c:3999
 #, c-format
 msgid "account %s not found: no configuration file available"
 msgstr "обліковий запис %s не знайдено: немає доступного файла налаштувань"
 
-#: src/msmtp.c:4020
+#: src/msmtp.c:4021
 #, c-format
 msgid "using account specified on command line\n"
 msgstr "з використанням облікового запису, вказаного у рядку команди\n"
 
-#: src/msmtp.c:4085
+#: src/msmtp.c:4086
 #, c-format
 msgid "account %s from %s: %s"
 msgstr "обліковий запис %s з %s: %s"
 
-#: src/msmtp.c:4126
+#: src/msmtp.c:4127
 msgid "this platform does not support syslog logging"
 msgstr "на цій платформі не передбачено підтримки ведення журналу syslog"
 
-#: src/msmtp.c:4135
+#: src/msmtp.c:4136
 #, c-format
 msgid "support for authentication method %s is not compiled in"
 msgstr ""
 "під час збирання програми не було увімкнено підтримку способу розпізнавання "
 "%s"
 
-#: src/msmtp.c:4143
+#: src/msmtp.c:4144
 #, c-format
 msgid "cannot initialize networking: %s"
 msgstr "не вдалося ініціалізувати мережу: %s"
 
-#: src/msmtp.c:4154
+#: src/msmtp.c:4155
 #, c-format
 msgid "cannot initialize TLS library: %s"
 msgstr "не вдалося ініціалізувати бібліотеку TLS: %s"
 
-#: src/msmtp.c:4161
+#: src/msmtp.c:4162
 msgid "support for TLS is not compiled in"
 msgstr "підтримку TLS не було увімкнено під час збирання програми"
 
-#: src/msmtp.c:4248
+#: src/msmtp.c:4251
 #, c-format
 msgid "LMTP server message: %s"
 msgstr "Повідомлення сервера LMTP: %s"
 
-#: src/msmtp.c:4259
+#: src/msmtp.c:4262
 #, c-format
 msgid "could not send mail to all recipients (account %s from %s)"
 msgstr "не вдалося надіслати пошту усім отримувачам (обліковий запис %s з %s)"
 
-#: src/msmtp.c:4265
+#: src/msmtp.c:4268
 msgid "could not send mail to all recipients"
 msgstr "не вдалося надіслати пошту усім отримувачам"
 
-#: src/msmtp.c:4280 src/msmtp.c:4335 src/msmtp.c:4356
+#: src/msmtp.c:4283 src/msmtp.c:4338 src/msmtp.c:4359
 #, c-format
 msgid "server message: %s"
 msgstr "повідомлення сервера: %s"
 
-#: src/msmtp.c:4286
+#: src/msmtp.c:4289
 #, c-format
 msgid "could not send mail (account %s from %s)"
 msgstr "не вдалося надіслати пошту (обліковий запис %s з %s)"
 
-#: src/msmtp.c:4291
+#: src/msmtp.c:4294
 msgid "could not send mail"
 msgstr "не вдалося надіслати пошту"
 
-#: src/msmtp.c:4301
+#: src/msmtp.c:4304
 #, c-format
 msgid "delivery to one or more recipients failed"
 msgstr "не вдалося доставити пошту до одного або декількох отримувачів"
@@ -1748,11 +1748,11 @@ msgid "authentication method %s needs a password"
 msgstr "для використання способу розпізнавання %s слід вказати пароль"
 
 #: src/smtp.c:1329
-#, fuzzy, c-format
-#| msgid "authentication method %s needs a user name"
+#, c-format
 msgid "authentication method %s needs TLS channel binding information"
 msgstr ""
-"для використання способу розпізнавання %s слід вказати ім'я користувача"
+"для використання способу розпізнавання %s потрібні дані щодо прив'язки TLS-"
+"каналу"
 
 #: src/smtp.c:1513
 #, c-format

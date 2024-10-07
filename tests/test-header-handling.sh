@@ -46,7 +46,7 @@ echo "to1@example.com" \
 	"to11@example.com" \
 	"to12" \
 	"to13@localhost" \
-	"bcc@example.com" > correct-recipients.txt
+	"bcc@example.com" > mail-header-handling-correct-recipients.txt
 
 # Check if msmtp adds a correct From header
 echo "Testing From header generation"
@@ -69,7 +69,7 @@ echo "Testing address extraction"
 ../src/msmtp --host=::1 --port=12346 \
 	--set-from-header=on --read-envelope-from --read-recipients < mail-header-handling.txt
 cmp --quiet <(echo "From: from@example.com") <(grep "^From: " out-header-handling-mail.txt)
-cmp --quiet correct-recipients.txt out-header-handling-rcpt.txt
+cmp --quiet mail-header-handling-correct-recipients.txt out-header-handling-rcpt.txt
 
 # Check if msmtp adds a Date header that agrees with the date command
 echo "Testing Date header"

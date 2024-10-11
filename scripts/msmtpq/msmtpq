@@ -55,10 +55,8 @@ shopt -s inherit_errexit
 IFS=$' \n\t'
 PS4='+\t '
 
-if [[ ! -t 0 ]] && [[ -n "$DISPLAY" ]] && command -v notify-send >/dev/null 2>&1; then
-  NOTIFY_SEND=${NOTIFY_SEND:-1}
-else
-  NOTIFY_SEND=${NOTIFY_SEND:-0}
+if [[ -z "$NOTIFY_SEND" ]] && [[ ! -t 0 ]] && [[ -n "$DISPLAY" ]] && command -v notify-send >/dev/null 2>&1; then
+  NOTIFY_SEND=1
 fi
 
 log_later() { LOG_LATER_ARGS=( "$@" ) ; }

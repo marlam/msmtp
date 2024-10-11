@@ -52,24 +52,24 @@ echo "to1@example.com" \
 echo "Testing From header generation"
 ../src/msmtp --host=::1 --port=12346 \
 	--set-from-header=on --from test@example.com recipient@example.com < mail-header-handling.txt
-cmp --quiet <(echo "From: test@example.com") <(grep "^From: " out-header-handling-mail.txt)
+cmp -s <(echo "From: test@example.com") <(grep "^From: " out-header-handling-mail.txt)
 ../src/msmtp --host=::1 --port=12346 \
 	--set-from-header=on --from test@example.com -F "Test User" recipient@example.com < mail-header-handling.txt
-cmp --quiet <(echo "From: Test User <test@example.com>") <(grep "^From: " out-header-handling-mail.txt)
+cmp -s <(echo "From: Test User <test@example.com>") <(grep "^From: " out-header-handling-mail.txt)
 LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8 ../src/msmtp --host=::1 --port=12346 \
 	--set-from-header=on --from test@example.com -F "Test Üser" recipient@example.com < mail-header-handling.txt
-cmp --quiet <(echo "From: =?utf-8?B?VGVzdCDDnHNlcg==?= <test@example.com>") <(grep "^From: " out-header-handling-mail.txt)
+cmp -s <(echo "From: =?utf-8?B?VGVzdCDDnHNlcg==?= <test@example.com>") <(grep "^From: " out-header-handling-mail.txt)
 
 # Check if msmtp used the correct recipient from the command line
 echo "Testing command line recipient"
-cmp --quiet <(echo recipient@example.com) out-header-handling-rcpt.txt
+cmp -s <(echo recipient@example.com) out-header-handling-rcpt.txt
 
 # Check if msmtp extracts the correct envelope from and recipient addresses when asked
 echo "Testing address extraction"
 ../src/msmtp --host=::1 --port=12346 \
 	--set-from-header=on --read-envelope-from --read-recipients < mail-header-handling.txt
-cmp --quiet <(echo "From: from@example.com") <(grep "^From: " out-header-handling-mail.txt)
-cmp --quiet mail-header-handling-correct-recipients.txt out-header-handling-rcpt.txt
+cmp -s <(echo "From: from@example.com") <(grep "^From: " out-header-handling-mail.txt)
+cmp -s mail-header-handling-correct-recipients.txt out-header-handling-rcpt.txt
 
 # Check if msmtp adds a Date header that agrees with the date command
 echo "Testing Date header"
@@ -77,7 +77,7 @@ grep "^Date: " out-header-handling-mail.txt > /dev/null
 if date --version > /dev/null 2>&1 ; then
 	echo "Testing Date header format"
 	TEST_DATE="`grep "^Date: " out-header-handling-mail.txt | sed -e 's/Date: //'`"
-	cmp --quiet <(echo $TEST_DATE) <(date -R --date="$TEST_DATE")
+	cmp -s <(echo $TEST_DATE) <(date -R --date="$TEST_DATE")
 fi
 
 # Check if msmtp adds a Message-ID header
@@ -86,4 +86,4 @@ grep "^Message-ID: <.*@example.com>" out-header-handling-mail.txt > /dev/null
 
 # Check if msmtp removed the Bcc headers
 echo "Testing Bcc header removal"
-cmp --quiet out-header-handling-mail.txt <(grep -v "^Bcc: " out-header-handling-mail.txt)
+cmp -s out-header-handling-mail.txt <(grep -v "^Bcc: " out-header-handling-mail.txt)

@@ -60,16 +60,27 @@ if [[ -z "$NOTIFY_SEND" ]] && [[ ! -t 0 ]] && [[ -n "$DISPLAY" ]] && command -v 
 fi
 
 log_later() { LOG_LATER_ARGS=( "$@" ) ; }
-dsp() {
+echo_msg() {
   local L
   local msg=""
   for L; do
     [ -n "$L" ] && msg+="  $L" || msg+="\n"
   done
+  echo "$msg"
+}
+dsp() {
+  msg="$(echo_msg "$@")"
+  echo -e "$msg"
+  if [ "$EMAIL_QUEUE_QUIET" = "0" ] && [ "$NOTIFY_SEND" = 1 ]; then
+    notify-send "${BASH_SOURCE[0]}:" "$msg"
+  fi
+}
+err() {
+  msg="$(echo_msg '' "$@" '')"
   echo -e "$msg"
   if [ "$NOTIFY_SEND" = 1 ]; then notify-send "${BASH_SOURCE[0]}:" "$msg"; fi
+  exit 1
 }
-err() { dsp '' "$@" '' ; exit 1 ; }
 
 
 ## ======================================================================================
@@ -183,7 +194,7 @@ log() {
     shift 2                          # shift opt & its arg off
   fi
 
-  [ "$EMAIL_QUEUE_QUIET" = "0" ] && dsp "$@"  # display msg to user, as well as logging it
+  dsp "$@"  # display msg to user, as well as logging it
 
   if [ -n "$MSMTPQ_LOG" ] ; then     # log is defined and in use
     for ARG ; do                     # each msg line out

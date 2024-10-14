@@ -1069,8 +1069,14 @@ char *net_get_canonical_hostname(const char *hostname)
  *
  * see net.h
  */
-char* net_get_srv_query(const char *domain, const char *service)
+char* net_get_srv_query(const char *domain0, const char *service)
 {
+    char *domain = NULL;
+#ifdef HAVE_LIBIDN
+    idn2_to_ascii_lz(domain0, &domain, IDN2_NFC_INPUT | IDN2_NONTRANSITIONAL);
+#else
+    domain = (char*)domain0;
+#endif
     size_t domain_len = strlen(domain);
     size_t service_len = strlen(service);
     size_t query_len = 1 /* '_' */ + service_len + 6 /* "._tcp." */ + domain_len;
@@ -1079,6 +1085,9 @@ char* net_get_srv_query(const char *domain, const char *service)
     strncpy(query + 1, service, service_len);
     strncpy(query + 1 + service_len, "._tcp.", 6);
     strcpy(query + 1 + service_len + 6, domain);
+#ifdef HAVE_LIBIDN
+    free(domain);
+#endif
     return query;
 }
 
@@ -1134,7 +1143,12 @@ int net_get_srv_record(const char* query, char **hostname, int *port)
         /* the loop finished but we did not find usable information */
         return NET_EIO;
     } else {
+#ifdef HAVE_LIBIDN
+        idn2_to_unicode_lzlz(current_hostname, hostname, 0);
+        free(current_hostname);
+#else
         *hostname = current_hostname;
+#endif
         *port = current_port;
         return NET_EOK;
     }

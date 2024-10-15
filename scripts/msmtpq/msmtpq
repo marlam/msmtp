@@ -31,7 +31,34 @@
 ##  please see the msmtp man page and docs for further mutt settings
 ##    and optimisations
 ## )
+
+## msmtpq can use the following environment variables :
+##   EMAIL_CONN_NOTEST   if set will suppress any testing for a connection
+##                         (the above var is deprecated & will be removed ; use the var below)
+##   EMAIL_CONN_TEST     if =x will suppress any testing for a connection
+##                       if =p or unset will use a ping test (debian.org) for a connection
+##                       if =P will use a fast ping test (8.8.8.8) for a connection
+##                       if =n will use netcat (nc) to test for a connection
+##                       if =s will use bash sockets to test for a connection
+##   EMAIL_QUEUE_QUIET   if set will cause suppression of messages and 'chatter'
+##                         (perhaps useful for some of the emacs mail clients)
+##   NOTIFY_SEND         if set to 1 then notify-send sends error messages to the desktop;
+##                       set to 1 by default whenever possible if terminal has no output;
+##                       set to any other value to forcibly suppress these messages
+##   NOTIFY_SEND_VERBOSE if set then notify-send sends all messages to the desktop
 ##
+## ======================================================================================
+##      !!!      define or confirm the following vars if you wish to set         !!!
+##      !!!      these properties here in the script - the same properties       !!!
+##      !!!      may be set externally, by means of environment variables        !!!
+##      !!!      note the internal variables, if set, will take precedence       !!!
+##      !!!      over properties set via environment variables                   !!!
+## ======================================================================================
+##
+#EMAIL_CONN_NOTEST=y                 # deprecated ; use below var
+#EMAIL_CONN_TEST={x| |p|P|n|s}       # see settings above for EMAIL_CONN_TEST
+## ======================================================================================
+
 ## two essential patches by Philipp Hartwig
 ## 19 Oct 2011 & 27 Oct 2011
 ##
@@ -55,8 +82,23 @@ shopt -s inherit_errexit
 IFS=$' \n\t'
 PS4='+\t '
 
-if [[ -z "$NOTIFY_SEND" ]] && [[ ! -t 0 ]] && [[ -n "$DISPLAY" ]] && command -v notify-send >/dev/null 2>&1; then
+if [ -n "$NOTIFY_SEND_VERBOSE" ]; then
   NOTIFY_SEND=1
+fi
+
+if [ -z "$NOTIFY_SEND" ] && [ ! -t 0 ] && [ -n "$DISPLAY" ] && command -v notify-send >/dev/null 2>&1; then
+  NOTIFY_SEND=1
+fi
+
+if [ "$NOTIFY_SEND" = 1 ]; then
+  if [ -z "$DISPLAY" ]; then
+    err "NOTIFY_SEND=1 set but no display available!"
+    exit 1
+  fi
+  if ! command -v notify-send >/dev/null 2>&1; then
+    err "NOTIFY_SEND=1 set but notify-send unavailable!"
+    exit 1
+  fi
 fi
 
 log_later() { LOG_LATER_ARGS=( "$@" ) ; }
@@ -71,17 +113,13 @@ echo_msg() {
 dsp() {
   msg="$(echo_msg "$@")"
   echo -e "$msg"
-  if [ "$EMAIL_QUEUE_QUIET" = "0" ] && [ "$NOTIFY_SEND" = 1 ]; then
-    notify-send "${BASH_SOURCE[0]}:" "$msg"
-  fi
+  if [ -n "$NOTIFY_SEND_VERBOSE" ]; then notify-send "${BASH_SOURCE[0]}:" "$msg"; fi
 }
 err() {
   msg="$(echo_msg '' "$@" '')"
   echo -e "$msg"
   if [ "$NOTIFY_SEND" = 1 ]; then notify-send "${BASH_SOURCE[0]}:" "$msg"; fi
-  exit 1
 }
-
 
 ## ======================================================================================
 ##      !!!          please define or confirm the following three vars           !!!
@@ -107,8 +145,11 @@ MSMTP="${MSMTP:-msmtp}"
 ##
 ## the queue dir - export this variable to reflect where you'd like it to be  (no quotes !!)
 MSMTPQ_Q=${MSMTPQ_Q:-${Q:-~/.msmtp.queue}}
-[ -d "$MSMTPQ_Q" ] || mkdir -m 0700 -p "$MSMTPQ_Q" || \
-  err '' "msmtpq : can't find or create msmtp queue directory [ $MSMTPQ_Q ]" ''     # if not present - complain ; quit
+[ -d "$MSMTPQ_Q" ] || mkdir -m 0700 -p "$MSMTPQ_Q"
+if ! [ -d "$MSMTPQ_Q" ]; then
+  err "msmtpq : can't create missing msmtp queue directory [ $MSMTPQ_Q ]"
+  exit 1
+fi
 ##
 ## set the queue log file var to the location of the msmtp queue log file
 ##   where it is or where you'd like it to be
@@ -120,39 +161,16 @@ MSMTPQ_Q=${MSMTPQ_Q:-${Q:-~/.msmtp.queue}}
 ##
 ## the queue log file - export this variable to change where logs are stored  (but no quotes !!)
 ##                      Set it to "" (empty string) to disable logging.
-if [ ! -v MSMTPQ_LOG ] ; then
-  if [ -v LOG ] ; then
-    MSMTPQ_LOG="$LOG"
-  else
-    MSMTPQ_LOG=~/log/msmtp.queue.log
-  fi
+if [ -z "$MSMTPQ_LOG" ] ; then
+  MSMTPQ_LOG="${LOG:-"$HOME/log/msmtp.queue.log"}"
 fi
-[ -d "$(dirname "$MSMTPQ_LOG")" ] || mkdir -p "$(dirname "$MSMTPQ_LOG")"
-## ======================================================================================
-
-## msmtpq can use the following environment variables :
-##   EMAIL_CONN_NOTEST   if set will suppress any testing for a connection
-##                         (the above var is deprecated & will be removed ; use the var below)
-##   EMAIL_CONN_TEST     if =x will suppress any testing for a connection
-##                       if =p or unset will use a ping test (debian.org) for a connection
-##                       if =P will use a fast ping test (8.8.8.8) for a connection
-##                       if =n will use netcat (nc) to test for a connection
-##                       if =s will use bash sockets to test for a connection
-##   EMAIL_QUEUE_QUIET   if set will cause suppression of messages and 'chatter'
-EMAIL_QUEUE_QUIET=${EMAIL_QUEUE_QUIET:-1}
-##                         (perhaps useful for some of the emacs mail clients)
-##
-## ======================================================================================
-##      !!!      define or confirm the following vars if you wish to set         !!!
-##      !!!      these properties here in the script - the same properties       !!!
-##      !!!      may be set externally, by means of environment variables        !!!
-##      !!!      note the internal variables, if set, will take precedence       !!!
-##      !!!      over properties set via environment variables                   !!!
-## ======================================================================================
-##
-#EMAIL_CONN_NOTEST=y                 # deprecated ; use below var
-#EMAIL_CONN_TEST={x| |p|P|n|s}       # see settings above for EMAIL_CONN_TEST
-## ======================================================================================
+msmtpq_log_dir="$(dirname "$MSMTPQ_LOG")"
+[ -d "$msmtpq_log_dir" ] || mkdir -p "$msmtpq_log_dir"
+if ! [ -d "$msmtpq_log_dir" ]; then
+  err "msmtpq : can't create missing msmtp queue log file directory [ $msmtpq_log_dir ]"
+  exit 1
+fi
+unset msmptq_log_dir
 
 umask 077                            # set secure permissions on created directories and files
 
@@ -192,9 +210,10 @@ log() {
   if [ "$1" = '-e' ] ; then          # there's an error exit code
     RC="$2"                          # take it
     shift 2                          # shift opt & its arg off
+    err "$@"                         # display msg to user, as well as logging it
+  elif [ -z "$EMAIL_QUEUE_QUIET" ]; then
+    dsp "$@"                         # display msg to user, as well as logging it
   fi
-
-  dsp "$@"  # display msg to user, as well as logging it
 
   if [ -n "$MSMTPQ_LOG" ] ; then     # log is defined and in use
     for ARG ; do                     # each msg line out
@@ -227,10 +246,12 @@ lock_queue() {        # <-- '-u' to remove lockfile
       'mkdir' "$LOK" 2>/dev/null && LKD='t'          # make lockdir ; lock queue ; set flag
     done                                             # try again while locked for MAX secs
     if [ -z "$LKD" ]; then
-      err ''  "cannot use queue $MSMTPQ_Q : waited $MAX seconds for"\
-              "  lockdir [ $LOK ] to vanish ; giving up"\
-              'if you are certain that no other instance of this script'\
-              "  is running, then 'rmdir' the lock dir manually" '' # lock file still there, give up
+      # lock file still there, give up
+      err "cannot use queue $MSMTPQ_Q : waited $MAX seconds for"\
+          " lockdir [ $LOK ] to vanish ; giving up"\
+          'if you are certain that no other instance of this script'\
+          " is running, then 'rmdir' the lock dir manually"
+      exit 1
     else
       return 0
     fi
@@ -573,7 +594,7 @@ send_mail() {    # <-- all mail args ; mail text via TMP
 ## -- entry point
 #
 
-[ -v LOG_LATER_ARGS ] && log "${LOG_LATER_ARGS[@]}"
+[ -z "${LOG_LATER_ARGS+x}" ] || log "${LOG_LATER_ARGS[@]}"
 if [ ! "$1" = '--q-mgmt' ] ; then    # msmtpq - sendmail mode
   lock_queue                         # lock here
   make_id                            # make base queue filename id for this mail

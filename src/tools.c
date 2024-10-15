@@ -35,6 +35,7 @@
 # include <lmcons.h>
 # include <sys/locking.h>
 # include <limits.h>
+# include <winnls.h>
 #else
 # include <pwd.h>
 #endif
@@ -50,6 +51,8 @@
 #include <unistd.h>
 #ifdef ENABLE_NLS
 # include <locale.h>
+#endif
+#ifdef HAVE_LANGINFO_H
 # include <langinfo.h>
 #endif
 
@@ -917,6 +920,15 @@ int check_hostname_matches_domain(const char *hostname, const char *domain)
  * see tools.h
  */
 
+#ifdef W32_NATIVE
+char *w32_langinfo_codeset()
+{
+    static char codeset[] = "CP4294967296";
+    sprintf(codeset, "CP%u", GetACP());
+    return codeset;
+}
+#endif
+
 char *encode_for_header(const char *s)
 {
     int needsEncoding = 0;
@@ -934,10 +946,14 @@ char *encode_for_header(const char *s)
         size_t s_len = strlen(s);
         size_t b64_s_len = BASE64_LENGTH(s_len);
         char* encoding =
-#ifdef ENABLE_NLS
+#ifdef HAVE_LANGINFO_H
                 nl_langinfo(CODESET);
 #else
+# ifdef W32_NATIVE
+                w32_langinfo_codeset();
+# else
                 "UTF-8";
+# endif
 #endif
         size_t e_len = strlen(encoding);
         size_t enc_len = 2 + e_len + 3 + b64_s_len + 3;

@@ -91,13 +91,11 @@ if [ -z "$NOTIFY_SEND" ] && [ ! -t 0 ] && [ -n "$DISPLAY" ] && command -v notify
 fi
 
 if [ "$NOTIFY_SEND" = 1 ]; then
-  if [ -z "$DISPLAY" ]; then
-    err "NOTIFY_SEND=1 set but no display available!"
-    exit 1
-  fi
+  # if [ -z "$DISPLAY" ] || [ -z "$WAYLAND_DISPLAY" ]; then
+  #   err "NOTIFY_SEND=1 set but no display available!"
+  # fi
   if ! command -v notify-send >/dev/null 2>&1; then
     err "NOTIFY_SEND=1 set but notify-send unavailable!"
-    exit 1
   fi
 fi
 

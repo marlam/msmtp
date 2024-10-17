@@ -1,3 +1,6 @@
+Version 1.8.28:
+- Add special value 'none' to logfile_time_format to suppress time output.
+
 Version 1.8.27:
 - Add a testing infrastructure ('make check')
 - Many improvements in the msmtpq script

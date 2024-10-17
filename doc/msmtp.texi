@@ -862,10 +862,6 @@ password, msmtp will search it in ~/.netrc and SYSCONFDIR/netrc.
 @item @code{USER}, @code{LOGNAME}
 These variables override the user's login name when constructing an
 envelope-from address. @code{LOGNAME} is only used if @code{USER} is unset.
-@item @code{TMPDIR}
-Directory to create temporary files in. If this is unset, a system specific
-default directory is used. A temporary file is used to buffer the headers of
-the mail but not the mail body, so the file will not get very large.
 @item @code{EMAIL}, @code{SMTPSERVER}
 These environment variables are used only if neither @option{--host} nor
 @option{--account} is used and there is no default account defined in the

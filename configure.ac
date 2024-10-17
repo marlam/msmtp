@@ -250,29 +250,10 @@ if test "$want_gai_idn" = "yes"; then
     fi
 fi
 
-dnl Check if the TLS library has IDN support
-have_tls_idn=no
-if test "$tls_lib" = "GnuTLS"; then
-    have_tls_idn="yes"
-fi
-
-dnl Do we need libidn for IDN support?
-AC_MSG_CHECKING([whether libidn is needed for IDN support])
-want_libidn=no
-if test "$have_gai_idn" = "no"; then
-    want_libidn=yes
-elif test "$have_tls" = "yes" -a "$have_tls_idn" = "no"; then
-    want_libidn=yes
-fi
-AC_MSG_RESULT([$want_libidn])
-
 dnl GNU Libidn
 AC_ARG_WITH([libidn], [AS_HELP_STRING([--with-libidn],
 	[Support IDN (needs GNU Libidn)])],
     [libidn=$withval], [libidn=yes])
-if test "$want_libidn" = "no"; then
-    libidn=no
-fi
 if test "$libidn" != "no"; then
     PKG_CHECK_MODULES([libidn2], [libidn2 >= 0.0], [HAVE_LIBIDN=1], [HAVE_LIBIDN=0])
     if test "$HAVE_LIBIDN" != "1"; then
@@ -345,13 +326,7 @@ echo
 echo "Install prefix ......... : $prefix"
 echo "NLS support ............ : $USE_NLS"
 echo "TLS support ............ : $have_tls (Library: $tls_lib)"
-if test "$want_libidn" = "no"; then
-    echo "IDN support ............ : yes (no library required)"
-elif test "$libidn" = "yes"; then
-    echo "IDN support ............ : yes (via GNU Libidn)"
-else
-    echo "IDN support ............ : no"
-fi
+echo "IDN support ............ : $libidn"
 echo "GNU SASL support ....... : $libgsasl"
 echo "Libsecret support (GNOME): $libsecret"
 echo "MacOS X Keychain support : $macosx_keyring"

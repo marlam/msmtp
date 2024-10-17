@@ -1,4 +1,5 @@
 Version 1.8.28:
+- Add IDN support to --configure (build with libidn2 to enable this).
 - Add special value 'none' to logfile_time_format to suppress time output.
 
 Version 1.8.27:

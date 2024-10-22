@@ -524,6 +524,11 @@ If you select a file, it must be in PEM format, and you should also use
 Deprecated. This sets a certificate revocation list (CRL) file for TLS, to check
 for revoked certificates (an empty argument, which is the default, disables this).
 Nowadays automatic OCSP checks replace CRL file checks.
+.br
+When GnuTLS is used, stapled OCSP information will be checked automatically,
+and the MustStaple TLS extension is supported, however no manual OCSP queries
+will be sent when stapled OCSP information is missing. With other TLS
+libraries, behavior may be different.
 .IP "tls_fingerprint [\fIfingerprint\fP]"
 Set the fingerprint of a single certificate to accept for TLS. This certificate
 will be trusted regardless of its contents (this overrides \fBtls_trust_file\fP).

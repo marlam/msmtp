@@ -1275,6 +1275,19 @@ int msmtp_read_headers(FILE *mailf, FILE *tmpf,
         {
             /* The current recipient just ended. Add it to the list */
             current_recipient[current_recipient_len] = '\0';
+#ifdef HAVE_LIBIDN
+            char *at = strchr(current_recipient, '@');
+            if (at)
+            {
+                *at = '\0';
+                char *recipient, *idn_domain = NULL;
+                idn2_to_ascii_lz(at + 1, &idn_domain, IDN2_NFC_INPUT | IDN2_NONTRANSITIONAL);
+                recipient = xasprintf("%s@%s", current_recipient, idn_domain);
+                free(idn_domain);
+                free(current_recipient);
+                current_recipient = recipient;
+            }
+#endif
             if (from_hdr == 0)
             {
                 *from = current_recipient;

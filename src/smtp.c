@@ -520,6 +520,10 @@ int smtp_init(smtp_server_t *srv, const char *ehlo_domain, list_t **errmsg,
         {
             srv->cap.flags |= SMTP_CAP_ETRN;
         }
+        else if (strncmp(s + 4, "SMTPUTF8", 8) == 0)
+        {
+            srv->cap.flags |= SMTP_CAP_SMTPUTF8;
+        }
     }
 
     list_xfree(ehlo_response, free);

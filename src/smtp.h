@@ -77,6 +77,7 @@
 #define SMTP_CAP_AUTH_NTLM               (1 << 16)
 #define SMTP_CAP_AUTH_XOAUTH2            (1 << 17)
 #define SMTP_CAP_ETRN                    (1 << 18)
+#define SMTP_CAP_SMTPUTF8                (1 << 19)
 
 
 /*

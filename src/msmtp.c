@@ -515,6 +515,11 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
             printf("    PIPELINING:\n        %s\n", _("Support for command "
                         "grouping for faster transmission"));
         }
+        if (srv.cap.flags & SMTP_CAP_SMTPUTF8)
+        {
+            printf("    SMTPUTF8:\n        %s\n", _("Support for "
+                "Email Address Internationalization (EAI) as defined in RFC 6531"));
+        }
         if (srv.cap.flags & SMTP_CAP_ETRN)
         {
             printf("    ETRN:\n        %s\n", _("Support for RMQS "

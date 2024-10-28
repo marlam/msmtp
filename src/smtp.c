@@ -1705,18 +1705,11 @@ int smtp_send_envelope(smtp_server_t *srv,
             /* send */
             if (!mailfrom_cmd_was_sent)
             {
-                if (dsn_return)
-                {
-                    e = smtp_send_cmd(srv, errstr, "MAIL FROM:<%s> RET=%s",
-                            strcasecmp(envelope_from, "MAILER-DAEMON") == 0
-                            ? "" : envelope_from, dsn_return);
-                }
-                else
-                {
-                    e = smtp_send_cmd(srv, errstr, "MAIL FROM:<%s>",
-                            strcasecmp(envelope_from, "MAILER-DAEMON") == 0
-                            ? "" : envelope_from);
-                }
+                e = smtp_send_cmd(srv, errstr, "MAIL FROM:<%s>%s%s%s",
+                        strcasecmp(envelope_from, "MAILER-DAEMON") == 0
+                        ? "" : envelope_from,
+                        dsn_return ? " RET=" : "", dsn_return ? dsn_return : "",
+                        srv->cap.flags & SMTP_CAP_SMTPUTF8 ? " SMTPUTF8" : "");
                 if (e != SMTP_EOK)
                 {
                     return e;

@@ -521,10 +521,10 @@ system default. An empty argument disables trust in CAs.
 If you select a file, it must be in PEM format, and you should also use
 \fBtls_crl_file\fP.
 .IP "tls_crl_file [\fIfile\fP]"
-Deprecated. This sets a certificate revocation list (CRL) file for TLS, to check
+This sets a certificate revocation list (CRL) file for TLS, to check
 for revoked certificates (an empty argument, which is the default, disables this).
-Nowadays automatic OCSP checks replace CRL file checks.
 .br
+OCSP is an alternative to CRL files.
 When GnuTLS is used, stapled OCSP information will be checked automatically,
 and the MustStaple TLS extension is supported, however no manual OCSP queries
 will be sent when stapled OCSP information is missing. With other TLS

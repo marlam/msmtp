@@ -182,7 +182,7 @@ AC_ARG_WITH([libgsasl], [AS_HELP_STRING([--with-libgsasl],
 	[Use GNU SASL authentication library.])],
     [libgsasl=$withval], [libgsasl=no])
 if test "$libgsasl" != "no"; then
-    PKG_CHECK_MODULES([libgsasl], [libgsasl >= 0.0], [HAVE_LIBGSASL=1], [HAVE_LIBGSASL=0])
+    PKG_CHECK_MODULES([libgsasl], [libgsasl >= 2.1], [HAVE_LIBGSASL=1], [HAVE_LIBGSASL=0])
     if test "$HAVE_LIBGSASL" != "1"; then
 	AC_MSG_WARN([library libgsasl not found:])
 	AC_MSG_WARN([$libgsasl_PKG_ERRORS])

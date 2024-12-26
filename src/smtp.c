@@ -4,7 +4,7 @@
  * This file is part of msmtp, an SMTP client.
  *
  * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011,
- * 2014, 2016, 2018, 2019, 2020, 2021, 2022, 2023
+ * 2014, 2016, 2018, 2019, 2020, 2021, 2022, 2023, 2024
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify

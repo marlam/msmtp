@@ -518,7 +518,7 @@ int msmtp_serverinfo(account_t *acc, int debug, list_t **msg, char **errstr)
         if (srv.cap.flags & SMTP_CAP_SMTPUTF8)
         {
             printf("    SMTPUTF8:\n        %s\n", _("Support for "
-                "Email Address Internationalization (EAI) as defined in RFC 6531"));
+                "Internationalized Email"));
         }
         if (srv.cap.flags & SMTP_CAP_ETRN)
         {

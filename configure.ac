@@ -181,7 +181,7 @@ AC_SUBST([tls_LIBS])
 dnl GNU SASL
 AC_ARG_WITH([libgsasl], [AS_HELP_STRING([--with-libgsasl],
 	[Use GNU SASL authentication library.])],
-    [libgsasl=$withval], [libgsasl=no])
+    [libgsasl=$withval], [libgsasl=yes])
 if test "$libgsasl" != "no"; then
     PKG_CHECK_MODULES([libgsasl], [libgsasl >= 2.1], [HAVE_LIBGSASL=1], [HAVE_LIBGSASL=0])
     if test "$HAVE_LIBGSASL" != "1"; then

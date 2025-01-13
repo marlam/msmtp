@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: msmtp 1.8.26\n"
 "Report-Msgid-Bugs-To: marlam@marlam.de\n"
-"POT-Creation-Date: 2024-10-06 14:18+0200\n"
+"POT-Creation-Date: 2025-01-13 20:43+0100\n"
 "PO-Revision-Date: 2024-06-06 01:40+0200\n"
 "Last-Translator: Remus-Gabriel Chelu <remusgabriel.chelu@disroot.org>\n"
 "Language-Team: Romanian <translation-team-ro@lists.sourceforge.net>\n"
@@ -175,7 +175,7 @@ msgstr ""
 msgid "%s: FATAL: %s\n"
 msgstr "%s: FATAL: %s\n"
 
-#: src/msmtp.c:230 src/msmtp.c:408 src/msmtp.c:1508
+#: src/msmtp.c:230 src/msmtp.c:408 src/msmtp.c:1513
 #, c-format
 msgid "the server does not support TLS via the STARTTLS command"
 msgstr "serverul nu acceptă TLS prin intermediul comenzii STARTTLS"
@@ -187,7 +187,7 @@ msgstr ""
 "serverul nu acceptă extensia „Remote Message Queue Starting” (pornirea cozii "
 "de mesaje de la distanță)"
 
-#: src/msmtp.c:284 src/msmtp.c:1566
+#: src/msmtp.c:284 src/msmtp.c:1571
 #, c-format
 msgid "the server does not support authentication"
 msgstr "serverul nu acceptă autentificarea"
@@ -251,24 +251,28 @@ msgid "Support for command grouping for faster transmission"
 msgstr "Suport pentru gruparea comenzilor pentru o transmisie mai rapidă"
 
 #: src/msmtp.c:520
+msgid "Support for Internationalized Email"
+msgstr ""
+
+#: src/msmtp.c:525
 msgid "Support for RMQS (Remote Message Queue Starting)"
 msgstr "Suport pentru RMQS (Remote Message Queue Starting)"
 
-#: src/msmtp.c:525
+#: src/msmtp.c:530
 msgid "Support for Delivery Status Notifications"
 msgstr ""
 "Suport pentru notificări privind starea livrării („Delivery Status "
 "Notifications”: DSN)"
 
-#: src/msmtp.c:535
+#: src/msmtp.c:540
 msgid "Support for TLS encryption via the STARTTLS command"
 msgstr "Suport pentru criptarea TLS prin intermediul comenzii STARTTLS"
 
-#: src/msmtp.c:541
+#: src/msmtp.c:546
 msgid "Supported authentication methods:"
 msgstr "Metode de autentificare acceptate:"
 
-#: src/msmtp.c:576
+#: src/msmtp.c:581
 #, c-format
 msgid ""
 "This server might advertise more or other capabilities when TLS is active.\n"
@@ -276,114 +280,114 @@ msgstr ""
 "Acest server poate anunța mai multe sau alte capacități atunci când TLS este "
 "activ.\n"
 
-#: src/msmtp.c:1260 src/msmtp.c:3412
+#: src/msmtp.c:1265 src/msmtp.c:3424
 #, c-format
 msgid "cannot write mail headers to temporary file: output error"
 msgstr ""
 "nu se pot scrie antetele de e-mail în fișierul temporar: eroare de ieșire"
 
-#: src/msmtp.c:1368
+#: src/msmtp.c:1373
 #, c-format
 msgid "input error while reading the mail"
 msgstr "eroare de intrare în timpul citirii mesajului"
 
-#: src/msmtp.c:1555
+#: src/msmtp.c:1560
 #, c-format
 msgid "the server does not support DSN"
 msgstr "serverul nu acceptă DSN"
 
-#: src/msmtp.c:1704 src/msmtp.c:1723 src/msmtp.c:1775
+#: src/msmtp.c:1709 src/msmtp.c:1728 src/msmtp.c:1780
 #, c-format
 msgid "automatic configuration based on SRV records failed: %s"
 msgstr "configurarea automată pe baza înregistrărilor SRV a eșuat: %s"
 
-#: src/msmtp.c:1705
+#: src/msmtp.c:1710
 msgid "invalid mail address"
 msgstr "adresă de e-mail nevalidă"
 
-#: src/msmtp.c:1721
+#: src/msmtp.c:1726
 #, c-format
 msgid "no SRV records for %s or %s"
 msgstr "nu există înregistrări SRV pentru %s sau %s"
 
-#: src/msmtp.c:1738
+#: src/msmtp.c:1743
 #, c-format
 msgid "copy this to your configuration file %s"
 msgstr "copiați aceasta în fișierul de configurare %s"
 
-#: src/msmtp.c:1742
+#: src/msmtp.c:1747
 msgid "warning: the host does not match the mail domain; please check"
 msgstr ""
 "avertisment: gazda nu se potrivește cu domeniul de e-mail; vă rugăm să "
 "verificați"
 
-#: src/msmtp.c:1745 src/msmtp.c:1749
+#: src/msmtp.c:1750 src/msmtp.c:1754
 msgid "add your password to the key ring:"
 msgstr "adăugați parola la inelul de chei:"
 
-#: src/msmtp.c:1752
+#: src/msmtp.c:1757
 msgid "encrypt your password:"
 msgstr "criptați-vă parola:"
 
-#: src/msmtp.c:1776
+#: src/msmtp.c:1781
 msgid "this system lacks libresolv"
 msgstr "acest sistem nu dispune de „libresolv”"
 
-#: src/msmtp.c:2008
+#: src/msmtp.c:2019
 #, c-format
 msgid "invalid logfile_time_format"
 msgstr "logfile_time_format nevalid"
 
-#: src/msmtp.c:2021
+#: src/msmtp.c:2033
 #, c-format
 msgid "cannot open: %s"
 msgstr "nu se poate deschide: %s"
 
-#: src/msmtp.c:2029
+#: src/msmtp.c:2041
 #, c-format
 msgid "cannot lock (tried for %d seconds): %s"
 msgstr "nu se poate bloca (s-a încercat timp de %d secunde): %s"
 
-#: src/msmtp.c:2034
+#: src/msmtp.c:2046
 #, c-format
 msgid "cannot lock: %s"
 msgstr "nu se poate bloca: %s"
 
-#: src/msmtp.c:2043
+#: src/msmtp.c:2055
 msgid "output error"
 msgstr "eroare de ieșire"
 
-#: src/msmtp.c:2060
+#: src/msmtp.c:2072
 #, c-format
 msgid "cannot log to %s: %s"
 msgstr "nu se poate scrie jurnalul în „%s”: %s"
 
-#: src/msmtp.c:2064
+#: src/msmtp.c:2076
 #, c-format
 msgid "log info was: %s"
 msgstr "informațiile de jurnal au fost: %s"
 
-#: src/msmtp.c:2173
+#: src/msmtp.c:2185
 #, c-format
 msgid "%s version %s\n"
 msgstr "%s versiunea %s\n"
 
-#: src/msmtp.c:2174
+#: src/msmtp.c:2186
 #, c-format
 msgid "Platform: %s\n"
 msgstr "Platformă: %s\n"
 
-#: src/msmtp.c:2176
+#: src/msmtp.c:2188
 #, c-format
 msgid "TLS/SSL library: %s\n"
 msgstr "Biblioteca TLS/SSL: %s\n"
 
-#: src/msmtp.c:2184 src/msmtp.c:2244
+#: src/msmtp.c:2196 src/msmtp.c:2256
 #, c-format
 msgid "none"
 msgstr "niciuna"
 
-#: src/msmtp.c:2188
+#: src/msmtp.c:2200
 #, c-format
 msgid ""
 "Authentication library: %s\n"
@@ -392,65 +396,65 @@ msgstr ""
 "Biblioteca de autentificare: %s\n"
 "Metode de autentificare acceptate:\n"
 
-#: src/msmtp.c:2191
+#: src/msmtp.c:2203
 msgid "GNU SASL; oauthbearer and xoauth2: built-in"
 msgstr "GNU SASL; oauthbearer și xoauth2: încorporate"
 
-#: src/msmtp.c:2193
+#: src/msmtp.c:2205
 msgid "built-in"
 msgstr "încorporat"
 
-#: src/msmtp.c:2224
+#: src/msmtp.c:2236
 #, c-format
 msgid "IDN support: "
 msgstr "Suport IDN: "
 
-#: src/msmtp.c:2228 src/msmtp.c:2236
+#: src/msmtp.c:2240 src/msmtp.c:2248
 #, c-format
 msgid "enabled"
 msgstr "activat"
 
-#: src/msmtp.c:2230 src/msmtp.c:2239
+#: src/msmtp.c:2242 src/msmtp.c:2251
 #, c-format
 msgid "disabled"
 msgstr "dezactivat"
 
-#: src/msmtp.c:2234
+#: src/msmtp.c:2246
 #, c-format
 msgid "NLS: "
 msgstr "NLS: "
 
-#: src/msmtp.c:2237
+#: src/msmtp.c:2249
 #, c-format
 msgid ", LOCALEDIR is %s"
 msgstr ", LOCALEDIR este %s"
 
-#: src/msmtp.c:2242
+#: src/msmtp.c:2254
 #, c-format
 msgid "Keyring support: "
 msgstr "Suport pentru inele de chei: "
 
-#: src/msmtp.c:2247
+#: src/msmtp.c:2259
 #, c-format
 msgid "Gnome "
 msgstr "Gnome "
 
-#: src/msmtp.c:2250
+#: src/msmtp.c:2262
 #, c-format
 msgid "MacOS "
 msgstr "MacOS "
 
-#: src/msmtp.c:2256
+#: src/msmtp.c:2268
 #, c-format
 msgid "System configuration file name: %s\n"
 msgstr "Numele fișierului de configurare al sistemului: %s\n"
 
-#: src/msmtp.c:2260
+#: src/msmtp.c:2272
 #, c-format
 msgid "User configuration file name: %s\n"
 msgstr "Numele fișierului de configurare al utilizatorului: %s\n"
 
-#: src/msmtp.c:2263
+#: src/msmtp.c:2275
 #, c-format
 msgid ""
 "Copyright (C) %d Martin Lambers and others.\n"
@@ -465,7 +469,7 @@ msgstr ""
 "<http://www.gnu.org/licenses/gpl.html>.\n"
 "Nu există NICI O GARANȚIE, în măsura permisă de lege.\n"
 
-#: src/msmtp.c:2280
+#: src/msmtp.c:2292
 #, c-format
 msgid ""
 "Usage:\n"
@@ -474,7 +478,7 @@ msgstr ""
 "Utilizare:\n"
 "\n"
 
-#: src/msmtp.c:2281
+#: src/msmtp.c:2293
 #, c-format
 msgid ""
 "Sendmail mode (default):\n"
@@ -489,7 +493,7 @@ msgstr ""
 "  Citește un mesaj de la intrarea standard și îl transmite către un server "
 "SMTP sau LMTP.\n"
 
-#: src/msmtp.c:2286
+#: src/msmtp.c:2298
 #, c-format
 msgid ""
 "Configuration mode:\n"
@@ -500,7 +504,7 @@ msgstr ""
 "  %s --configure=adresă-email\n"
 " Generează și afișează configurația pentru adresă.\n"
 
-#: src/msmtp.c:2289
+#: src/msmtp.c:2301
 #, c-format
 msgid ""
 "Server information mode:\n"
@@ -511,7 +515,7 @@ msgstr ""
 "  %s [opțiune...] --serverinfo\n"
 "  Afișează informații despre un server.\n"
 
-#: src/msmtp.c:2292
+#: src/msmtp.c:2304
 #, c-format
 msgid ""
 "Remote Message Queue Starting mode:\n"
@@ -523,39 +527,39 @@ msgstr ""
 "  %s [opțiune...] --rmqs=gazdă|@domeniu|#nr-coadă\n"
 "  Trimite o cerere Remote Message Queue Starting către un server.\n"
 
-#: src/msmtp.c:2296
+#: src/msmtp.c:2308
 #, c-format
 msgid "General options:\n"
 msgstr "Opțiuni generale:\n"
 
-#: src/msmtp.c:2297
+#: src/msmtp.c:2309
 #, c-format
 msgid "  --version                    print version\n"
 msgstr "  --version                    afișează informațiile despre versiune\n"
 
-#: src/msmtp.c:2298
+#: src/msmtp.c:2310
 #, c-format
 msgid "  --help                       print help\n"
 msgstr "  --help                       imprimă ajutorul și iese\n"
 
-#: src/msmtp.c:2299
+#: src/msmtp.c:2311
 #, c-format
 msgid "  -P, --pretend                print configuration info and exit\n"
 msgstr ""
 "  -P, --pretend                afișează informațiile despre configurare și "
 "iese\n"
 
-#: src/msmtp.c:2300
+#: src/msmtp.c:2312
 #, c-format
 msgid "  -d, --debug                  print debugging information\n"
 msgstr "  -d, --debug                  imprimă informațiile de depanare\n"
 
-#: src/msmtp.c:2301
+#: src/msmtp.c:2313
 #, c-format
 msgid "Changing the mode of operation:\n"
 msgstr "Schimbarea modului de operare:\n"
 
-#: src/msmtp.c:2302
+#: src/msmtp.c:2314
 #, c-format
 msgid ""
 "  --configure=mailaddress      generate and print configuration for address\n"
@@ -563,12 +567,12 @@ msgstr ""
 "  --configure=adresă-email     generează și afișează configurația pentru "
 "adresă\n"
 
-#: src/msmtp.c:2303
+#: src/msmtp.c:2315
 #, c-format
 msgid "  -S, --serverinfo             print information about the server\n"
 msgstr "  -S, --serverinfo             afișează informații despre server\n"
 
-#: src/msmtp.c:2304
+#: src/msmtp.c:2316
 #, c-format
 msgid ""
 "  --rmqs=host|@domain|#queue   send a Remote Message Queue Starting request\n"
@@ -577,17 +581,17 @@ msgstr ""
 "                               trimite o cerere Remote Message Queue "
 "Starting\n"
 
-#: src/msmtp.c:2305
+#: src/msmtp.c:2317
 #, c-format
 msgid "Configuration options:\n"
 msgstr "Opțiuni de configurare:\n"
 
-#: src/msmtp.c:2306
+#: src/msmtp.c:2318
 #, c-format
 msgid "  -C, --file=filename          set configuration file\n"
 msgstr "  -C, --file=nume-fișier       stabilește fișierul de configurare\n"
 
-#: src/msmtp.c:2307
+#: src/msmtp.c:2319
 #, c-format
 msgid ""
 "  -a, --account=id             use the given account instead of the account\n"
@@ -601,7 +605,7 @@ msgstr ""
 "modificați\n"
 "                               cu ajutorul opțiunilor din linia de comandăn\n"
 
-#: src/msmtp.c:2310
+#: src/msmtp.c:2322
 #, c-format
 msgid ""
 "  --host=hostname              set the server, use only command-line "
@@ -614,12 +618,12 @@ msgstr ""
 "utilizează\n"
 "                               datele din fișierul de configurare\n"
 
-#: src/msmtp.c:2312
+#: src/msmtp.c:2324
 #, c-format
 msgid "  --port=number                set port number\n"
 msgstr "  --port=număr                 stabilește numărul portului\n"
 
-#: src/msmtp.c:2313
+#: src/msmtp.c:2325
 #, c-format
 msgid ""
 "  --source-ip=[IP]             set/unset source ip address to bind the "
@@ -628,25 +632,25 @@ msgstr ""
 "  --source-ip=[IP]             specifică/elimină adresa IP sursă la care se\n"
 "                               asociază soclul\n"
 
-#: src/msmtp.c:2314
+#: src/msmtp.c:2326
 #, c-format
 msgid "  --proxy-host=[IP|hostname]   set/unset proxy\n"
 msgstr "  --proxy-host=[IP|nume-gazdă]  specifică/elimină serverul proxy\n"
 
-#: src/msmtp.c:2315
+#: src/msmtp.c:2327
 #, c-format
 msgid "  --proxy-port=[number]        set/unset proxy port\n"
 msgstr ""
 "  --proxy-port=[număr]         specifică/elimină portul serverului proxy\n"
 
-#: src/msmtp.c:2316
+#: src/msmtp.c:2328
 #, c-format
 msgid "  --socket=[socketname]        set/unset local socket to connect to\n"
 msgstr ""
 "  --socket=[nume-soclu]        specifică/elimină soclul local la care să se\n"
 "                               conecteze\n"
 
-#: src/msmtp.c:2317
+#: src/msmtp.c:2329
 #, c-format
 msgid "  --timeout=(off|seconds)      set/unset network timeout in seconds\n"
 msgstr ""
@@ -654,19 +658,19 @@ msgstr ""
 "al\n"
 "                               rețelei în secunde\n"
 
-#: src/msmtp.c:2318
+#: src/msmtp.c:2330
 #, c-format
 msgid "  --protocol=(smtp|lmtp)       use the given sub protocol\n"
 msgstr "  --protocol=(smtp|lmtp)       utilizează protocolul dat\n"
 
-#: src/msmtp.c:2319
+#: src/msmtp.c:2331
 #, c-format
 msgid ""
 "  --domain=string              set the argument of EHLO or LHLO command\n"
 msgstr ""
 "  --domain=șir                 stabilește argumentul comenzii EHLO sau LHLO\n"
 
-#: src/msmtp.c:2320
+#: src/msmtp.c:2332
 #, c-format
 msgid ""
 "  --auth[=(on|off|method)]     enable/disable authentication and optionally\n"
@@ -676,7 +680,7 @@ msgstr ""
 "opțional,\n"
 "                               alege metoda\n"
 
-#: src/msmtp.c:2322
+#: src/msmtp.c:2334
 #, c-format
 msgid "  --user=[username]            set/unset user name for authentication\n"
 msgstr ""
@@ -684,37 +688,37 @@ msgstr ""
 "pentru\n"
 "                               autentificare\n"
 
-#: src/msmtp.c:2323
+#: src/msmtp.c:2335
 #, c-format
 msgid "  --passwordeval=[eval]        evaluate password for authentication\n"
 msgstr "  --passwordeval=[eval]        evaluează parola pentru autentificare\n"
 
-#: src/msmtp.c:2324
+#: src/msmtp.c:2336
 #, c-format
 msgid "  --tls[=(on|off)]             enable/disable TLS encryption\n"
 msgstr "  --tls[=(on|off)]             activează/dezactivează criptarea TLS\n"
 
-#: src/msmtp.c:2325
+#: src/msmtp.c:2337
 #, c-format
 msgid "  --tls-starttls[=(on|off)]    enable/disable STARTTLS for TLS\n"
 msgstr ""
 "  --tls-starttls[=(on|off)]    activează/dezactivează STARTTLS pentru TLS\n"
 
-#: src/msmtp.c:2326
+#: src/msmtp.c:2338
 #, c-format
 msgid "  --tls-trust-file=[file]      set/unset trust file for TLS\n"
 msgstr ""
 "  --tls-trust-file=[fișier]    specifică/elimină fișierul de încredere "
 "pentru TLS\n"
 
-#: src/msmtp.c:2327
+#: src/msmtp.c:2339
 #, c-format
 msgid "  --tls-crl-file=[file]        set/unset revocation file for TLS\n"
 msgstr ""
 "  --tls-crl-file=[fișier]      specifică/elimină fișierul de revocare pentru "
 "TLS\n"
 
-#: src/msmtp.c:2328
+#: src/msmtp.c:2340
 #, c-format
 msgid ""
 "  --tls-fingerprint=[f]        set/unset trusted certificate fingerprint for "
@@ -724,7 +728,7 @@ msgstr ""
 "certificatului\n"
 "                               de încredere pentru TLS\n"
 
-#: src/msmtp.c:2329
+#: src/msmtp.c:2341
 #, c-format
 msgid ""
 "  --tls-certcheck[=(on|off)]   enable/disable server certificate checks for "
@@ -734,7 +738,7 @@ msgstr ""
 "certificatelor\n"
 "                               serverului pentru TLS\n"
 
-#: src/msmtp.c:2330
+#: src/msmtp.c:2342
 #, c-format
 msgid "  --tls-key-file=[file]        set/unset private key file for TLS\n"
 msgstr ""
@@ -742,7 +746,7 @@ msgstr ""
 "pentru\n"
 "                               TLS\n"
 
-#: src/msmtp.c:2331
+#: src/msmtp.c:2343
 #, c-format
 msgid "  --tls-cert-file=[file]       set/unset private cert file for TLS\n"
 msgstr ""
@@ -750,12 +754,12 @@ msgstr ""
 "privat\n"
 "                               pentru TLS\n"
 
-#: src/msmtp.c:2332
+#: src/msmtp.c:2344
 #, c-format
 msgid "  --tls-priorities=[prios]     set/unset TLS priorities.\n"
 msgstr "  --tls-priorities=[priorități]  stabilește/elimină prioritățile TLS\n"
 
-#: src/msmtp.c:2333
+#: src/msmtp.c:2345
 #, c-format
 msgid ""
 "  --tls-host-override=[host]   set/unset override for TLS host "
@@ -764,19 +768,19 @@ msgstr ""
 "  --tls-host-override=[gazda]  activează/dezactivează suprascrierea pentru\n"
 "                               verificarea unei gazdei TLS\n"
 
-#: src/msmtp.c:2334
+#: src/msmtp.c:2346
 #, c-format
 msgid "  --tls-min-dh-prime-bits=[b]  set/unset minimum bit size of DH prime\n"
 msgstr ""
 "  --tls-min-dh-prime-bits=[b]  specifică/dezactivează numărul minim de biți\n"
 "                               utilizați pentru numărul prim DH\n"
 
-#: src/msmtp.c:2335
+#: src/msmtp.c:2347
 #, c-format
 msgid "Options specific to sendmail mode:\n"
 msgstr "Opțiuni specifice pentru modul trimitere e-mail:\n"
 
-#: src/msmtp.c:2336
+#: src/msmtp.c:2348
 #, c-format
 msgid ""
 "  --auto-from[=(on|off)]       enable/disable automatic envelope-from "
@@ -787,13 +791,13 @@ msgstr ""
 "                               adresei expeditorului plicurilor, câmpul "
 "„From”\n"
 
-#: src/msmtp.c:2337
+#: src/msmtp.c:2349
 #, c-format
 msgid "  -f, --from=address           set envelope from address\n"
 msgstr ""
 "  -f, --from=adresa            definește adresa expeditorului plicului\n"
 
-#: src/msmtp.c:2338
+#: src/msmtp.c:2350
 #, c-format
 msgid ""
 "  --maildomain=[domain]        set the domain for automatic envelope from\n"
@@ -803,12 +807,12 @@ msgstr ""
 "automată a\n"
 "                               adresei expeditorului plicurilor\n"
 
-#: src/msmtp.c:2340
+#: src/msmtp.c:2352
 #, c-format
 msgid "  -N, --dsn-notify=(off|cond)  set/unset DSN conditions\n"
 msgstr "  -N, --dsn-notify=(off|cond)  stabilește/elimină condițiile DSN\n"
 
-#: src/msmtp.c:2341
+#: src/msmtp.c:2353
 #, c-format
 msgid "  -R, --dsn-return=(off|ret)   set/unset DSN amount\n"
 msgstr ""
@@ -816,12 +820,12 @@ msgstr ""
 "DSN\n"
 "                               (off/headers/full)\n"
 
-#: src/msmtp.c:2342
+#: src/msmtp.c:2354
 #, c-format
 msgid "  -X, --logfile=[file]         set/unset log file\n"
 msgstr "  -X, --logfile=[fișier]       specifică/elimină fișierul de jurnal\n"
 
-#: src/msmtp.c:2343
+#: src/msmtp.c:2355
 #, c-format
 msgid ""
 "  --logfile-time-format=[fmt]  set/unset log file time format for "
@@ -830,7 +834,7 @@ msgstr ""
 "  --logfile-time-format=[format]  definește formatul de dată strftime() al\n"
 "                               fișierului de jurnal\n"
 
-#: src/msmtp.c:2344
+#: src/msmtp.c:2356
 #, c-format
 msgid ""
 "  --syslog[=(on|off|facility)] enable/disable/configure syslog logging\n"
@@ -839,14 +843,14 @@ msgstr ""
 "jurnalizarea\n"
 "                               syslog\n"
 
-#: src/msmtp.c:2345
+#: src/msmtp.c:2357
 #, c-format
 msgid ""
 "  -t, --read-recipients        read additional recipients from the mail\n"
 msgstr ""
 "  -t, --read-recipients        citește destinatarii suplimentari din e-mail\n"
 
-#: src/msmtp.c:2346
+#: src/msmtp.c:2358
 #, c-format
 msgid ""
 "  --read-envelope-from         read envelope from address from the mail\n"
@@ -854,27 +858,27 @@ msgstr ""
 "  --read-envelope-from         citește adresa expeditorului plicului din e-"
 "mail\n"
 
-#: src/msmtp.c:2347
+#: src/msmtp.c:2359
 #, c-format
 msgid "  --aliases=[file]             set/unset aliases file\n"
 msgstr "  --aliases=[fișier]           specifică/elimină fișierul de alias\n"
 
-#: src/msmtp.c:2348
+#: src/msmtp.c:2360
 #, c-format
 msgid "  --set-from-header[=(auto|on|off)] set From header handling\n"
 msgstr "  --set-from-header[=(auto|on|off)]  gestionează antetul „From”\n"
 
-#: src/msmtp.c:2349
+#: src/msmtp.c:2361
 #, c-format
 msgid "  --set-date-header[=(auto|off)] set Date header handling\n"
 msgstr "  --set-date-header[=(auto|off)]  gestionează antetul „Date”\n"
 
-#: src/msmtp.c:2350
+#: src/msmtp.c:2362
 #, c-format
 msgid "  --set-msgid-header[=(auto|off)] set Message-ID header handling\n"
 msgstr "  --set-msgid-header[=(auto|off)]  gestionează antetul „Message-ID”\n"
 
-#: src/msmtp.c:2351
+#: src/msmtp.c:2363
 #, c-format
 msgid ""
 "  --remove-bcc-headers[=(on|off)] enable/disable removal of Bcc headers\n"
@@ -883,7 +887,7 @@ msgstr ""
 "                               activează/dezactivează eliminarea antetelor "
 "„Bcc”\n"
 
-#: src/msmtp.c:2352
+#: src/msmtp.c:2364
 #, c-format
 msgid ""
 "  --undisclosed-recipients[=(on|off)] enable/disable replacement of To/Cc/"
@@ -895,17 +899,17 @@ msgstr ""
 "cu\n"
 "                               To: undisclosed-recipients:;\n"
 
-#: src/msmtp.c:2354
+#: src/msmtp.c:2366
 #, c-format
 msgid "  --                           end of options\n"
 msgstr "  --                           sfârșitul opțiunilor\n"
 
-#: src/msmtp.c:2355
+#: src/msmtp.c:2367
 #, c-format
 msgid "Accepted but ignored: -A, -B, -bm, -G, -h, -i, -L, -m, -n, -O, -o\n"
 msgstr "Acceptate, dar ignorate: -A, -B, -bm, -G, -h, -i, -L, -m, -n, -O, -o\n"
 
-#: src/msmtp.c:2356
+#: src/msmtp.c:2368
 #, c-format
 msgid ""
 "\n"
@@ -914,239 +918,239 @@ msgstr ""
 "\n"
 "Raportați erorile la <%s>.\n"
 
-#: src/msmtp.c:2597 src/msmtp.c:2611
+#: src/msmtp.c:2609 src/msmtp.c:2623
 msgid "cannot use both --serverinfo and --rmqs"
 msgstr "nu se poate utiliza atât „--serverinfo”, cât și „--rmqs”"
 
-#: src/msmtp.c:2631 src/msmtp.c:2643
+#: src/msmtp.c:2643 src/msmtp.c:2655
 msgid "cannot use both --host and --account"
 msgstr "nu se poate utiliza atât „--host”, cât și „--account”"
 
-#: src/msmtp.c:2659 src/msmtp.c:2677 src/msmtp.c:2696 src/msmtp.c:2751
-#: src/msmtp.c:2783 src/msmtp.c:2801 src/msmtp.c:2864 src/msmtp.c:2909
-#: src/msmtp.c:2931 src/msmtp.c:2977 src/msmtp.c:3002 src/msmtp.c:3021
-#: src/msmtp.c:3074 src/msmtp.c:3119 src/msmtp.c:3146 src/msmtp.c:3164
-#: src/msmtp.c:3182 src/msmtp.c:3201 src/msmtp.c:3220 src/msmtp.c:3238
-#: src/msmtp.c:3256 src/msmtp.c:3334
+#: src/msmtp.c:2671 src/msmtp.c:2689 src/msmtp.c:2708 src/msmtp.c:2763
+#: src/msmtp.c:2795 src/msmtp.c:2813 src/msmtp.c:2876 src/msmtp.c:2921
+#: src/msmtp.c:2943 src/msmtp.c:2989 src/msmtp.c:3014 src/msmtp.c:3033
+#: src/msmtp.c:3086 src/msmtp.c:3131 src/msmtp.c:3158 src/msmtp.c:3176
+#: src/msmtp.c:3194 src/msmtp.c:3213 src/msmtp.c:3232 src/msmtp.c:3250
+#: src/msmtp.c:3268 src/msmtp.c:3346
 #, c-format
 msgid "invalid argument %s for %s"
 msgstr "argument nevalid %s pentru %s"
 
-#: src/msmtp.c:2706 src/msmtp.c:3296
+#: src/msmtp.c:2718 src/msmtp.c:3308
 msgid "cannot use both --from and --read-envelope-from"
 msgstr "nu se poate utiliza atât „--from”, cât și „--read-envelope-from”"
 
-#: src/msmtp.c:3311
+#: src/msmtp.c:3323
 #, c-format
 msgid "unsupported operation mode b%s"
 msgstr "mod de operare neacceptat b%s"
 
-#: src/msmtp.c:3389 src/msmtp.c:3873 src/msmtp.c:4180
+#: src/msmtp.c:3401 src/msmtp.c:3885 src/msmtp.c:4192
 #, c-format
 msgid "cannot create temporary file: %s"
 msgstr "nu se poate crea fișierul temporar: %s"
 
-#: src/msmtp.c:3419 src/msmtp.c:3899 src/msmtp.c:4222
+#: src/msmtp.c:3431 src/msmtp.c:3911 src/msmtp.c:4234
 #, c-format
 msgid "cannot rewind temporary file: %s"
 msgstr "nu se poate reveni la începutul fișierului temporar: %s"
 
-#: src/msmtp.c:3485
+#: src/msmtp.c:3497
 #, c-format
 msgid "ignoring system configuration file %s: %s\n"
 msgstr "se ignoră fișierul de configurare al sistemului %s: %s\n"
 
-#: src/msmtp.c:3500
+#: src/msmtp.c:3512
 #, c-format
 msgid "loaded system configuration file %s\n"
 msgstr "s-a încărcat fișierul de configurare al sistemului %s\n"
 
-#: src/msmtp.c:3539
+#: src/msmtp.c:3551
 #, c-format
 msgid "ignoring user configuration file %s: %s\n"
 msgstr "se ignoră fișierul de configurare al utilizatorului %s: %s\n"
 
-#: src/msmtp.c:3554
+#: src/msmtp.c:3566
 #, c-format
 msgid "loaded user configuration file %s\n"
 msgstr "s-a încărcat fișierul de configurare al utilizatorului %s\n"
 
-#: src/msmtp.c:3611
+#: src/msmtp.c:3623
 #, c-format
 msgid "using account %s from %s\n"
 msgstr "se utilizează contul %s din %s\n"
 
-#: src/msmtp.c:3615 src/msmtp.c:3618 src/msmtp.c:3620 src/msmtp.c:3623
-#: src/msmtp.c:3657 src/msmtp.c:3658 src/msmtp.c:3660 src/msmtp.c:3662
-#: src/msmtp.c:3666 src/msmtp.c:3668 src/msmtp.c:3687 src/msmtp.c:3689
-#: src/msmtp.c:3691 src/msmtp.c:3701 src/msmtp.c:3704 src/msmtp.c:3706
-#: src/msmtp.c:3711 src/msmtp.c:3714 src/msmtp.c:3716 src/msmtp.c:3730
-#: src/msmtp.c:3732 src/msmtp.c:3734 src/msmtp.c:3737 src/msmtp.c:3739
-#: src/msmtp.c:3741
+#: src/msmtp.c:3627 src/msmtp.c:3630 src/msmtp.c:3632 src/msmtp.c:3635
+#: src/msmtp.c:3669 src/msmtp.c:3670 src/msmtp.c:3672 src/msmtp.c:3674
+#: src/msmtp.c:3678 src/msmtp.c:3680 src/msmtp.c:3699 src/msmtp.c:3701
+#: src/msmtp.c:3703 src/msmtp.c:3713 src/msmtp.c:3716 src/msmtp.c:3718
+#: src/msmtp.c:3723 src/msmtp.c:3726 src/msmtp.c:3728 src/msmtp.c:3742
+#: src/msmtp.c:3744 src/msmtp.c:3746 src/msmtp.c:3749 src/msmtp.c:3751
+#: src/msmtp.c:3753
 msgid "(not set)"
 msgstr "(nedefinit)"
 
-#: src/msmtp.c:3627
+#: src/msmtp.c:3639
 #, c-format
 msgid "off\n"
 msgstr "dezactivat\n"
 
-#: src/msmtp.c:3633
+#: src/msmtp.c:3645
 #, c-format
 msgid "%d seconds\n"
 msgstr "%d secunde\n"
 
-#: src/msmtp.c:3637
+#: src/msmtp.c:3649
 #, c-format
 msgid "1 second\n"
 msgstr "o secundă\n"
 
-#: src/msmtp.c:3646
+#: src/msmtp.c:3658
 #, c-format
 msgid "none\n"
 msgstr "niciuna\n"
 
-#: src/msmtp.c:3650
+#: src/msmtp.c:3662
 #, c-format
 msgid "choose\n"
 msgstr "alegeți\n"
 
-#: src/msmtp.c:3663 src/msmtp.c:3664 src/msmtp.c:3693 src/msmtp.c:3709
-#: src/msmtp.c:3718 src/msmtp.c:3721 src/msmtp.c:3726 src/msmtp.c:3728
+#: src/msmtp.c:3675 src/msmtp.c:3676 src/msmtp.c:3705 src/msmtp.c:3721
+#: src/msmtp.c:3730 src/msmtp.c:3733 src/msmtp.c:3738 src/msmtp.c:3740
 msgid "on"
 msgstr "activat"
 
-#: src/msmtp.c:3663 src/msmtp.c:3664 src/msmtp.c:3693 src/msmtp.c:3709
-#: src/msmtp.c:3718 src/msmtp.c:3721 src/msmtp.c:3724 src/msmtp.c:3726
-#: src/msmtp.c:3728
+#: src/msmtp.c:3675 src/msmtp.c:3676 src/msmtp.c:3705 src/msmtp.c:3721
+#: src/msmtp.c:3730 src/msmtp.c:3733 src/msmtp.c:3736 src/msmtp.c:3738
+#: src/msmtp.c:3740
 msgid "off"
 msgstr "dezactivat"
 
-#: src/msmtp.c:3714
+#: src/msmtp.c:3726
 msgid "(read from mail)"
 msgstr "(citește din e-mail)"
 
-#: src/msmtp.c:3720 src/msmtp.c:3723
+#: src/msmtp.c:3732 src/msmtp.c:3735
 msgid "auto"
 msgstr "auto"
 
-#: src/msmtp.c:3744
+#: src/msmtp.c:3756
 #, c-format
 msgid "reading recipients from the command line and the mail\n"
 msgstr "se citesc destinatarii din linia de comandă și din e-mail\n"
 
-#: src/msmtp.c:3749
+#: src/msmtp.c:3761
 #, c-format
 msgid "reading recipients from the command line\n"
 msgstr "se citesc destinatarii din linia de comandă\n"
 
-#: src/msmtp.c:3863
+#: src/msmtp.c:3875
 msgid "too many arguments"
 msgstr "prea multe argumente"
 
-#: src/msmtp.c:3893
+#: src/msmtp.c:3905
 #, c-format
 msgid "envelope from address extracted from mail: %s\n"
 msgstr "adresa expeditorului plicului extrasă din e-mail: %s\n"
 
-#: src/msmtp.c:3908
+#: src/msmtp.c:3920
 msgid "no recipients found"
 msgstr "niciun destinatar găsit"
 
-#: src/msmtp.c:3938
+#: src/msmtp.c:3950
 #, c-format
 msgid "account chosen by envelope from address %s: %s\n"
 msgstr "cont ales prin intermediul adresei expeditorului plicului %s: %s\n"
 
-#: src/msmtp.c:3952
+#: src/msmtp.c:3964
 #, c-format
 msgid "falling back to default account\n"
 msgstr "se revine la contul implicit\n"
 
-#: src/msmtp.c:3975
+#: src/msmtp.c:3987
 #, c-format
 msgid "using environment variables EMAIL and SMTPSERVER\n"
 msgstr "se utilizează variabilele de mediu EMAIL și SMTPSERVER\n"
 
-#: src/msmtp.c:3983
+#: src/msmtp.c:3995
 #, c-format
 msgid "account %s not found in %s and %s"
 msgstr "contul %s nu a fost găsit în %s și %s"
 
-#: src/msmtp.c:3989 src/msmtp.c:3994
+#: src/msmtp.c:4001 src/msmtp.c:4006
 #, c-format
 msgid "account %s not found in %s"
 msgstr "contul %s nu a fost găsit în %s"
 
-#: src/msmtp.c:3999
+#: src/msmtp.c:4011
 #, c-format
 msgid "account %s not found: no configuration file available"
 msgstr ""
 "contul %s nu a fost găsit: nu este disponibil niciun fișier de configurare"
 
-#: src/msmtp.c:4021
+#: src/msmtp.c:4033
 #, c-format
 msgid "using account specified on command line\n"
 msgstr "se utilizează contul specificat în linia de comandă\n"
 
-#: src/msmtp.c:4086
+#: src/msmtp.c:4098
 #, c-format
 msgid "account %s from %s: %s"
 msgstr "contul %s din %s: %s"
 
-#: src/msmtp.c:4127
+#: src/msmtp.c:4139
 msgid "this platform does not support syslog logging"
 msgstr "această platformă nu suportă jurnalizarea syslog"
 
-#: src/msmtp.c:4136
+#: src/msmtp.c:4148
 #, c-format
 msgid "support for authentication method %s is not compiled in"
 msgstr "suportul pentru metoda de autentificare %s nu este compilat în"
 
-#: src/msmtp.c:4144
+#: src/msmtp.c:4156
 #, c-format
 msgid "cannot initialize networking: %s"
 msgstr "nu se poate inițializa rețeaua: %s"
 
-#: src/msmtp.c:4155
+#: src/msmtp.c:4167
 #, c-format
 msgid "cannot initialize TLS library: %s"
 msgstr "nu se poate inițializa biblioteca TLS: %s"
 
-#: src/msmtp.c:4162
+#: src/msmtp.c:4174
 msgid "support for TLS is not compiled in"
 msgstr "suportul pentru TLS nu este compilat în"
 
-#: src/msmtp.c:4251
+#: src/msmtp.c:4263
 #, c-format
 msgid "LMTP server message: %s"
 msgstr "mesajul serverului LMTP: %s"
 
-#: src/msmtp.c:4262
+#: src/msmtp.c:4274
 #, c-format
 msgid "could not send mail to all recipients (account %s from %s)"
 msgstr ""
 "nu s-a putut trimite corespondența către toți destinatarii (contul %s din %s)"
 
-#: src/msmtp.c:4268
+#: src/msmtp.c:4280
 msgid "could not send mail to all recipients"
 msgstr "nu s-a putut trimite corespondența către toți destinatarii"
 
-#: src/msmtp.c:4283 src/msmtp.c:4338 src/msmtp.c:4359
+#: src/msmtp.c:4295 src/msmtp.c:4350 src/msmtp.c:4371
 #, c-format
 msgid "server message: %s"
 msgstr "mesajul serverului: %s"
 
-#: src/msmtp.c:4289
+#: src/msmtp.c:4301
 #, c-format
 msgid "could not send mail (account %s from %s)"
 msgstr "nu s-a putut trimite corespondența (contul %s din %s)"
 
-#: src/msmtp.c:4294
+#: src/msmtp.c:4306
 msgid "could not send mail"
 msgstr "nu s-a putut trimite corespondența"
 
-#: src/msmtp.c:4304
+#: src/msmtp.c:4316
 #, c-format
 msgid "delivery to one or more recipients failed"
 msgstr "livrarea către unul sau mai mulți destinatari a eșuat"
@@ -1719,108 +1723,108 @@ msgstr "nu se poate primi mesajul OK inițial de la server"
 msgid "SMTP server does not accept EHLO or HELO commands"
 msgstr "Serverul SMTP nu acceptă comenzile EHLO sau HELO"
 
-#: src/smtp.c:440 src/smtp.c:581 src/smtp.c:586 src/smtp.c:659 src/smtp.c:707
-#: src/smtp.c:797 src/smtp.c:888 src/smtp.c:1024 src/smtp.c:2183
+#: src/smtp.c:440 src/smtp.c:585 src/smtp.c:590 src/smtp.c:663 src/smtp.c:711
+#: src/smtp.c:801 src/smtp.c:892 src/smtp.c:1028 src/smtp.c:2180
 #, c-format
 msgid "command %s failed"
 msgstr "comanda %s a eșuat"
 
-#: src/smtp.c:664 src/smtp.c:728 src/smtp.c:749 src/smtp.c:846 src/smtp.c:909
-#: src/smtp.c:983 src/smtp.c:1066 src/smtp.c:1452 src/smtp.c:1497
-#: src/smtp.c:1534
+#: src/smtp.c:668 src/smtp.c:732 src/smtp.c:753 src/smtp.c:850 src/smtp.c:913
+#: src/smtp.c:987 src/smtp.c:1070 src/smtp.c:1456 src/smtp.c:1501
+#: src/smtp.c:1538
 #, c-format
 msgid "authentication failed (method %s)"
 msgstr "autentificarea a eșuat (metoda %s)"
 
-#: src/smtp.c:808
+#: src/smtp.c:812
 #, c-format
 msgid "authentication method CRAM-MD5: server sent invalid challenge"
 msgstr ""
 "metoda de autentificare CRAM-MD5: serverul a trimis o provocare nevalidă"
 
-#: src/smtp.c:1188 src/smtp.c:1555
+#: src/smtp.c:1192 src/smtp.c:1559
 #, c-format
 msgid "the server does not support authentication method %s"
 msgstr "serverul nu acceptă metoda de autentificare %s"
 
-#: src/smtp.c:1194 src/smtp.c:1354 src/smtp.c:1406
+#: src/smtp.c:1198 src/smtp.c:1358 src/smtp.c:1410
 #, c-format
 msgid "GNU SASL: %s"
 msgstr "GNU SASL: %s"
 
-#: src/smtp.c:1201
+#: src/smtp.c:1205
 #, c-format
 msgid "GNU SASL: authentication method %s not supported"
 msgstr "GNU SASL: metoda de autentificare %s nu este acceptată"
 
-#: src/smtp.c:1282 src/smtp.c:1586
+#: src/smtp.c:1286 src/smtp.c:1590
 #, c-format
 msgid "cannot use a secure authentication method"
 msgstr "nu se poate utiliza o metodă de autentificare sigură"
 
-#: src/smtp.c:1288 src/smtp.c:1592
+#: src/smtp.c:1292 src/smtp.c:1596
 #, c-format
 msgid "cannot find a usable authentication method"
 msgstr "nu se poate găsi o metodă de autentificare utilizabilă"
 
-#: src/smtp.c:1301 src/smtp.c:1604
+#: src/smtp.c:1305 src/smtp.c:1608
 #, c-format
 msgid "authentication method %s needs a user name"
 msgstr "metoda de autentificare %s are nevoie de un nume de utilizator"
 
-#: src/smtp.c:1314 src/smtp.c:1614
+#: src/smtp.c:1318 src/smtp.c:1618
 #, c-format
 msgid "authentication method %s needs a password"
 msgstr "metoda de autentificare %s necesită o parolă"
 
-#: src/smtp.c:1329
+#: src/smtp.c:1333
 #, c-format
 msgid "authentication method %s needs TLS channel binding information"
 msgstr ""
 "metoda de autentificare %s are nevoie de informații de asociere a canalului "
 "TLS"
 
-#: src/smtp.c:1513
+#: src/smtp.c:1517
 #, c-format
 msgid "authentication failed: %s (method %s)"
 msgstr "autentificarea a eșuat: %s (metoda %s)"
 
-#: src/smtp.c:1649
+#: src/smtp.c:1653
 #, c-format
 msgid "authentication method %s not supported"
 msgstr "metoda de autentificare %s nu este acceptată"
 
-#: src/smtp.c:1763
+#: src/smtp.c:1760
 #, c-format
 msgid "envelope from address %s not accepted by the server"
 msgstr "adresa expeditorului plicului %s nu este acceptată de server"
 
-#: src/smtp.c:1782
+#: src/smtp.c:1779
 #, c-format
 msgid "recipient address %s not accepted by the server"
 msgstr "adresa destinatarului %s nu este acceptată de server"
 
-#: src/smtp.c:1801
+#: src/smtp.c:1798
 #, c-format
 msgid "the server does not accept mail data"
 msgstr "serverul nu acceptă datele de e-mail"
 
-#: src/smtp.c:2041
+#: src/smtp.c:2038
 #, c-format
 msgid "the server did not accept the mail"
 msgstr "serverul nu a acceptat e-mailul"
 
-#: src/smtp.c:2105
+#: src/smtp.c:2102
 #, c-format
 msgid "the server refuses to send the mail to %s"
 msgstr "serverul refuză să trimită e-mailul către %s"
 
-#: src/smtp.c:2169
+#: src/smtp.c:2166
 #, c-format
 msgid "the server is unable to fulfill the request"
 msgstr "serverul nu este în măsură să îndeplinească cererea"
 
-#: src/smtp.c:2177
+#: src/smtp.c:2174
 #, c-format
 msgid "invalid argument for Remote Message Queue Starting"
 msgstr "argument nevalid pentru Remote Message Queue Starting"

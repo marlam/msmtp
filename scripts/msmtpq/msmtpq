@@ -78,7 +78,7 @@ set -o errtrace -o errexit            -o pipefail
 # optionally debug output by supplying TRACE=1
 [[ "${TRACE:-0}" == "1" ]] && set -o xtrace
 
-shopt -s inherit_errexit
+shopt -s inherit_errexit 2>/dev/null || true
 IFS=$' \n\t'
 PS4='+\t '
 
@@ -263,6 +263,14 @@ lock_queue() {        # <-- '-u' to remove lockfile
 ## test whether system is connected
 ## returns t/f (0/1)
 ##
+case $(uname | tr '[:upper:]' '[:lower:]') in
+  darwin* | *bsd)
+    export PING_TIMEOUT_FLAG=t
+    ;;
+  *)
+    export PING_TIMEOUT_FLAG=w
+    ;;
+esac
 connect_test() {
   if [ -z "$EMAIL_CONN_TEST" ] || \
      [ "$EMAIL_CONN_TEST" = 'p' ] ; then                       # use ping test (default)
@@ -270,13 +278,13 @@ connect_test() {
     # would ping -qnc2 -w4 be better ?
     # would ping -qnc1 -w10 or -w20 be better ?
     #ping -qnc1 -w4 debian.org >/dev/null 2>&1 || return 1
-    ping -qnc2 -w10 debian.org >/dev/null 2>&1 || return 1
+    ping -qnc2 -${PING_TIMEOUT_FLAG}10 debian.org >/dev/null 2>&1 || return 1
 
   elif [ "$EMAIL_CONN_TEST" = 'P' ] ; then                     # use quicker ping test
     # I personally think that including a DNS lookup
     # is a better connection test but some
     # have found the above test too slow
-    ping -qnc1 -w4 8.8.8.8 >/dev/null 2>&1 || return 1
+    ping -qnc1 -${PING_TIMEOUT_FLAG}4 8.8.8.8 >/dev/null 2>&1 || return 1
 
   elif [ "$EMAIL_CONN_TEST" = 'n' ] ; then                     # use netcat (nc) test
     # must, of course, have netcat (nc) installed

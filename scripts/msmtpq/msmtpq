@@ -265,10 +265,10 @@ lock_queue() {        # <-- '-u' to remove lockfile
 ##
 case $(uname | tr '[:upper:]' '[:lower:]') in
   darwin* | *bsd)
-    export PING_TIMEOUT_FLAG=t
+    PING_TIMEOUT_FLAG=t
     ;;
   *)
-    export PING_TIMEOUT_FLAG=w
+    PING_TIMEOUT_FLAG=w
     ;;
 esac
 connect_test() {

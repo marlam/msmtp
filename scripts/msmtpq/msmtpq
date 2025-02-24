@@ -169,16 +169,18 @@ fi
 ##
 ## the queue log file - export this variable to change where logs are stored  (but no quotes !!)
 ##                      Set it to "" (empty string) to disable logging.
-if [ -z "$MSMTPQ_LOG" ] ; then
+if [ -z ${MSMTPQ_LOG+x} ] ; then
   MSMTPQ_LOG="${LOG:-"$HOME/log/msmtp.queue.log"}"
 fi
-msmtpq_log_dir="$(dirname "$MSMTPQ_LOG")"
-[ -d "$msmtpq_log_dir" ] || mkdir -p "$msmtpq_log_dir"
-if ! [ -d "$msmtpq_log_dir" ]; then
-  err "msmtpq : can't create missing msmtp queue log file directory [ $msmtpq_log_dir ]"
-  exit 1
+if [ -n "$MSMTPQ_LOG" ] ; then
+  msmtpq_log_dir="$(dirname "$MSMTPQ_LOG")"
+  [ -d "$msmtpq_log_dir" ] || mkdir -p "$msmtpq_log_dir"
+  if ! [ -d "$msmtpq_log_dir" ]; then
+      err "msmtpq : can't create missing msmtp queue log file directory [ $msmtpq_log_dir ]"
+      exit 1
+  fi
+  unset msmptq_log_dir
 fi
-unset msmptq_log_dir
 
 umask 077                            # set secure permissions on created directories and files
 
@@ -220,7 +222,7 @@ log() {
     shift 2                          # shift opt & its arg off
     err "$@"                         # display msg to user, as well as logging it
   elif [ -z "$EMAIL_QUEUE_QUIET" ]; then
-    dsp "$@"                         # display msg to user, as well as logging it
+    dsp "$@"                         # display msg to user
   fi
 
   if [ -n "$MSMTPQ_LOG" ] ; then     # log is defined and in use

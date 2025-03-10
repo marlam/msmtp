@@ -85,7 +85,7 @@ bash_has_min_version() {
 
 # see https://git.savannah.gnu.org/gitweb/?p=bash.git;a=blob;f=NEWS;hb=6794b5478f660256a1023712b5fc169196ed0a22#l654
 if bash_has_min_version 4 4 ; then
-    if [ "$POSIXLY_CORRECT" = "y" ]; then
+    if [ "$POSIXLY_CORRECT" == "y" ]; then
         shopt -s inherit_errexit 2>/dev/null
     fi
 fi

@@ -79,7 +79,8 @@ set -o errtrace -o errexit            -o pipefail
 [[ "${TRACE:-0}" == "1" ]] && set -o xtrace
 
 bash_has_min_version() {
-    (( BASH_VERSINFO[0] >= $1 && BASH_VERSINFO[1] >= $2 ))
+    ((  ( BASH_VERSINFO[0] > $1 )
+        || ( BASH_VERSINFO[0] == $1  &&  BASH_VERSINFO[1] >= $2 ) ))
 }
 
 # see https://git.savannah.gnu.org/gitweb/?p=bash.git;a=blob;f=NEWS;hb=6794b5478f660256a1023712b5fc169196ed0a22#l654

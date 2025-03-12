@@ -375,10 +375,22 @@ send_queued_mail() {   # <-- mail id
   fi                                                           # (but allow continuation)
 }
 
+is_queue_dir_empty() {
+    # - "shopt -p" is available as of bash 2.01.1
+    # - "trap ... RETURN" is available as of bash 2.05b
+    # - the return value of shopt must be ignored (the manual says:
+    #   "The return status when listing options is zero if all
+    #   optnames are enabled, non-zero otherwise.")
+    trap "$(shopt -p nullglob || true)" RETURN
+    shopt -s nullglob
+    files=( "$MSMTPQ_Q"/*.mail )
+    (( ${#files[@]} == 0 ))
+}
+
 ## run (flush) queue
 ##
 run_queue() {    # <- 'sm' mode      # run queue
-  if [ -z "$(ls -A "$MSMTPQ_Q"/*.mail 2>/dev/null)" ]; then
+  if is_queue_dir_empty ; then
     [ -n "$1" ] || dsp '' 'mail queue is empty (nothing to send)' ''
     return
   fi
@@ -398,7 +410,7 @@ run_queue() {    # <- 'sm' mode      # run queue
 ## display queue contents
 ##
 display_queue() {      # <-- { 'purge' | 'send' } (op label) ; { 'rec' } (record array of mail ids)
-  if [ -z "$(ls -A "$MSMTPQ_Q"/*.mail 2>/dev/null)" ]; then
+  if is_queue_dir_empty ; then
     if [ -z "$1" ]; then
       dsp '' 'no mail in queue' ''
     else

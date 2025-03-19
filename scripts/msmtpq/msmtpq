@@ -74,7 +74,7 @@
 ##--------------------------------------------------------------
 
 # exit on error or pipe error:
-set -o errexit -o pipefail
+set -o errtrace -o errexit -o pipefail
 # optionally debug output by supplying TRACE=1
 [[ "${TRACE:-0}" == "1" ]] && set -o xtrace
 

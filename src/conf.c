@@ -106,6 +106,7 @@ account_t *account_new(const char *conffile, const char *id)
     a->set_from_header = 2;
     a->set_date_header = 2;
     a->set_msgid_header = 2;
+    a->set_to_header = 0;
     a->remove_bcc_headers = 1;
     a->undisclosed_recipients = 0;
     a->source_ip = NULL;
@@ -199,6 +200,7 @@ account_t *account_copy(account_t *acc)
         a->set_from_header = acc->set_from_header;
         a->set_date_header = acc->set_date_header;
         a->set_msgid_header = acc->set_msgid_header;
+        a->set_to_header = acc->set_to_header;
         a->remove_bcc_headers = acc->remove_bcc_headers;
         a->undisclosed_recipients = acc->undisclosed_recipients;
         a->source_ip = acc->source_ip ? xstrdup(acc->source_ip) : NULL;
@@ -802,6 +804,10 @@ void override_account(account_t *acc1, account_t *acc2)
     if (acc2->mask & ACC_SET_MSGID_HEADER)
     {
         acc1->set_msgid_header = acc2->set_msgid_header;
+    }
+    if (acc2->mask & ACC_SET_TO_HEADER)
+    {
+        acc1->set_to_header = acc2->set_to_header;
     }
     if (acc2->mask & ACC_SOURCE_IP)
     {
@@ -1938,6 +1944,26 @@ int read_conffile(const char *conffile, FILE *f, list_t **acc_list,
             else if (is_off(arg))
             {
                 acc->set_msgid_header = 0;
+            }
+            else
+            {
+                *errstr = xasprintf(
+                        _("line %d: invalid argument %s for command %s"),
+                        line, arg, cmd);
+                e = CONF_ESYNTAX;
+                break;
+            }
+        }
+        else if (strcmp(cmd, "set_to_header") == 0)
+        {
+            acc->mask |= ACC_SET_TO_HEADER;
+            if (is_on(arg))
+            {
+                acc->set_to_header = 1;
+            }
+            else if (is_off(arg))
+            {
+                acc->set_to_header = 0;
             }
             else
             {

@@ -468,6 +468,14 @@ value of the @ref{domain} command (unless that is the default value
 @samp{localhost}), or the domain part of the envelope-from address (if available),
 or the host name of the SMTP server.
 @xref{Header handling}.
+@anchor{set_to_header}
+@item set_to_header (on|off)
+@cmindex set_to_header
+When set to @samp{on}, the original To, Cc, and Bcc headers are removed and a new
+To header is added that contains all recipients, regardless of how they were originally
+specified.
+The default setting is off.
+@xref{Header handling}.
 @anchor{remove_bcc_headers}
 @item remove_bcc_headers [(on|off)]
 @cmindex remove_bcc_headers
@@ -760,6 +768,10 @@ Set Date header handling. @xref{set_date_header}.
 @item --set-msgid-header[=(auto|off)]
 @opindex --set-msgid-header
 Set Message-ID header handling. @xref{set_msgid_header}.
+@anchor{--set-to-header}
+@item --set-to-header[=(auto|off)]
+@opindex --set-to-header
+Set To header handling. @xref{set_to_header}.
 @anchor{--remove-bcc-headers}
 @item --remove-bcc-headers[=(on|off)]
 @opindex --remove-bcc-headers
@@ -1160,6 +1172,9 @@ with the @samp{-F} option.
 with the @ref{set_date_header} command.
 @item A Message-ID header will be added if the mail does not have one. This can be changed
 with the @ref{set_msgid_header} command.
+@item When @ref{set_to_header} is set, the original To, Cc, and Bcc headers
+are removed and replaced with a new To header that contains all recipients,
+regardless of how they were originally specified.
 @item When @ref{undisclosed_recipients} is set, the original To, Cc, and Bcc headers
 are removed and replaced with "To: undisclosed-recipients:;".
 @end itemize

@@ -81,13 +81,14 @@
 #define ACC_SET_FROM_HEADER             (1LL << 31LL)
 #define ACC_SET_DATE_HEADER             (1LL << 32LL)
 #define ACC_SET_MSGID_HEADER            (1LL << 33LL)
-#define ACC_REMOVE_BCC_HEADERS          (1LL << 34LL)
-#define ACC_UNDISCLOSED_RECIPIENTS      (1LL << 35LL)
-#define ACC_SOURCE_IP                   (1LL << 36LL)
-#define ACC_LOGFILE_TIME_FORMAT         (1LL << 37LL)
-#define ACC_SOCKET                      (1LL << 38LL)
-#define ACC_FROM_FULL_NAME              (1LL << 39LL)
-#define ACC_ALLOW_FROM_OVERRIDE         (1LL << 40LL)
+#define ACC_SET_TO_HEADER               (1LL << 34LL)
+#define ACC_REMOVE_BCC_HEADERS          (1LL << 35LL)
+#define ACC_UNDISCLOSED_RECIPIENTS      (1LL << 36LL)
+#define ACC_SOURCE_IP                   (1LL << 37LL)
+#define ACC_LOGFILE_TIME_FORMAT         (1LL << 38LL)
+#define ACC_SOCKET                      (1LL << 39LL)
+#define ACC_FROM_FULL_NAME              (1LL << 40LL)
+#define ACC_ALLOW_FROM_OVERRIDE         (1LL << 41LL)
 
 typedef struct
 {
@@ -145,6 +146,7 @@ typedef struct
     int set_from_header;        /* 0=off, 1=on, 2=auto */
     int set_date_header;        /* 0=off,       2=auto */
     int set_msgid_header;       /* 0=off,       2=auto */
+    int set_to_header;          /* 0=off, 1=on         */
     int remove_bcc_headers;     /* remove the Bcc headers from the mail? */
     int undisclosed_recipients; /* remove To, Cc, Bcc, add anonymous To */
     /* source ip binding */

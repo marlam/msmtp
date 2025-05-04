@@ -1,3 +1,8 @@
+Version 1.8.29:
+- Added a new configuration command 'set_to_header' with the default setting
+  'off'. If activated, this replaces To, Cc, Bcc with a new To header.
+- Added a new substitution pattern '%F' for envelope-from addresses.
+
 Version 1.8.28:
 - Detect SMTPUTF8 server capability and use it if available.
 - Add IDN support to --configure (build with libidn2 to enable this).

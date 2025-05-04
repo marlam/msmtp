@@ -993,13 +993,6 @@ msmtp will search it in ~/.netrc and SYSCONFDIR/netrc.
 .IP "USER, LOGNAME"
 These variables override the user's login name when constructing an
 envelope-from address. LOGNAME is only used if USER is unset.
-.br
-A temporary file is only created when the
-.BR \-t/\-\-read\-recipients
-or
-.BR \-\-read\-envelope\-from
-option is used. The file is then used to buffer the headers of the mail (but not
-the body, so the file won't get very large).
 .IP "EMAIL, SMTPSERVER"
 These environment variables are used only if neither \fB\-\-host\fP nor
 \fB\-\-account\fP is used and there is no default account defined in the

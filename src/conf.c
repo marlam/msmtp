@@ -1957,7 +1957,7 @@ int read_conffile(const char *conffile, FILE *f, list_t **acc_list,
         else if (strcmp(cmd, "set_to_header") == 0)
         {
             acc->mask |= ACC_SET_TO_HEADER;
-            if (is_on(arg))
+            if (*arg == '\0' || is_on(arg))
             {
                 acc->set_to_header = 1;
             }

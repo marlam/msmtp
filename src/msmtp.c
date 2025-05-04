@@ -2510,7 +2510,7 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
             LONGONLYOPT_SET_DATE_HEADER },
         { "set-msgid-header", optional_argument, 0,
             LONGONLYOPT_SET_MSGID_HEADER },
-        { "set-to-header", required_argument, 0,
+        { "set-to-header", optional_argument, 0,
             LONGONLYOPT_SET_TO_HEADER },
         { "remove-bcc-headers", optional_argument, 0,
             LONGONLYOPT_REMOVE_BCC_HEADERS },
@@ -3206,7 +3206,7 @@ int msmtp_cmdline(msmtp_cmdline_conf_t *conf, int argc, char *argv[])
                 break;
 
             case LONGONLYOPT_SET_TO_HEADER:
-                if (is_on(optarg))
+                if (!optarg || is_on(optarg))
                 {
                     conf->cmdline_account->set_to_header = 1;
                 }

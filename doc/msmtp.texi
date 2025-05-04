@@ -469,7 +469,7 @@ value of the @ref{domain} command (unless that is the default value
 or the host name of the SMTP server.
 @xref{Header handling}.
 @anchor{set_to_header}
-@item set_to_header (on|off)
+@item set_to_header [(on|off)]
 @cmindex set_to_header
 When set to @samp{on}, the original To, Cc, and Bcc headers are removed and a new
 To header is added that contains all recipients, regardless of how they were originally
@@ -769,7 +769,7 @@ Set Date header handling. @xref{set_date_header}.
 @opindex --set-msgid-header
 Set Message-ID header handling. @xref{set_msgid_header}.
 @anchor{--set-to-header}
-@item --set-to-header[=(auto|off)]
+@item --set-to-header[=(on|off)]
 @opindex --set-to-header
 Set To header handling. @xref{set_to_header}.
 @anchor{--remove-bcc-headers}

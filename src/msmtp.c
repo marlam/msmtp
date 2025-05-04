@@ -2278,7 +2278,7 @@ void msmtp_print_version(void)
                     "it under the terms of\n"
                 "the GNU General Public License "
                     "<http://www.gnu.org/licenses/gpl.html>.\n"
-                "There is NO WARRANTY, to the extent permitted by law.\n"), 2024);
+                "There is NO WARRANTY, to the extent permitted by law.\n"), 2025);
 }
 
 

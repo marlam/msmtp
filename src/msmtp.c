@@ -4,7 +4,8 @@
  * This file is part of msmtp, an SMTP client.
  *
  * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011,
- * 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024
+ * 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024,
+ * 2025
  * Martin Lambers <marlam@marlam.de>
  * Martin Stenberg <martin@gnutiken.se> (passwordeval support)
  * Scott Shumate <sshumate@austin.rr.com> (aliases support)
@@ -3809,6 +3810,7 @@ int main(int argc, char *argv[])
     /* needed to read the headers and extract addresses */
     FILE *header_tmpfile = NULL;
     FILE *prepend_header_tmpfile = NULL;
+    char *envelope_from = NULL;
     int have_from_header = 0;
     int have_date_header = 0;
     int have_msgid_header = 0;
@@ -3879,7 +3881,6 @@ int main(int argc, char *argv[])
     /* Read recipients and/or the envelope from address from the mail. */
     if (conf.sendmail)
     {
-        char *envelope_from = NULL;
         if (!(header_tmpfile = tmpfile()))
         {
             print_error(_("cannot create temporary file: %s"),
@@ -4078,7 +4079,7 @@ int main(int argc, char *argv[])
     }
     if (conf.sendmail && account->from)
     {
-        if (expand_from(&(account->from), &errstr) != CONF_EOK)
+        if (expand_from(&(account->from), envelope_from, &errstr) != CONF_EOK)
         {
             print_error("%s", sanitize_string(errstr));
             error_code = EX_CONFIG;
@@ -4405,6 +4406,7 @@ exit:
     }
     account_free(conf.cmdline_account);
     account_free(account);
+    free(envelope_from);
     if (conf.recipients)
     {
         list_xfree(conf.recipients, free);

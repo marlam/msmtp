@@ -4,7 +4,7 @@
  * This file is part of msmtp, an SMTP client.
  *
  * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2010, 2011, 2014,
- * 2016, 2018, 2019, 2020, 2021, 2022, 2023
+ * 2016, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025
  * Martin Lambers <marlam@marlam.de>
  * Martin Stenberg <martin@gnutiken.se> (passwordeval support)
  * Scott Shumate <sshumate@austin.rr.com> (aliases support)
@@ -290,7 +290,7 @@ int check_account(account_t *acc, int sendmail_mode, char **errstr);
  * or, if an error occured, one of the CONF_E* error codes, in which case
  * *errstr will contain an error string.
  */
-int expand_from(char **from, char **errstr);
+int expand_from(char **from, const char *envelope_from, char **errstr);
 
 /*
  * expand_domain()

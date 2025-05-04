@@ -4,7 +4,7 @@
  * This file is part of msmtp, an SMTP client.
  *
  * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2010, 2011, 2012,
- * 2014, 2015, 2016, 2018, 2019, 2020, 2021, 2022, 2023
+ * 2014, 2015, 2016, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025
  * Martin Lambers <marlam@marlam.de>
  * Martin Stenberg <martin@gnutiken.se> (passwordeval support)
  * Scott Shumate <sshumate@austin.rr.com> (aliases support)
@@ -878,13 +878,9 @@ int check_account(account_t *acc, int sendmail_mode, char **errstr)
  * helper function for expand_from() and expand_domain()
  */
 
-static int expand_from_or_domain(char **str, int expand_U, char **errstr)
+static int expand_from_or_domain(char **str, int expand_U,
+        const char *envelope_from, char **errstr)
 {
-    char* M = NULL;
-    char* U = NULL;
-    char* H = NULL;
-    char* C = NULL;
-
     if (strstr(*str, "%M"))
     {
         char *sysconfdir;
@@ -927,43 +923,39 @@ static int expand_from_or_domain(char **str, int expand_U, char **errstr)
             return CONF_EPARSE;
         }
         free(filename);
-        M = xstrdup(buf);
-        sanitize_string(M);
+        sanitize_string(buf);
+        *str = string_replace(*str, "%M", buf);
     }
     if (expand_U && strstr(*str, "%U"))
     {
-        U = get_username();
+        char *U = get_username();
         sanitize_string(U);
-    }
-    if (strstr(*str, "%H") || strstr(*str, "%C"))
-    {
-        H = get_hostname();
-        sanitize_string(H);
-    }
-    if (strstr(*str, "%C"))
-    {
-        C = net_get_canonical_hostname(H);
-    }
-
-    if (M)
-    {
-        *str = string_replace(*str, "%M", M);
-        free(M);
-    }
-    if (U)
-    {
         *str = string_replace(*str, "%U", U);
         free(U);
     }
-    if (H)
+    if (strstr(*str, "%H") || strstr(*str, "%C"))
     {
-        *str = string_replace(*str, "%H", H);
+        char *H = get_hostname();
+        sanitize_string(H);
+        if (strstr(*str, "%C"))
+        {
+            char *C = net_get_canonical_hostname(H);
+            sanitize_string(C);
+            *str = string_replace(*str, "%C", C);
+            free(C);
+        }
+        if (strstr(*str, "%H"))
+        {
+            *str = string_replace(*str, "%H", H);
+        }
         free(H);
     }
-    if (C)
+    if (envelope_from && strstr(*str, "%F"))
     {
-        *str = string_replace(*str, "%C", C);
-        free(C);
+        char *F = xstrdup(envelope_from);
+        sanitize_string(F);
+        *str = string_replace(*str, "%F", F);
+        free(F);
     }
 
     return CONF_EOK;
@@ -976,9 +968,9 @@ static int expand_from_or_domain(char **str, int expand_U, char **errstr)
  * see conf.h
  */
 
-int expand_from(char **from, char **errstr)
+int expand_from(char **from, const char *envelope_from, char **errstr)
 {
-    return expand_from_or_domain(from, 1, errstr);
+    return expand_from_or_domain(from, 1, envelope_from, errstr);
 }
 
 
@@ -990,7 +982,7 @@ int expand_from(char **from, char **errstr)
 
 int expand_domain(char **domain, char **errstr)
 {
-    return expand_from_or_domain(domain, 0, errstr);
+    return expand_from_or_domain(domain, 0, NULL, errstr);
 }
 
 

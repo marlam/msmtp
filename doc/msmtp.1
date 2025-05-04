@@ -1,7 +1,7 @@
 .\" -*-nroff-*-
 .\"
 .\" Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014,
-.\" 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024
+.\" 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025
 .\" Martin Lambers
 .\" Copyright (C) 2011
 .\" Scott Shumate
@@ -181,7 +181,8 @@ Resent-Cc, and Resent-Bcc headers in the first block of Resent- headers are
 used instead.
 .IP "\-\-read\-envelope\-from"
 Read the envelope from address from the From header of the mail, or from Resent-From
-if such a header is present and appears before any From header.
+if such a header is present and appears before any From header. Note that you
+can also use the pattern %F in the envelope from address; see the \fBfrom\fP command.
 .IP "\-\-aliases=[\fIfile\fP]"
 Set or unset an aliases file. See the \fBaliases\fP command.
 .IP "\-F\fIname\fP"
@@ -576,6 +577,9 @@ using an empty argument to this command. Only lower the default (for example to
 512 bits) if there is no other way to make TLS work with the remote server.
 .IP "from \fIenvelope_from\fP"
 Set the envelope-from address. The following substitution patterns are supported:
+.br
+%F will be replaced by the address extracted from the From header of the mail,
+or from Resent-From if such a header is present and appears before any From header.
 .br
 %U will be replaced by $USER, or if that fails by $LOGNAME, or if that fails by
 the login name of the user running msmtp.

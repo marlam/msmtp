@@ -161,14 +161,11 @@ Set From header handling. See the \fBset_from_header\fP command.
 Set Date header handling. See the \fBset_date_header\fP command.
 .IP "\-\-set\-msgid\-header[=(\fIauto\fP|\fIoff\fP)]"
 Set Message-ID header handling. See the \fBset_msgid_header\fP command.
-.IP "\-\-set\-to\-header[=(\fIon\fP|\fIoff\fP)]"
+.IP "\-\-set\-to\-header[=(\fIon\fP|\fIoff\fP|\fIundisclosed_recipients\fP)]"
 Set To header handling. See the \fBset_to_header\fP command.
 .IP "\-\-remove\-bcc\-headers[=(\fIon\fP|\fIoff\fP)]"
 Enable or disable the removal of Bcc headers. See the \fBremove_bcc_headers\fP
 command.
-.IP "\-\-undisclosed\-recipients[=(\fIon\fP|\fIoff\fP)]"
-Enable or disable the replacement of To/Cc/Bcc with "To: undisclosed-recipients:;".
-See the \fBundisclosed_recipients\fP command.
 .IP "\-X, \-\-logfile=[\fIfile\fP]"
 Set or unset the log file. See the \fBlogfile\fP command.
 .IP "\-\-logfile\-time\-format=[\fIfmt\fP]"
@@ -252,11 +249,7 @@ with the \fBset_date_header\fP command and \fB\-\-set\-date\-header\fP option.
 with the \fBset_msgid_header\fP command and \fB\-\-set\-msgid\-header\fP option.
 .br
 - When \fBset_to_header\fP is set, the original To, Cc, and Bcc headers
-are removed and replaced with a new To header that contains all recipients,
-regardless of how they were originally specified.
-.br
-- When \fBundisclosed_recipients\fP is set, the original To, Cc, and Bcc headers
-are removed and replaced with "To: undisclosed-recipients:;".
+are replaced with a new To header.
 .PP
 Skip to the EXAMPLES section for a quick start.
 .SH CONFIGURATION FILES
@@ -660,16 +653,18 @@ some values that uniquely identify the mail, and \fIdomain\fP is either the
 value of the \fBdomain\fP command (unless that is the default value
 \fIlocalhost\fP), or the domain part of the envelope-from address (if available),
 or the host name of the SMTP server.
-.IP "set_to_header [(\fIon\fP|\fIoff\fP)]"
-When set to \fIon\fP, the original To, Cc, and Bcc headers are removed and a new
-To header is added that contains all recipients, regardless of how they were originally
-specified.
+.IP "set_to_header [(\fIon\fP|\fIoff\fP|\fIundisclosed_recipients\fP)]"
+When set to \fIon\fP or \fIundisclosed_recipients\fP, the original To, Cc, and Bcc headers
+are removed and a new To header is added.
+When set to \fIon\fP, this new header contains all recipients, regardless of how they were
+originally specified.
+When set to \fIundisclosed_recipients\fP, the To header will be "To: undisclosed-recipients:;".
 The default setting is off.
+.br
+For compatibility with older versions, \fBundisclosed_recipients\fP [(\fIon\fP|\fIoff\fP)]
+is still supported and corresponds to the \fIfIundisclosed_recipients\fP and \fIoff\fP settings.
 .IP "remove_bcc_headers [(\fIon\fP|\fIoff\fP)]"
 This command controls whether to remove Bcc headers. The default is to remove them.
-.IP "undisclosed_recipients [(\fIon\fP|\fIoff\fP)]"
-When set, the original To, Cc, and Bcc headers of the mail are removed and a single
-new header line "To: undisclosed-recipients:;" is added. The default setting is off.
 .IP "logfile [\fIfile\fP]"
 An empty argument disables logging (this is the default).
 .br

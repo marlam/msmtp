@@ -469,23 +469,21 @@ value of the @ref{domain} command (unless that is the default value
 or the host name of the SMTP server.
 @xref{Header handling}.
 @anchor{set_to_header}
-@item set_to_header [(on|off)]
+@item set_to_header [(on|off|undisclosed_recipients)]
 @cmindex set_to_header
-When set to @samp{on}, the original To, Cc, and Bcc headers are removed and a new
-To header is added that contains all recipients, regardless of how they were originally
-specified.
-The default setting is off.
+When set to @samp{on} or @samp{undisclosed_recipients}, the original To, Cc, and Bcc headers
+are removed and a new To header is added.
+When set to @samp{on}, this new header contains all recipients, regardless of how they were
+originally specified.
+When set to @samp{undisclosed_recipients}, the To header will be "To: undisclosed-recipients:;".
+The default setting is off.@*
+For compatibility with older versions, @samp{undisclosed_recipients [(on|off)]}
+is still supported and corresponds to the @samp{undisclosed_recipients} and @samp{off} settings.
 @xref{Header handling}.
 @anchor{remove_bcc_headers}
 @item remove_bcc_headers [(on|off)]
 @cmindex remove_bcc_headers
 This command controls whether to remove Bcc headers. The default is to remove them.
-@anchor{undisclosed_recipients}
-@item undisclosed_recipients [(on|off)]
-@cmindex undisclosed_recipients
-When set, the original To, Cc, and Bcc headers of the mail are removed and a single
-new header line "To: undisclosed-recipients:;" is added. The default setting is off.
-@xref{Header handling}.
 @anchor{logfile}
 @item logfile [@var{file}]
 @cmindex logfile
@@ -769,18 +767,13 @@ Set Date header handling. @xref{set_date_header}.
 @opindex --set-msgid-header
 Set Message-ID header handling. @xref{set_msgid_header}.
 @anchor{--set-to-header}
-@item --set-to-header[=(on|off)]
+@item --set-to-header[=(on|off|undisclosed_recipients)]
 @opindex --set-to-header
 Set To header handling. @xref{set_to_header}.
 @anchor{--remove-bcc-headers}
 @item --remove-bcc-headers[=(on|off)]
 @opindex --remove-bcc-headers
 Enable or disable the removal of Bcc headers. @xref{remove_bcc_headers}.
-@anchor{--undisclosed-recipients}
-@item --undisclosed-recipients[=(on|off)]
-@opindex --undisclosed-recipients
-Enable or disable the replacement of To/Cc/Bcc with "To: undisclosed-recipients:;".
-@xref{undisclosed_recipients}.
 @anchor{--logfile}
 @item -X [@var{file}]
 @itemx --logfile=[@var{file}]
@@ -1173,10 +1166,7 @@ with the @ref{set_date_header} command.
 @item A Message-ID header will be added if the mail does not have one. This can be changed
 with the @ref{set_msgid_header} command.
 @item When @ref{set_to_header} is set, the original To, Cc, and Bcc headers
-are removed and replaced with a new To header that contains all recipients,
-regardless of how they were originally specified.
-@item When @ref{undisclosed_recipients} is set, the original To, Cc, and Bcc headers
-are removed and replaced with "To: undisclosed-recipients:;".
+are removed and replaced with a new To header.
 @end itemize
 
 

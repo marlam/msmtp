@@ -1,7 +1,11 @@
 Version 1.8.29:
 - Added a new configuration command 'set_to_header' with the default setting
   'off'. If activated, this replaces To, Cc, Bcc with a new To header.
-- Added a new substitution pattern '%F' for envelope-from addresses.
+  The setting 'undisclosed_recipients' replaces the separate command of the same
+  name (but the old command remains supported for compatibility).
+- Added a new substitution pattern '%F' for the 'from' command. This allows
+  to set the envelope-from address to the content of the From header.
+- Many improvements in the msmtpq script.
 
 Version 1.8.28:
 - Detect SMTPUTF8 server capability and use it if available.

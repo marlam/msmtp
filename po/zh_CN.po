@@ -1,77 +1,78 @@
-# Tamil messages for msmtp.
-# Copyright (C) 2018 Martin Lambers <marlam@marlam.de>
+# Simplified Chinese translation for msmtp.
+# Copyright (C) 2025 Martin Lambers <marlam@marlam.de>
 # This file is distributed under the same license as the msmtp package.
-# Arun Isaac <arunisaac@systemreboot.net>, 2020.
+# Poesty Li <poesty7450@gmail.com>, 2025.
 #
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: msmtp 1.8.8rc2\n"
+"Project-Id-Version: msmtp 1.8.28\n"
 "Report-Msgid-Bugs-To: marlam@marlam.de\n"
 "POT-Creation-Date: 2025-05-05 09:18+0200\n"
-"PO-Revision-Date: 2020-04-07 18:54+0530\n"
-"Last-Translator: Arun Isaac <arunisaac@systemreboot.net>\n"
-"Language-Team: Tamil <tamil@systemreboot.net>\n"
-"Language: ta\n"
+"PO-Revision-Date: 2025-05-25 23:34+0800\n"
+"Last-Translator: Poesty Li <poesty7450@gmail.com>\n"
+"Language-Team: Chinese (simplified) <i18n-zh@googlegroups.com>\n"
+"Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Bugs: Report translation errors to the Language-Team address.\n"
+"X-Generator: Poedit 3.6\n"
 
 #: src/aliases.c:121
-#, fuzzy, c-format
-#| msgid "line longer than %d characters"
+#, c-format
 msgid "line %d: longer than %d characters"
-msgstr "வரியில் %d வரியுருகளுக்கு அதிமாக உள்ளன"
+msgstr "行 %d：字符长度超过 %d"
 
 #: src/aliases.c:138
 #, c-format
 msgid "line %d: single ':' delimiter expected"
-msgstr ""
+msgstr "行 %d：预期单个 ':' 分隔符"
 
 #: src/aliases.c:146
 #, c-format
 msgid "line %d: invalid alias '%s'"
-msgstr ""
+msgstr "行 %d：无效的别名 '%s'"
 
 #: src/aliases.c:153
 #, c-format
 msgid "line %d: duplicate alias '%s'"
-msgstr ""
+msgstr "行 %d：重复的别名 '%s'"
 
 #: src/aliases.c:178 src/conf.c:1200 src/stream.c:63
 #, c-format
 msgid "input error"
-msgstr "உள்ளீட்டுப் பிழை"
+msgstr "输入错误"
 
 #: src/aliases.c:283
 #, c-format
 msgid "Too many redirects when expanding alias %s."
-msgstr ""
+msgstr "扩展别名 %s 时重定向次数过多。"
 
 #: src/conf.c:830 src/conf.c:845
 #, c-format
 msgid "host not set"
-msgstr ""
+msgstr "未设置主机"
 
 #: src/conf.c:835
 #, c-format
 msgid "port not set"
-msgstr "வாயில் குறிப்பிடப்படவில்லை"
+msgstr "未设置端口"
 
 #: src/conf.c:840
 #, c-format
 msgid "envelope-from address is missing"
-msgstr ""
+msgstr "缺少发件人地址"
 
 #: src/conf.c:850
 #, c-format
 msgid "tls_key_file requires tls_cert_file"
-msgstr "tls_key_file க்கு tls_cert_file தேவை"
+msgstr "tls_key_file 需要 tls_cert_file"
 
 #: src/conf.c:855
 #, c-format
 msgid "tls_cert_file requires tls_key_file"
-msgstr "tls_cert_file க்கு tls_key_file தேவை"
+msgstr "tls_cert_file 需要 tls_key_file"
 
 #: src/conf.c:863
 #, c-format
@@ -79,11 +80,12 @@ msgid ""
 "tls requires either tls_trust_file (highly recommended) or tls_fingerprint "
 "or a disabled tls_certcheck"
 msgstr ""
+"tls 需要 tls_trust_file（强烈推荐）或 tls_fingerprint 或禁用 tls_certcheck"
 
 #: src/conf.c:869
 #, c-format
 msgid "tls_crl_file requires tls_trust_file"
-msgstr "tls_crl_file க்கு tls_trust_file தேவை"
+msgstr "tls_crl_file 需要 tls_trust_file"
 
 #: src/conf.c:897 src/conf.c:904 src/conf.c:921 src/mtls-gnutls.c:329
 #, c-format
@@ -93,38 +95,38 @@ msgstr "%s: %s"
 #: src/conf.c:1126 src/conf.c:1299
 #, c-format
 msgid "line %d: missing account name"
-msgstr "வரி %d: கணக்குப் பெயர் இல்லை"
+msgstr "行 %d：缺少账号名称"
 
 #: src/conf.c:1131
 #, c-format
 msgid "line %d: account %s not (yet) defined"
-msgstr ""
+msgstr "行 %d：账号 %s 尚未定义"
 
 #: src/conf.c:1212
 #, c-format
 msgid "line longer than %d characters"
-msgstr "வரியில் %d வரியுருகளுக்கு அதிமாக உள்ளன"
+msgstr "行长度超过 %d 个字符"
 
 #: src/conf.c:1229 src/conf.c:1342 src/conf.c:1361 src/conf.c:1388
 #: src/conf.c:1417 src/conf.c:1730 src/conf.c:1765
 #, c-format
 msgid "line %d: command %s needs an argument"
-msgstr "வரி %d: %s கட்டளைக்குச் செயலுருபு தேவை"
+msgstr "行 %d：命令 %s 需要参数"
 
 #: src/conf.c:1271 src/conf.c:2140 src/conf.c:2157
 #, c-format
 msgid "line %d: command %s does not take an argument"
-msgstr "வரி %d: %s கட்டளைக்குச் செயலுருபு கிடையாது"
+msgstr "行 %d：命令 %s 不接受参数"
 
 #: src/conf.c:1307
 #, c-format
 msgid "line %d: an account name must not contain colons or commas"
-msgstr "வரி %d: கணக்குப் பெயரில் விளக்கிசைக்குறிகளோ உறுப்பிசைக்குறிகளோ இடம்பெறக்கூடாது"
+msgstr "行 %d：账号名称不能包含冒号或逗号"
 
 #: src/conf.c:1317
 #, c-format
 msgid "line %d: account %s was already defined"
-msgstr "வரி %d: %s என்னும் கணக்கு ஏற்கனவே வரையறுக்கப்பட்டது"
+msgstr "行 %d：账号 %s 已经被定义"
 
 #: src/conf.c:1372 src/conf.c:1404 src/conf.c:1435 src/conf.c:1474
 #: src/conf.c:1500 src/conf.c:1546 src/conf.c:1566 src/conf.c:1651
@@ -134,90 +136,90 @@ msgstr "வரி %d: %s என்னும் கணக்கு ஏற்க�
 #: src/conf.c:2057 src/conf.c:2078 src/conf.c:2099 src/conf.c:2127
 #, c-format
 msgid "line %d: invalid argument %s for command %s"
-msgstr ""
+msgstr "行 %d：命令 %s 的参数 %s 无效"
 
 #: src/conf.c:2173
 #, c-format
 msgid "line %d: unknown command %s"
-msgstr "வரி %d: அறியப்படாக் கட்டளை %s"
+msgstr "行 %d：未知命令 %s"
 
 #: src/conf.c:2227
 #, c-format
 msgid "contains secrets and therefore must be owned by you"
-msgstr ""
+msgstr "包含秘密，因此必须由你拥有"
 
 #: src/conf.c:2233
 #, c-format
 msgid ""
 "contains secrets and therefore must have no more than user read/write "
 "permissions"
-msgstr ""
+msgstr "包含秘密，因此权限不得超过用户读/写权限"
 
 #. TRANSLATORS: msmtp shares a lot of code and translatable strings with
 #. mpop <https://marlam.de/mpop>.
 #: src/msmtp.c:91
 #, c-format
 msgid "%s: FATAL: %s\n"
-msgstr "%s: முறிவுப்பிழை: %s\n"
+msgstr "%s：致命错误：%s\n"
 
 #: src/msmtp.c:231 src/msmtp.c:409 src/msmtp.c:1514
 #, c-format
 msgid "the server does not support TLS via the STARTTLS command"
-msgstr ""
+msgstr "服务器不支持通过 STARTTLS 命令启用 TLS"
 
 #: src/msmtp.c:273
 #, c-format
 msgid "the server does not support Remote Message Queue Starting"
-msgstr ""
+msgstr "服务器不支持远程消息队列启动"
 
 #: src/msmtp.c:285 src/msmtp.c:1572
 #, c-format
 msgid "the server does not support authentication"
-msgstr ""
+msgstr "服务器不支持身份验证"
 
 #: src/msmtp.c:444
 #, c-format
 msgid "%s server at %s (%s [%s]), port %d:\n"
-msgstr "%2$s (%3$s [%4$s]) வாயில் %5$d யிலுள்ள %1$s வழங்கி\n"
+msgstr "%s 服务器在 %s (%s [%s])，端口 %d：\n"
 
 #: src/msmtp.c:451
 #, c-format
 msgid "%s server at %s (%s), port %d:\n"
-msgstr "%2$s (%3$s) வாயில் %4$d யிலுள்ள %1$s வழங்கி\n"
+msgstr "%s 服务器在 %s (%s)，端口 %d：\n"
 
 #: src/msmtp.c:458
 #, c-format
 msgid "%s server at %s ([%s]), port %d:\n"
-msgstr "%2$s ([%3$s]) வாயில் %4$d யிலுள்ள %1$s வழங்கி\n"
+msgstr "%s 服务器在 %s ([%s])，端口 %d：\n"
 
 #: src/msmtp.c:465
 #, c-format
 msgid "%s server at %s, port %d:\n"
-msgstr "%2$s வாயில் %3$d யிலுள்ள %1$s வழங்கி\n"
+msgstr "%s 服务器在 %s，端口 %d：\n"
 
 #: src/msmtp.c:486
 #, c-format
 msgid "No special capabilities.\n"
-msgstr "சிறப்புச் செயல்வல்லமைகள் எதுவுமில்லை.\n"
+msgstr "没有特殊功能。\n"
 
 #: src/msmtp.c:490
 #, c-format
 msgid "Capabilities:\n"
-msgstr "செயல்வல்லமைகள்:\n"
+msgstr "功能：\n"
 
 #: src/msmtp.c:494
 msgid "Maximum message size is "
-msgstr ""
+msgstr "最大消息大小为 "
 
 #: src/msmtp.c:497
 #, c-format
 msgid "unlimited\n"
-msgstr ""
+msgstr "无限制\n"
 
 #: src/msmtp.c:501
 #, c-format
 msgid "%ld bytes"
-msgstr "%ld எண்ணுண்மிகள்"
+msgstr "%ld 字节"
 
 #: src/msmtp.c:504
 #, c-format
@@ -231,137 +233,137 @@ msgstr " = %.2f KiB"
 
 #: src/msmtp.c:516
 msgid "Support for command grouping for faster transmission"
-msgstr ""
+msgstr "支持命令分组以加快传输速度"
 
 #: src/msmtp.c:521
 msgid "Support for Internationalized Email"
-msgstr ""
+msgstr "支持国际化电子邮件"
 
 #: src/msmtp.c:526
 msgid "Support for RMQS (Remote Message Queue Starting)"
-msgstr ""
+msgstr "支持 RMQS（远程消息队列启动）"
 
 #: src/msmtp.c:531
 msgid "Support for Delivery Status Notifications"
-msgstr ""
+msgstr "支持传递状态通知"
 
 #: src/msmtp.c:541
 msgid "Support for TLS encryption via the STARTTLS command"
-msgstr ""
+msgstr "支持通过 STARTTLS 命令进行 TLS 加密"
 
 #: src/msmtp.c:547
 msgid "Supported authentication methods:"
-msgstr ""
+msgstr "支持的身份验证方法："
 
 #: src/msmtp.c:582
 #, c-format
 msgid ""
 "This server might advertise more or other capabilities when TLS is active.\n"
-msgstr "இவ்வழங்கி TLS இருந்தால் பிறச் செயல்வல்லமைகளை வெளிப்படுத்தலாம்.\n"
+msgstr "启用 TLS 后，服务器可能会宣告更多或其它功能。\n"
 
 #: src/msmtp.c:1266 src/msmtp.c:3450
 #, c-format
 msgid "cannot write mail headers to temporary file: output error"
-msgstr ""
+msgstr "无法将邮件头写入临时文件：输出错误"
 
 #: src/msmtp.c:1374
 #, c-format
 msgid "input error while reading the mail"
-msgstr ""
+msgstr "读取邮件时发生输入错误"
 
 #: src/msmtp.c:1561
 #, c-format
 msgid "the server does not support DSN"
-msgstr ""
+msgstr "服务器不支持 DSN"
 
 #: src/msmtp.c:1710 src/msmtp.c:1729 src/msmtp.c:1781
 #, c-format
 msgid "automatic configuration based on SRV records failed: %s"
-msgstr ""
+msgstr "基于 SRV 记录的自动配置失败：%s"
 
 #: src/msmtp.c:1711
 msgid "invalid mail address"
-msgstr "ஏற்கத்தகா அஞ்சல் முகவரி"
+msgstr "无效的邮件地址"
 
 #: src/msmtp.c:1727
 #, c-format
 msgid "no SRV records for %s or %s"
-msgstr ""
+msgstr "没有 %s 或 %s 的 SRV 记录"
 
 #: src/msmtp.c:1744
 #, c-format
 msgid "copy this to your configuration file %s"
-msgstr ""
+msgstr "将此复制到你的配置文件 %s"
 
 #: src/msmtp.c:1748
 msgid "warning: the host does not match the mail domain; please check"
-msgstr ""
+msgstr "警告：主机与邮件域不匹配；请检查"
 
 #: src/msmtp.c:1751 src/msmtp.c:1755
 msgid "add your password to the key ring:"
-msgstr ""
+msgstr "将你的密码添加到密钥环："
 
 #: src/msmtp.c:1758
 msgid "encrypt your password:"
-msgstr ""
+msgstr "加密您的密码："
 
 #: src/msmtp.c:1782
 msgid "this system lacks libresolv"
-msgstr ""
+msgstr "此系统缺少 libresolv"
 
 #: src/msmtp.c:2020
 #, c-format
 msgid "invalid logfile_time_format"
-msgstr ""
+msgstr "无效的 logfile_time_format"
 
 #: src/msmtp.c:2034
 #, c-format
 msgid "cannot open: %s"
-msgstr "திறக்க இயலவில்லை: %s"
+msgstr "无法打开：%s"
 
 #: src/msmtp.c:2042
 #, c-format
 msgid "cannot lock (tried for %d seconds): %s"
-msgstr "பூட்ட இயலவில்லை (%d நொடிகளுக்கு முயலப்பட்டது): %s"
+msgstr "无法锁定（尝试了 %d 秒）：%s"
 
 #: src/msmtp.c:2047
 #, c-format
 msgid "cannot lock: %s"
-msgstr "பூட்ட இயலவில்லை: %s"
+msgstr "无法锁定：%s"
 
 #: src/msmtp.c:2056
 msgid "output error"
-msgstr "வெளியீட்டுப் பிழை"
+msgstr "输出错误"
 
 #: src/msmtp.c:2073
 #, c-format
 msgid "cannot log to %s: %s"
-msgstr "%s யில் குறிக்க இயலவில்லை: %s"
+msgstr "无法记录到 %s：%s"
 
 #: src/msmtp.c:2077
 #, c-format
 msgid "log info was: %s"
-msgstr ""
+msgstr "日志信息为：%s"
 
 #: src/msmtp.c:2186
 #, c-format
 msgid "%s version %s\n"
-msgstr "%s பதிப்பெண் %s\n"
+msgstr "%s 版本 %s\n"
 
 #: src/msmtp.c:2187
 #, c-format
 msgid "Platform: %s\n"
-msgstr "இயங்குதளம்: %s\n"
+msgstr "平台：%s\n"
 
 #: src/msmtp.c:2189
 #, c-format
 msgid "TLS/SSL library: %s\n"
-msgstr "TLS/SSL நிரலகம்: %s\n"
+msgstr "TLS/SSL 库：%s\n"
 
 #: src/msmtp.c:2197 src/msmtp.c:2257
 #, c-format
 msgid "none"
-msgstr "இல்லை"
+msgstr "无"
 
 #: src/msmtp.c:2201
 #, c-format
@@ -369,73 +371,69 @@ msgid ""
 "Authentication library: %s\n"
 "Supported authentication methods:\n"
 msgstr ""
+"认证库：%s\n"
+"支持的认证方法：\n"
 
 #: src/msmtp.c:2204
 msgid "GNU SASL; oauthbearer and xoauth2: built-in"
-msgstr ""
+msgstr "GNU SASL；oauthbearer 和 xoauth2：内置"
 
 #: src/msmtp.c:2206
 msgid "built-in"
-msgstr ""
+msgstr "内置"
 
 #: src/msmtp.c:2237
 #, c-format
 msgid "IDN support: "
-msgstr ""
+msgstr "IDN 支持： "
 
 #: src/msmtp.c:2241 src/msmtp.c:2249
 #, c-format
 msgid "enabled"
-msgstr ""
+msgstr "已启用"
 
 #: src/msmtp.c:2243 src/msmtp.c:2252
 #, c-format
 msgid "disabled"
-msgstr ""
+msgstr "已禁用"
 
 #: src/msmtp.c:2247
 #, c-format
 msgid "NLS: "
-msgstr ""
+msgstr "NLS： "
 
 #: src/msmtp.c:2250
 #, c-format
 msgid ", LOCALEDIR is %s"
-msgstr ""
+msgstr "，LOCALEDIR 是 %s"
 
 #: src/msmtp.c:2255
 #, c-format
 msgid "Keyring support: "
-msgstr ""
+msgstr "钥匙串支持： "
 
 #: src/msmtp.c:2260
 #, c-format
 msgid "Gnome "
-msgstr ""
+msgstr "Gnome "
 
 #: src/msmtp.c:2263
 #, c-format
 msgid "MacOS "
-msgstr ""
+msgstr "MacOS "
 
 #: src/msmtp.c:2269
 #, c-format
 msgid "System configuration file name: %s\n"
-msgstr "பொது அமைவடிவக்கோப்பு: %s\n"
+msgstr "系统配置文件名：%s\n"
 
 #: src/msmtp.c:2273
 #, c-format
 msgid "User configuration file name: %s\n"
-msgstr "பயனர் அமைவடிவக்கோப்பு: %s\n"
+msgstr "用户配置文件名：%s\n"
 
 #: src/msmtp.c:2276
-#, fuzzy, c-format
-#| msgid ""
-#| "Copyright (C) 2020 Martin Lambers and others.\n"
-#| "This is free software.  You may redistribute copies of it under the terms "
-#| "of\n"
-#| "the GNU General Public License <http://www.gnu.org/licenses/gpl.html>.\n"
-#| "There is NO WARRANTY, to the extent permitted by law.\n"
+#, c-format
 msgid ""
 "Copyright (C) %d Martin Lambers and others.\n"
 "This is free software.  You may redistribute copies of it under the terms "
@@ -443,10 +441,10 @@ msgid ""
 "the GNU General Public License <http://www.gnu.org/licenses/gpl.html>.\n"
 "There is NO WARRANTY, to the extent permitted by law.\n"
 msgstr ""
-"Copyright (C) 2020 Martin Lambers and others.\n"
-"இது கட்டற்ற மென்பொருள்.  இதை நீங்கள் GNU General Public License\n"
-"<http://gnu.org/licenses/gpl.html> என்னும் உரிமத்தின் கீழ் மறுவிநியோகம் செய்யலாம்.\n"
-"சட்டத்தால் அனுமதிக்கப்பட்ட அளவிற்கு எந்த உத்தரவாதமும் இல்லை.\n"
+"版权所有 (C) %d Martin Lambers 等人。\n"
+"这是自由软件。您可以根据 GNU 通用公共许可证\n"
+"<http://www.gnu.org/licenses/gpl.html> 的条款重新分发其副本。\n"
+"在法律允许的范围内，不提供任何保证。\n"
 
 #: src/msmtp.c:2293
 #, c-format
@@ -454,7 +452,7 @@ msgid ""
 "Usage:\n"
 "\n"
 msgstr ""
-"பயன்பாடு:\n"
+"用法：\n"
 "\n"
 
 #: src/msmtp.c:2294
@@ -466,6 +464,10 @@ msgid ""
 "  Read a mail from standard input and transmit it to an SMTP or LMTP "
 "server.\n"
 msgstr ""
+"Sendmail 模式（默认）：\n"
+"  %s [option...] [--] recipient...\n"
+"  %s [option...] -t [--] [recipient...]\n"
+"  从标准输入读取邮件并传输到 SMTP 或 LMTP 服务器。\n"
 
 #: src/msmtp.c:2299
 #, c-format
@@ -474,6 +476,9 @@ msgid ""
 "  %s --configure=mailadress\n"
 "  Generate and print configuration for address.\n"
 msgstr ""
+"配置模式：\n"
+"  %s --configure=mailadress\n"
+"  为地址生成并打印配置。\n"
 
 #: src/msmtp.c:2302
 #, c-format
@@ -482,9 +487,9 @@ msgid ""
 "  %s [option...] --serverinfo\n"
 "  Print information about a server.\n"
 msgstr ""
-"வழங்கி விவரப் பாங்கு:\n"
-"  %s [செயல்மாற்றி...] --serverinfo\n"
-"  வழங்கி விவரத்தைக் காட்டு\n"
+"服务器信息模式：\n"
+"  %s [option...] --serverinfo\n"
+"  打印服务器信息。\n"
 
 #: src/msmtp.c:2305
 #, c-format
@@ -494,63 +499,67 @@ msgid ""
 "  Send a Remote Message Queue Starting request to a server.\n"
 "\n"
 msgstr ""
+"远程消息队列启动模式：\n"
+"  %s [option...] --rmqs=host|@domain|#queue\n"
+"  向服务器发送远程消息队列启动请求。\n"
+"\n"
 
 #: src/msmtp.c:2309
 #, c-format
 msgid "General options:\n"
-msgstr "பொதுவான செயல்மாற்றிகள்:\n"
+msgstr "常规选项：\n"
 
 #: src/msmtp.c:2310
 #, c-format
 msgid "  --version                    print version\n"
-msgstr "  --version                   பதிப்பு விவரத்தைக் காட்டு\n"
+msgstr "  --version                    打印版本\n"
 
 #: src/msmtp.c:2311
 #, c-format
 msgid "  --help                       print help\n"
-msgstr "  --help                      உதவிச் செய்தியைக் காட்டு\n"
+msgstr "  --help                       打印帮助\n"
 
 #: src/msmtp.c:2312
 #, c-format
 msgid "  -P, --pretend                print configuration info and exit\n"
-msgstr "  -P, --pretend               அமைவடிவ விவரத்தைக் காட்டி வெளியேறு\n"
+msgstr "  -P, --pretend                打印配置信息并退出\n"
 
 #: src/msmtp.c:2313
 #, c-format
 msgid "  -d, --debug                  print debugging information\n"
-msgstr ""
+msgstr "  -d, --debug                  打印调试信息\n"
 
 #: src/msmtp.c:2314
 #, c-format
 msgid "Changing the mode of operation:\n"
-msgstr "செய்பணி பாங்கை மாற்றுவது:\n"
+msgstr "更改操作模式：\n"
 
 #: src/msmtp.c:2315
 #, c-format
 msgid ""
 "  --configure=mailaddress      generate and print configuration for address\n"
-msgstr ""
+msgstr "  --configure=mailaddress      为地址生成并打印配置\n"
 
 #: src/msmtp.c:2316
 #, c-format
 msgid "  -S, --serverinfo             print information about the server\n"
-msgstr "  -S, --serverinfo            வழங்கி விவரத்தைக் காட்டு\n"
+msgstr "  -S, --serverinfo             打印服务器信息\n"
 
 #: src/msmtp.c:2317
 #, c-format
 msgid ""
 "  --rmqs=host|@domain|#queue   send a Remote Message Queue Starting request\n"
-msgstr ""
+msgstr "  --rmqs=host|@domain|#queue   发送远程消息队列启动请求\n"
 
 #: src/msmtp.c:2318
 #, c-format
 msgid "Configuration options:\n"
-msgstr "அமைவடிவ செயல்மாற்றிகள்:\n"
+msgstr "配置选项：\n"
 
 #: src/msmtp.c:2319
 #, c-format
 msgid "  -C, --file=filename          set configuration file\n"
-msgstr "  -C, --file=கோப்புப்பெயர்      அமைவடிவக்கோப்பைக் குறிப்பிடு\n"
+msgstr "  -C, --file=filename          设置配置文件\n"
 
 #: src/msmtp.c:2320
 #, c-format
@@ -560,6 +569,8 @@ msgid ""
 "changed\n"
 "                               with command-line options\n"
 msgstr ""
+"  -a, --account=id             使用指定账号替代名为“default”的账号；\n"
+"                               其设置可通过命令行选项更改\n"
 
 #: src/msmtp.c:2323
 #, c-format
@@ -568,166 +579,168 @@ msgid ""
 "settings;\n"
 "                               do not use any configuration file data\n"
 msgstr ""
+"  --host=hostname              设置服务器，仅使用命令行设置；\n"
+"                               不使用任何配置文件数据\n"
 
 #: src/msmtp.c:2325
 #, c-format
 msgid "  --port=number                set port number\n"
-msgstr "  --port=எண்                 வாயில் எண்ணைக் குறிப்பிடு\n"
+msgstr "  --port=number                设置端口号\n"
 
 #: src/msmtp.c:2326
 #, c-format
 msgid ""
 "  --source-ip=[IP]             set/unset source ip address to bind the "
 "socket to\n"
-msgstr ""
+msgstr "  --source-ip=[IP]             设置/取消设置绑定套接字的源 IP 地址\n"
 
 #: src/msmtp.c:2327
 #, c-format
 msgid "  --proxy-host=[IP|hostname]   set/unset proxy\n"
-msgstr ""
+msgstr "  --proxy-host=[IP|hostname]   设置/取消设置代理\n"
 
 #: src/msmtp.c:2328
 #, c-format
 msgid "  --proxy-port=[number]        set/unset proxy port\n"
-msgstr ""
+msgstr "  --proxy-port=[number]        设置/取消设置代理端口\n"
 
 #: src/msmtp.c:2329
 #, c-format
 msgid "  --socket=[socketname]        set/unset local socket to connect to\n"
-msgstr ""
+msgstr "  --socket=[socketname]        设置/取消设置连接的本地套接字\n"
 
 #: src/msmtp.c:2330
 #, c-format
 msgid "  --timeout=(off|seconds)      set/unset network timeout in seconds\n"
-msgstr ""
+msgstr "  --timeout=(off|seconds)      设置/取消设置网络超时（秒）\n"
 
 #: src/msmtp.c:2331
 #, c-format
 msgid "  --protocol=(smtp|lmtp)       use the given sub protocol\n"
-msgstr ""
+msgstr "  --protocol=(smtp|lmtp)       使用指定的子协议\n"
 
 #: src/msmtp.c:2332
 #, c-format
 msgid ""
 "  --domain=string              set the argument of EHLO or LHLO command\n"
-msgstr ""
+msgstr "  --domain=string              设置 EHLO 或 LHLO 命令的参数\n"
 
 #: src/msmtp.c:2333
 #, c-format
 msgid ""
 "  --auth[=(on|off|method)]     enable/disable authentication and optionally\n"
 "                               choose the method\n"
-msgstr ""
+msgstr "  --auth[=(on|off|method)]     启用/禁用身份验证，并可选择方法\n"
 
 #: src/msmtp.c:2335
 #, c-format
 msgid "  --user=[username]            set/unset user name for authentication\n"
-msgstr ""
+msgstr "  --user=[username]            设置/取消设置用于身份验证的用户名\n"
 
 #: src/msmtp.c:2336
 #, c-format
 msgid "  --passwordeval=[eval]        evaluate password for authentication\n"
-msgstr ""
+msgstr "  --passwordeval=[eval]        评估用于身份验证的密码\n"
 
 #: src/msmtp.c:2337
 #, c-format
 msgid "  --tls[=(on|off)]             enable/disable TLS encryption\n"
-msgstr ""
+msgstr "  --tls[=(on|off)]             启用/禁用 TLS 加密\n"
 
 #: src/msmtp.c:2338
 #, c-format
 msgid "  --tls-starttls[=(on|off)]    enable/disable STARTTLS for TLS\n"
-msgstr ""
+msgstr "  --tls-starttls[=(on|off)]    启用/禁用 STARTTLS 进行 TLS 加密\n"
 
 #: src/msmtp.c:2339
 #, c-format
 msgid "  --tls-trust-file=[file]      set/unset trust file for TLS\n"
-msgstr ""
+msgstr "  --tls-trust-file=[file]      设置/取消设置 TLS 信任文件\n"
 
 #: src/msmtp.c:2340
 #, c-format
 msgid "  --tls-crl-file=[file]        set/unset revocation file for TLS\n"
-msgstr ""
+msgstr "  --tls-crl-file=[file]        设置/取消设置 TLS 吊销列表文件\n"
 
 #: src/msmtp.c:2341
 #, c-format
 msgid ""
 "  --tls-fingerprint=[f]        set/unset trusted certificate fingerprint for "
 "TLS\n"
-msgstr ""
+msgstr "  --tls-fingerprint=[f]        设置/取消设置用于 TLS 的可信证书指纹\n"
 
 #: src/msmtp.c:2342
 #, c-format
 msgid ""
 "  --tls-certcheck[=(on|off)]   enable/disable server certificate checks for "
 "TLS\n"
-msgstr ""
+msgstr "  --tls-certcheck[=(on|off)]   启用/禁用 TLS 服务器证书检查\n"
 
 #: src/msmtp.c:2343
 #, c-format
 msgid "  --tls-key-file=[file]        set/unset private key file for TLS\n"
-msgstr ""
+msgstr "  --tls-key-file=[file]        设置/取消设置 TLS 私钥文件\n"
 
 #: src/msmtp.c:2344
 #, c-format
 msgid "  --tls-cert-file=[file]       set/unset private cert file for TLS\n"
-msgstr ""
+msgstr "  --tls-cert-file=[file]       设置/取消设置 TLS 证书文件\n"
 
 #: src/msmtp.c:2345
 #, c-format
 msgid "  --tls-priorities=[prios]     set/unset TLS priorities.\n"
-msgstr ""
+msgstr "  --tls-priorities=[prios]     设置/取消设置 TLS 优先级\n"
 
 #: src/msmtp.c:2346
 #, c-format
 msgid ""
 "  --tls-host-override=[host]   set/unset override for TLS host "
 "verification.\n"
-msgstr ""
+msgstr "  --tls-host-override=[host]   设置/取消设置对 TLS 主机验证的覆盖\n"
 
 #: src/msmtp.c:2347
 #, c-format
 msgid "  --tls-min-dh-prime-bits=[b]  set/unset minimum bit size of DH prime\n"
-msgstr ""
+msgstr "  --tls-min-dh-prime-bits=[b]  设置/取消设置 DH 素数的最小位数\n"
 
 #: src/msmtp.c:2348
 #, c-format
 msgid "Options specific to sendmail mode:\n"
-msgstr ""
+msgstr "特定于 sendmail 模式的选项：\n"
 
 #: src/msmtp.c:2349
 #, c-format
 msgid ""
 "  --auto-from[=(on|off)]       enable/disable automatic envelope-from "
 "addresses\n"
-msgstr ""
+msgstr "  --auto-from[=(on|off)]       启用/禁用自动发件人地址\n"
 
 #: src/msmtp.c:2350
 #, c-format
 msgid "  -f, --from=address           set envelope from address\n"
-msgstr ""
+msgstr "  -f, --from=address           设置发件人地址\n"
 
 #: src/msmtp.c:2351
 #, c-format
 msgid ""
 "  --maildomain=[domain]        set the domain for automatic envelope from\n"
 "                               addresses\n"
-msgstr ""
+msgstr "  --maildomain=[domain]        设置自动发件人地址的域\n"
 
 #: src/msmtp.c:2353
 #, c-format
 msgid "  -N, --dsn-notify=(off|cond)  set/unset DSN conditions\n"
-msgstr ""
+msgstr "  -N, --dsn-notify=(off|cond)  设置/取消设置 DSN 条件\n"
 
 #: src/msmtp.c:2354
 #, c-format
 msgid "  -R, --dsn-return=(off|ret)   set/unset DSN amount\n"
-msgstr ""
+msgstr "  -R, --dsn-return=(off|ret)   设置/取消设置 DSN 返回值\n"
 
 #: src/msmtp.c:2355
 #, c-format
 msgid "  -X, --logfile=[file]         set/unset log file\n"
-msgstr "  -X, --logfile=கோப்பு         குறிப்பேடைக் குறிப்பிடு\n"
+msgstr "  -X, --logfile=[file]         设置/取消设置日志文件\n"
 
 #: src/msmtp.c:2356
 #, c-format
@@ -735,66 +748,68 @@ msgid ""
 "  --logfile-time-format=[fmt]  set/unset log file time format for "
 "strftime()\n"
 msgstr ""
+"  --logfile-time-format=[fmt]  设置/取消设置 strftime() 的日志文件时间格式\n"
 
 #: src/msmtp.c:2357
 #, c-format
 msgid ""
 "  --syslog[=(on|off|facility)] enable/disable/configure syslog logging\n"
-msgstr ""
+msgstr "  --syslog[=(on|off|facility)] 启用/禁用/配置 syslog 日志记录\n"
 
 #: src/msmtp.c:2358
 #, c-format
 msgid ""
 "  -t, --read-recipients        read additional recipients from the mail\n"
-msgstr ""
+msgstr "  -t, --read-recipients        从邮件中读取额外的收件人\n"
 
 #: src/msmtp.c:2359
 #, c-format
 msgid ""
 "  --read-envelope-from         read envelope from address from the mail\n"
-msgstr ""
+msgstr "  --read-envelope-from         从邮件中读取发件人地址\n"
 
 #: src/msmtp.c:2360
 #, c-format
 msgid "  --aliases=[file]             set/unset aliases file\n"
-msgstr ""
+msgstr "  --aliases=[file]             设置/取消设置别名文件\n"
 
 #: src/msmtp.c:2361
 #, c-format
 msgid "  --set-from-header[=(auto|on|off)] set From header handling\n"
-msgstr ""
+msgstr "  --set-from-header[=(auto|on|off)] 设置 From 头处理方式\n"
 
 #: src/msmtp.c:2362
 #, c-format
 msgid "  --set-date-header[=(auto|off)] set Date header handling\n"
-msgstr ""
+msgstr "  --set-date-header[=(auto|off)] 设置 Date 头处理方式\n"
 
 #: src/msmtp.c:2363
 #, c-format
 msgid "  --set-msgid-header[=(auto|off)] set Message-ID header handling\n"
-msgstr ""
+msgstr "  --set-msgid-header[=(auto|off)] 设置 Message-ID 头处理方式\n"
 
 #: src/msmtp.c:2364
-#, c-format
+#, fuzzy, c-format
+#| msgid "  --set-from-header[=(auto|on|off)] set From header handling\n"
 msgid ""
 "  --set-to-header[=(on|off|undisclosed_recipients)] set To header handling\n"
-msgstr ""
+msgstr "  --set-from-header[=(auto|on|off)] 设置 From 头处理方式\n"
 
 #: src/msmtp.c:2365
 #, c-format
 msgid ""
 "  --remove-bcc-headers[=(on|off)] enable/disable removal of Bcc headers\n"
-msgstr ""
+msgstr "  --remove-bcc-headers[=(on|off)] 启用/禁用移除 Bcc 头\n"
 
 #: src/msmtp.c:2366
 #, c-format
 msgid "  --                           end of options\n"
-msgstr "  --                          செயல்மாற்றிகளின் முடிவு\n"
+msgstr "  --                           选项结束\n"
 
 #: src/msmtp.c:2367
 #, c-format
 msgid "Accepted but ignored: -A, -B, -bm, -G, -h, -i, -L, -m, -n, -O, -o\n"
-msgstr ""
+msgstr "接受但忽略：-A, -B, -bm, -G, -h, -i, -L, -m, -n, -O, -o\n"
 
 #: src/msmtp.c:2368
 #, c-format
@@ -803,17 +818,15 @@ msgid ""
 "Report bugs to <%s>.\n"
 msgstr ""
 "\n"
-"\n"
-"வழுக்களை <%s> யிடம் தெரிவிக்க.\n"
-"தமிழாக்க வழுக்களை <tamil@systemreboot.net> யிடம் தெரிவிக்க.\n"
+"请将错误报告发送至 <%s>。\n"
 
 #: src/msmtp.c:2612 src/msmtp.c:2626
 msgid "cannot use both --serverinfo and --rmqs"
-msgstr "--serverinfo, --rmqs இரண்டையும் ஒரே நேரத்தில் குறிப்பிடக்கூடாது"
+msgstr "不能同时使用 --serverinfo 和 --rmqs"
 
 #: src/msmtp.c:2646 src/msmtp.c:2658
 msgid "cannot use both --host and --account"
-msgstr "--host, --account இரண்டையும் ஒரே நேரத்தில் குறிப்பிடக்கூடாது"
+msgstr "不能同时使用 --host 和 --account"
 
 #: src/msmtp.c:2674 src/msmtp.c:2692 src/msmtp.c:2711 src/msmtp.c:2766
 #: src/msmtp.c:2798 src/msmtp.c:2816 src/msmtp.c:2879 src/msmtp.c:2924
@@ -823,51 +836,51 @@ msgstr "--host, --account இரண்டையும் ஒரே நேரத�
 #: src/msmtp.c:3275 src/msmtp.c:3353 src/msmtp.c:3372
 #, c-format
 msgid "invalid argument %s for %s"
-msgstr ""
+msgstr "参数 %s 对于 %s 无效"
 
 #: src/msmtp.c:2721 src/msmtp.c:3315
 msgid "cannot use both --from and --read-envelope-from"
-msgstr "--host, --read-envelope-from இரண்டையும் ஒரே நேரத்தில் குறிப்பிடக்கூடாது"
+msgstr "不能同时使用 --from 和 --read-envelope-from"
 
 #: src/msmtp.c:3330
 #, c-format
 msgid "unsupported operation mode b%s"
-msgstr ""
+msgstr "不支持的操作模式 b%s"
 
 #: src/msmtp.c:3427 src/msmtp.c:3915 src/msmtp.c:4222
 #, c-format
 msgid "cannot create temporary file: %s"
-msgstr "தற்காலிகக் கோப்பை உருவாக்க இயலவில்லை: %s"
+msgstr "无法创建临时文件：%s"
 
 #: src/msmtp.c:3457 src/msmtp.c:3941 src/msmtp.c:4277
-#, c-format
+#, fuzzy, c-format
 msgid "cannot rewind temporary file: %s"
-msgstr ""
+msgstr "无法回绕临时文件：%s"
 
 #: src/msmtp.c:3523
 #, c-format
 msgid "ignoring system configuration file %s: %s\n"
-msgstr "பொது அமைவடிவக்கொப்பு %s ஒதுக்கப்படுகிறது: %s\n"
+msgstr "忽略系统配置文件 %s：%s\n"
 
 #: src/msmtp.c:3538
 #, c-format
 msgid "loaded system configuration file %s\n"
-msgstr "பொது அமைவடிவக்கோப்பு %s ஏற்றப்படுகிறது\n"
+msgstr "已加载系统配置文件 %s\n"
 
 #: src/msmtp.c:3577
 #, c-format
 msgid "ignoring user configuration file %s: %s\n"
-msgstr "பயனர் அமைவடிவக்கோப்பு %s ஒதுக்கப்படுகிறது: %s\n"
+msgstr "忽略用户配置文件 %s：%s\n"
 
 #: src/msmtp.c:3592
 #, c-format
 msgid "loaded user configuration file %s\n"
-msgstr "பயனர் அமைவடிவக்கோப்பு %s ஏற்றப்படுகிறது\n"
+msgstr "已加载用户配置文件 %s\n"
 
 #: src/msmtp.c:3649
 #, c-format
 msgid "using account %s from %s\n"
-msgstr ""
+msgstr "使用账号 %s 来自 %s\n"
 
 #: src/msmtp.c:3653 src/msmtp.c:3656 src/msmtp.c:3658 src/msmtp.c:3661
 #: src/msmtp.c:3695 src/msmtp.c:3696 src/msmtp.c:3698 src/msmtp.c:3700
@@ -877,957 +890,832 @@ msgstr ""
 #: src/msmtp.c:3774 src/msmtp.c:3776 src/msmtp.c:3779 src/msmtp.c:3781
 #: src/msmtp.c:3783
 msgid "(not set)"
-msgstr ""
+msgstr "（未设置）"
 
 #: src/msmtp.c:3665
 #, c-format
 msgid "off\n"
-msgstr ""
+msgstr "关闭\n"
 
 #: src/msmtp.c:3671
 #, c-format
 msgid "%d seconds\n"
-msgstr "%d நொடிகள்\n"
+msgstr "%d 秒\n"
 
 #: src/msmtp.c:3675
 #, c-format
 msgid "1 second\n"
-msgstr "1 நொடி\n"
+msgstr "1 秒\n"
 
 #: src/msmtp.c:3684
 #, c-format
 msgid "none\n"
-msgstr "இல்லை\n"
+msgstr "无\n"
 
 #: src/msmtp.c:3688
 #, c-format
 msgid "choose\n"
-msgstr "தேர்ந்தெடு\n"
+msgstr "选择\n"
 
 #: src/msmtp.c:3701 src/msmtp.c:3702 src/msmtp.c:3731 src/msmtp.c:3747
 #: src/msmtp.c:3756 src/msmtp.c:3759 src/msmtp.c:3768 src/msmtp.c:3770
 msgid "on"
-msgstr ""
+msgstr "开启"
 
 #: src/msmtp.c:3701 src/msmtp.c:3702 src/msmtp.c:3731 src/msmtp.c:3747
 #: src/msmtp.c:3756 src/msmtp.c:3759 src/msmtp.c:3762 src/msmtp.c:3765
 #: src/msmtp.c:3768 src/msmtp.c:3770
 msgid "off"
-msgstr ""
+msgstr "关闭"
 
 #: src/msmtp.c:3752
 msgid "(read from mail)"
-msgstr ""
+msgstr "（从邮件读取）"
 
 #: src/msmtp.c:3758 src/msmtp.c:3761 src/msmtp.c:3764
 msgid "auto"
-msgstr ""
+msgstr "自动"
 
 #: src/msmtp.c:3786
 #, c-format
 msgid "reading recipients from the command line and the mail\n"
-msgstr ""
+msgstr "从命令行和邮件中读取收件人\n"
 
 #: src/msmtp.c:3791
 #, c-format
 msgid "reading recipients from the command line\n"
-msgstr ""
+msgstr "从命令行中读取收件人\n"
 
 #: src/msmtp.c:3906
 msgid "too many arguments"
-msgstr ""
+msgstr "参数过多"
 
 #: src/msmtp.c:3935
 #, c-format
 msgid "envelope from address extracted from mail: %s\n"
-msgstr ""
+msgstr "从邮件中提取的发件人地址：%s\n"
 
 #: src/msmtp.c:3950
 msgid "no recipients found"
-msgstr ""
+msgstr "未找到收件人"
 
 #: src/msmtp.c:3980
 #, c-format
 msgid "account chosen by envelope from address %s: %s\n"
-msgstr ""
+msgstr "通过发件人地址 %s 选择的账号：%s\n"
 
 #: src/msmtp.c:3994
 #, c-format
 msgid "falling back to default account\n"
-msgstr ""
+msgstr "回退到默认账号\n"
 
 #: src/msmtp.c:4017
 #, c-format
 msgid "using environment variables EMAIL and SMTPSERVER\n"
-msgstr ""
+msgstr "使用环境变量 EMAIL 和 SMTPSERVER\n"
 
 #: src/msmtp.c:4025
 #, c-format
 msgid "account %s not found in %s and %s"
-msgstr ""
+msgstr "账号 %s 未在 %s 和 %s 中找到"
 
 #: src/msmtp.c:4031 src/msmtp.c:4036
 #, c-format
 msgid "account %s not found in %s"
-msgstr ""
+msgstr "账号 %s 未在 %s 中找到"
 
 #: src/msmtp.c:4041
 #, c-format
 msgid "account %s not found: no configuration file available"
-msgstr ""
+msgstr "账号 %s 未找到：无可用配置文件"
 
 #: src/msmtp.c:4063
 #, c-format
 msgid "using account specified on command line\n"
-msgstr ""
+msgstr "使用命令行指定的账号\n"
 
 #: src/msmtp.c:4128
 #, c-format
 msgid "account %s from %s: %s"
-msgstr ""
+msgstr "账号 %s 来自 %s：%s"
 
 #: src/msmtp.c:4169
 msgid "this platform does not support syslog logging"
-msgstr ""
+msgstr "此平台不支持 syslog 日志记录"
 
 #: src/msmtp.c:4178
 #, c-format
 msgid "support for authentication method %s is not compiled in"
-msgstr ""
+msgstr "未编译支持 %s 认证方法"
 
 #: src/msmtp.c:4186
 #, c-format
 msgid "cannot initialize networking: %s"
-msgstr "வலையத்தைத் தொடங்க இயலவில்லை: %s"
+msgstr "无法初始化网络：%s"
 
 #: src/msmtp.c:4197
 #, c-format
 msgid "cannot initialize TLS library: %s"
-msgstr ""
+msgstr "无法初始化 TLS 库：%s"
 
 #: src/msmtp.c:4204
 msgid "support for TLS is not compiled in"
-msgstr ""
+msgstr "未编译支持 TLS"
 
 #: src/msmtp.c:4306
 #, c-format
 msgid "LMTP server message: %s"
-msgstr "LMTP வழங்கிச் செய்தி: %s"
+msgstr "LMTP 服务器消息：%s"
 
 #: src/msmtp.c:4317
 #, c-format
 msgid "could not send mail to all recipients (account %s from %s)"
-msgstr ""
+msgstr "无法向所有收件人发送邮件（账号 %s 来自 %s）"
 
 #: src/msmtp.c:4323
 msgid "could not send mail to all recipients"
-msgstr ""
+msgstr "无法向所有收件人发送邮件"
 
 #: src/msmtp.c:4338 src/msmtp.c:4393 src/msmtp.c:4414
 #, c-format
 msgid "server message: %s"
-msgstr "வழங்கிச் செய்தி: %s"
+msgstr "服务器消息：%s"
 
 #: src/msmtp.c:4344
 #, c-format
 msgid "could not send mail (account %s from %s)"
-msgstr "மடல் அனுப்ப இயலவில்லை (%s யிலுள்ள %s கணக்கு)"
+msgstr "无法发送邮件（账号 %s 来自 %s）"
 
 #: src/msmtp.c:4349
 msgid "could not send mail"
-msgstr "மடல் அனுப்ப இயலவில்லை"
+msgstr "无法发送邮件"
 
 #: src/msmtp.c:4359
 #, c-format
 msgid "delivery to one or more recipients failed"
-msgstr ""
+msgstr "投递到一个或多个收件人失败"
 
 #: src/mtls.c:144
 #, c-format
 msgid "TLS session parameters:\n"
-msgstr ""
+msgstr "TLS 会话参数：\n"
 
 #: src/mtls.c:146
 msgid "not available"
-msgstr ""
+msgstr "不可用"
 
 #: src/mtls.c:154
 #, c-format
 msgid "TLS certificate information:\n"
-msgstr "TLS சான்றிதழ் பற்றிய தகவல்:\n"
+msgstr "TLS 证书信息：\n"
 
 #: src/mtls.c:155
 msgid "Subject"
-msgstr ""
+msgstr "主题"
 
 #: src/mtls.c:157
 msgid "Issuer"
-msgstr "வழங்குநர்"
+msgstr "颁发者"
 
 #: src/mtls.c:159
 msgid "Validity"
-msgstr "செல்லுபடி"
+msgstr "有效性"
 
 #: src/mtls.c:161
 msgid "Activation time"
-msgstr "செல்லுபடி தொடங்கும் நேரம்"
+msgstr "激活时间"
 
 #: src/mtls.c:163
 msgid "Expiration time"
-msgstr "செல்லுபடி முடியும் நேரம்"
+msgstr "到期时间"
 
 #: src/mtls.c:164
 msgid "Fingerprints"
-msgstr "கைவரைகள்"
+msgstr "指纹"
 
 #: src/mtls-gnutls.c:121 src/mtls-openssl.c:285 src/mtls-libtls.c:105
 msgid "cannot get TLS certificate info"
-msgstr ""
+msgstr "无法获取 TLS 证书信息"
 
 #: src/mtls-gnutls.c:126 src/mtls-gnutls.c:242 src/mtls-openssl.c:288
 #, c-format
 msgid "%s: no certificate was found"
-msgstr ""
+msgstr "%s：未找到证书"
 
 #: src/mtls-gnutls.c:131 src/mtls-gnutls.c:248
 #, c-format
 msgid "%s: cannot initialize certificate structure"
-msgstr ""
+msgstr "%s：无法初始化证书结构"
 
 #: src/mtls-gnutls.c:137
 #, c-format
 msgid "%s: error parsing certificate"
-msgstr ""
+msgstr "%s：解析证书时出错"
 
 #: src/mtls-gnutls.c:146 src/mtls-gnutls.c:264 src/mtls-openssl.c:308
 #: src/mtls-openssl.c:470 src/mtls-libtls.c:113 src/mtls-libtls.c:179
 #, c-format
 msgid "%s: error getting SHA256 fingerprint"
-msgstr ""
+msgstr "%s：获取 SHA256 指纹时出错"
 
 #: src/mtls-gnutls.c:153 src/mtls-gnutls.c:282 src/mtls-openssl.c:314
 #: src/mtls-openssl.c:488
 #, c-format
 msgid "%s: error getting SHA1 fingerprint"
-msgstr ""
+msgstr "%s：获取 SHA1 指纹时出错"
 
 #: src/mtls-gnutls.c:159 src/mtls-openssl.c:322 src/mtls-libtls.c:126
 #, c-format
 msgid "%s: cannot get activation time"
-msgstr ""
+msgstr "%s：无法获取激活时间"
 
 #: src/mtls-gnutls.c:165 src/mtls-openssl.c:332 src/mtls-libtls.c:133
 #, c-format
 msgid "%s: cannot get expiration time"
-msgstr ""
+msgstr "%s：无法获取到期时间"
 
 #: src/mtls-gnutls.c:225 src/mtls-openssl.c:446 src/mtls-libtls.c:166
 msgid "TLS certificate verification failed"
-msgstr ""
+msgstr "TLS 证书验证失败"
 
 #: src/mtls-gnutls.c:255
 #, c-format
 msgid "%s: error parsing certificate %u of %u"
-msgstr ""
+msgstr "%s：解析证书 %u（共%u个）时出错"
 
 #: src/mtls-gnutls.c:271 src/mtls-gnutls.c:289 src/mtls-gnutls.c:307
 #: src/mtls-openssl.c:477 src/mtls-openssl.c:495 src/mtls-openssl.c:513
 #: src/mtls-libtls.c:191
 #, c-format
 msgid "%s: the certificate fingerprint does not match"
-msgstr ""
+msgstr "%s：证书指纹不匹配"
 
 #: src/mtls-gnutls.c:300 src/mtls-openssl.c:506
 #, c-format
 msgid "%s: error getting MD5 fingerprint"
-msgstr ""
+msgstr "%s：获取 MD5 指纹时出错"
 
 #: src/mtls-gnutls.c:388 src/mtls-libtls.c:238 src/mtls-libtls.c:374
 #, c-format
 msgid "cannot initialize TLS session: %s"
-msgstr ""
+msgstr "无法初始化 TLS 会话：%s"
 
 #: src/mtls-gnutls.c:401
 #, c-format
 msgid "error in priority string at position %d"
-msgstr ""
+msgstr "优先级字符串在位置%d出错"
 
 #: src/mtls-gnutls.c:404 src/mtls-gnutls.c:411 src/mtls-openssl.c:657
 #: src/mtls-libtls.c:257 src/mtls-libtls.c:272 src/mtls-libtls.c:287
 #: src/mtls-libtls.c:297
 #, c-format
 msgid "cannot set priorities for TLS session: %s"
-msgstr ""
+msgstr "无法设置 TLS 会话的优先级：%s"
 
 #: src/mtls-gnutls.c:424
 #, c-format
 msgid "cannot set default priority for TLS session: %s"
-msgstr ""
+msgstr "无法设置 TLS 会话的默认优先级：%s"
 
 #: src/mtls-gnutls.c:439
 #, c-format
 msgid "cannot allocate certificate for TLS session: %s"
-msgstr ""
+msgstr "无法为 TLS 会话分配证书：%s"
 
 #: src/mtls-gnutls.c:452 src/mtls-libtls.c:312
 #, c-format
 msgid ""
 "cannot set X509 key file %s and/or X509 cert file %s for TLS session: %s"
-msgstr ""
+msgstr "无法设置 X509 密钥文件 %s 和/或 X509 证书文件 %s 用于 TLS 会话：%s"
 
 #: src/mtls-gnutls.c:474 src/mtls-openssl.c:720
 #, c-format
 msgid "cannot set X509 system trust for TLS session: %s"
-msgstr ""
+msgstr "无法设置 X509 系统信任用于 TLS 会话：%s"
 
 #: src/mtls-gnutls.c:489 src/mtls-libtls.c:342
 #, c-format
 msgid "cannot set X509 trust file %s for TLS session: %s"
-msgstr ""
+msgstr "无法设置 X509 信任文件 %s 用于 TLS 会话：%s"
 
 #: src/mtls-gnutls.c:504 src/mtls-libtls.c:355
 #, c-format
 msgid "cannot set X509 CRL file %s for TLS session: %s"
-msgstr ""
+msgstr "无法设置 X509 CRL 文件 %s 用于 TLS 会话：%s"
 
 #: src/mtls-gnutls.c:533
 #, c-format
 msgid "cannot set credentials for TLS session: %s"
-msgstr ""
+msgstr "无法设置 TLS 会话的凭据：%s"
 
 #: src/mtls-gnutls.c:568 src/mtls-libtls.c:410
 #, c-format
 msgid "TLS handshake failed: %s"
-msgstr ""
+msgstr "TLS 握手失败：%s"
 
 #: src/mtls-gnutls.c:648 src/mtls-gnutls.c:695 src/mtls-openssl.c:866
 #: src/mtls-openssl.c:933 src/mtls-openssl.c:975 src/net.c:97 src/net.c:208
 #: src/net.c:255 src/net.c:767 src/net.c:894
 #, c-format
 msgid "operation aborted"
-msgstr "செய்பணி நிறுத்தப்பட்டது"
+msgstr "操作中止"
 
 #: src/mtls-gnutls.c:652 src/mtls-libtls.c:497
 #, c-format
 msgid "cannot read from TLS connection: %s"
-msgstr "TLS இணைப்பிலிருந்து படிக்க இயலவில்லை: %s"
+msgstr "无法从 TLS 连接读取：%s"
 
 #: src/mtls-gnutls.c:699 src/mtls-gnutls.c:710 src/mtls-libtls.c:529
 #, c-format
 msgid "cannot write to TLS connection: %s"
-msgstr "TLS இணைப்பிற்கு எழுத இயலவில்லை: %s"
+msgstr "无法向 TLS 连接写入：%s"
 
 #: src/mtls-gnutls.c:711 src/mtls-openssl.c:809 src/mtls-openssl.c:833
 #: src/net.c:178 src/net.c:648
 msgid "unknown error"
-msgstr "அறியப்படாப் பிழை"
+msgstr "未知错误"
 
 #: src/mtls-openssl.c:92
 #, c-format
 msgid ""
 "no environment variables RANDFILE or HOME, or filename of rand file too long"
-msgstr ""
+msgstr "没有环境变量 RANDFILE 或 HOME，或随机文件名过长"
 
 #: src/mtls-openssl.c:98
 #, c-format
 msgid "%s: input error"
-msgstr "%s: உள்ளீட்டுப் பிழை"
+msgstr "%s：输入错误"
 
 #: src/mtls-openssl.c:120
 #, c-format
 msgid "random file + time + pseudo randomness is not enough, giving up"
-msgstr ""
+msgstr "随机文件 + 时间 + 伪随机不足，放弃"
 
 #: src/mtls-openssl.c:293 src/mtls-openssl.c:579
 #, c-format
 msgid "%s: cannot get certificate subject"
-msgstr ""
+msgstr "%s：无法获取证书主题"
 
 #: src/mtls-openssl.c:299
 #, c-format
 msgid "%s: cannot get certificate issuer"
-msgstr ""
+msgstr "%s：无法获取证书颁发者"
 
 #: src/mtls-openssl.c:450
 msgid "TLS certificate check failed"
-msgstr ""
+msgstr "TLS 证书检查失败"
 
 #: src/mtls-openssl.c:456
 #, c-format
 msgid "%s: no certificate was sent"
-msgstr ""
+msgstr "%s：未发送证书"
 
 #: src/mtls-openssl.c:559
 #, c-format
 msgid "%s: certificate subject alternative name contains NUL"
-msgstr ""
+msgstr "%s：证书主题备用名称包含 NUL"
 
 #: src/mtls-openssl.c:591
 #, c-format
 msgid "%s: cannot get certificate common name"
-msgstr ""
+msgstr "%s：无法获取证书通用名"
 
 #: src/mtls-openssl.c:600
 #, c-format
 msgid "%s: certificate common name contains NUL"
-msgstr ""
+msgstr "%s：证书通用名包含 NUL"
 
 #: src/mtls-openssl.c:617
 #, c-format
 msgid "%s: the certificate owner does not match hostname %s"
-msgstr ""
+msgstr "%s：证书所有者与主机名 %s 不匹配"
 
 #: src/mtls-openssl.c:649 src/mtls-libtls.c:231
 #, c-format
 msgid "cannot set minimum number of DH prime bits for TLS: %s"
-msgstr ""
+msgstr "无法设置 TLS 的最小 DH 素数位数：%s"
 
 #: src/mtls-openssl.c:650 src/mtls-openssl.c:658 src/mtls-openssl.c:666
 msgid "feature not yet implemented for OpenSSL"
-msgstr ""
+msgstr "尚未实现 OpenSSL 的功能"
 
 #: src/mtls-openssl.c:665
 #, c-format
 msgid "cannot load CRL file: %s"
-msgstr ""
+msgstr "无法加载 CRL 文件：%s"
 
 #: src/mtls-openssl.c:672
 #, c-format
 msgid "cannot set TLS method"
-msgstr ""
+msgstr "无法设置 TLS 方法"
 
 #: src/mtls-openssl.c:680
 #, c-format
 msgid "cannot create TLS context: %s"
-msgstr ""
+msgstr "无法创建 TLS 上下文：%s"
 
 #: src/mtls-openssl.c:693
 #, c-format
 msgid "cannot load key file %s: %s"
-msgstr ""
+msgstr "无法加载密钥文件 %s：%s"
 
 #: src/mtls-openssl.c:702
 #, c-format
 msgid "cannot load certificate file %s: %s"
-msgstr ""
+msgstr "无法加载证书文件 %s：%s"
 
 #: src/mtls-openssl.c:732
 #, c-format
 msgid "cannot load trust file %s: %s"
-msgstr ""
+msgstr "无法加载信任文件 %s：%s"
 
 #: src/mtls-openssl.c:759 src/mtls-libtls.c:365
 #, c-format
 msgid "cannot create a TLS structure: %s"
-msgstr ""
+msgstr "无法创建 TLS 结构：%s"
 
 #: src/mtls-openssl.c:801
 msgid "a protocol violating EOF occurred"
-msgstr ""
+msgstr "发生了违反协议的 EOF"
 
 #: src/mtls-openssl.c:819
 msgid "the connection was closed unexpectedly"
-msgstr ""
+msgstr "连接意外关闭"
 
 #: src/mtls-openssl.c:828 src/net.c:198 src/net.c:213 src/net.c:245
 #: src/net.c:260
 msgid "the operation timed out"
-msgstr ""
+msgstr "操作超时"
 
 #: src/mtls-openssl.c:853 src/mtls-libtls.c:402
 #, c-format
 msgid "cannot set the file descriptor for TLS: %s"
-msgstr ""
+msgstr "无法为 TLS 设置文件描述符：%s"
 
 #: src/mtls-openssl.c:872
 msgid "TLS handshake failed"
-msgstr "TLS கைகுலுக்கல் தோல்வியுற்றது"
+msgstr "TLS 握手失败"
 
 #: src/mtls-openssl.c:938
 msgid "cannot read from TLS connection"
-msgstr "TLS இணைப்பிலிருந்து படிக்க இயலவில்லை"
+msgstr "无法从 TLS 连接读取"
 
 #: src/mtls-openssl.c:981
 msgid "cannot write to TLS connection"
-msgstr "TLS இணைப்பிற்கு எழுத இயலவில்லை"
+msgstr "无法写入 TLS 连接"
 
 #: src/mtls-libtls.c:59
-#, fuzzy, c-format
-#| msgid "cannot initialize networking: %s"
+#, c-format
 msgid "cannot initialize libtls"
-msgstr "வலையத்தைத் தொடங்க இயலவில்லை: %s"
+msgstr "无法初始化 libtls"
 
 #: src/mtls-libtls.c:223
 #, c-format
 msgid "cannot use deprecated fingerprints, please update to SHA256"
-msgstr ""
+msgstr "不能使用已弃用的指纹，请更新为 SHA256"
 
 #: src/mtls-libtls.c:232
 msgid "feature not yet implemented for libtls"
-msgstr ""
+msgstr "libtls 尚未实现此功能"
 
 #: src/mtls-libtls.c:288
-#, fuzzy
-#| msgid "could not send mail"
 msgid "could not parse protocols"
-msgstr "மடல் அனுப்ப இயலவில்லை"
+msgstr "无法解析协议"
 
 #: src/net.c:94
 msgid "not enough memory"
-msgstr ""
+msgstr "内存不足"
 
 #: src/net.c:100 src/net.c:684
 msgid "invalid argument"
-msgstr "ஏற்கத்தகாச் செயலுருபு"
+msgstr "无效参数"
 
 #: src/net.c:103
 msgid "class type not found"
-msgstr ""
+msgstr "未找到类类型"
 
 #: src/net.c:106
 msgid "the network subsystem has failed"
-msgstr ""
+msgstr "网络子系统失败"
 
 #: src/net.c:109
 msgid "host not found (authoritative)"
-msgstr ""
+msgstr "主机未找到（权威）"
 
 #: src/net.c:112
 msgid "host not found (nonauthoritative) or server failure"
-msgstr ""
+msgstr "主机未找到（非权威）或服务器失败"
 
 #: src/net.c:115
 msgid "nonrecoverable error"
-msgstr ""
+msgstr "不可恢复的错误"
 
 #: src/net.c:118
 msgid "valid name, but no data record of requested type"
-msgstr ""
+msgstr "有效名称，但无请求类型的数据记录"
 
 #: src/net.c:121
 msgid "address family not supported"
-msgstr ""
+msgstr "地址族不支持"
 
 #: src/net.c:124
 msgid "no socket descriptors available"
-msgstr ""
+msgstr "无可用的套接字描述符"
 
 #: src/net.c:127
 msgid "no buffer space available"
-msgstr ""
+msgstr "无可用缓冲区空间"
 
 #: src/net.c:130
 msgid "protocol not supported"
-msgstr ""
+msgstr "协议不支持"
 
 #: src/net.c:133
 msgid "wrong protocol type for this socket"
-msgstr ""
+msgstr "此套接字的协议类型错误"
 
 #: src/net.c:136
 msgid "socket type is not supported in this address family"
-msgstr ""
+msgstr "此地址族不支持套接字类型"
 
 #: src/net.c:139
 msgid "remote address is not valid"
-msgstr ""
+msgstr "远程地址无效"
 
 #: src/net.c:142 src/net.c:636
 msgid "connection refused"
-msgstr ""
+msgstr "连接被拒绝"
 
 #: src/net.c:145 src/net.c:630
 msgid "network unreachable"
-msgstr ""
+msgstr "网络不可达"
 
 #: src/net.c:148
 msgid "timeout"
-msgstr "காலாவதி ஆனது"
+msgstr "超时"
 
 #: src/net.c:151
 msgid "socket not connected"
-msgstr ""
+msgstr "套接字未连接"
 
 #: src/net.c:154
 msgid "the socket was shut down"
-msgstr ""
+msgstr "套接字已关闭"
 
 #: src/net.c:157 src/net.c:633
 msgid "host unreachable"
-msgstr ""
+msgstr "主机不可达"
 
 #: src/net.c:160
 msgid "connection reset by peer"
-msgstr ""
+msgstr "连接被对方重置"
 
 #: src/net.c:163
 msgid "the underlying network subsystem is not ready"
-msgstr ""
+msgstr "底层网络子系统未准备好"
 
 #: src/net.c:166
 msgid "the requested version is not available"
-msgstr ""
+msgstr "请求的版本不可用"
 
 #: src/net.c:169
 msgid "a blocking operation is in progress"
-msgstr ""
+msgstr "阻塞操作正在进行中"
 
 #: src/net.c:172
 msgid "limit on the number of tasks has been reached"
-msgstr ""
+msgstr "任务数量已达上限"
 
 #: src/net.c:175
 msgid "invalid request"
-msgstr "ஏற்கத்தகா வேண்டுகோள்"
+msgstr "无效请求"
 
 #: src/net.c:197 src/net.c:202 src/net.c:212 src/net.c:217
 #, c-format
 msgid "network read error: %s"
-msgstr ""
+msgstr "网络读取错误：%s"
 
 #: src/net.c:244 src/net.c:249 src/net.c:259 src/net.c:264
 #, c-format
 msgid "network write error: %s"
-msgstr ""
+msgstr "网络写入错误：%s"
 
 #: src/net.c:528 src/net.c:558 src/net.c:593 src/net.c:624 src/net.c:627
 #: src/net.c:630 src/net.c:633 src/net.c:636 src/net.c:639 src/net.c:642
 #: src/net.c:645 src/net.c:648
 #, c-format
 msgid "proxy failure: %s"
-msgstr ""
+msgstr "代理失败：%s"
 
 #: src/net.c:528
 msgid "host name too long"
-msgstr ""
+msgstr "主机名过长"
 
 #: src/net.c:542 src/net.c:576 src/net.c:1007
 #, c-format
 msgid "network write error"
-msgstr ""
+msgstr "网络写入错误"
 
 #: src/net.c:552 src/net.c:586 src/net.c:615
 #, c-format
 msgid "network read error"
-msgstr ""
+msgstr "网络读取错误"
 
 #: src/net.c:558 src/net.c:593
 msgid "unexpected reply"
-msgstr ""
+msgstr "意外回复"
 
 #: src/net.c:624
 msgid "general server failure"
-msgstr ""
+msgstr "服务器一般性失败"
 
 #: src/net.c:627
 msgid "connection not allowed"
-msgstr ""
+msgstr "连接不被允许"
 
 #: src/net.c:639
 msgid "time-to-live expired"
-msgstr ""
+msgstr "存活时间（TTL）已过期"
 
 #: src/net.c:642
 msgid "command not supported"
-msgstr ""
+msgstr "命令不支持"
 
 #: src/net.c:645
 msgid "address type not supported"
-msgstr ""
+msgstr "地址类型不支持"
 
 #: src/net.c:676 src/net.c:683 src/net.c:698
 #, c-format
 msgid "cannot connect to %s: %s"
-msgstr "%s யை அணுக இயலவில்லை: %s"
+msgstr "无法连接到 %s：%s"
 
 #: src/net.c:689 src/net.c:862
 #, c-format
 msgid "cannot create socket: %s"
-msgstr ""
+msgstr "无法创建套接字：%s"
 
 #: src/net.c:762 src/net.c:771
 #, c-format
 msgid "cannot locate host %s: %s"
-msgstr ""
+msgstr "无法定位主机 %s：%s"
 
 #: src/net.c:873
 #, c-format
 msgid "cannot bind source ip %s: %s"
-msgstr ""
+msgstr "无法绑定源 IP %s：%s"
 
 #: src/net.c:889 src/net.c:902
 #, c-format
 msgid "cannot connect to %s, port %d: %s"
-msgstr ""
+msgstr "无法连接到 %s，端口 %d：%s"
 
 #: src/password.c:214
 #, c-format
 msgid "password for %s at %s: "
-msgstr "%2$s யில் %1$s யின் கடவுச்சொல்: "
+msgstr "%s 在 %s 的密码："
 
 #: src/smtp.c:213
 #, c-format
 msgid "the server sent an empty reply"
-msgstr "வழங்கி வெற்று மறுமொழி அளித்தது"
+msgstr "服务器发送了空回复"
 
 #: src/smtp.c:217
 #, c-format
 msgid "the server sent an invalid reply"
-msgstr "வழங்கி ஏற்கத்தகா மறுமொழி அளித்தது"
+msgstr "服务器发送了无效回复"
 
 #: src/smtp.c:236
 #, c-format
 msgid ""
 "Rejecting server reply that is longer than %d lines. Increase SMTP_MAXLINES."
-msgstr ""
+msgstr "拒绝超过 %d 行的服务器回复。请增加 SMTP_MAXLINES。"
 
 #: src/smtp.c:323
 #, c-format
 msgid ""
 "Cannot send command because it is longer than %d characters. Increase "
 "SMTP_MAXCMDLEN."
-msgstr ""
-"கட்டளை %d வரியுருக்களுக்கு மேல் இருப்பதால் அதை அனுப்ப இயலாது.\n"
-"SMTP_MAXCMDLEN யை உயர்த்தவும்."
+msgstr "无法发送命令，因为其长度超过 %d 字符。请增加 SMTP_MAXCMDLEN。"
 
 #: src/smtp.c:355
 #, c-format
 msgid "cannot get initial OK message from server"
-msgstr "வழங்கியிடமிருந்து முதல் OK செய்தியைப் பெற இயலவில்லை"
+msgstr "无法从服务器获取初始 OK 消息"
 
 #: src/smtp.c:417
 #, c-format
 msgid "SMTP server does not accept EHLO or HELO commands"
-msgstr ""
+msgstr "SMTP 服务器不接受 EHLO 或 HELO 命令"
 
 #: src/smtp.c:440 src/smtp.c:585 src/smtp.c:590 src/smtp.c:663 src/smtp.c:711
 #: src/smtp.c:801 src/smtp.c:892 src/smtp.c:1028 src/smtp.c:2180
 #, c-format
 msgid "command %s failed"
-msgstr "%s கட்டளை தோல்வியுற்றது"
+msgstr "命令 %s 失败"
 
 #: src/smtp.c:668 src/smtp.c:732 src/smtp.c:753 src/smtp.c:850 src/smtp.c:913
 #: src/smtp.c:987 src/smtp.c:1070 src/smtp.c:1456 src/smtp.c:1501
 #: src/smtp.c:1538
 #, c-format
 msgid "authentication failed (method %s)"
-msgstr ""
+msgstr "认证失败（方法 %s）"
 
 #: src/smtp.c:812
 #, c-format
 msgid "authentication method CRAM-MD5: server sent invalid challenge"
-msgstr ""
+msgstr "认证方法 CRAM-MD5：服务器发送了无效的挑战"
 
 #: src/smtp.c:1192 src/smtp.c:1559
 #, c-format
 msgid "the server does not support authentication method %s"
-msgstr ""
+msgstr "服务器不支持认证方法 %s"
 
 #: src/smtp.c:1198 src/smtp.c:1358 src/smtp.c:1410
 #, c-format
 msgid "GNU SASL: %s"
-msgstr ""
+msgstr "GNU SASL：%s"
 
 #: src/smtp.c:1205
 #, c-format
 msgid "GNU SASL: authentication method %s not supported"
-msgstr ""
+msgstr "GNU SASL：不支持认证方法 %s"
 
 #: src/smtp.c:1286 src/smtp.c:1590
 #, c-format
 msgid "cannot use a secure authentication method"
-msgstr ""
+msgstr "无法使用安全的认证方法"
 
 #: src/smtp.c:1292 src/smtp.c:1596
 #, c-format
 msgid "cannot find a usable authentication method"
-msgstr ""
+msgstr "找不到可用的认证方法"
 
 #: src/smtp.c:1305 src/smtp.c:1608
 #, c-format
 msgid "authentication method %s needs a user name"
-msgstr ""
+msgstr "认证方法 %s 需要用户名"
 
 #: src/smtp.c:1318 src/smtp.c:1618
 #, c-format
 msgid "authentication method %s needs a password"
-msgstr ""
+msgstr "认证方法 %s 需要密码"
 
 #: src/smtp.c:1333
 #, c-format
 msgid "authentication method %s needs TLS channel binding information"
-msgstr ""
+msgstr "认证方法 %s 需要 TLS 通道绑定信息"
 
 #: src/smtp.c:1517
 #, c-format
 msgid "authentication failed: %s (method %s)"
-msgstr ""
+msgstr "认证失败：%s（方法 %s）"
 
 #: src/smtp.c:1653
 #, c-format
 msgid "authentication method %s not supported"
-msgstr ""
+msgstr "不支持 %s 认证方法"
 
 #: src/smtp.c:1760
 #, c-format
 msgid "envelope from address %s not accepted by the server"
-msgstr ""
+msgstr "发件人地址 %s 未被服务器接受"
 
 #: src/smtp.c:1779
 #, c-format
 msgid "recipient address %s not accepted by the server"
-msgstr ""
+msgstr "收件人地址 %s 未被服务器接受"
 
 #: src/smtp.c:1798
 #, c-format
 msgid "the server does not accept mail data"
-msgstr ""
+msgstr "服务器不接受邮件数据"
 
 #: src/smtp.c:2038
 #, c-format
 msgid "the server did not accept the mail"
-msgstr ""
+msgstr "服务器未接受邮件"
 
 #: src/smtp.c:2102
 #, c-format
 msgid "the server refuses to send the mail to %s"
-msgstr "வழங்கி மடலை %s க்கு அனுப்ப மறுக்கிறது"
+msgstr "服务器拒绝向 %s 发送邮件"
 
 #: src/smtp.c:2166
 #, c-format
 msgid "the server is unable to fulfill the request"
-msgstr ""
+msgstr "服务器无法完成请求"
 
 #: src/smtp.c:2174
 #, c-format
 msgid "invalid argument for Remote Message Queue Starting"
-msgstr ""
+msgstr "远程消息队列启动的参数无效"
 
 #, c-format
-#~ msgid "cannot evaluate '%s': %s"
-#~ msgstr "'%s' யைக் கணிக்க முடியவில்லை: %s"
-
-#, c-format
-#~ msgid "cannot read output of '%s'"
-#~ msgstr "'%s' வின் வெளியீட்டைப் படிக்க முடியவில்லை"
-
-#, c-format
-#~ msgid "output of '%s' is longer than %d characters"
-#~ msgstr "'%s' யின் வெளியீட்டில் %d வரியுருகளுக்கு அதிகமாக உள்ளன"
-
-#~ msgid "Common Name"
-#~ msgstr "பொதுப் பெயர்"
-
-#~ msgid "Organization"
-#~ msgstr "அமைப்பு"
-
-#~ msgid "Organizational unit"
-#~ msgstr "அமைப்புப் பிரிவு"
-
-#~ msgid "Locality"
-#~ msgstr "வட்டாரம்"
-
-#~ msgid "State or Province"
-#~ msgstr "மாநிலம்"
-
-#~ msgid "Country"
-#~ msgstr "நாடு"
-
-#~ msgid "Owner"
-#~ msgstr "உரிமையாளர்"
-
-#~ msgid "minimum time between logins is %ld seconds"
-#~ msgstr "புகுபதிகைகளுக்கிடையே குறைந்தபட்சம் %ld நொடிகள் இருக்கவேண்டும்"
-
-#~ msgid " = %.2f hours"
-#~ msgstr " = %.2f மணி நேரம்"
-
-#~ msgid " = %.2f minutes"
-#~ msgstr " = %.2f நிமிடங்கள்"
-
-#~ msgid "this POP3 server will never delete mails"
-#~ msgstr "இந்த POP3 வழங்கி ஒருபோதும் மடல்களை அழிக்காது"
-
-#~ msgid "this POP3 server will keep mails for %ld days"
-#~ msgstr "இந்த POP3 வழங்கி மடல்களை %ld நாட்களுக்குத் தக்கவைக்கும்"
-
-#~ msgid "Server error messages in square brackets have a special meaning"
-#~ msgstr "பகர அடைப்பிற்குள்ளிருக்கும் வழங்கி பிழைச்செய்திகள் சிறப்புப் பொருள் உடையவை."
-
-#~ msgid "%.2f GiB"
-#~ msgstr "%.2f GiB"
-
-#~ msgid "1 byte"
-#~ msgstr "1 எண்ணுண்மி"
-
-#~ msgid "skipping message %ld of %ld (reason: filter + keep)\n"
-#~ msgstr "%ld/%ld மடல் கையாளப்படவில்லை (காரணம்: filter + keep)\n"
-
-#~ msgid "deleting message %ld of %ld (reason: filter)\n"
-#~ msgstr "%ld/%ld மடல் அழிக்கப்படுகிறது (காரணம்: filter)\n"
-
-#~ msgid "skipping message %ld of %ld (reason: filter)\n"
-#~ msgstr "%ld/%ld மடல் கையாளப்படவில்லை (காரணம்: filter)\n"
-
-#~ msgid "retrieving message %ld of %ld (%s): "
-#~ msgstr "%ld/%ld (%s) மடல் பதிவிறக்கப்படுகிறது: "
-
-#~ msgid "retrieving message %ld of %ld: "
-#~ msgstr "%ld/%ld மடல் பதிவிறக்கப்படுகிறது: "
-
-#~ msgid "%s at %s:\n"
-#~ msgstr "%2$s யில் %1$s:\n"
-
-#~ msgid "new: "
-#~ msgstr "புதியன: "
-
-#~ msgid "no messages"
-#~ msgstr "மடல்கள் இல்லை"
-
-#~ msgid "1 message"
-#~ msgstr "1 மடல்"
-
-#~ msgid "%ld messages"
-#~ msgstr "%ld மடல்கள்"
-
-#~ msgid " in %s"
-#~ msgstr " %s"
-
-#~ msgid "total: "
-#~ msgstr "மொத்தம்: "
-
-#~ msgid "skipping message %ld of %ld (reason: killsize + keep)\n"
-#~ msgstr "%ld/%ld மடல் கையாளப்படவில்லை (காரணம்: killsize + keep)\n"
-
-#~ msgid "deleting message %ld of %ld (reason: killsize)\n"
-#~ msgstr "%ld/%ld மடல் அழிக்கப்படுகிறது (காரணம்: killsize)\n"
-
-#~ msgid "skipping message %ld of %ld (reason: skipsize)\n"
-#~ msgstr "%ld/%ld மடல் கையாளப்படவில்லை (காரணம்: skipsize)\n"
-
-#~ msgid "%s: no accounts defined"
-#~ msgstr "%s: கணக்குகள் எவையும் வரையறுக்கப்படவில்லை"
-
-#~ msgid "%s: no account %s"
-#~ msgstr "%s: %s எனக் கணக்கில்லை"
-
-#~ msgid "  -n, --only-new[=(on|off)]    process only new messages\n"
-#~ msgstr "  -n, --only-new[=(on|off)]   புதிய மடல்களை மட்டும் கையாள்\n"
-
-#~ msgid "error during mail retrieval"
-#~ msgstr "மடலைப் பதிவிறக்கும்பொழுது பிழை"
-
-#~ msgid "line %d: first command must be account or defaults"
-#~ msgstr "வரி %d: முதல் கட்டளை account அல்லது defaults ஆகயிருக்கவேண்டும்"
-
-#~ msgid "invalid reply to command %s"
-#~ msgstr "%s கட்டளைக்கு ஏற்கத்தகா மறுமொழி"
-
-#~ msgid "command TOP %ld 0 failed"
-#~ msgstr "TOP %ld 0 கட்டளை தோல்வியுற்றது"
-
-#~ msgid "command RETR %ld failed"
-#~ msgstr "RETR கட்டளை %ld தோல்வியுற்றது"
-
-#~ msgid "command DELE %ld failed"
-#~ msgstr "DELE %ld கட்டளை தோல்வியுற்றது"
+#~ msgid ""
+#~ "  --undisclosed-recipients[=(on|off)] enable/disable replacement of To/Cc/"
+#~ "Bcc\n"
+#~ "                               with To: undisclosed-recipients:;\n"
+#~ msgstr ""
+#~ "  --undisclosed-recipients[=(on|off)] 启用/禁用将 To/Cc/Bcc 替换\n"
+#~ "                               为 To: undisclosed-recipients:;\n"

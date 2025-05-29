@@ -12,3 +12,5 @@ dist-hook:
 mydist:
 	umask 022; \
 	TAR_OPTIONS='--owner=0 --group=0 --numeric-owner --mode=u+rw,go+r-w' $(MAKE) dist-xz
+
+ACLOCAL_AMFLAGS = -I m4

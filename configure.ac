@@ -43,8 +43,8 @@ AC_DEFINE_UNQUOTED([PLATFORM], ["${target}"], [Platform triplet])
 case "${target}" in *-*-mingw*) LIBS="$LIBS -lws2_32"; build_msmtpd_default="no" ;; esac
 
 dnl Gettext
-AM_GNU_GETTEXT_REQUIRE_VERSION([0.21])
 AM_GNU_GETTEXT([external])
+AM_GNU_GETTEXT_REQUIRE_VERSION([0.21])
 
 dnl Headers, functions, and types
 AC_CHECK_HEADERS([fnmatch.h sysexits.h netdb.h arpa/inet.h sys/select.h sys/socket.h sys/wait.h netinet/in.h langinfo.h])

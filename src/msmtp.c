@@ -3929,7 +3929,7 @@ int main(int argc, char *argv[])
         have_from_header = (envelope_from ? 1 : 0);
         if (conf.read_envelope_from)
         {
-            conf.cmdline_account->from = envelope_from;
+            conf.cmdline_account->from = xstrdup(envelope_from);
             if (conf.pretend || conf.debug)
             {
                 printf(_("envelope from address extracted from mail: %s\n"),

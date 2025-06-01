@@ -1,3 +1,6 @@
+Version 1.8.30:
+- No significant changes.
+
 Version 1.8.29:
 - Added a new configuration command 'set_to_header' with the default setting
   'off'. If activated, this replaces To, Cc, Bcc with a new To header.

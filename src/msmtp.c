@@ -68,7 +68,7 @@ extern int optind;
 #endif /* HAVE_TLS */
 
 /* Default file names. */
-#ifdef W32_NATIVE
+#ifdef _MSC_VER
 #define SYSCONFFILE     "msmtprc.txt"
 #define USERCONFFILE    "msmtprc.txt"
 #else /* UNIX */
@@ -2247,7 +2247,15 @@ void msmtp_print_version(void)
     printf(_("NLS: "));
 #ifdef ENABLE_NLS
     printf(_("enabled"));
+#ifdef W32_NATIVE
+    char *localedir = get_filename(get_parentdir(), "share\\locale");
+    if (localedir)
+        printf(_(", LOCALEDIR is %s"), localedir);
+    else
+        printf(_(", LOCALEDIR is %s"), "");
+#else
     printf(_(", LOCALEDIR is %s"), LOCALEDIR);
+#endif
 #else
     printf(_("disabled"));
 #endif
@@ -3857,7 +3865,15 @@ int main(int argc, char *argv[])
     /* internationalization with gettext */
 #ifdef ENABLE_NLS
     setlocale(LC_ALL, "");
+#ifdef W32_NATIVE
+    char *localedir = get_filename(get_parentdir(), "share\\locale");
+    if (localedir)
+        bindtextdomain(PACKAGE, localedir);
+    else
+        bindtextdomain(PACKAGE, NULL);
+#else
     bindtextdomain(PACKAGE, LOCALEDIR);
+#endif
     textdomain(PACKAGE);
 #endif
 

@@ -56,6 +56,10 @@
 # include <langinfo.h>
 #endif
 
+#ifdef __MINGW32__
+# include <libgen.h>
+#endif
+
 #include "xalloc.h"
 #include "base64.h"
 #include "tools.h"
@@ -314,6 +318,29 @@ const char *get_prgname(const char *argv0)
 
 
 /*
+ * get_parentdir()
+ *
+ * see tools.h
+ */
+
+char *get_parentdir(void)
+{
+    char path[MAX_PATH];
+    GetModuleFileNameA(NULL, path, MAX_PATH - 1);
+
+    char *path1 = strdup(path);
+    char *progdir = dirname(path1);
+
+    char *path2 = strdup(progdir);
+    char *parentdir = dirname(path2);
+
+    return parentdir;
+    free(path1);
+    free(path2);
+}
+
+
+/*
  * get_sysconfdir()
  *
  * see tools.h
@@ -321,7 +348,7 @@ const char *get_prgname(const char *argv0)
 
 char *get_sysconfdir(void)
 {
-#ifdef W32_NATIVE
+#if defined(_MSC_VER)
 
     BYTE sysconfdir[MAX_PATH + 1];
     HKEY hkey;
@@ -347,6 +374,13 @@ char *get_sysconfdir(void)
     }
     RegCloseKey(hkey);
     return xstrdup((char *)sysconfdir);
+
+#elif defined(__MINGW32__)
+
+    char *sysconfdir = get_filename(get_parentdir(), "etc");
+    if (sysconfdir)
+        return xstrdup(sysconfdir);
+    return xstrdup("");
 
 #else /* UNIX */
 

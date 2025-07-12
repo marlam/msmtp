@@ -3945,18 +3945,20 @@ int main(int argc, char *argv[])
         have_from_header = (envelope_from ? 1 : 0);
         if (conf.read_envelope_from)
         {
-			// Check if it's NULL to avoid segfault from xstrdup
-			if(envelope_from == NULL) {
-				print_error(_("no envelope-from found"));
-				error_code = EX_USAGE;
-				goto exit;
-			}
-
-            conf.cmdline_account->from = xstrdup(envelope_from);
-            if (conf.pretend || conf.debug)
+            if (have_from_header)
             {
-                printf(_("envelope from address extracted from mail: %s\n"),
-                        conf.cmdline_account->from);
+                conf.cmdline_account->from = xstrdup(envelope_from);
+                if (conf.pretend || conf.debug)
+                {
+                    printf(_("envelope from address extracted from mail: %s\n"),
+                            conf.cmdline_account->from);
+                }
+            }
+            else
+            {
+                print_error(_("no envelope from address found"));
+                error_code = EX_USAGE;
+                goto exit;
             }
         }
         if (fseeko(header_tmpfile, 0, SEEK_SET) != 0)

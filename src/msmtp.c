@@ -2247,15 +2247,7 @@ void msmtp_print_version(void)
     printf(_("NLS: "));
 #ifdef ENABLE_NLS
     printf(_("enabled"));
-#ifdef W32_NATIVE
-    char *localedir = get_filename(get_parentdir(), "share\\locale");
-    if (localedir)
-        printf(_(", LOCALEDIR is %s"), localedir);
-    else
-        printf(_(", LOCALEDIR is %s"), "");
-#else
-    printf(_(", LOCALEDIR is %s"), LOCALEDIR);
-#endif
+    printf(_(", LOCALEDIR is %s"), get_localedir());
 #else
     printf(_("disabled"));
 #endif
@@ -3865,15 +3857,7 @@ int main(int argc, char *argv[])
     /* internationalization with gettext */
 #ifdef ENABLE_NLS
     setlocale(LC_ALL, "");
-#ifdef W32_NATIVE
-    char *localedir = get_filename(get_parentdir(), "share\\locale");
-    if (localedir)
-        bindtextdomain(PACKAGE, localedir);
-    else
-        bindtextdomain(PACKAGE, NULL);
-#else
-    bindtextdomain(PACKAGE, LOCALEDIR);
-#endif
+    bindtextdomain(PACKAGE, get_localedir());
     textdomain(PACKAGE);
 #endif
 

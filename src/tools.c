@@ -4,7 +4,7 @@
  * This file is part of msmtp, an SMTP client, and of mpop, a POP3 client.
  *
  * Copyright (C) 2004, 2005, 2006, 2007, 2009, 2011, 2014, 2018, 2019, 2020,
- * 2021, 2022, 2023
+ * 2021, 2022, 2023, 2024, 2025
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -317,10 +317,12 @@ const char *get_prgname(const char *argv0)
 }
 
 
+#ifdef __MINGW32__
 /*
  * get_parentdir()
  *
- * see tools.h
+ * Get the parent installation directory.
+ * The returned string is allocated.
  */
 
 char *get_parentdir(void)
@@ -334,10 +336,10 @@ char *get_parentdir(void)
     char *path2 = strdup(progdir);
     char *parentdir = dirname(path2);
 
-    return parentdir;
     free(path1);
-    free(path2);
+    return parentdir;
 }
+#endif
 
 
 /*
@@ -377,10 +379,10 @@ char *get_sysconfdir(void)
 
 #elif defined(__MINGW32__)
 
-    char *sysconfdir = get_filename(get_parentdir(), "etc");
-    if (sysconfdir)
-        return xstrdup(sysconfdir);
-    return xstrdup("");
+    char *parentdir = get_parentdir();
+    char *sysconfdir = get_filename(parentdir, "etc");
+    free(parentdir);
+    return sysconfdir;
 
 #else /* UNIX */
 
@@ -392,6 +394,35 @@ char *get_sysconfdir(void)
 
 #endif
 }
+
+
+#ifdef ENABLE_NLS
+/*
+ * get_localedir()
+ *
+ * see tools.h
+ */
+
+const char *get_localedir(void)
+{
+#ifdef __MINGW32__
+    static char buf[MAX_PATH];
+    static int initialized = 0;
+    if (!initialized)
+    {
+        char *parentdir = get_parentdir;
+        char *localedir = get_filename(parentdir, "share\\locale");
+        strncpy(buf, localedir, MAX_PATH);
+        free(parentdir);
+        free(localedir);
+        initialized = 1;
+    }
+    return buf;
+#else
+    return LOCALEDIR;
+#endif
+}
+#endif
 
 
 /*

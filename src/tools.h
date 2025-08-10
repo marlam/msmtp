@@ -105,6 +105,13 @@ char *getpass(const char *prompt);
 const char *get_prgname(const char *argv0);
 
 /*
+ * get_parentdir()
+ *
+ * Get the parent installation directory
+ */
+char *get_parentdir(void);
+
+/*
  * get_sysconfdir()
  *
  * Get the system configuration directory (or something similar, depending

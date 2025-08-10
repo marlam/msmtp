@@ -40,7 +40,7 @@ AC_LANG([C])
 dnl System
 build_msmtpd_default="yes"
 AC_DEFINE_UNQUOTED([PLATFORM], ["${target}"], [Platform triplet])
-case "${target}" in *-*-mingw*) LIBS="$LIBS -lws2_32"; build_msmtpd_default="no" ;; esac
+case "${target}" in *-*-mingw*) LIBS="$LIBS -lpthread -lws2_32"; build_msmtpd_default="no" ;; esac
 
 dnl Gettext
 AM_GNU_GETTEXT([external])

@@ -43,7 +43,7 @@
 #include "xalloc.h"
 #include "password.h"
 
-#ifdef W32_NATIVE
+#ifdef _MSC_VER
 #define SYSNETRCFILE    "netrc.txt"
 #define USERNETRCFILE   "netrc.txt"
 #else /* UNIX */

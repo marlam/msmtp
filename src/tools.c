@@ -410,7 +410,7 @@ const char *get_localedir(void)
     static int initialized = 0;
     if (!initialized)
     {
-        char *parentdir = get_parentdir;
+        char *parentdir = get_parentdir();
         char *localedir = get_filename(parentdir, "share\\locale");
         strncpy(buf, localedir, MAX_PATH);
         free(parentdir);

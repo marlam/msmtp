@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2018, 2019, 2020, 2021, 2022
+ * Copyright (C) 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -47,6 +47,7 @@ extern int optind;
 #include "base64.h"
 #include "password.h"
 #include "eval.h"
+#include "stream.h"
 #include "tools.h"
 #include "xalloc.h"
 
@@ -142,9 +143,12 @@ log_msg(log_t* log,
 /* Read SMTP command from client */
 int read_smtp_cmd(FILE* in, char* buf, int bufsize)
 {
-    if (!fgets(buf, bufsize, in))
+    char *errstr = NULL;
+    size_t len = 0;
+    if (stream_gets(in, buf, bufsize, &len, &errstr) != STREAM_EOK) {
+        free(errstr);
         return 1;
-    size_t len = strlen(buf);
+    }
     if (buf[len - 1] != '\n')
         return 1;
     buf[len - 1] = '\0';
@@ -212,10 +216,12 @@ int smtp_pipe(FILE* in, FILE* pipe, char* buf, size_t bufsize)
 
     line_continues = 0;
     for (;;) {
+        char *errstr = NULL;
         line_starts = !line_continues;
-        if (!fgets(buf, bufsize, in))
+        if (stream_gets(in, buf, bufsize, &len, &errstr) != STREAM_EOK) {
+            free(errstr);
             return 1;
-        len = strlen(buf);
+        }
         if (len > 0 && buf[len - 1] == '\n') {
             /* first case: we have a line end */
             buf[--len] = '\0';

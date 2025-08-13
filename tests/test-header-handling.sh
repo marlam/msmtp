@@ -2,9 +2,15 @@
 
 set -e
 
+msmtpd=../src/msmtpd
+if [ ! -x $msmtpd ]; then
+	echo 'msmtpd is not built'
+	exit 77
+fi
+
 # Start an msmtpd that dumps the mail and the recipient lists so we can check them
 echo "Starting msmtpd"
-../src/msmtpd --interface=::1 --port=12346 \
+$msmtpd --interface=::1 --port=12346 \
 	--command='cat > out-header-handling-mail.txt; echo > out-header-handling-rcpt.txt' &
 MSMTPD_PID=$!
 trap "kill $MSMTPD_PID" EXIT

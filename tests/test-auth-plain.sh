@@ -2,9 +2,15 @@
 
 set -e
 
+msmtpd=../src/msmtpd
+if [ ! -x $msmtpd ]; then
+	echo 'msmtpd is not built'
+	exit 77
+fi
+
 # Start an msmtpd with PLAIN authentication
 echo "Starting msmtpd"
-../src/msmtpd --interface=::1 --port=12345 --auth='testuser,echo testpassword' \
+$msmtpd --interface=::1 --port=12345 --auth='testuser,echo testpassword' \
 	--command='cat > out-auth-plain-mail.txt; echo > out-auth-plain-rcpt.txt' &
 MSMTPD_PID=$!
 trap "kill $MSMTPD_PID" EXIT

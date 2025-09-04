@@ -78,7 +78,7 @@
  * But this is not sufficient for some authentication mechanisms, notably
  * GSSAPI, so this value must be higher.
  */
-#define SMTP_MAXCMDLEN 4094
+#define SMTP_MAXCMDLEN 8190
 
 /* The maximum length of the SMTP command pipeline (the maximum number of
  * commands that are sent at once, before starting to read the replies). This

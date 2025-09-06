@@ -2,22 +2,22 @@
 # Copyright (C) 2025 Martin Lambers <marlam@marlam.de>
 # This file is distributed under the same license as the msmtp package.
 # Poesty Li <poesty7450@gmail.com>, 2025.
+# Boyuan Yang <073plan@gmail.com>, 2025.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: msmtp 1.8.28\n"
+"Project-Id-Version: msmtp 1.8.29\n"
 "Report-Msgid-Bugs-To: marlam@marlam.de\n"
-"POT-Creation-Date: 2025-05-05 09:18+0200\n"
-"PO-Revision-Date: 2025-05-25 23:34+0800\n"
-"Last-Translator: Poesty Li <poesty7450@gmail.com>\n"
+"POT-Creation-Date: 2025-09-06 13:29+0200\n"
+"PO-Revision-Date: 2025-05-31 07:53-0400\n"
+"Last-Translator: Boyuan Yang <073plan@gmail.com>\n"
 "Language-Team: Chinese (simplified) <i18n-zh@googlegroups.com>\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Bugs: Report translation errors to the Language-Team address.\n"
-"X-Generator: Poedit 3.6\n"
+"X-Generator: Poedit 2.4.3\n"
 
 #: src/aliases.c:121
 #, c-format
@@ -410,7 +410,7 @@ msgstr "，LOCALEDIR 是 %s"
 #: src/msmtp.c:2255
 #, c-format
 msgid "Keyring support: "
-msgstr "钥匙串支持： "
+msgstr "密钥环支持： "
 
 #: src/msmtp.c:2260
 #, c-format
@@ -789,11 +789,11 @@ msgid "  --set-msgid-header[=(auto|off)] set Message-ID header handling\n"
 msgstr "  --set-msgid-header[=(auto|off)] 设置 Message-ID 头处理方式\n"
 
 #: src/msmtp.c:2364
-#, fuzzy, c-format
-#| msgid "  --set-from-header[=(auto|on|off)] set From header handling\n"
+#, c-format
 msgid ""
 "  --set-to-header[=(on|off|undisclosed_recipients)] set To header handling\n"
-msgstr "  --set-from-header[=(auto|on|off)] 设置 From 头处理方式\n"
+msgstr ""
+"  --set-to-header[=(on|off|undisclosed_recipients)] 设置 To 头处理方式\n"
 
 #: src/msmtp.c:2365
 #, c-format
@@ -847,13 +847,13 @@ msgstr "不能同时使用 --from 和 --read-envelope-from"
 msgid "unsupported operation mode b%s"
 msgstr "不支持的操作模式 b%s"
 
-#: src/msmtp.c:3427 src/msmtp.c:3915 src/msmtp.c:4222
+#: src/msmtp.c:3427 src/msmtp.c:3915 src/msmtp.c:4231
 #, c-format
 msgid "cannot create temporary file: %s"
 msgstr "无法创建临时文件：%s"
 
-#: src/msmtp.c:3457 src/msmtp.c:3941 src/msmtp.c:4277
-#, fuzzy, c-format
+#: src/msmtp.c:3457 src/msmtp.c:3950 src/msmtp.c:4286
+#, c-format
 msgid "cannot rewind temporary file: %s"
 msgstr "无法回绕临时文件：%s"
 
@@ -950,107 +950,113 @@ msgstr "从命令行中读取收件人\n"
 msgid "too many arguments"
 msgstr "参数过多"
 
-#: src/msmtp.c:3935
+#: src/msmtp.c:3937
 #, c-format
 msgid "envelope from address extracted from mail: %s\n"
 msgstr "从邮件中提取的发件人地址：%s\n"
 
-#: src/msmtp.c:3950
+#: src/msmtp.c:3943
+#, fuzzy
+#| msgid "envelope-from address is missing"
+msgid "no envelope from address found"
+msgstr "缺少发件人地址"
+
+#: src/msmtp.c:3959
 msgid "no recipients found"
 msgstr "未找到收件人"
 
-#: src/msmtp.c:3980
+#: src/msmtp.c:3989
 #, c-format
 msgid "account chosen by envelope from address %s: %s\n"
 msgstr "通过发件人地址 %s 选择的账号：%s\n"
 
-#: src/msmtp.c:3994
+#: src/msmtp.c:4003
 #, c-format
 msgid "falling back to default account\n"
 msgstr "回退到默认账号\n"
 
-#: src/msmtp.c:4017
+#: src/msmtp.c:4026
 #, c-format
 msgid "using environment variables EMAIL and SMTPSERVER\n"
 msgstr "使用环境变量 EMAIL 和 SMTPSERVER\n"
 
-#: src/msmtp.c:4025
+#: src/msmtp.c:4034
 #, c-format
 msgid "account %s not found in %s and %s"
 msgstr "账号 %s 未在 %s 和 %s 中找到"
 
-#: src/msmtp.c:4031 src/msmtp.c:4036
+#: src/msmtp.c:4040 src/msmtp.c:4045
 #, c-format
 msgid "account %s not found in %s"
 msgstr "账号 %s 未在 %s 中找到"
 
-#: src/msmtp.c:4041
+#: src/msmtp.c:4050
 #, c-format
 msgid "account %s not found: no configuration file available"
 msgstr "账号 %s 未找到：无可用配置文件"
 
-#: src/msmtp.c:4063
+#: src/msmtp.c:4072
 #, c-format
 msgid "using account specified on command line\n"
 msgstr "使用命令行指定的账号\n"
 
-#: src/msmtp.c:4128
+#: src/msmtp.c:4137
 #, c-format
 msgid "account %s from %s: %s"
 msgstr "账号 %s 来自 %s：%s"
 
-#: src/msmtp.c:4169
+#: src/msmtp.c:4178
 msgid "this platform does not support syslog logging"
 msgstr "此平台不支持 syslog 日志记录"
 
-#: src/msmtp.c:4178
+#: src/msmtp.c:4187
 #, c-format
 msgid "support for authentication method %s is not compiled in"
 msgstr "未编译支持 %s 认证方法"
 
-#: src/msmtp.c:4186
+#: src/msmtp.c:4195
 #, c-format
 msgid "cannot initialize networking: %s"
 msgstr "无法初始化网络：%s"
 
-#: src/msmtp.c:4197
+#: src/msmtp.c:4206
 #, c-format
 msgid "cannot initialize TLS library: %s"
 msgstr "无法初始化 TLS 库：%s"
 
-#: src/msmtp.c:4204
+#: src/msmtp.c:4213
 msgid "support for TLS is not compiled in"
 msgstr "未编译支持 TLS"
 
-#: src/msmtp.c:4306
+#: src/msmtp.c:4315
 #, c-format
 msgid "LMTP server message: %s"
 msgstr "LMTP 服务器消息：%s"
 
-#: src/msmtp.c:4317
+#: src/msmtp.c:4326
 #, c-format
 msgid "could not send mail to all recipients (account %s from %s)"
 msgstr "无法向所有收件人发送邮件（账号 %s 来自 %s）"
 
-#: src/msmtp.c:4323
+#: src/msmtp.c:4332
 msgid "could not send mail to all recipients"
 msgstr "无法向所有收件人发送邮件"
 
-#: src/msmtp.c:4338 src/msmtp.c:4393 src/msmtp.c:4414
+#: src/msmtp.c:4347 src/msmtp.c:4402 src/msmtp.c:4423
 #, c-format
 msgid "server message: %s"
 msgstr "服务器消息：%s"
 
-#: src/msmtp.c:4344
+#: src/msmtp.c:4353
 #, c-format
 msgid "could not send mail (account %s from %s)"
 msgstr "无法发送邮件（账号 %s 来自 %s）"
 
-#: src/msmtp.c:4349
+#: src/msmtp.c:4358
 msgid "could not send mail"
 msgstr "无法发送邮件"
 
-#: src/msmtp.c:4359
+#: src/msmtp.c:4368
 #, c-format
 msgid "delivery to one or more recipients failed"
 msgstr "投递到一个或多个收件人失败"

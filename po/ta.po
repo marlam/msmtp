@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: msmtp 1.8.8rc2\n"
 "Report-Msgid-Bugs-To: marlam@marlam.de\n"
-"POT-Creation-Date: 2025-05-05 09:18+0200\n"
+"POT-Creation-Date: 2025-09-06 13:29+0200\n"
 "PO-Revision-Date: 2020-04-07 18:54+0530\n"
 "Last-Translator: Arun Isaac <arunisaac@systemreboot.net>\n"
 "Language-Team: Tamil <tamil@systemreboot.net>\n"
@@ -834,12 +834,12 @@ msgstr "--host, --read-envelope-from இரண்டையும் ஒரே �
 msgid "unsupported operation mode b%s"
 msgstr ""
 
-#: src/msmtp.c:3427 src/msmtp.c:3915 src/msmtp.c:4222
+#: src/msmtp.c:3427 src/msmtp.c:3915 src/msmtp.c:4231
 #, c-format
 msgid "cannot create temporary file: %s"
 msgstr "தற்காலிகக் கோப்பை உருவாக்க இயலவில்லை: %s"
 
-#: src/msmtp.c:3457 src/msmtp.c:3941 src/msmtp.c:4277
+#: src/msmtp.c:3457 src/msmtp.c:3950 src/msmtp.c:4286
 #, c-format
 msgid "cannot rewind temporary file: %s"
 msgstr ""
@@ -937,107 +937,111 @@ msgstr ""
 msgid "too many arguments"
 msgstr ""
 
-#: src/msmtp.c:3935
+#: src/msmtp.c:3937
 #, c-format
 msgid "envelope from address extracted from mail: %s\n"
 msgstr ""
 
-#: src/msmtp.c:3950
+#: src/msmtp.c:3943
+msgid "no envelope from address found"
+msgstr ""
+
+#: src/msmtp.c:3959
 msgid "no recipients found"
 msgstr ""
 
-#: src/msmtp.c:3980
+#: src/msmtp.c:3989
 #, c-format
 msgid "account chosen by envelope from address %s: %s\n"
 msgstr ""
 
-#: src/msmtp.c:3994
+#: src/msmtp.c:4003
 #, c-format
 msgid "falling back to default account\n"
 msgstr ""
 
-#: src/msmtp.c:4017
+#: src/msmtp.c:4026
 #, c-format
 msgid "using environment variables EMAIL and SMTPSERVER\n"
 msgstr ""
 
-#: src/msmtp.c:4025
+#: src/msmtp.c:4034
 #, c-format
 msgid "account %s not found in %s and %s"
 msgstr ""
 
-#: src/msmtp.c:4031 src/msmtp.c:4036
+#: src/msmtp.c:4040 src/msmtp.c:4045
 #, c-format
 msgid "account %s not found in %s"
 msgstr ""
 
-#: src/msmtp.c:4041
+#: src/msmtp.c:4050
 #, c-format
 msgid "account %s not found: no configuration file available"
 msgstr ""
 
-#: src/msmtp.c:4063
+#: src/msmtp.c:4072
 #, c-format
 msgid "using account specified on command line\n"
 msgstr ""
 
-#: src/msmtp.c:4128
+#: src/msmtp.c:4137
 #, c-format
 msgid "account %s from %s: %s"
 msgstr ""
 
-#: src/msmtp.c:4169
+#: src/msmtp.c:4178
 msgid "this platform does not support syslog logging"
 msgstr ""
 
-#: src/msmtp.c:4178
+#: src/msmtp.c:4187
 #, c-format
 msgid "support for authentication method %s is not compiled in"
 msgstr ""
 
-#: src/msmtp.c:4186
+#: src/msmtp.c:4195
 #, c-format
 msgid "cannot initialize networking: %s"
 msgstr "வலையத்தைத் தொடங்க இயலவில்லை: %s"
 
-#: src/msmtp.c:4197
+#: src/msmtp.c:4206
 #, c-format
 msgid "cannot initialize TLS library: %s"
 msgstr ""
 
-#: src/msmtp.c:4204
+#: src/msmtp.c:4213
 msgid "support for TLS is not compiled in"
 msgstr ""
 
-#: src/msmtp.c:4306
+#: src/msmtp.c:4315
 #, c-format
 msgid "LMTP server message: %s"
 msgstr "LMTP வழங்கிச் செய்தி: %s"
 
-#: src/msmtp.c:4317
+#: src/msmtp.c:4326
 #, c-format
 msgid "could not send mail to all recipients (account %s from %s)"
 msgstr ""
 
-#: src/msmtp.c:4323
+#: src/msmtp.c:4332
 msgid "could not send mail to all recipients"
 msgstr ""
 
-#: src/msmtp.c:4338 src/msmtp.c:4393 src/msmtp.c:4414
+#: src/msmtp.c:4347 src/msmtp.c:4402 src/msmtp.c:4423
 #, c-format
 msgid "server message: %s"
 msgstr "வழங்கிச் செய்தி: %s"
 
-#: src/msmtp.c:4344
+#: src/msmtp.c:4353
 #, c-format
 msgid "could not send mail (account %s from %s)"
 msgstr "மடல் அனுப்ப இயலவில்லை (%s யிலுள்ள %s கணக்கு)"
 
-#: src/msmtp.c:4349
+#: src/msmtp.c:4358
 msgid "could not send mail"
 msgstr "மடல் அனுப்ப இயலவில்லை"
 
-#: src/msmtp.c:4359
+#: src/msmtp.c:4368
 #, c-format
 msgid "delivery to one or more recipients failed"
 msgstr ""

@@ -10,14 +10,15 @@
 # Actualizare a traducerii pentru versiunea 1.8.25, făcută de R-GC, oct-2023.
 # Actualizare a traducerii pentru versiunea 1.8.26, făcută de R-GC, iun-2024.
 # Actualizare a traducerii pentru versiunea 1.8.28, făcută de R-GC, ian-2025.
+# Actualizare a traducerii pentru versiunea 1.8.29, făcută de R-GC, mai-2025.
 # Actualizare a traducerii pentru versiunea Y, făcută de X, Z(luna-anul).
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: msmtp 1.8.28\n"
+"Project-Id-Version: msmtp 1.8.29\n"
 "Report-Msgid-Bugs-To: marlam@marlam.de\n"
-"POT-Creation-Date: 2025-05-05 09:18+0200\n"
-"PO-Revision-Date: 2025-01-14 12:08+0100\n"
+"POT-Creation-Date: 2025-09-06 13:29+0200\n"
+"PO-Revision-Date: 2025-05-30 17:38+0200\n"
 "Last-Translator: Remus-Gabriel Chelu <remusgabriel.chelu@disroot.org>\n"
 "Language-Team: Romanian <translation-team-ro@lists.sourceforge.net>\n"
 "Language: ro\n"
@@ -880,11 +881,12 @@ msgid "  --set-msgid-header[=(auto|off)] set Message-ID header handling\n"
 msgstr "  --set-msgid-header[=(auto|off)]  gestionează antetul „Message-ID”\n"
 
 #: src/msmtp.c:2364
-#, fuzzy, c-format
-#| msgid "  --set-from-header[=(auto|on|off)] set From header handling\n"
+#, c-format
 msgid ""
 "  --set-to-header[=(on|off|undisclosed_recipients)] set To header handling\n"
-msgstr "  --set-from-header[=(auto|on|off)]  gestionează antetul „From”\n"
+msgstr ""
+"  --set-to-header[=(on|off|undisclosed_recipients)] gestionează antetul "
+"„To”\n"
 
 #: src/msmtp.c:2365
 #, c-format
@@ -941,12 +943,12 @@ msgstr "nu se poate utiliza atât „--from”, cât și „--read-envelope-from
 msgid "unsupported operation mode b%s"
 msgstr "mod de operare neacceptat b%s"
 
-#: src/msmtp.c:3427 src/msmtp.c:3915 src/msmtp.c:4222
+#: src/msmtp.c:3427 src/msmtp.c:3915 src/msmtp.c:4231
 #, c-format
 msgid "cannot create temporary file: %s"
 msgstr "nu se poate crea fișierul temporar: %s"
 
-#: src/msmtp.c:3457 src/msmtp.c:3941 src/msmtp.c:4277
+#: src/msmtp.c:3457 src/msmtp.c:3950 src/msmtp.c:4286
 #, c-format
 msgid "cannot rewind temporary file: %s"
 msgstr "nu se poate reveni la începutul fișierului temporar: %s"
@@ -1044,109 +1046,115 @@ msgstr "se citesc destinatarii din linia de comandă\n"
 msgid "too many arguments"
 msgstr "prea multe argumente"
 
-#: src/msmtp.c:3935
+#: src/msmtp.c:3937
 #, c-format
 msgid "envelope from address extracted from mail: %s\n"
 msgstr "adresa expeditorului plicului extrasă din e-mail: %s\n"
 
-#: src/msmtp.c:3950
+#: src/msmtp.c:3943
+#, fuzzy
+#| msgid "envelope-from address is missing"
+msgid "no envelope from address found"
+msgstr "lipsește adresa expeditorului de pe plic"
+
+#: src/msmtp.c:3959
 msgid "no recipients found"
 msgstr "niciun destinatar găsit"
 
-#: src/msmtp.c:3980
+#: src/msmtp.c:3989
 #, c-format
 msgid "account chosen by envelope from address %s: %s\n"
 msgstr "cont ales prin intermediul adresei expeditorului plicului %s: %s\n"
 
-#: src/msmtp.c:3994
+#: src/msmtp.c:4003
 #, c-format
 msgid "falling back to default account\n"
 msgstr "se revine la contul implicit\n"
 
-#: src/msmtp.c:4017
+#: src/msmtp.c:4026
 #, c-format
 msgid "using environment variables EMAIL and SMTPSERVER\n"
 msgstr "se utilizează variabilele de mediu EMAIL și SMTPSERVER\n"
 
-#: src/msmtp.c:4025
+#: src/msmtp.c:4034
 #, c-format
 msgid "account %s not found in %s and %s"
 msgstr "contul %s nu a fost găsit în %s și %s"
 
-#: src/msmtp.c:4031 src/msmtp.c:4036
+#: src/msmtp.c:4040 src/msmtp.c:4045
 #, c-format
 msgid "account %s not found in %s"
 msgstr "contul %s nu a fost găsit în %s"
 
-#: src/msmtp.c:4041
+#: src/msmtp.c:4050
 #, c-format
 msgid "account %s not found: no configuration file available"
 msgstr ""
 "contul %s nu a fost găsit: nu este disponibil niciun fișier de configurare"
 
-#: src/msmtp.c:4063
+#: src/msmtp.c:4072
 #, c-format
 msgid "using account specified on command line\n"
 msgstr "se utilizează contul specificat în linia de comandă\n"
 
-#: src/msmtp.c:4128
+#: src/msmtp.c:4137
 #, c-format
 msgid "account %s from %s: %s"
 msgstr "contul %s din %s: %s"
 
-#: src/msmtp.c:4169
+#: src/msmtp.c:4178
 msgid "this platform does not support syslog logging"
 msgstr "această platformă nu suportă jurnalizarea syslog"
 
-#: src/msmtp.c:4178
+#: src/msmtp.c:4187
 #, c-format
 msgid "support for authentication method %s is not compiled in"
 msgstr "suportul pentru metoda de autentificare %s nu este compilat în"
 
-#: src/msmtp.c:4186
+#: src/msmtp.c:4195
 #, c-format
 msgid "cannot initialize networking: %s"
 msgstr "nu se poate inițializa rețeaua: %s"
 
-#: src/msmtp.c:4197
+#: src/msmtp.c:4206
 #, c-format
 msgid "cannot initialize TLS library: %s"
 msgstr "nu se poate inițializa biblioteca TLS: %s"
 
-#: src/msmtp.c:4204
+#: src/msmtp.c:4213
 msgid "support for TLS is not compiled in"
 msgstr "suportul pentru TLS nu este compilat în"
 
-#: src/msmtp.c:4306
+#: src/msmtp.c:4315
 #, c-format
 msgid "LMTP server message: %s"
 msgstr "mesajul serverului LMTP: %s"
 
-#: src/msmtp.c:4317
+#: src/msmtp.c:4326
 #, c-format
 msgid "could not send mail to all recipients (account %s from %s)"
 msgstr ""
 "nu s-a putut trimite corespondența către toți destinatarii (contul %s din %s)"
 
-#: src/msmtp.c:4323
+#: src/msmtp.c:4332
 msgid "could not send mail to all recipients"
 msgstr "nu s-a putut trimite corespondența către toți destinatarii"
 
-#: src/msmtp.c:4338 src/msmtp.c:4393 src/msmtp.c:4414
+#: src/msmtp.c:4347 src/msmtp.c:4402 src/msmtp.c:4423
 #, c-format
 msgid "server message: %s"
 msgstr "mesajul serverului: %s"
 
-#: src/msmtp.c:4344
+#: src/msmtp.c:4353
 #, c-format
 msgid "could not send mail (account %s from %s)"
 msgstr "nu s-a putut trimite corespondența (contul %s din %s)"
 
-#: src/msmtp.c:4349
+#: src/msmtp.c:4358
 msgid "could not send mail"
 msgstr "nu s-a putut trimite corespondența"
 
-#: src/msmtp.c:4359
+#: src/msmtp.c:4368
 #, c-format
 msgid "delivery to one or more recipients failed"
 msgstr "livrarea către unul sau mai mulți destinatari a eșuat"

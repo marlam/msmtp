@@ -1012,7 +1012,13 @@ char *encode_for_header(const char *s)
         size_t b64_s_len = BASE64_LENGTH(s_len);
         char* encoding =
 #ifdef HAVE_LANGINFO_H
+            /* With disabled NLS, nl_langinfo() always seems to return
+             * ANSI_X3.4-1968 (i.e. ASCII). We want to assume UTF-8 instead. */
+# ifdef ENABLE_NLS
                 nl_langinfo(CODESET);
+# else
+                "UTF-8";
+# endif
 #else
 # ifdef W32_NATIVE
                 w32_langinfo_codeset();

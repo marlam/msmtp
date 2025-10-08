@@ -270,6 +270,14 @@ void split_mail_address(const char *address, char **local_part, char **domain_pa
 int check_hostname_matches_domain(const char *hostname, const char *domain);
 
 /*
+ * domain_is_non_ascii()
+ *
+ * Returns whether the domain part (after '@') of the given mail address
+ * contains non-ascii characters.
+ */
+int domain_is_non_ascii(const char *address);
+
+/*
  * encode_for_header()
  *
  * Encode a string so that it can be used in a mail header.

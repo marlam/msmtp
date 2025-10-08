@@ -980,6 +980,33 @@ int check_hostname_matches_domain(const char *hostname, const char *domain)
 
 
 /*
+ * domain_is_non_ascii()
+ *
+ * see tools.h
+ */
+
+int domain_is_non_ascii(const char *address)
+{
+    int in_domain_part = 0;
+    int non_ascii = 0;
+    for (int i = 0; address[i]; i++)
+    {
+        if (!in_domain_part && address[i] == '@')
+        {
+            in_domain_part = 1;
+            continue;
+        }
+        if (in_domain_part && (address[i] < 32 || address[i] >= 127))
+        {
+            non_ascii = 1;
+            break;
+        }
+    }
+    return non_ascii;
+}
+
+
+/*
  * encode_for_header()
  *
  * see tools.h

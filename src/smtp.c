@@ -4,7 +4,7 @@
  * This file is part of msmtp, an SMTP client.
  *
  * Copyright (C) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011,
- * 2014, 2016, 2018, 2019, 2020, 2021, 2022, 2023, 2024
+ * 2014, 2016, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -1685,6 +1685,7 @@ int smtp_send_envelope(smtp_server_t *srv,
     int data_reply_was_rcvd = 0;
     int pipeline_limit = 1;
     int piped_commands = 0;
+    int send_smtputf8 = 0;
     int status;
 
 
@@ -1692,6 +1693,26 @@ int smtp_send_envelope(smtp_server_t *srv,
     if (srv->cap.flags & SMTP_CAP_PIPELINING)
     {
         pipeline_limit = SMTP_PIPELINE_LIMIT;
+    }
+    if (srv->cap.flags & SMTP_CAP_SMTPUTF8)
+    {
+        if (domain_is_non_ascii(envelope_from))
+        {
+            send_smtputf8 = 1;
+        }
+        else
+        {
+            list_t *rcpt = recipients;
+            while (!list_is_empty(rcpt))
+            {
+                rcpt = rcpt->next;
+                if (domain_is_non_ascii(rcpt->data))
+                {
+                    send_smtputf8 = 1;
+                    break;
+                }
+            }
+        }
     }
 
     /* Send the MAIL FROM, RCPT TO and DATA commands using pipelining. The
@@ -1709,7 +1730,7 @@ int smtp_send_envelope(smtp_server_t *srv,
                         strcasecmp(envelope_from, "MAILER-DAEMON") == 0
                         ? "" : envelope_from,
                         dsn_return ? " RET=" : "", dsn_return ? dsn_return : "",
-                        srv->cap.flags & SMTP_CAP_SMTPUTF8 ? " SMTPUTF8" : "");
+                        send_smtputf8 ? " SMTPUTF8" : "");
                 if (e != SMTP_EOK)
                 {
                     return e;

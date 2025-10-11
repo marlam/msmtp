@@ -1115,7 +1115,7 @@ msgstr "сообщение сервера: %s"
 #: src/msmtp.c:4353
 #, c-format
 msgid "could not send mail (account %s from %s)"
-msgstr "не удалось отправить почту (учёрная запись %s из %s)"
+msgstr "не удалось отправить почту (учётная запись %s из %s)"
 
 #: src/msmtp.c:4358
 msgid "could not send mail"

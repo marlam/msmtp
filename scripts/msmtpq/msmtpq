@@ -578,9 +578,9 @@ make_id() {
 ## enqueue a mail
 ##
 enqueue_mail() { # <-- all mail args ; mail text via TMP
-  if echo "$@" > "${FQP}.msmtp" ; then     # write msmtp command line to queue .msmtp file
-    log "enqueued mail as : [ $ID ] ( $* ) : successful" # (queue .mail file is already there)
-  else                                     # write failed ; bomb
+  if echo "$@" > "${FQP}.msmtp" ; then      # write msmtp command line to queue .msmtp file
+    log "enqueued mail as : [ $ID ] ( $* )" # (queue .mail file is already there)
+  else                                      # write failed ; bomb
     log -e "$?" "queueing - writing msmtp cmd line { $* }"\
                 "           to [ ${ID}.msmtp ] : failed"
   fi
@@ -594,18 +594,18 @@ send_mail() {    # <-- all mail args ; mail text via TMP
   [ "$EMAIL_CONN_TEST" != 'x' ] && \
   [ -z "$EMAIL_CONN_NOTEST" ] && {   # do connection test
     connect_test || {
-      log "mail for [ $* ] : couldn't be sent - host not connected"
+      log "mail for [ $* ] : sending FAILED as host disconnected."
       enqueue_mail "$@"              # enqueue the mail
       return
     }
   }
 
   if "$MSMTP" "$@" < "${FQP}.mail" > /dev/null ; then      # send mail using queue .mail fil
-    log "mail for [ $* ] : send was successful"          # log it
+    log "mail for [ $* ] : sent successfully"          # log it
     'rm' -f "${FQP}".*               # remove all queue mail files .mail & .msmtp file
     run_queue 'sm'                   # run/flush any other mails in queue
   else                               # send failed - the mail stays in the queue
-    log "mail for [ $* ] : send was unsuccessful ; msmtp exit code was $?"\
+    log "mail for [ $* ] : sending FAILED as msmtp exited with $?"\
         "enqueued mail as : [ $ID ] ( $* )"    # (queue .mail file is already there)
   fi
 }

@@ -79,19 +79,20 @@ set -o errtrace -o errexit -o pipefail
 [[ "${TRACE:-0}" == "1" ]] && set -o xtrace
 
 bash_has_min_version() {
-    ((  ( BASH_VERSINFO[0] > $1 )
-        || ( BASH_VERSINFO[0] == $1  &&  BASH_VERSINFO[1] >= $2 ) ))
+  ((  ( BASH_VERSINFO[0] > $1 )
+  || ( BASH_VERSINFO[0] == $1  &&  BASH_VERSINFO[1] >= $2 ) ))
 }
 
 # see https://git.savannah.gnu.org/gitweb/?p=bash.git;a=blob;f=NEWS;hb=6794b5478f660256a1023712b5fc169196ed0a22#l654
 if bash_has_min_version 4 4 ; then
-    if [ "$POSIXLY_CORRECT" = "y" ]; then
-        shopt -s inherit_errexit 2>/dev/null
-    fi
+  if [ "$POSIXLY_CORRECT" = "y" ]; then
+    shopt -s inherit_errexit 2>/dev/null
+  fi
 fi
 IFS=$' \n\t'
 PS4='+\t '
 
+# desktop notifications handling
 if [ -n "$NOTIFY_SEND_VERBOSE" ]; then
   NOTIFY_SEND=1
 fi
@@ -119,14 +120,20 @@ echo_msg() {
   echo "$msg"
 }
 dsp() {
+  local msg
   msg="$(echo_msg "$@")"
   echo -e "$msg"
-  if [ -n "$NOTIFY_SEND_VERBOSE" ]; then notify-send "${BASH_SOURCE[0]}:" "$msg"; fi
+  if [ -n "$NOTIFY_SEND_VERBOSE" ]; then
+    notify-send "${BASH_SOURCE[0]}:" "$msg" || true
+  fi
 }
 err() {
+  local msg
   msg="$(echo_msg '' "$@" '')"
-  echo -e "$msg"
-  if [ "$NOTIFY_SEND" = 1 ]; then notify-send "${BASH_SOURCE[0]}:" "$msg"; fi
+  echo -e "$msg" >&2
+  if [ "${NOTIFY_SEND:-0}" = 1 ]; then
+    notify-send "${BASH_SOURCE[0]}:" "$msg" || true
+  fi
 }
 
 ## ======================================================================================
@@ -152,7 +159,7 @@ MSMTP="${MSMTP:-msmtp}"
 ##            ( chmod 0700 msmtp.queue )
 ##
 ## the queue dir - export this variable to reflect where you'd like it to be  (no quotes !!)
-MSMTPQ_Q=${MSMTPQ_Q:-${Q:-~/.msmtp.queue}}
+MSMTPQ_Q=${MSMTPQ_Q:-${Q:-"$HOME/.msmtp.queue"}}
 [ -d "$MSMTPQ_Q" ] || mkdir -m 0700 -p "$MSMTPQ_Q"
 if ! [ -d "$MSMTPQ_Q" ]; then
   err "msmtpq : can't create missing msmtp queue directory [ $MSMTPQ_Q ]"
@@ -179,7 +186,7 @@ if [ -n "$MSMTPQ_LOG" ] ; then
       err "msmtpq : can't create missing msmtp queue log file directory [ $msmtpq_log_dir ]"
       exit 1
   fi
-  unset msmptq_log_dir
+  unset msmtpq_log_dir
 fi
 
 umask 077                            # set secure permissions on created directories and files
@@ -188,8 +195,8 @@ declare -i CNT                       # a count of mail(s) currently in the queue
 declare -a Q_LST                     # queue list array ; used selecting a mail (to send or remove)
 
 error_handler() {
-  summary="Error: In ${BASH_SOURCE[0]}, Lines $1 and $2, Command $3 exited with Status $4"
-  body=$(pr -tn "${BASH_SOURCE[0]}" | tail -n+$(($1 - 3)) | head -n7 | sed '4s/^\s*/>> /')
+  local summary="Error: In ${BASH_SOURCE[0]}, Lines $1 and $2, Command $3 exited with Status $4"
+  local body=$(pr -tn "${BASH_SOURCE[0]}" | tail -n+$(($1 - 3)) | head -n7 | sed '4s/^\s*/>> /')
   echo >&2 -en "$summary\n$body" &&
     [ "$NOTIFY_SEND" = 1 ] && notify-send --urgency=critical "$summary" "$body"
   exit "$4"
@@ -284,26 +291,22 @@ case $(uname | tr '[:upper:]' '[:lower:]') in
     ;;
 esac
 connect_test() {
-  if [ -z "$EMAIL_CONN_TEST" ] || \
-     [ "$EMAIL_CONN_TEST" = 'p' ] ; then                       # use ping test (default)
+  if [ -z "$EMAIL_CONN_TEST" ] || [ "$EMAIL_CONN_TEST" = 'p' ] ; then
     # verify net connection - ping ip address of debian.org
     # would ping -qnc2 -w4 be better ?
     # would ping -qnc1 -w10 or -w20 be better ?
     #ping -qnc1 -w4 debian.org >/dev/null 2>&1 || return 1
     ping -qnc2 -${PING_TIMEOUT_FLAG}10 debian.org >/dev/null 2>&1 || return 1
-
   elif [ "$EMAIL_CONN_TEST" = 'P' ] ; then                     # use quicker ping test
     # I personally think that including a DNS lookup
     # is a better connection test but some
     # have found the above test too slow
     ping -qnc1 -${PING_TIMEOUT_FLAG}4 8.8.8.8 >/dev/null 2>&1 || return 1
-
   elif [ "$EMAIL_CONN_TEST" = 'n' ] ; then                     # use netcat (nc) test
     # must, of course, have netcat (nc) installed
-    which nc >/dev/null 2>&1 || \
-      log -e 1 "msmtpq : can't find netcat executable [ nc ]"  # if not found - complain ; quit
-    'nc' -vz www.debian.org 80 >/dev/null 2>&1 || return 1
-
+    command -v nc >/dev/null 2>&1 || \
+      log -e 1 "msmtpq : can't find netcat executable [ nc ]"
+    'nc' -vz -w 5 www.debian.org 80 >/dev/null 2>&1 || return 1
   elif [ "$EMAIL_CONN_TEST" = 's' ] ; then                     # use sh sockets test
     # note that this does not work on debian systems
     #   where bash opened sockets are suppressed for security
@@ -401,9 +404,9 @@ is_queue_dir_empty() {
     # - the return value of shopt must be ignored (the manual says:
     #   "The return status when listing options is zero if all
     #   optnames are enabled, non-zero otherwise.")
-    trap "$(shopt -p nullglob || true)" RETURN
+    trap '$(shopt -p nullglob || true)' RETURN
     shopt -s nullglob
-    files=( "$MSMTPQ_Q"/*.mail )
+    local files=( "$MSMTPQ_Q"/*.mail )
     (( ${#files[@]} == 0 ))
 }
 
@@ -445,7 +448,7 @@ display_queue() {      # <-- { 'purge' | 'send' } (op label) ; { 'rec' } (record
     ID="$(basename "$M" .mail)"      # take mail id from filename
     CNT="$((CNT + 1))"
     dsp '' "mail  num=[ $CNT ]  id=[ $ID ]"                  # show mail id ## patch in
-    'grep' -E -s --colour -h -m 3 '(^From:|^To:|^Subject:)' "$M" || true # show mail info
+    'grep' -E -s -h -m 3 '(^From:|^To:|^Subject:)' "$M" || true
     [ -n "$2" ] && Q_LST["$CNT"]="$ID" # bang mail id into array (note 1-based array indexing)
   done
   echo
@@ -477,8 +480,8 @@ purge_queue() {
 ## select by mail index (position in queue) or mail id
 ##
 select_mail() {  # <-- < 'purge' | 'send' >
-  local OK ID                                        # mail id
-  local -i I NDX                                     # mail index (position in queue)
+  local ID                                           # mail id
+  local -i NDX
 
   while true ; do                                    # purge an individual mail from queue
     display_queue "$1" 'rec'                         # show queue contents ; make mail ids array
@@ -489,25 +492,12 @@ select_mail() {  # <-- < 'purge' | 'send' >
       ID="${Q_LST[1]}"
     else                                             # more than one mail ; select its id
       while true ; do                                # get mail id
-        OK='t'                                       # optimistic to a fault
         dsp "enter mail number or id to $1"          # <-- num or file name (only, no suff)
         echo -n '    ( <cr> alone to exit ) ..: '
         read -r ID
-        [ -n "$ID" ] || return                       # entry made - or say good bye
+        [ -n "$ID" ] || return
 
-        if [ "${ID:4:1}" != '-' ] ; then             # mail id *not* entered ; test index num
-          I=0
-          while [ "$I" -lt ${#ID} ]; do              # test index number
-            if [ "${ID:${I}:1}" -lt '0' ] || \
-                  [ "${ID:${I}:1}" -gt '9' ] ; then
-              dsp '' "[ $ID ] is neither a valid mail id"\
-                     'nor a valid mail number' ''
-              unset OK
-            fi
-          I=$((I + 1))
-          done
-          [ -z "$OK" ] && continue                   # format not ok (not all nums)
-
+        if [[ ${ID:4:1} != '-' && ! $ID =~ ^[0-9]+$ ]]; then
           NDX=$ID
           if [ "$NDX" -lt 1 ] || [ "$NDX" -gt "$CNT" ] ; then  # test number range (1 - $CNT)
             dsp '' "[ $NDX ] is out of range as a mail number"\
@@ -588,9 +578,9 @@ make_id() {
 ## enqueue a mail
 ##
 enqueue_mail() { # <-- all mail args ; mail text via TMP
-  if echo "$@" > "${FQP}.msmtp" ; then     # write msmtp command line to queue .msmtp file
-    log "enqueued mail as : [ $ID ] ( $* ) : successful" # (queue .mail file is already there)
-  else                                     # write failed ; bomb
+  if echo "$@" > "${FQP}.msmtp" ; then      # write msmtp command line to queue .msmtp file
+    log "enqueued mail as : [ $ID ] ( $* )" # (queue .mail file is already there)
+  else                                      # write failed ; bomb
     log -e "$?" "queueing - writing msmtp cmd line { $* }"\
                 "           to [ ${ID}.msmtp ] : failed"
   fi
@@ -604,18 +594,18 @@ send_mail() {    # <-- all mail args ; mail text via TMP
   [ "$EMAIL_CONN_TEST" != 'x' ] && \
   [ -z "$EMAIL_CONN_NOTEST" ] && {   # do connection test
     connect_test || {
-      log "mail for [ $* ] : couldn't be sent - host not connected"
+      log "mail for [ $* ] : sending FAILED as host disconnected."
       enqueue_mail "$@"              # enqueue the mail
       return
     }
   }
 
   if "$MSMTP" "$@" < "${FQP}.mail" > /dev/null ; then      # send mail using queue .mail fil
-    log "mail for [ $* ] : send was successful"          # log it
+    log "mail for [ $* ] : sent successfully"          # log it
     'rm' -f "${FQP}".*               # remove all queue mail files .mail & .msmtp file
     run_queue 'sm'                   # run/flush any other mails in queue
   else                               # send failed - the mail stays in the queue
-    log "mail for [ $* ] : send was unsuccessful ; msmtp exit code was $?"\
+    log "mail for [ $* ] : sending FAILED as msmtp exited with $?"\
         "enqueued mail as : [ $ID ] ( $* )"    # (queue .mail file is already there)
   fi
 }

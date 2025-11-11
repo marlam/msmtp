@@ -59,14 +59,26 @@ all config is done by exporting these environment variables
 
   set the MSMTP var to point to the location of the msmtp executable
     (set this only if necessary ; if it's not on the path)
+  set the MSMTPQ_RC var to point to the location of the config file
+    (if unset, will look at $XDG_CONFIG_HOME/msmtpq/config, then ~/.msmtpqrc)
   set the MSMTPQ_Q var to point to the location of the queue directory
   set the MSMTPQ_LOG var to point to the location of the queue log
+  set the MSMTPQ_LOG_DATEFMT var to the date format to use for the logs
+    (for backwards compatibility: %Y %d %b %H:%M:%S
+                         ISO8601: %Y-%m-%dT%H:%M:%S%:z
+    )
 
 you can put this variables into a config file msmtpq is considering now ;
 see as example:
 cat << EOF > ~/.msmtpqrc
 MSMTPQ_Q=~/.msmtp.queue
 MSMTPQ_LOG=~/log/msmtp.queue.log
+EOF
+
+Or for a more XDG-style configuration:
+cat << EOF > $XDG_CONFIG_HOME/msmtpq/config
+MSMTPQ_Q=$XDG_STATE_HOME/msmtpq/queue/
+MSMTPQ_LOG=$XDG_STATE_HOME/log/msmtp.queue.log
 EOF
 
 the MSMTP variable can have the location of the msmtp executable entered
@@ -114,8 +126,12 @@ the vars : EMAIL_CONN_NOTEST (to test for a net connection or not
 
 see below for their values
 
-there are two methods of setting options -
+there are three methods of setting options -
 
+- set the vars in a config file
+
+  see the explanation on MSMTPQ_RC -- the selected file will be sourced if it
+  exists
 
 - set the vars in the msmtpq script (near the top)
 
@@ -123,8 +139,10 @@ there are two methods of setting options -
 
 - set the vars externally to the script
 
-    define the variables as environment vars, set on the command line
-      invoking msmtp
+  define the variables as environment vars, set on the command line invoking
+  msmtp. note variables will be overridden by config file values unless this is
+  unset (eg by invoking msmtpq using env -u MSMTPQ_RC msmtpq, or by setting
+  MSMTPQ_RC=/dev/null)
 
 set sendmail = "/path/to/msmtpq"
                  # normal config for mutt to use the queue

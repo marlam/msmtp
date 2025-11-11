@@ -373,7 +373,7 @@ send_queued_mail() {   # <-- mail id
   local FQP="${MSMTPQ_Q}/${1}"       # fully qualified path name
   local -i RC=0                      # for msmtp exit code
 
-  if [ -f "${FQP}.msmtp" ] ; then    # corresponding .msmtp file found
+  if [ -f "${FQP}/msmtp" ] ; then    # corresponding msmtp file found
     [ "$EMAIL_CONN_TEST" != 'x' ] && \
     [ -z "$EMAIL_CONN_NOTEST" ] && { # do connection test
       connect_test || {
@@ -382,9 +382,9 @@ send_queued_mail() {   # <-- mail id
       }
     }
 
-    if "$MSMTP" $(< "${FQP}.msmtp") < "${FQP}.mail" ; then     # this mail goes out the door
+    if "$MSMTP" $(< "${FQP}/msmtp") < "${FQP}/mail" ; then     # this mail goes out the door
       log "mail [ $2 ] [ $1 ] from queue ; send was successful ; purged from queue"  # good news to user
-      'rm' -f "${FQP}".*                                       # nuke both queue mail files
+      'rm' -rf "${FQP}"                                        # nuke both queue mail files
       ALT='t'                        # set queue changed flag
     else                             # send was unsuccessful
       RC=$?                          # take msmtp exit code
@@ -392,8 +392,8 @@ send_queued_mail() {   # <-- mail id
     fi
     return $RC                       # func returns exit code
   else                               # corresponding MSF file not found
-    log "preparing to send .mail file [ $1 ] [ ${FQP}.mail ] but"\
-        "  corresponding .msmtp file [ ${FQP}.msmtp ] was not found in queue"\
+    log "preparing to send mail file [ $1 ] [ ${FQP}/mail ] but"\
+        "  corresponding msmtp file [ ${FQP}/msmtp ] was not found in queue"\
         '  skipping this mail ; this is worth looking into'    # give user the bad news
   fi                                                           # (but allow continuation)
 }
@@ -406,7 +406,7 @@ is_queue_dir_empty() {
     #   optnames are enabled, non-zero otherwise.")
     trap '$(shopt -p nullglob || true)' RETURN
     shopt -s nullglob
-    local files=( "$MSMTPQ_Q"/*.mail )
+    local files=( "$MSMTPQ_Q"/*/mail )
     (( ${#files[@]} == 0 ))
 }
 
@@ -421,9 +421,9 @@ run_queue() {    # <- 'sm' mode      # run queue
   local M
   local -i NDX=0
 
-  for M in "$MSMTPQ_Q"/*.mail ; do        # process all mails
+  for M in "$MSMTPQ_Q"/*/mail ; do        # process all mails
     NDX=$((NDX + 1))
-    send_queued_mail "$(basename "$M" .mail)" "$NDX"     # send mail - pass {id} only
+    send_queued_mail "$(dirname "$M")" "$NDX"     # send mail - pass {id} only
   done
   if [ "$NDX" = 0 ] && [ -z "$1" ]; then  # queue is empty. inform user (if not running in sendmail mode)
     dsp '' 'mail queue is empty (nothing to send)' ''
@@ -444,8 +444,8 @@ display_queue() {      # <-- { 'purge' | 'send' } (op label) ; { 'rec' } (record
 
   local M ID
 
-  for M in "$MSMTPQ_Q"/*.mail ; do   # cycle through each
-    ID="$(basename "$M" .mail)"      # take mail id from filename
+  for M in "$MSMTPQ_Q"/*/mail ; do   # cycle through each
+    ID="$(dirname "$M")"      # take mail id from filename
     CNT="$((CNT + 1))"
     dsp '' "mail  num=[ $CNT ]  id=[ $ID ]"                  # show mail id ## patch in
     'grep' -E -s -h -m 3 '(^From:|^To:|^Subject:)' "$M" || true
@@ -468,7 +468,7 @@ purge_queue() {
   display_queue 'purge'              # show queue contents
   if ok -n 'remove (purge) all mail from the queue' ; then
     lock_queue                       # lock here
-    'rm' -f "$MSMTPQ_Q"/*.*
+    'rm' -rf "$MSMTPQ_Q"/*
     log 'msmtp queue purged (all mail)'
     lock_queue -u                    # unlock here
   else
@@ -527,7 +527,8 @@ select_mail() {  # <-- < 'purge' | 'send' >
           "        id=[ $ID ]" '' ; then             # confirm mail op
       if [ "$1" = 'purge' ] ; then                   # purging
         lock_queue                                   # lock here
-        'rm' -f "$MSMTPQ_Q"/"$ID".*                  # msmtp - nukes single mail (both files) in queue
+        'rm' -rf "$MSMTPQ_Q"/"$ID"/                  # msmtp - nukes single mail
+                                                     # (both files and the continaing dir) in queue
         log "mail [ $ID ] purged from queue"         # log op
         lock_queue -u                                # unlock here
         ALT='t'                                      # mark that a queue alteration has taken place
@@ -556,33 +557,67 @@ select_mail() {  # <-- < 'purge' | 'send' >
 #
 
 ## ('sendmail' mode only)
-## make base filename id for queue
+## make base directory id for queue
+## sets global variables ID and FQP
+## FQP will be a fresh directory under MSMTPQ_Q in which to store the new mail
+## ID is a unique id (the dirname of FQP) to use in user-facing messages
 ##
 make_id() {
+  ID="$(date +%Y-%m-%d-%H.%M.%S)"    # shared prefix for IDs
+
+  # mktemp(1) exists since OpenBSD 2.1, circa 1997, and has been taken up by
+  # most platforms since then, see https://stackoverflow.com/a/2792789
+  # It has the advantage of ensuring the chosen file/directory doesn't already
+  # exist (preventing TOCTOU attacks) and using high randomness for its choice
+  # (preventing DOS attacks), see
+  # https://owasp.org/www-community/vulnerabilities/Insecure_Temporary_File
+  #
+  # Unfortunately, the various ports have slightly divergent semantics.
+  # The combination -d -p should be portable to most platforms, but eg HP/UX's
+  # implementation is difficult to support here.
+  # Unfortunately -t is in the incompatible set, but the variants are few --
+  # the BSD-derived mktemp's expect -t to be passed a prefix to which randomness
+  # is appended, the GNU mktemp expects -t to be passed a template with X's to
+  # mark where to substitute randomness in.
+  if FQP="$(mktemp -d -p "${MSMTPQ_Q}" -t "$ID" 2>&- ||
+            mktemp -d -p "${MSMTPQ_Q}" -t "$ID".XXXXXX)"; then
+    ID="${FQP##*/}"
+    return
+  fi
+
+  # mktemp doesn't exist, for backwards compatibility we hack a
+  # reasonably-unique fallback
+
   local -i INC                       # increment counter for (possible) base fqp name collision
 
-  ID="$(date +%Y-%m-%d-%H.%M.%S)"    # make filename id for queue    (global
-  FQP="${MSMTPQ_Q}/$ID"              # make fully qualified pathname  vars)
-  ## Philipp Hartwig patch #1
-  if [ -f "${FQP}.mail" ] || [ -f "${FQP}.msmtp" ] ; then    # ensure fqp name is unique
-    INC=1                            # initial increment
-      while [ -f "${FQP}-${INC}.mail" ] || [ -f "${FQP}-${INC}.msmtp" ] ; do # fqp name w/incr exists
-        INC=$((INC + 1))             # bump increment
-      done
-      ID="${ID}-${INC}"              # unique ; set id
-      FQP="${FQP}-${INC}"            # unique ; set fqp name
-  fi
+  # add randomness to id to reduce result guessability and collisions likelihood
+  # (LC_ALL is set to prevent OSX complaining that urandom is invalid UTF8)
+  ID="$ID"."$(LC_ALL=C tr -dc A-Za-z0-9 </dev/urandom | head -c 6)"
+  FQP="${MSMTPQ_Q}/$ID"              # make fully qualified pathname
+  mkdir "${FQP}" 2>&-
+  while # loop to avoid TOCTOU
+    if ! [ -f "${FQP}/mail" ] && ! [ -f "${FQP}/msmtp" ]; then
+      break
+    fi
+    INC=1
+    while [ -f "${FQP}-${INC}/mail" ] || [ -f "${FQP}-${INC}/msmtp" ] ; do # scan for fresh increment
+      INC=$((INC + 1))             # bump increment
+    done
+    ID="${ID}-${INC}"              # looks unique ; set id
+    FQP="${FQP}-${INC}"            # looks unique ; set fqp name
+    mkdir "${FQP}" 2>&-
+  do true; done
 }
 
 ## ('sendmail' mode only)
 ## enqueue a mail
 ##
 enqueue_mail() { # <-- all mail args ; mail text via TMP
-  if echo "$@" > "${FQP}.msmtp" ; then      # write msmtp command line to queue .msmtp file
-    log "enqueued mail as : [ $ID ] ( $* )" # (queue .mail file is already there)
+  if echo "$@" > "${FQP}/msmtp" ; then      # write msmtp command line to queue msmtp file
+    log "enqueued mail as : [ $ID ] ( $* )" # (queue mail file is already there)
   else                                      # write failed ; bomb
     log -e "$?" "queueing - writing msmtp cmd line { $* }"\
-                "           to [ ${ID}.msmtp ] : failed"
+                "           to [ ${ID}/msmtp ] : failed"
   fi
 }
 
@@ -600,13 +635,13 @@ send_mail() {    # <-- all mail args ; mail text via TMP
     }
   }
 
-  if "$MSMTP" "$@" < "${FQP}.mail" > /dev/null ; then      # send mail using queue .mail fil
+  if "$MSMTP" "$@" < "${FQP}/mail" > /dev/null ; then      # send mail using queue mail fil
     log "mail for [ $* ] : sent successfully"          # log it
-    'rm' -f "${FQP}".*               # remove all queue mail files .mail & .msmtp file
+    'rm' -rf "${FQP}"                # remove all queue mail files mail & msmtp file
     run_queue 'sm'                   # run/flush any other mails in queue
   else                               # send failed - the mail stays in the queue
     log "mail for [ $* ] : sending FAILED as msmtp exited with $?"\
-        "enqueued mail as : [ $ID ] ( $* )"    # (queue .mail file is already there)
+        "enqueued mail as : [ $ID ] ( $* )"    # (queue mail file is already there)
   fi
 }
 
@@ -618,13 +653,13 @@ send_mail() {    # <-- all mail args ; mail text via TMP
 if [ ! "$1" = '--q-mgmt' ] ; then    # msmtpq - sendmail mode
   lock_queue                         # lock here
   make_id                            # make base queue filename id for this mail
-  # write mail body text to queue .mail file
-  cat > "${FQP}.mail" || \
-    log -e "$?" "creating mail body file [ ${FQP}.mail ] : failed" # test for error
-  # write msmtp command line to queue .msmtp file
-  echo "$@" > "${FQP}.msmtp" || \
+  # write mail body text to queue mail file
+  cat > "${FQP}/mail" || \
+    log -e "$?" "creating mail body file [ ${FQP}/mail ] : failed" # test for error
+  # write msmtp command line to queue msmtp file
+  echo "$@" > "${FQP}/msmtp" || \
     log -e "$?" "creating msmtp cmd line file { $* }"\
-                "           to [ ${ID}.msmtp ] : failed" # test for error
+                "           to [ ${ID}/msmtp ] : failed" # test for error
   send_mail "$@"                     # send the mail if possible, queue it if not
   lock_queue -u                      # unlock here
 else                                 # msmtp-queue - queue management mode

@@ -92,24 +92,6 @@ fi
 IFS=$' \n\t'
 PS4='+\t '
 
-# desktop notifications handling
-if [ -n "$NOTIFY_SEND_VERBOSE" ]; then
-  NOTIFY_SEND=1
-fi
-
-if [ -z "$NOTIFY_SEND" ] && [ ! -t 0 ] && [ -n "$DISPLAY" ] && command -v notify-send >/dev/null 2>&1; then
-  NOTIFY_SEND=1
-fi
-
-if [ "$NOTIFY_SEND" = 1 ]; then
-  # if [ -z "$DISPLAY" ] || [ -z "$WAYLAND_DISPLAY" ]; then
-  #   err "NOTIFY_SEND=1 set but no display available!"
-  # fi
-  if ! command -v notify-send >/dev/null 2>&1; then
-    err "NOTIFY_SEND=1 set but notify-send unavailable!"
-  fi
-fi
-
 log_later() { LOG_LATER_ARGS=( "$@" ) ; }
 echo_msg() {
   local L
@@ -135,6 +117,24 @@ err() {
     notify-send "${BASH_SOURCE[0]}:" "$msg" || true
   fi
 }
+
+# desktop notifications handling
+if [ -n "$NOTIFY_SEND_VERBOSE" ]; then
+  NOTIFY_SEND=1
+fi
+
+if [ -z "$NOTIFY_SEND" ] && [ ! -t 0 ] && [ -n "$DISPLAY" ] && command -v notify-send >/dev/null 2>&1; then
+  NOTIFY_SEND=1
+fi
+
+if [ "$NOTIFY_SEND" = 1 ]; then
+  # if [ -z "$DISPLAY" ] || [ -z "$WAYLAND_DISPLAY" ]; then
+  #   err "NOTIFY_SEND=1 set but no display available!"
+  # fi
+  if ! command -v notify-send >/dev/null 2>&1; then
+    err "NOTIFY_SEND=1 set but notify-send unavailable!"
+  fi
+fi
 
 ## ======================================================================================
 ##      !!!          please define or confirm the following three vars           !!!

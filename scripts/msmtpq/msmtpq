@@ -563,21 +563,27 @@ select_mail() {  # <-- < 'purge' | 'send' >
 
 ## ('sendmail' mode only)
 ## make base filename id for queue
+## sets global variables ID and FQP=$MSMTPQ_Q/$ID
+## it is guaranteed that $FQP.mail, $FQP.msmtp both didn't exist before
+## (they will be created empty so as to avoid collisions)
+## these should be used for writing a new mail item
 ##
 make_id() {
   local -i INC                       # increment counter for (possible) base fqp name collision
 
-  ID="$(date +%Y-%m-%d-%H.%M.%S)"    # make filename id for queue    (global
+  ID="$(date +%Y-%m-%d-%H.%M.%S)"-"$(uuidgen)"   # make id for queue (global
   FQP="${MSMTPQ_Q}/$ID"              # make fully qualified pathname  vars)
-  ## Philipp Hartwig patch #1
-  if [ -f "${FQP}.mail" ] || [ -f "${FQP}.msmtp" ] ; then    # ensure fqp name is unique
-    INC=1                            # initial increment
-      while [ -f "${FQP}-${INC}.mail" ] || [ -f "${FQP}-${INC}.msmtp" ] ; do # fqp name w/incr exists
-        INC=$((INC + 1))             # bump increment
-      done
-      ID="${ID}-${INC}"              # unique ; set id
-      FQP="${FQP}-${INC}"            # unique ; set fqp name
-  fi
+  # ensure $FQP.* don't exist
+  while
+    # Append -$INC if INC is set
+    fqp="$FQP${INC+-}$INC"
+    id="$ID${INC+-}$INC"
+    [ -f "${FQP}.mail" ] || [ -f "${FQP}.msmtp" ]
+  do INC=$((INC + 1)); done
+  touch "${FQP}".{mail,msmtp} # Create the queue files already to prevent them
+                              # being picked by another msmtpq instance
+  FQP="$fqp"
+  ID="$id"
 }
 
 ## ('sendmail' mode only)

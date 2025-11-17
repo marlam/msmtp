@@ -474,7 +474,7 @@ purge_queue() {
   display_queue 'purge'              # show queue contents
   if ok -n 'remove (purge) all mail from the queue' ; then
     lock_queue                       # lock here
-    'rm' -f "$MSMTPQ_Q"/*.*
+    'rm' -f "$MSMTPQ_Q"/*.{mail,msmtp}
     log 'msmtp queue purged (all mail)'
     lock_queue -u                    # unlock here
   else
@@ -533,7 +533,7 @@ select_mail() {  # <-- < 'purge' | 'send' >
           "        id=[ $ID ]" '' ; then             # confirm mail op
       if [ "$1" = 'purge' ] ; then                   # purging
         lock_queue                                   # lock here
-        'rm' -f "$MSMTPQ_Q"/"$ID".*                  # msmtp - nukes single mail (both files) in queue
+        'rm' -f "$MSMTPQ_Q"/"$ID".{mail,msmtp}       # msmtp - nukes single mail (both files) in queue
         log "mail [ $ID ] purged from queue"         # log op
         lock_queue -u                                # unlock here
         ALT='t'                                      # mark that a queue alteration has taken place
@@ -608,7 +608,7 @@ send_mail() {    # <-- all mail args ; mail text via TMP
 
   if "$MSMTP" "$@" < "${FQP}.mail" > /dev/null ; then      # send mail using queue .mail fil
     log "mail for [ $* ] : sent successfully"          # log it
-    'rm' -f "${FQP}".*               # remove all queue mail files .mail & .msmtp file
+    'rm' -f "${FQP}".{mail,msmtp}    # remove all queue mail files .mail & .msmtp file
     run_queue 'sm'                   # run/flush any other mails in queue
   else                               # send failed - the mail stays in the queue
     log "mail for [ $* ] : sending FAILED as msmtp exited with $?"\

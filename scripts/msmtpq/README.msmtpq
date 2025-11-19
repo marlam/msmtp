@@ -148,6 +148,8 @@ set sendmail = "EMAIL_CONN_TEST=s /path/to/msmtpq"
                  #  may not be a serious consideration, however, on
                  #  single user workstations - e.g. on laptops -
                  #  or in embedded systems)
+set sendmail = "EMAIL_CONN_TEST=q /path/to/msmtpq"
+                 # forces to queue all emails
 
 set sendmail = "EMAIL_QUEUE_QUIET=t /path/to/msmtpq"
                  # use queue ; suppress messages and 'chatter'

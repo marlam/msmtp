@@ -56,7 +56,7 @@
 ## ======================================================================================
 ##
 #EMAIL_CONN_NOTEST=y                 # deprecated ; use below var
-#EMAIL_CONN_TEST={x| |p|P|n|s}       # see settings above for EMAIL_CONN_TEST
+#EMAIL_CONN_TEST={x| |p|P|n|s|q}     # see settings above for EMAIL_CONN_TEST
 ## ======================================================================================
 
 ## two essential patches by Philipp Hartwig
@@ -320,6 +320,8 @@ connect_test() {
     # thank you to Brian Goose, on the list, for encouraging this
     exec 3<>/dev/udp/debian.org/80 || return 1                 # open socket on site ; use dns
     exec 3<&- ; exec 3>&-                                      # close socket
+  elif [ "$EMAIL_CONN_TEST" = 'q' ] ; then                     # Force it to queue
+    return 1
   fi
   return 0
 }

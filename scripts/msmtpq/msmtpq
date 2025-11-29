@@ -472,7 +472,7 @@ purge_queue() {
   display_queue 'purge'              # show queue contents
   if ok -n 'remove (purge) all mail from the queue' ; then
     lock_queue                       # lock here
-    'rm' -f "$MSMTPQ_Q"/*.*
+    'rm' -f "$MSMTPQ_Q"/*.{mail,msmtp}
     log 'msmtp queue purged (all mail)'
     lock_queue -u                    # unlock here
   else
@@ -531,7 +531,7 @@ select_mail() {  # <-- < 'purge' | 'send' >
           "        id=[ $ID ]" '' ; then             # confirm mail op
       if [ "$1" = 'purge' ] ; then                   # purging
         lock_queue                                   # lock here
-        'rm' -f "$MSMTPQ_Q"/"$ID".*                  # msmtp - nukes single mail (both files) in queue
+        'rm' -f "$MSMTPQ_Q"/"$ID".{mail,msmtp}       # msmtp - nukes single mail (both files) in queue
         log "mail [ $ID ] purged from queue"         # log op
         lock_queue -u                                # unlock here
         ALT='t'                                      # mark that a queue alteration has taken place
@@ -561,21 +561,27 @@ select_mail() {  # <-- < 'purge' | 'send' >
 
 ## ('sendmail' mode only)
 ## make base filename id for queue
+## sets global variables ID and FQP=$MSMTPQ_Q/$ID
+## it is guaranteed that $FQP.mail, $FQP.msmtp both didn't exist before
+## (they will be created empty so as to avoid collisions)
+## these should be used for writing a new mail item
 ##
 make_id() {
   local -i INC                       # increment counter for (possible) base fqp name collision
 
-  ID="$(date +%Y-%m-%d-%H.%M.%S)"    # make filename id for queue    (global
+  ID="$(date +%Y-%m-%d-%H.%M.%S)"-"$(uuidgen)"   # make id for queue (global
   FQP="${MSMTPQ_Q}/$ID"              # make fully qualified pathname  vars)
-  ## Philipp Hartwig patch #1
-  if [ -f "${FQP}.mail" ] || [ -f "${FQP}.msmtp" ] ; then    # ensure fqp name is unique
-    INC=1                            # initial increment
-      while [ -f "${FQP}-${INC}.mail" ] || [ -f "${FQP}-${INC}.msmtp" ] ; do # fqp name w/incr exists
-        INC=$((INC + 1))             # bump increment
-      done
-      ID="${ID}-${INC}"              # unique ; set id
-      FQP="${FQP}-${INC}"            # unique ; set fqp name
-  fi
+  # ensure $FQP.* don't exist
+  while
+    # Append -$INC if INC is set
+    fqp="$FQP${INC+-}$INC"
+    id="$ID${INC+-}$INC"
+    [ -f "${FQP}.mail" ] || [ -f "${FQP}.msmtp" ]
+  do INC=$((INC + 1)); done
+  touch "${FQP}".{mail,msmtp} # Create the queue files already to prevent them
+                              # being picked by another msmtpq instance
+  FQP="$fqp"
+  ID="$id"
 }
 
 ## ('sendmail' mode only)
@@ -606,7 +612,7 @@ send_mail() {    # <-- all mail args ; mail text via TMP
 
   if "$MSMTP" "$@" < "${FQP}.mail" > /dev/null ; then      # send mail using queue .mail fil
     log "mail for [ $* ] : sent successfully"          # log it
-    'rm' -f "${FQP}".*               # remove all queue mail files .mail & .msmtp file
+    'rm' -f "${FQP}".{mail,msmtp}    # remove all queue mail files .mail & .msmtp file
     run_queue 'sm'                   # run/flush any other mails in queue
   else                               # send failed - the mail stays in the queue
     log "mail for [ $* ] : sending FAILED as msmtp exited with $?"\

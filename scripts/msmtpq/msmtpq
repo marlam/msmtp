@@ -129,7 +129,7 @@ fi
 
 if [ "$NOTIFY_SEND" = 1 ]; then
   if [ -z "$DBUS_SESSION_BUS_ADDRESS" ]; then
-    err "NOTIFY_SEND=1 set but no DBUS sesion address available!"
+    err "NOTIFY_SEND=1 set but no DBUS session address available!"
   fi
   if ! command -v notify-send >/dev/null 2>&1; then
     err "NOTIFY_SEND=1 set but notify-send unavailable!"

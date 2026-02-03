@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client.
  *
- * Copyright (C) 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025
+ * Copyright (C) 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -372,8 +372,22 @@ int msmtpd_session(log_t* log,
         return 1;
     }
 
+    /* allow unlimited NOOP or RSET before anything interesting happens */
+    for (;;) {
+        if (strcasecmp(buf, "NOOP") == 0 || strcasecmp(buf, "RSET") == 0) {
+            fprintf(out, "250 Ok\r\n");
+            if (read_smtp_cmd(in, buf, SMTP_BUFSIZE) != 0) {
+                log_msg(log, log_error, "client did not send command after NOOP or RSET, session aborted");
+                return 1;
+            }
+        } else {
+            break;
+        }
+    }
+
+    /* authentication */
     if (user) {
-        if (strcmp(buf, "QUIT") == 0) {
+        if (strcasecmp(buf, "QUIT") == 0) {
             fprintf(out, "221 Bye\r\n");
             log_msg(log, log_info, "client ended session");
             return 0;
@@ -423,7 +437,23 @@ int msmtpd_session(log_t* log,
         }
     }
 
+    /* mail transactions */
     for (;;) {
+
+        /* allow unlimited NOOP or RSET before the transaction;
+         * note that we do not support either command within a transaction (for simplicity) */
+        for (;;) {
+            if (strcasecmp(buf, "NOOP") == 0 || strcasecmp(buf, "RSET") == 0) {
+                fprintf(out, "250 Ok\r\n");
+                if (read_smtp_cmd(in, buf, SMTP_BUFSIZE) != 0) {
+                    log_msg(log, log_error, "client did not send command after NOOP or RSET, session aborted");
+                    return 1;
+                }
+            } else {
+                break;
+            }
+        }
+
         cmd_index = 0;
         envfrom_was_handled = 0;
         recipient_was_seen = 0;
@@ -766,7 +796,7 @@ int main(int argc, char* argv[])
     }
     if (print_version) {
         printf("msmtpd version %s\n", VERSION);
-        printf("Copyright (C) 2021 Martin Lambers.\n"
+        printf("Copyright (C) 2026 Martin Lambers.\n"
                 "This is free software.  You may redistribute copies of it under the terms of\n"
                 "the GNU General Public License <http://www.gnu.org/licenses/gpl.html>.\n"
                 "There is NO WARRANTY, to the extent permitted by law.\n");

@@ -80,6 +80,8 @@ else
 fi
 if test "$found_res_query" = "yes"; then
     AC_DEFINE([HAVE_LIBRESOLV], [1], [Define to 1 if libresolv is available])
+else
+    case "${target}" in *-*-mingw*) LIBS="$LIBS -ldnsapi" ;; esac
 fi
 
 dnl pkg-config (required to detect libraries)
@@ -95,11 +97,12 @@ want_tls="yes"
 want_gnutls="yes"
 want_openssl="no"
 want_libtls="no"
+want_sspi="no"
 tls_CFLAGS=""
 tls_LIBS=""
 with_ssl_was_used=no
-AC_ARG_WITH([tls], [AS_HELP_STRING([--with-tls=[gnutls|openssl|libtls|no]],
-    [TLS support: GnuTLS (default), OpenSSL (discouraged), libtls, or none.])],
+AC_ARG_WITH([tls], [AS_HELP_STRING([--with-tls=[gnutls|openssl|libtls|sspi|no]],
+    [TLS support: GnuTLS (default), OpenSSL (discouraged), libtls, SSPI (Schannel), or none.])],
     if test "$withval" = "gnutls"; then
 	want_tls=yes
 	want_gnutls=yes
@@ -115,13 +118,17 @@ AC_ARG_WITH([tls], [AS_HELP_STRING([--with-tls=[gnutls|openssl|libtls|no]],
 	want_gnutls=no
 	want_openssl=no
 	want_libtls=yes
+    elif test "$withval" = "sspi"; then
+	want_tls=yes
+	want_gnutls=no
+        want_sspi=yes
     elif test "$withval" = "no"; then
 	want_tls=no
 	want_gnutls=no
 	want_openssl=no
 	want_libtls=no
     else
-	AC_MSG_ERROR([Use --with-tls=gnutls or --with-tls=openssl or --with-tls=libtls or --with-tls=no])
+        [AC_MSG_ERROR([Invalid --with-tls=$withval. Use --with-tls=gnutls|openssl|libtls|sspi|no])]
     fi)
 if test "$want_gnutls" = "yes"; then
     PKG_CHECK_MODULES([libgnutls], [gnutls >= 3.7.2], [HAVE_LIBGNUTLS=1], [HAVE_LIBGNUTLS=0])
@@ -166,15 +173,23 @@ if test "$want_libtls" = "yes" -a "$have_tls" = "no"; then
 	AC_DEFINE([HAVE_LIBTLS], [1], [Define to 1 if libtls is available])
     fi
 fi
+if test "$want_sspi" = "yes"; then
+   have_tls="yes"
+   tls_lib="Schannel"
+   tls_LIBS="-lsecur32 -lcrypt32"
+   AC_DEFINE([HAVE_LIBSSL], [1], [Define to 1 if libssl is available])
+fi
 if test "$have_tls" = "yes"; then
     AC_DEFINE([HAVE_TLS], [1], [Define to 1 to build with TLS/SSL support])
 elif test "$want_tls" = "yes"; then
     AC_MSG_WARN([Disabling TLS support, which is very bad. Consider using GnuTLS!])
 fi
+AC_DEFINE_UNQUOTED([TLS_LIB], ["$tls_lib"], [TLS library used])
 AM_CONDITIONAL([HAVE_TLS], [test "$have_tls" = "yes"])
 AM_CONDITIONAL([HAVE_GNUTLS], [test "$tls_lib" = "GnuTLS"])
 AM_CONDITIONAL([HAVE_OPENSSL], [test "$tls_lib" = "OpenSSL"])
 AM_CONDITIONAL([HAVE_LIBTLS], [test "$tls_lib" = "libtls"])
+AM_CONDITIONAL([HAVE_SSPI], [test "$tls_lib" = "Schannel"])
 AC_SUBST([tls_CFLAGS])
 AC_SUBST([tls_LIBS])
 
@@ -262,17 +277,21 @@ if test "$libidn" != "no"; then
 	AC_MSG_WARN([$libidn_PKG_ERRORS])
 	AC_MSG_WARN([libidn is provided by GNU Libidn])
 	libidn="no"
+	case "${target}" in *-*-mingw*)
+             AC_MSG_WARN([Using Windows native IDN support])
+             want_libidn=no
+        esac
     else
 	libidn="yes"
 	AC_DEFINE([HAVE_LIBIDN], [1], [Define to 1 if libidn is available])
     fi
 fi
 
-dnl libsecret support (requires pkg-config).
-AC_ARG_WITH([libsecret], [AS_HELP_STRING([--with-libsecret],
-	[Support libsecret (GNOME password management)])],
-    [libsecret=$withval],[libsecret=yes])
-if test "$libsecret" != "no"; then
+AC_ARG_WITH([vault], [AS_HELP_STRING([--with-vault=libsecret|macosx-keyring|credman|no],
+    [Password vault support: libsecret (GNOME password management), Mac OS X Keyring, Windows Credential Manager, or none.])],
+    [vault=$withval], [vault=none])
+AS_CASE([$vault],
+[libsecret], [
     PKG_CHECK_MODULES([libsecret], [libsecret-1], [HAVE_LIBSECRET=1], [HAVE_LIBSECRET=0])
     if test "$HAVE_LIBSECRET" != "1"; then
 	AC_MSG_WARN([library libsecret not found:])
@@ -283,13 +302,7 @@ if test "$libsecret" != "no"; then
 	libsecret="yes"
 	AC_DEFINE([HAVE_LIBSECRET], [1], [Define to 1 if libsecret is available])
     fi
-fi
-
-dnl MacOS X Keychain Services (Security Framework)
-AC_ARG_WITH([macosx-keyring], [AS_HELP_STRING([--with-macosx-keyring],
-	[Support Mac OS X Keyring])],
-    [macosx_keyring=$withval],[macosx_keyring=yes])
-if test "$macosx_keyring" != "no"; then
+], [macosx_keyring], [
     AC_CACHE_CHECK([for SecKeychainGetVersion],
 	ac_cv_func_SecKeychainGetVersion,
 	[ac_save_LIBS="$LIBS"
@@ -304,7 +317,17 @@ if test "$macosx_keyring" != "no"; then
     else
 	macosx_keyring=no
     fi
-fi
+], [credman], [
+    credman=yes
+    LIBS="$LIBS -lcredui -lole32"
+    AC_DEFINE([USE_CREDMAN], [1], [Define to 1 if you want to use Windows Credential Manager])
+], [none], [
+    libsecret="no"
+    macosx_keyring=no
+    credman=no
+],
+    [AC_MSG_ERROR([Invalid --with-vault=$vault. Use --with-vault=libsecret|macosx-keyring|credman|no])]
+)
 
 dnl Check if msmtpd should be built
 AC_ARG_WITH([msmtpd],
@@ -329,6 +352,5 @@ echo "NLS support ............ : $USE_NLS"
 echo "TLS support ............ : $have_tls (Library: $tls_lib)"
 echo "IDN support ............ : $libidn"
 echo "GNU SASL support ....... : $libgsasl"
-echo "Libsecret support (GNOME): $libsecret"
-echo "MacOS X Keychain support : $macosx_keyring"
-echo "Build msmtpd ............: $build_msmtpd"
+echo "Password vault ......... : $vault"
+echo "Build msmtpd ........... : $build_msmtpd"

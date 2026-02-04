@@ -1,0 +1,181 @@
+name: Windows build
+
+on: [push, pull_request]
+
+jobs:
+  libressl:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+    - name: Check out repository code
+      uses: actions/checkout@v4
+    - uses: msys2/setup-msys2@v2
+      with:
+        msystem: UCRT64
+        update: true
+        install: >-
+          mingw-w64-ucrt-x86_64-gcc
+          mingw-w64-ucrt-x86_64-libidn2
+          mingw-w64-ucrt-x86_64-libressl
+          pkgconf
+          automake
+          autoconf
+          make
+          texinfo
+    - name: Build
+      run: |
+        autoreconf -i
+        ./configure --with-tls=openssl --with-libidn --prefix=/ libssl_CFLAGS=-I/ucrt64/include/libressl "libssl_LIBS=-llibressl -L@prefix/lib -llibrecrypto" "CFLAGS=-Wno-incompatible-pointer-types -DNOCRYPT"
+        make
+        make install-strip DESTDIR=/d/a/msmtp/tmp
+        cp `ldd src/msmtp | awk '/\/ucrt64/ {print $3}' | uniq` /d/a/msmtp/tmp/bin/
+    - name: Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: msmtp-libressl
+        path: D:\a\msmtp\tmp\
+  nls:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+    - name: Check out repository code
+      uses: actions/checkout@v4
+    - name: Install build dependencies
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: UCRT64
+        update: true
+        install: >-
+          mingw-w64-ucrt-x86_64-gcc
+          pkgconf
+          automake
+          autoconf
+          make
+          texinfo
+    - name: Build
+      run: |
+        autoreconf -i
+        mkdir nls && cd nls
+        # The only function from libwinpthread is clock_gettime()
+        ../configure --with-tls=sspi LDFLAGS=-Wl,-Bstatic,-lwinpthread CFLAGS=-DFIXME1
+        make
+        cd .. && mkdir norm && cd norm
+        ../configure --with-tls=sspi LDFLAGS=-Wl,-Bstatic,-lwinpthread
+        make
+    - name: Set locale
+      shell: pwsh
+      run: |
+        Set-WinSystemLocale -SystemLocale ru-RU
+    - name: Test IDN fixme
+      continue-on-error: true
+      run: |
+        nls/src/msmtp --debug --serverinfo --tls --host=mx3.почта.рус --port=1234 > output.log 2>&1 || true
+        cat output.log | iconv -f cp1251 -t utf-8
+        grep -q 'connection refused' output.log && echo 🎉 The host was found successfully but the connection was refused.
+    - name: Test IDN fixme 2
+      continue-on-error: true
+      run: |
+        nls/src/msmtp --debug --serverinfo --tls --host=mx3.почта.рус --port=1234
+    - name: Test IDN norm 2
+      continue-on-error: true
+      run: |
+        norm/src/msmtp --debug --serverinfo --tls --host=mx3.почта.рус --port=1234
+  native:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+    - name: Check out repository code
+      uses: actions/checkout@v4
+    - name: Install build dependencies
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: UCRT64
+        update: true
+        install: >-
+          mingw-w64-ucrt-x86_64-gcc
+          pkgconf
+          automake
+          autoconf
+          make
+          texinfo
+    - name: Configure
+      run: |
+        autoreconf -i
+        # The only function from libwinpthread is clock_gettime()
+        ./configure --with-tls=sspi --with-vault=credman --disable-nls LDFLAGS=-Wl,-Bstatic,-lwinpthread
+    - name: Build
+      run: |
+        make
+        strip --strip-all src/msmtp.exe
+    - name: List SO imports
+      run: |
+        ldd src/msmtp
+        src/msmtp --version
+    - name: Test DNS SRV record lookup
+      continue-on-error: true
+      run: |
+        src/msmtp --configure user@gmail.com | tee output.log
+        grep -q 'port 587' output.log && echo 🎉 Success
+    - name: Get server info
+      continue-on-error: true
+      run: |
+        src/msmtp --serverinfo --tls --host=smtp.gmail.com --port=587 | tee output.log
+        grep -q 'ESMTP' output.log && echo 🎉 Success
+    - name: Limit to TLSv1.2
+      continue-on-error: true
+      run: |
+        src/msmtp --serverinfo --tls-priorities=PROTOCOLS=TLSv1.2 --tls --host=smtp.gmail.com --port=587 | tee output.log
+        grep -q 'TLS1\.2' output.log && echo 🎉 Success
+    - name: Test with wrong host on certificate
+      continue-on-error: true
+      run: |
+        src/msmtp --serverinfo --tls --tls-starttls=off --host=wrong.host.badssl.com --port=443 2>&1 | tee output.log || true
+        grep -q 'the certificate owner does not match hostname' output.log && echo 🎉 Success
+    - name: Test with revoked certificate
+      continue-on-error: true
+      run: |
+        src/msmtp --serverinfo --tls --tls-starttls=off --host=revoked.badssl.com --port=443 2>&1 | tee output.log || true
+        grep -q 'revoked' output.log && echo 🎉 Success
+    - name: Test with expired certificate
+      continue-on-error: true
+      run: |
+        src/msmtp --serverinfo --tls --tls-starttls=off --host=expired.badssl.com --port=443 2>&1 | tee output.log || true
+        grep -q 'expired' output.log && echo 🎉 Success
+    - name: Test with self-signed certificate
+      continue-on-error: true
+      run: |
+        src/msmtp --serverinfo --tls --tls-starttls=off --host=self-signed.badssl.com --port=443 2>&1 | tee output.log || true
+        grep -q 'not trusted' output.log && echo 🎉 Success
+    - name: Test with non-secure protocol
+      continue-on-error: true
+      run: src/msmtp --serverinfo --tls --tls-starttls=off --host=dh480.badssl.com --port=443
+    - name: Set locale
+      shell: pwsh
+      run: |
+        Set-WinSystemLocale -SystemLocale ru-RU
+    - name: Test IDN
+      continue-on-error: true
+      run: |
+        src/msmtp --debug --serverinfo --tls --host=mx3.почта.рус --port=1234 > output.log 2>&1 || true
+        cat output.log | iconv -f cp1251 -t utf-8
+        grep -q 'connection refused' output.log && echo 🎉 The host was found successfully but the connection was refused.
+    - name: Upload release to GitHub
+      if: github.ref_type == 'tag'
+      shell: pwsh
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        7z a msmtp-native.zip src\msmtp.exe
+        gh release create ${{ github.ref_name }} --generate-notes || echo "Release already exists!"
+        gh release upload ${{ github.ref_name }} msmtp-native.zip#Windows native support for DNS-based configufation, IDN, and Schannel SSP for TLS
+    - name: Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: msmtp-native
+        path: src/msmtp.exe

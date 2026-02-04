@@ -32,6 +32,9 @@ endif
 if HAVE_LIBTLS
 msmtp_SOURCES += mtls-libtls.c
 endif
+if HAVE_SSPI
+msmtp_SOURCES += mtls-sspi.c
+endif
 
 AM_CPPFLAGS = $(tls_CFLAGS) $(libgsasl_CFLAGS) $(libidn2_CFLAGS) $(libsecret_CFLAGS)
 

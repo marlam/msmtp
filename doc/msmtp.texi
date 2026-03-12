@@ -438,7 +438,7 @@ The SMTP server must support the DSN extension.
 @item set_from_header [(auto|on|off)]
 @cmindex set_from_header
 When to set a From header: @samp{auto} adds a From header if the mail does not
-have one (this is the default), @samp{on\} always sets a From header and overrides
+have one (this is the default), @samp{on} always sets a From header and overrides
 any existing one, and @samp{off} never sets a From header.@*
 If the mail server rejects the mail because its From header does not match the
 envelope from address (a common anti-spam measure), then you might want to set

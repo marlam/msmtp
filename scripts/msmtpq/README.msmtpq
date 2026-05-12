@@ -158,6 +158,9 @@ set sendmail = "EMAIL_CONN_TEST=P /path/to/msmtpq"
 set sendmail = "EMAIL_CONN_TEST=n /path/to/msmtpq"
                  # use queue with netcat connection test
                  # (netcat must be installed on user's system)
+set sendmail = "EMAIL_CONN_TEST=c /path/to/msmtpq"
+                 # use queue with curl connection test
+                 # (curl must be installed on user's system)
 set sendmail = "EMAIL_CONN_TEST=s /path/to/msmtpq"
                  # use queue with sh sockets connection test
                  # (this does *not* work on Debian systems ;

@@ -39,6 +39,7 @@
 ##                       if =p or unset will use a ping test (debian.org) for a connection
 ##                       if =P will use a fast ping test (8.8.8.8) for a connection
 ##                       if =n will use netcat (nc) to test for a connection
+##                       if =c will use curl to test for a connection
 ##                       if =s will use bash sockets to test for a connection
 ##   EMAIL_QUEUE_QUIET   if set will cause suppression of messages and 'chatter'
 ##                         (perhaps useful for some of the emacs mail clients)
@@ -56,7 +57,7 @@
 ## ======================================================================================
 ##
 #EMAIL_CONN_NOTEST=y                 # deprecated ; use below var
-#EMAIL_CONN_TEST={x| |p|P|n|s|q}     # see settings above for EMAIL_CONN_TEST
+#EMAIL_CONN_TEST={x| |p|P|n|c|s|q}     # see settings above for EMAIL_CONN_TEST
 ## ======================================================================================
 
 ## two essential patches by Philipp Hartwig
@@ -311,6 +312,11 @@ connect_test() {
     command -v nc >/dev/null 2>&1 || \
       log -e 1 "msmtpq : can't find netcat executable [ nc ]"
     'nc' -vz -w 5 www.debian.org 80 >/dev/null 2>&1 || return 1
+  elif [ "$EMAIL_CONN_TEST" = 'c' ] ; then                     # use curl test, for iphone hotspot
+    # must, of course, have curl installed
+    command -v curl >/dev/null 2>&1 || \
+      log -e 1 "msmtpq : can't find curl executable [ curl ]"
+    curl -sSfI https://www.debian.org/ -o /dev/null || return 1
   elif [ "$EMAIL_CONN_TEST" = 's' ] ; then                     # use sh sockets test
     # note that this does not work on debian systems
     #   where bash opened sockets are suppressed for security

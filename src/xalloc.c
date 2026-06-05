@@ -3,7 +3,7 @@
  *
  * This file is part of msmtp, an SMTP client, and of mpop, a POP3 client.
  *
- * Copyright (C) 2004, 2005, 2011, 2014, 2018, 2020
+ * Copyright (C) 2004, 2005, 2011, 2014, 2018, 2020, 2026
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -133,7 +133,7 @@ static int vasprintf(char **strp, const char *format, va_list args)
      * of vsnprintf(), but not for Microsofts version (Visual Studio etc.)!
      */
     int length = vsnprintf(NULL, 0, format, args);
-    if (length > INT_MAX - 1 || !(*strp = malloc(length + 1)))
+    if (length < 0 || length > INT_MAX - 1 || !(*strp = malloc(length + 1)))
     {
         return -1;
     }

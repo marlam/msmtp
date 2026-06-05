@@ -65,6 +65,8 @@
 #include "base64.h"
 #include "tools.h"
 
+extern void xalloc_die(void);
+
 
 /*
  * exitcode_to_string()
@@ -803,7 +805,10 @@ char *string_replace(char *str, const char *s, const char *r)
 
     while ((p = strstr(str + next_pos, s)))
     {
-        new_str = xmalloc((strlen(str) + rlen - 1) * sizeof(char));
+        size_t str_len = strlen(str);
+        if (rlen >= SIZE_MAX - str_len)
+            xalloc_die();
+        new_str = xmalloc((str_len + rlen - 1) * sizeof(char));
         strncpy(new_str, str, (size_t)(p - str));
         strcpy(new_str + (size_t)(p - str), r);
         strcpy(new_str + (size_t)(p - str) + rlen,
@@ -1021,8 +1026,6 @@ char *w32_langinfo_codeset()
     return codeset;
 }
 #endif
-
-extern void xalloc_die(void);
 
 char *encode_for_header(const char *s)
 {

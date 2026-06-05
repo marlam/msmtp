@@ -4,7 +4,7 @@
  * This file is part of msmtp, an SMTP client, and of mpop, a POP3 client.
  *
  * Copyright (C) 2004, 2005, 2006, 2007, 2009, 2011, 2014, 2018, 2019, 2020,
- * 2021, 2022, 2023, 2024, 2025
+ * 2021, 2022, 2023, 2024, 2025, 2026
  * Martin Lambers <marlam@marlam.de>
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -41,6 +41,7 @@
 #endif
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <ctype.h>
 #include <string.h>
 #include <strings.h>
@@ -1021,10 +1022,14 @@ char *w32_langinfo_codeset()
 }
 #endif
 
+extern void xalloc_die(void);
+
 char *encode_for_header(const char *s)
 {
     int needsEncoding = 0;
-    for (int i = 0; s[i]; i++)
+    size_t s_len = strlen(s);
+
+    for (size_t i = 0; i < s_len; i++)
     {
         if (s[i] < 32 || s[i] >= 127)
         {
@@ -1034,8 +1039,12 @@ char *encode_for_header(const char *s)
     }
     if (needsEncoding)
     {
+        if (s_len > SIZE_MAX / 2)
+        {
+            /* precaution to avoid overflows */
+            xalloc_die();
+        }
         /* create a string of the form "=?ENCODING?B?BASE64STRING?=" */
-        size_t s_len = strlen(s);
         size_t b64_s_len = BASE64_LENGTH(s_len);
         char* encoding =
 #ifdef HAVE_LANGINFO_H

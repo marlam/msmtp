@@ -1,18 +1,18 @@
 /* base64.c -- Encode binary data using printable characters.
-   Copyright (C) 1999-2001, 2004-2006, 2009-2018 Free Software Foundation, Inc.
+   Copyright (C) 1999-2001, 2004-2006, 2009-2026 Free Software Foundation, Inc.
 
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2, or (at your option)
-   any later version.
+   This file is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Lesser General Public License as
+   published by the Free Software Foundation; either version 2.1 of the
+   License, or (at your option) any later version.
 
-   This program is distributed in the hope that it will be useful,
+   This file is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
+   GNU Lesser General Public License for more details.
 
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, see <https://www.gnu.org/licenses/>.  */
+   You should have received a copy of the GNU Lesser General Public License
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
 /* Written by Simon Josefsson.  Partially adapted from GNU MailUtils
  * (mailbox/filter_trans.c, as of 2004-11-28).  Improved by review
@@ -30,7 +30,7 @@
  *   FAIL: memory allocation error
  * OK: data in OUT/OUTLEN
  *
- * size_t outlen = base64_encode_alloc (in, inlen, &out);
+ * idx_t outlen = base64_encode_alloc (in, inlen, &out);
  * if (out == NULL && outlen == 0 && inlen != 0)
  *   FAIL: input too long
  * if (out == NULL)
@@ -41,18 +41,26 @@
 
 #include <config.h>
 
+#include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
+
 /* Get prototype. */
 #include "base64.h"
 
-/* Get malloc. */
-#include <stdlib.h>
+bool
+isubase64 (unsigned char ch)
+{
+  return 0 <= base64_to_int[ch];
+}
 
-/* Get UCHAR_MAX. */
-#include <limits.h>
+bool
+isbase64 (char ch)
+{
+  return isubase64 (ch);
+}
 
-#include <string.h>
-
-/* C89 compliant way to cast 'char' to 'unsigned char'. */
+/* Convert 'char' to 'unsigned char' without casting.  */
 static unsigned char
 to_uchar (char ch)
 {
@@ -66,11 +74,11 @@ static const char b64c[64] =
    to be of length >= BASE64_LENGTH(INLEN), and INLEN needs to be
    a multiple of 3.  */
 static void
-base64_encode_fast (const char *in, size_t inlen, char *out)
+base64_encode_fast (const char *restrict in, idx_t inlen, char *restrict out)
 {
   while (inlen)
     {
-      *out++ = b64c[to_uchar (in[0]) >> 2];
+      *out++ = b64c[(to_uchar (in[0]) >> 2) & 0x3f];
       *out++ = b64c[((to_uchar (in[0]) << 4) + (to_uchar (in[1]) >> 4)) & 0x3f];
       *out++ = b64c[((to_uchar (in[1]) << 2) + (to_uchar (in[2]) >> 6)) & 0x3f];
       *out++ = b64c[to_uchar (in[2]) & 0x3f];
@@ -85,8 +93,8 @@ base64_encode_fast (const char *in, size_t inlen, char *out)
    possible.  If OUTLEN is larger than BASE64_LENGTH(INLEN), also zero
    terminate the output buffer. */
 void
-base64_encode (const char *in, size_t inlen,
-               char *out, size_t outlen)
+base64_encode (const char *restrict in, idx_t inlen,
+               char *restrict out, idx_t outlen)
 {
   /* Note this outlen constraint can be enforced at compile time.
      I.E. that the output buffer is exactly large enough to hold
@@ -95,7 +103,7 @@ base64_encode (const char *in, size_t inlen,
      at the end of input.  However the common case when reading
      large inputs is to have both constraints satisfied, so we depend
      on both in base_encode_fast().  */
-  if (outlen % 4 == 0 && inlen == outlen / 4 * 3)
+  if (outlen % 4 == 0 && inlen == (outlen >> 2) * 3)
     {
       base64_encode_fast (in, inlen, out);
       return;
@@ -103,7 +111,7 @@ base64_encode (const char *in, size_t inlen,
 
   while (inlen && outlen)
     {
-      *out++ = b64c[to_uchar (in[0]) >> 2];
+      *out++ = b64c[(to_uchar (in[0]) >> 2) & 0x3f];
       if (!--outlen)
         break;
       *out++ = b64c[((to_uchar (in[0]) << 4)
@@ -141,8 +149,8 @@ base64_encode (const char *in, size_t inlen,
    memory allocation failed, OUT is set to NULL, and the return value
    indicates length of the requested memory block, i.e.,
    BASE64_LENGTH(inlen) + 1. */
-size_t
-base64_encode_alloc (const char *in, size_t inlen, char **out)
+idx_t
+base64_encode_alloc (const char *in, idx_t inlen, char **out)
 {
   size_t outlen = 1 + BASE64_LENGTH (inlen);
 
@@ -163,6 +171,7 @@ base64_encode_alloc (const char *in, size_t inlen, char **out)
       *out = NULL;
       return 0;
     }
+  outlen++;
 
   *out = malloc (outlen);
   if (!*out)
@@ -249,7 +258,7 @@ base64_encode_alloc (const char *in, size_t inlen, char **out)
    : (_) == '/' ? 63                            \
    : -1)
 
-static const signed char b64[0x100] = {
+signed char const base64_to_int[256] = {
   B64 (0), B64 (1), B64 (2), B64 (3),
   B64 (4), B64 (5), B64 (6), B64 (7),
   B64 (8), B64 (9), B64 (10), B64 (11),
@@ -316,28 +325,6 @@ static const signed char b64[0x100] = {
   B64 (252), B64 (253), B64 (254), B64 (255)
 };
 
-#if UCHAR_MAX == 255
-# define uchar_in_range(c) true
-#else
-# define uchar_in_range(c) ((c) <= 255)
-#endif
-
-/* Return true if CH is a character from the Base64 alphabet, and
-   false otherwise.  Note that '=' is padding and not considered to be
-   part of the alphabet.  */
-bool
-isbase64 (char ch)
-{
-  return uchar_in_range (to_uchar (ch)) && 0 <= b64[to_uchar (ch)];
-}
-
-/* Initialize decode-context buffer, CTX.  */
-void
-base64_decode_ctx_init (struct base64_decode_context *ctx)
-{
-  ctx->i = 0;
-}
-
 /* If CTX->i is 0 or 4, there are four or more bytes in [*IN..IN_END), and
    none of those four is a newline, then return *IN.  Otherwise, copy up to
    4 - CTX->i non-newline bytes from that range into CTX->buf, starting at
@@ -347,8 +334,8 @@ base64_decode_ctx_init (struct base64_decode_context *ctx)
    verified non-newline bytes accessible through the returned pointer.  */
 static char *
 get_4 (struct base64_decode_context *ctx,
-       char const **in, char const *in_end,
-       size_t *n_non_newline)
+       char const *restrict *in, char const *restrict in_end,
+       idx_t *n_non_newline)
 {
   if (ctx->i == 4)
     ctx->i = 0;
@@ -400,20 +387,21 @@ get_4 (struct base64_decode_context *ctx,
    *OUT to point to the byte after the last one written, and decrement
    *OUTLEN to reflect the number of bytes remaining in *OUT.  */
 static bool
-decode_4 (char const *in, size_t inlen,
-          char **outp, size_t *outleft)
+decode_4 (char const *restrict in, idx_t inlen,
+          char *restrict *outp, idx_t *outleft)
 {
-  char *out = *outp;
   if (inlen < 2)
     return false;
 
   if (!isbase64 (in[0]) || !isbase64 (in[1]))
     return false;
 
+  char *out = *outp;
+
   if (*outleft)
     {
-      *out++ = ((b64[to_uchar (in[0])] << 2)
-                | (b64[to_uchar (in[1])] >> 4));
+      *out++ = ((base64_to_int[to_uchar (in[0])] << 2)
+                | (base64_to_int[to_uchar (in[1])] >> 4));
       --*outleft;
     }
 
@@ -427,6 +415,10 @@ decode_4 (char const *in, size_t inlen,
 
       if (in[3] != '=')
         return_false;
+
+      /* Reject non-canonical encodings.  */
+      if (base64_to_int[to_uchar (in[1])] & 0x0f)
+        return_false;
     }
   else
     {
@@ -435,8 +427,8 @@ decode_4 (char const *in, size_t inlen,
 
       if (*outleft)
         {
-          *out++ = (((b64[to_uchar (in[1])] << 4) & 0xf0)
-                    | (b64[to_uchar (in[2])] >> 2));
+          *out++ = (((base64_to_int[to_uchar (in[1])] << 4) & 0xf0)
+                    | (base64_to_int[to_uchar (in[2])] >> 2));
           --*outleft;
         }
 
@@ -447,6 +439,10 @@ decode_4 (char const *in, size_t inlen,
         {
           if (inlen != 4)
             return_false;
+
+          /* Reject non-canonical encodings.  */
+          if (base64_to_int[to_uchar (in[2])] & 0x03)
+            return_false;
         }
       else
         {
@@ -455,8 +451,8 @@ decode_4 (char const *in, size_t inlen,
 
           if (*outleft)
             {
-              *out++ = (((b64[to_uchar (in[2])] << 6) & 0xc0)
-                        | b64[to_uchar (in[3])]);
+              *out++ = (((base64_to_int[to_uchar (in[2])] << 6) & 0xc0)
+                        | base64_to_int[to_uchar (in[3])]);
               --*outleft;
             }
         }
@@ -464,6 +460,13 @@ decode_4 (char const *in, size_t inlen,
 
   *outp = out;
   return true;
+}
+
+/* Initialize decode-context buffer, CTX.  */
+void
+base64_decode_ctx_init (struct base64_decode_context *ctx)
+{
+  ctx->i = 0;
 }
 
 /* Decode base64-encoded input array IN of length INLEN to output array
@@ -486,10 +489,9 @@ decode_4 (char const *in, size_t inlen,
 
 bool
 base64_decode_ctx (struct base64_decode_context *ctx,
-                   const char *in, size_t inlen,
-                   char *out, size_t *outlen)
+                   const char *restrict in, idx_t inlen,
+                   char *restrict out, idx_t *outlen)
 {
-  size_t outleft = *outlen;
   bool ignore_newlines = ctx != NULL;
   bool flush_ctx = false;
   unsigned int ctx_i = 0;
@@ -500,10 +502,11 @@ base64_decode_ctx (struct base64_decode_context *ctx,
       flush_ctx = inlen == 0;
     }
 
+  idx_t outleft = *outlen;
 
   while (true)
     {
-      size_t outleft_save = outleft;
+      idx_t outleft_save = outleft;
       if (ctx_i == 0 && !flush_ctx)
         {
           while (true)
@@ -528,35 +531,36 @@ base64_decode_ctx (struct base64_decode_context *ctx,
         {
           ++in;
           --inlen;
-          continue;
         }
+      else
+        {
+          /* Restore OUT and OUTLEFT.  */
+          out -= outleft_save - outleft;
+          outleft = outleft_save;
 
-      /* Restore OUT and OUTLEFT.  */
-      out -= outleft_save - outleft;
-      outleft = outleft_save;
-
-      {
-        char const *in_end = in + inlen;
-        char const *non_nl;
-
-        if (ignore_newlines)
-          non_nl = get_4 (ctx, &in, in_end, &inlen);
-        else
-          non_nl = in;  /* Might have nl in this case. */
-
-        /* If the input is empty or consists solely of newlines (0 non-newlines),
-           then we're done.  Likewise if there are fewer than 4 bytes when not
-           flushing context and not treating newlines as garbage.  */
-        if (inlen == 0 || (inlen < 4 && !flush_ctx && ignore_newlines))
           {
-            inlen = 0;
-            break;
-          }
-        if (!decode_4 (non_nl, inlen, &out, &outleft))
-          break;
+            char const *in_end = in + inlen;
 
-        inlen = in_end - in;
-      }
+            char const *non_nl;
+            if (ignore_newlines)
+              non_nl = get_4 (ctx, &in, in_end, &inlen);
+            else
+              non_nl = in;  /* Might have nl in this case. */
+
+            /* If the input is empty or consists solely of newlines (0 non-newlines),
+               then we're done.  Likewise if there are fewer than 4 bytes when not
+               flushing context and not treating newlines as garbage.  */
+            if (inlen == 0 || (inlen < 4 && !flush_ctx && ignore_newlines))
+              {
+                inlen = 0;
+                break;
+              }
+            if (!decode_4 (non_nl, inlen, &out, &outleft))
+              break;
+
+            inlen = in_end - in;
+          }
+        }
     }
 
   *outlen -= outleft;
@@ -577,15 +581,15 @@ base64_decode_ctx (struct base64_decode_context *ctx,
    undefined. */
 bool
 base64_decode_alloc_ctx (struct base64_decode_context *ctx,
-                         const char *in, size_t inlen, char **out,
-                         size_t *outlen)
+                         const char *in, idx_t inlen, char **out,
+                         idx_t *outlen)
 {
   /* This may allocate a few bytes too many, depending on input,
      but it's not worth the extra CPU time to compute the exact size.
      The exact size is 3 * (inlen + (ctx ? ctx->i : 0)) / 4, minus 1 if the
      input ends with "=" and minus another 1 if the input ends with "==".
-     Dividing before multiplying avoids the possibility of overflow.  */
-  size_t needlen = 3 * (inlen / 4) + 3;
+     Shifting before multiplying avoids the possibility of overflow.  */
+  idx_t needlen = 3 * ((inlen >> 2) + 1);
 
   *out = malloc (needlen);
   if (!*out)

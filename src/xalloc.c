@@ -26,6 +26,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
 #include <stdarg.h>
 
@@ -114,7 +115,10 @@ char *xstrndup(const char *s, size_t n)
     {
         l++;
     }
-    p = malloc(l + 1);
+    if (l == SIZE_MAX || !(p = malloc(l + 1)))
+    {
+        xalloc_die();
+    }
     memcpy(p, s, l);
     p[l] = '\0';
     return p;

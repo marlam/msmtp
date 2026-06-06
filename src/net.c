@@ -59,11 +59,17 @@
 
 #ifdef HAVE_LIBIDN
 # include <idn2.h>
+#elif defined(W32_NATIVE)
+# include <locale.h>
+# pragma comment(lib, "normaliz.lib")
 #endif
 
 #ifdef HAVE_LIBRESOLV
 # include <arpa/nameser.h>
 # include <resolv.h>
+#elif defined(W32_NATIVE)
+# include <windns.h>
+# pragma comment(lib, "dnsapi.lib")
 #endif
 
 #include "gettext.h"
@@ -445,7 +451,7 @@ int net_connect(int fd, const struct sockaddr *serv_addr, socklen_t addrlen,
 
             /* test for success, set errno */
             optlen = sizeof(err);
-            if (getsockopt(fd, SOL_SOCKET, SO_ERROR, &err, &optlen) < 0)
+            if (getsockopt(fd, SOL_SOCKET, SO_ERROR, (void*)&err, &optlen) < 0)
             {
                 return -1;
             }
@@ -490,8 +496,8 @@ void net_set_io_timeout(int socket, int seconds)
     if (seconds > 0)
     {
         milliseconds = seconds * 1000;
-        (void)setsockopt(socket, SOL_SOCKET, SO_RCVTIMEO, &milliseconds, sizeof(int));
-        (void)setsockopt(socket, SOL_SOCKET, SO_SNDTIMEO, &milliseconds, sizeof(int));
+        (void)setsockopt(socket, SOL_SOCKET, SO_RCVTIMEO, (void*)&milliseconds, sizeof(int));
+        (void)setsockopt(socket, SOL_SOCKET, SO_SNDTIMEO, (void*)&milliseconds, sizeof(int));
     }
 #else /* UNIX */
     struct timeval tv;
@@ -751,6 +757,47 @@ int net_open_socket(
 # endif
 #elif defined(HAVE_LIBIDN)
     idn2_to_ascii_lz(hostname, &idn_hostname, IDN2_NFC_INPUT | IDN2_NONTRANSITIONAL);
+#elif defined(W32_NATIVE) && !defined(_UNICODE)
+    size_t conv;
+    WCHAR hostname_wide[NI_MAXHOST];
+    /* We rely on a proper setlocale earlier that was NOT "C" as set default by MS C runtime. */
+#if defined(ENABLE_NLS) && defined(FIXME1)
+    /* FIXME: Something messes up locale (at least on MSYS2/UCRT64) and setlocale(LC_ALL, "") won't fix it.
+     * The commented code below is the way to get proper console output for hostname.
+     * Otherwise let's make sure we get proper IDN conversion and that is it. */
+    char locale_name[LOCALE_NAME_MAX_LENGTH * sizeof(WCHAR)];
+    GetSystemDefaultLocaleName((LPWSTR)locale_name, LOCALE_NAME_MAX_LENGTH);
+    size_t len = wcsnlen_s((LPWSTR)locale_name, LOCALE_NAME_MAX_LENGTH);
+    for (int i = 1; i <= len; ++i)
+        locale_name[i] = locale_name[i * 2];
+    setlocale(LC_ALL, locale_name);
+    _locale_t locale = _create_locale(LC_ALL, "");
+    errno_t err = _mbstowcs_s_l(&conv, hostname_wide, ARRAYSIZE(hostname_wide), hostname, _TRUNCATE, locale);
+    _free_locale(locale);
+#else
+    setlocale(LC_ALL, "");
+    errno_t err = mbstowcs_s(&conv, hostname_wide, ARRAYSIZE(hostname_wide), hostname, _TRUNCATE);
+#endif
+    if (!err)
+    {
+        int i;
+        size_t hostname_length = wcsnlen_s(hostname_wide, ARRAYSIZE(hostname_wide));
+        idn_hostname = xmalloc(NI_MAXHOST * sizeof(WCHAR));
+        int result = IdnToAscii(0, hostname_wide, hostname_length, (LPWSTR)idn_hostname, NI_MAXHOST);
+        /* We have a non-null-terminated ASCII string stored in WORDs
+         * presumingly little-endian way because we are on Windows. */
+        if (result)
+        {
+            for (i = 1; i < result; ++i)
+                idn_hostname[i] = idn_hostname[i * 2];
+            idn_hostname[i] = 0;
+        }
+        else
+        {
+            free(idn_hostname);
+            idn_hostname = NULL;
+        }
+    }
 #endif
     error_code = getaddrinfo(idn_hostname ? idn_hostname : hostname,
             port_string, &hints, &res0);
@@ -1099,16 +1146,15 @@ char* net_get_srv_query(const char *domain0, const char *service)
  */
 int net_get_srv_record(const char* query, char **hostname, int *port)
 {
-#ifdef HAVE_LIBRESOLV
-
-    unsigned char buffer[NS_PACKETSZ];
-    int response_len;
-    ns_msg msg;
-    int i;
     int current_prio = INT_MAX;
     int current_weight = -1;
     char *current_hostname = NULL;
     int current_port = 0;
+#ifdef HAVE_LIBRESOLV
+    unsigned char buffer[NS_PACKETSZ];
+    int response_len;
+    ns_msg msg;
+    int i;
 
     response_len = res_query(query, ns_c_in, ns_t_srv, buffer, sizeof(buffer));
     if (response_len < 0) {
@@ -1153,6 +1199,36 @@ int net_get_srv_record(const char* query, char **hostname, int *port)
         return NET_EOK;
     }
 
+#elif defined(W32_NATIVE)
+    int error_code = NET_EIO;
+    PDNS_RECORD record;
+    DNS_STATUS status = DnsQuery_A(query, DNS_TYPE_SRV, DNS_QUERY_STANDARD, NULL,  &record, NULL);
+    if (status != ERROR_SUCCESS)
+        return NET_ESRVNOTFOUND;
+    for (PDNS_RECORD r = record; r; r = r->pNext)
+    {
+        if (r->wType != DNS_TYPE_SRV)
+            continue;
+        int prio, weight;
+        prio = r->Data.SRV.wPriority;
+        weight = r->Data.SRV.wWeight;
+        if (prio < current_prio || (prio == current_prio && weight > current_weight))
+        {
+            current_hostname = r->Data.SRV.pNameTarget;
+            current_port = r->Data.SRV.wPort;
+            current_prio = prio;
+            current_weight = weight;
+        }
+    }
+    if (current_hostname)
+    {
+        *hostname = xstrdup(current_hostname);
+        *port = current_port;
+        error_code = NET_EOK;
+    }
+    DnsRecordListFree(record, DnsFreeRecordList);
+
+    return error_code;
 #else
 
     return NET_ELIBFAILED;

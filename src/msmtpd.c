@@ -149,6 +149,8 @@ int read_smtp_cmd(FILE* in, char* buf, int bufsize)
         free(errstr);
         return 1;
     }
+    if (len == 0)
+        return 1;
     if (buf[len - 1] != '\n')
         return 1;
     buf[len - 1] = '\0';

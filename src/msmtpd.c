@@ -224,7 +224,9 @@ int smtp_pipe(FILE* in, FILE* pipe, char* buf, size_t bufsize)
             free(errstr);
             return 1;
         }
-        if (len > 0 && buf[len - 1] == '\n') {
+        if (len == 0)
+            break;
+        if (buf[len - 1] == '\n') {
             /* first case: we have a line end */
             buf[--len] = '\0';
             if (len > 0 && buf[len - 1] == '\r')

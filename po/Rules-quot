@@ -1,12 +1,12 @@
 # Special Makefile rules for English message catalogs with quotation marks.
 #
-# Copyright (C) 2001-2024 Free Software Foundation, Inc.
+# Copyright (C) 2001-2026 Free Software Foundation, Inc.
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
 # with or without modifications, as long as this notice is preserved.
 # This file is offered as-is, without any warranty.
 #
-# Written by Bruno Haible <bruno@clisp.org>, 2001.
+# Written by Bruno Haible.
 
 DISTFILES.common.extra1 = quot.sed boldquot.sed en@quot.header en@boldquot.header insert-header.sed Rules-quot
 

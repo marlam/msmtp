@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: msmtp 1.8.29\n"
 "Report-Msgid-Bugs-To: marlam@marlam.de\n"
-"POT-Creation-Date: 2025-09-06 13:29+0200\n"
+"POT-Creation-Date: 2025-05-05 09:18+0200\n"
 "PO-Revision-Date: 2025-06-01 20:39+0200\n"
 "Last-Translator: Kristian Nordin <kristian.po@proton.me>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
@@ -77,12 +77,8 @@ msgstr "tls_cert_file kräver tls_key_file"
 
 #: src/conf.c:863
 #, c-format
-msgid ""
-"tls requires either tls_trust_file (highly recommended) or tls_fingerprint "
-"or a disabled tls_certcheck"
-msgstr ""
-"tls kräver antingen tls_trust_file (rekommenderas starkt) eller "
-"tls_fingerprint eller en inaktiverad tls_certcheck"
+msgid "tls requires either tls_trust_file (highly recommended) or tls_fingerprint or a disabled tls_certcheck"
+msgstr "tls kräver antingen tls_trust_file (rekommenderas starkt) eller tls_fingerprint eller en inaktiverad tls_certcheck"
 
 #: src/conf.c:869
 #, c-format
@@ -152,12 +148,8 @@ msgstr "innehåller hemligheter och måste därför ägas av dig"
 
 #: src/conf.c:2233
 #, c-format
-msgid ""
-"contains secrets and therefore must have no more than user read/write "
-"permissions"
-msgstr ""
-"innehåller hemligheter och får därför inte ha mer än användarens läs-/"
-"skrivbehörighet"
+msgid "contains secrets and therefore must have no more than user read/write permissions"
+msgstr "innehåller hemligheter och får därför inte ha mer än användarens läs-/skrivbehörighet"
 
 #. TRANSLATORS: msmtp shares a lot of code and translatable strings with
 #. mpop <https://marlam.de/mpop>.
@@ -261,11 +253,8 @@ msgstr "Autentiseringsmetoder som stöds:"
 
 #: src/msmtp.c:582
 #, c-format
-msgid ""
-"This server might advertise more or other capabilities when TLS is active.\n"
-msgstr ""
-"Den här servern kan annonsera fler eller andra funktioner när TLS är "
-"aktivt.\n"
+msgid "This server might advertise more or other capabilities when TLS is active.\n"
+msgstr "Den här servern kan annonsera fler eller andra funktioner när TLS är aktivt.\n"
 
 #: src/msmtp.c:1266 src/msmtp.c:3450
 #, c-format
@@ -442,14 +431,12 @@ msgstr "Användarkonfigurationsfilens namn: %s\n"
 #, c-format
 msgid ""
 "Copyright (C) %d Martin Lambers and others.\n"
-"This is free software.  You may redistribute copies of it under the terms "
-"of\n"
+"This is free software.  You may redistribute copies of it under the terms of\n"
 "the GNU General Public License <http://www.gnu.org/licenses/gpl.html>.\n"
 "There is NO WARRANTY, to the extent permitted by law.\n"
 msgstr ""
 "Copyright (C) %d Martin Lambers och andra.\n"
-"Detta är gratis programvara. Du får vidaredistribuera kopior av den enligt "
-"villkoren i\n"
+"Detta är gratis programvara. Du får vidaredistribuera kopior av den enligt villkoren i\n"
 "GNU General Public License <http://www.gnu.org/licenses/gpl.html>.\n"
 "Det finns INGEN GARANTI, i den utsträckning som lagen tillåter.\n"
 
@@ -468,14 +455,12 @@ msgid ""
 "Sendmail mode (default):\n"
 "  %s [option...] [--] recipient...\n"
 "  %s [option...] -t [--] [recipient...]\n"
-"  Read a mail from standard input and transmit it to an SMTP or LMTP "
-"server.\n"
+"  Read a mail from standard input and transmit it to an SMTP or LMTP server.\n"
 msgstr ""
 "Sendmail läge (standard)\n"
 "  %s [alternativ...] [--] mottagare...\n"
 "  %s [alternativ...] -t [--] [mottagare...]\n"
-"  Läs ett e-postmeddelande från standardinmatning och överför det till en "
-"SMTP- eller LMTP-server.\n"
+"  Läs ett e-postmeddelande från standardinmatning och överför det till en SMTP- eller LMTP-server.\n"
 
 #: src/msmtp.c:2299
 #, c-format
@@ -530,9 +515,7 @@ msgstr "  --help                       skriv ut hjälp\n"
 #: src/msmtp.c:2312
 #, c-format
 msgid "  -P, --pretend                print configuration info and exit\n"
-msgstr ""
-"  -P, --pretend                skriv ut konfigurationsinformation och "
-"avsluta\n"
+msgstr "  -P, --pretend                skriv ut konfigurationsinformation och avsluta\n"
 
 #: src/msmtp.c:2313
 #, c-format
@@ -546,11 +529,8 @@ msgstr "Ändrar användningsläget:\n"
 
 #: src/msmtp.c:2315
 #, c-format
-msgid ""
-"  --configure=mailaddress      generate and print configuration for address\n"
-msgstr ""
-"  --configure=e-postaddress      generera och skriva ut konfiguration för "
-"adress\n"
+msgid "  --configure=mailaddress      generate and print configuration for address\n"
+msgstr "  --configure=e-postaddress      generera och skriva ut konfiguration för adress\n"
 
 #: src/msmtp.c:2316
 #, c-format
@@ -559,11 +539,8 @@ msgstr "  -S, --serverinfo             skriv ut information om servern\n"
 
 #: src/msmtp.c:2317
 #, c-format
-msgid ""
-"  --rmqs=host|@domain|#queue   send a Remote Message Queue Starting request\n"
-msgstr ""
-"  --rmqs=värd|@domän|#kö  skicka en \"Remote Message Queue Starting\"-"
-"begäran\n"
+msgid "  --rmqs=host|@domain|#queue   send a Remote Message Queue Starting request\n"
+msgstr "  --rmqs=värd|@domän|#kö  skicka en \"Remote Message Queue Starting\"-begäran\n"
 
 #: src/msmtp.c:2318
 #, c-format
@@ -579,24 +556,20 @@ msgstr "  -C, --file=filnamn          ställ in konfigurationsfil\n"
 #, c-format
 msgid ""
 "  -a, --account=id             use the given account instead of the account\n"
-"                               named \"default\"; its settings may be "
-"changed\n"
+"                               named \"default\"; its settings may be changed\n"
 "                               with command-line options\n"
 msgstr ""
 "  -a, --account=id             använd det angivna kontot istället för konto\n"
-"                               med namnet \"standard\"; dess inställningar "
-"kan ändras\n"
+"                               med namnet \"standard\"; dess inställningar kan ändras\n"
 "                               med kommandorads alternativ\n"
 
 #: src/msmtp.c:2323
 #, c-format
 msgid ""
-"  --host=hostname              set the server, use only command-line "
-"settings;\n"
+"  --host=hostname              set the server, use only command-line settings;\n"
 "                               do not use any configuration file data\n"
 msgstr ""
-"  --host=värdnamn              ställ in servern, använd endast "
-"kommandoradsinställningar;\n"
+"  --host=värdnamn              ställ in servern, använd endast kommandoradsinställningar;\n"
 "                               använd inte några konfigurationsfildata\n"
 
 #: src/msmtp.c:2325
@@ -606,12 +579,8 @@ msgstr "  --port=nummer                ställer in port nummer\n"
 
 #: src/msmtp.c:2326
 #, c-format
-msgid ""
-"  --source-ip=[IP]             set/unset source ip address to bind the "
-"socket to\n"
-msgstr ""
-"  --source-ip=[IP]             ställ in/ta bort källans ip-adress för att "
-"binda uttaget till\n"
+msgid "  --source-ip=[IP]             set/unset source ip address to bind the socket to\n"
+msgstr "  --source-ip=[IP]             ställ in/ta bort källans ip-adress för att binda uttaget till\n"
 
 #: src/msmtp.c:2327
 #, c-format
@@ -626,16 +595,12 @@ msgstr "  --proxy-port=[nummer]        aktivera/avaktivera proxyport\n"
 #: src/msmtp.c:2329
 #, c-format
 msgid "  --socket=[socketname]        set/unset local socket to connect to\n"
-msgstr ""
-"  --socket=[socketname]        ställ in/ta bort lokalt uttag att ansluta "
-"till\n"
+msgstr "  --socket=[socketname]        ställ in/ta bort lokalt uttag att ansluta till\n"
 
 #: src/msmtp.c:2330
 #, c-format
 msgid "  --timeout=(off|seconds)      set/unset network timeout in seconds\n"
-msgstr ""
-"  --timeout=(av|sekunder)      aktivera/avaktivera nätverkstimeout i "
-"sekunder\n"
+msgstr "  --timeout=(av|sekunder)      aktivera/avaktivera nätverkstimeout i sekunder\n"
 
 #: src/msmtp.c:2331
 #, c-format
@@ -644,11 +609,8 @@ msgstr "  --protocol=(smtp|lmtp)       använd det givna underprotokollet\n"
 
 #: src/msmtp.c:2332
 #, c-format
-msgid ""
-"  --domain=string              set the argument of EHLO or LHLO command\n"
-msgstr ""
-"  --domain=sträng              ställ in argumentet för EHLO eller LHLO "
-"kommando\n"
+msgid "  --domain=string              set the argument of EHLO or LHLO command\n"
+msgstr "  --domain=sträng              ställ in argumentet för EHLO eller LHLO kommando\n"
 
 #: src/msmtp.c:2333
 #, c-format
@@ -662,9 +624,7 @@ msgstr ""
 #: src/msmtp.c:2335
 #, c-format
 msgid "  --user=[username]            set/unset user name for authentication\n"
-msgstr ""
-"  --user=[användarnamn]            ställ in/avaktivera användarnamn för "
-"autentisering\n"
+msgstr "  --user=[användarnamn]            ställ in/avaktivera användarnamn för autentisering\n"
 
 #: src/msmtp.c:2336
 #, c-format
@@ -684,45 +644,32 @@ msgstr "  --tls-starttls[=(av|på)]    aktivera/inaktivera STARTTLS för TLS\n"
 #: src/msmtp.c:2339
 #, c-format
 msgid "  --tls-trust-file=[file]      set/unset trust file for TLS\n"
-msgstr ""
-"  --tls-trust-file=[fil]      aktivera/avaktivera förtroendefil för TLS\n"
+msgstr "  --tls-trust-file=[fil]      aktivera/avaktivera förtroendefil för TLS\n"
 
 #: src/msmtp.c:2340
 #, c-format
 msgid "  --tls-crl-file=[file]        set/unset revocation file for TLS\n"
-msgstr ""
-"  --tls-crl-file=[fil]        ställ in/avaktivera återkallningsfil för TLS\n"
+msgstr "  --tls-crl-file=[fil]        ställ in/avaktivera återkallningsfil för TLS\n"
 
 #: src/msmtp.c:2341
 #, c-format
-msgid ""
-"  --tls-fingerprint=[f]        set/unset trusted certificate fingerprint for "
-"TLS\n"
-msgstr ""
-"  --tls-fingerprint=[f]        ställ in/avaktivera betrodda "
-"certifikatfingeravtryck för TLS\n"
+msgid "  --tls-fingerprint=[f]        set/unset trusted certificate fingerprint for TLS\n"
+msgstr "  --tls-fingerprint=[f]        ställ in/avaktivera betrodda certifikatfingeravtryck för TLS\n"
 
 #: src/msmtp.c:2342
 #, c-format
-msgid ""
-"  --tls-certcheck[=(on|off)]   enable/disable server certificate checks for "
-"TLS\n"
-msgstr ""
-"  --tls-certcheck[=(av|på)]   aktivera/avaktivera servercertifikatkontroller "
-"för TLS\n"
+msgid "  --tls-certcheck[=(on|off)]   enable/disable server certificate checks for TLS\n"
+msgstr "  --tls-certcheck[=(av|på)]   aktivera/avaktivera servercertifikatkontroller för TLS\n"
 
 #: src/msmtp.c:2343
 #, c-format
 msgid "  --tls-key-file=[file]        set/unset private key file for TLS\n"
-msgstr ""
-"  --tls-key-file=[fil]        ställ in/avaktivera privat nyckelfil för TLS\n"
+msgstr "  --tls-key-file=[fil]        ställ in/avaktivera privat nyckelfil för TLS\n"
 
 #: src/msmtp.c:2344
 #, c-format
 msgid "  --tls-cert-file=[file]       set/unset private cert file for TLS\n"
-msgstr ""
-"  --tls-cert-file=[fil]       ställ in/avaktivera privat certifikatfil för "
-"TLS\n"
+msgstr "  --tls-cert-file=[fil]       ställ in/avaktivera privat certifikatfil för TLS\n"
 
 #: src/msmtp.c:2345
 #, c-format
@@ -731,19 +678,13 @@ msgstr "  --tls-priorities=[prios]     ställ in/avaktivera TLS-prioriteter.\n"
 
 #: src/msmtp.c:2346
 #, c-format
-msgid ""
-"  --tls-host-override=[host]   set/unset override for TLS host "
-"verification.\n"
-msgstr ""
-"  --tls-host-override=[värd]   aktivera/avaktivera åsidosättande för TLS-"
-"värdverifiering.\n"
+msgid "  --tls-host-override=[host]   set/unset override for TLS host verification.\n"
+msgstr "  --tls-host-override=[värd]   aktivera/avaktivera åsidosättande för TLS-värdverifiering.\n"
 
 #: src/msmtp.c:2347
 #, c-format
 msgid "  --tls-min-dh-prime-bits=[b]  set/unset minimum bit size of DH prime\n"
-msgstr ""
-"  --tls-min-dh-prime-bits=[b]  ställ in/avaktivera minsta bitstorlek för DH-"
-"prim\n"
+msgstr "  --tls-min-dh-prime-bits=[b]  ställ in/avaktivera minsta bitstorlek för DH-prim\n"
 
 #: src/msmtp.c:2348
 #, c-format
@@ -752,12 +693,8 @@ msgstr "Alternativ specifika för sendmail läge:\n"
 
 #: src/msmtp.c:2349
 #, c-format
-msgid ""
-"  --auto-from[=(on|off)]       enable/disable automatic envelope-from "
-"addresses\n"
-msgstr ""
-"  --auto-from[=(av|på)]       aktivera/avaktivera automatiska kuvert-från-"
-"adresser\n"
+msgid "  --auto-from[=(on|off)]       enable/disable automatic envelope-from addresses\n"
+msgstr "  --auto-from[=(av|på)]       aktivera/avaktivera automatiska kuvert-från-adresser\n"
 
 #: src/msmtp.c:2350
 #, c-format
@@ -790,31 +727,22 @@ msgstr "  -X, --logfile=[fil]         aktivera/avaktivera loggfil\n"
 
 #: src/msmtp.c:2356
 #, c-format
-msgid ""
-"  --logfile-time-format=[fmt]  set/unset log file time format for "
-"strftime()\n"
-msgstr ""
-"  --logfile-time-format=[fmt]  ställ in/avaktivera loggfilens tidsformat för "
-"strftime()\n"
+msgid "  --logfile-time-format=[fmt]  set/unset log file time format for strftime()\n"
+msgstr "  --logfile-time-format=[fmt]  ställ in/avaktivera loggfilens tidsformat för strftime()\n"
 
 #: src/msmtp.c:2357
 #, c-format
-msgid ""
-"  --syslog[=(on|off|facility)] enable/disable/configure syslog logging\n"
-msgstr ""
-"  --syslog[=(på|av|facilitet)] aktivera/avaktivera/konfigurera syslog-"
-"loggning\n"
+msgid "  --syslog[=(on|off|facility)] enable/disable/configure syslog logging\n"
+msgstr "  --syslog[=(på|av|facilitet)] aktivera/avaktivera/konfigurera syslog-loggning\n"
 
 #: src/msmtp.c:2358
 #, c-format
-msgid ""
-"  -t, --read-recipients        read additional recipients from the mail\n"
+msgid "  -t, --read-recipients        read additional recipients from the mail\n"
 msgstr "  -t, --read-recipients        läs ytterligare mottagare från e-post\n"
 
 #: src/msmtp.c:2359
 #, c-format
-msgid ""
-"  --read-envelope-from         read envelope from address from the mail\n"
+msgid "  --read-envelope-from         read envelope from address from the mail\n"
 msgstr "  --read-envelope-from         läs kuvert från adress från e-post\n"
 
 #: src/msmtp.c:2360
@@ -835,23 +763,17 @@ msgstr "  --set-date-header[=(auto|av)] ställ in datumrubrikshantering\n"
 #: src/msmtp.c:2363
 #, c-format
 msgid "  --set-msgid-header[=(auto|off)] set Message-ID header handling\n"
-msgstr ""
-"  --set-msgid-header[=(auto|off)] ställ in meddelandeIDrubrikshantering\n"
+msgstr "  --set-msgid-header[=(auto|off)] ställ in meddelandeIDrubrikshantering\n"
 
 #: src/msmtp.c:2364
 #, c-format
-msgid ""
-"  --set-to-header[=(on|off|undisclosed_recipients)] set To header handling\n"
-msgstr ""
-"  --set-to-header[=(på|av|dold_mottagare)] ställ in Till rubrikhantering\n"
+msgid "  --set-to-header[=(on|off|undisclosed_recipients)] set To header handling\n"
+msgstr "  --set-to-header[=(på|av|dold_mottagare)] ställ in Till rubrikhantering\n"
 
 #: src/msmtp.c:2365
 #, c-format
-msgid ""
-"  --remove-bcc-headers[=(on|off)] enable/disable removal of Bcc headers\n"
-msgstr ""
-"  --remove-bcc-headers[=(av|på)] aktivera/inaktivera borttagning av hemlig "
-"kopia-rubriker\n"
+msgid "  --remove-bcc-headers[=(on|off)] enable/disable removal of Bcc headers\n"
+msgstr "  --remove-bcc-headers[=(av|på)] aktivera/inaktivera borttagning av hemlig kopia-rubriker\n"
 
 #: src/msmtp.c:2366
 #, c-format
@@ -900,12 +822,12 @@ msgstr "kan inte både använda --from och --read-envelope-from"
 msgid "unsupported operation mode b%s"
 msgstr "användningsläget b%s stöds ej"
 
-#: src/msmtp.c:3427 src/msmtp.c:3915 src/msmtp.c:4231
+#: src/msmtp.c:3427 src/msmtp.c:3915 src/msmtp.c:4222
 #, c-format
 msgid "cannot create temporary file: %s"
 msgstr "kunde inte skapa temporär fil: %s"
 
-#: src/msmtp.c:3457 src/msmtp.c:3950 src/msmtp.c:4286
+#: src/msmtp.c:3457 src/msmtp.c:3941 src/msmtp.c:4277
 #, c-format
 msgid "cannot rewind temporary file: %s"
 msgstr "kunde inte spola tillbaka temporär fil: %s"
@@ -1003,113 +925,107 @@ msgstr "läser mottagare från kommandoraden\n"
 msgid "too many arguments"
 msgstr "för många argument"
 
-#: src/msmtp.c:3937
+#: src/msmtp.c:3935
 #, c-format
 msgid "envelope from address extracted from mail: %s\n"
 msgstr "kuvert från adress extraherat från e-post: %s\n"
 
-#: src/msmtp.c:3943
-#, fuzzy
-#| msgid "envelope-from address is missing"
-msgid "no envelope from address found"
-msgstr "kuvert-från-adress saknas"
-
-#: src/msmtp.c:3959
+#: src/msmtp.c:3950
 msgid "no recipients found"
 msgstr "inga mottagare hittades"
 
-#: src/msmtp.c:3989
+#: src/msmtp.c:3980
 #, c-format
 msgid "account chosen by envelope from address %s: %s\n"
 msgstr "konto valt av kuvert från adress %s: %s\n"
 
-#: src/msmtp.c:4003
+#: src/msmtp.c:3994
 #, c-format
 msgid "falling back to default account\n"
 msgstr "faller tillbaka på standardkonto\n"
 
-#: src/msmtp.c:4026
+#: src/msmtp.c:4017
 #, c-format
 msgid "using environment variables EMAIL and SMTPSERVER\n"
 msgstr "använder miljövariabler EMAIL och SMTPSERVER\n"
 
-#: src/msmtp.c:4034
+#: src/msmtp.c:4025
 #, c-format
 msgid "account %s not found in %s and %s"
 msgstr "konto %s hittades inte i %s och %s"
 
-#: src/msmtp.c:4040 src/msmtp.c:4045
+#: src/msmtp.c:4031 src/msmtp.c:4036
 #, c-format
 msgid "account %s not found in %s"
 msgstr "konto %s hittades inte i %s"
 
-#: src/msmtp.c:4050
+#: src/msmtp.c:4041
 #, c-format
 msgid "account %s not found: no configuration file available"
 msgstr "konto %s hittades inte: ingen konfigurationsfil tillgänglig"
 
-#: src/msmtp.c:4072
+#: src/msmtp.c:4063
 #, c-format
 msgid "using account specified on command line\n"
 msgstr "använder konto som angetts på kommandoraden\n"
 
-#: src/msmtp.c:4137
+#: src/msmtp.c:4128
 #, c-format
 msgid "account %s from %s: %s"
 msgstr "konto %s från %s: %s"
 
-#: src/msmtp.c:4178
+#: src/msmtp.c:4169
 msgid "this platform does not support syslog logging"
 msgstr "den här plattformen stöder inte syslog-loggning"
 
-#: src/msmtp.c:4187
+#: src/msmtp.c:4178
 #, c-format
 msgid "support for authentication method %s is not compiled in"
 msgstr "stöd för autentiseringsmetod %s är inte kompilerat i"
 
-#: src/msmtp.c:4195
+#: src/msmtp.c:4186
 #, c-format
 msgid "cannot initialize networking: %s"
 msgstr "kan inte initiera nätverk: %s"
 
-#: src/msmtp.c:4206
+#: src/msmtp.c:4197
 #, c-format
 msgid "cannot initialize TLS library: %s"
 msgstr "kan inte initiera TLS-biblioteket: %s"
 
-#: src/msmtp.c:4213
+#: src/msmtp.c:4204
 msgid "support for TLS is not compiled in"
 msgstr "stöd för TLS är inte kompilerat i"
 
-#: src/msmtp.c:4315
+#: src/msmtp.c:4306
 #, c-format
 msgid "LMTP server message: %s"
 msgstr "LMTP-servermeddelande: %s"
 
-#: src/msmtp.c:4326
+#: src/msmtp.c:4317
 #, c-format
 msgid "could not send mail to all recipients (account %s from %s)"
 msgstr "kunde inte skicka e-post till alla mottagare (konto %s från %s)"
 
-#: src/msmtp.c:4332
+#: src/msmtp.c:4323
 msgid "could not send mail to all recipients"
 msgstr "kunde inte skicka e-post till alla mottagare"
 
-#: src/msmtp.c:4347 src/msmtp.c:4402 src/msmtp.c:4423
+#: src/msmtp.c:4338 src/msmtp.c:4393 src/msmtp.c:4414
 #, c-format
 msgid "server message: %s"
 msgstr "servermeddelande: %s"
 
-#: src/msmtp.c:4353
+#: src/msmtp.c:4344
 #, c-format
 msgid "could not send mail (account %s from %s)"
 msgstr "kunde inte skicka e-post (konto %s från %s)"
 
-#: src/msmtp.c:4358
+#: src/msmtp.c:4349
 msgid "could not send mail"
 msgstr "kunde inte skicka e-post"
 
-#: src/msmtp.c:4368
+#: src/msmtp.c:4359
 #, c-format
 msgid "delivery to one or more recipients failed"
 msgstr "leverans till en eller flera mottagare misslyckades"
@@ -1243,11 +1159,8 @@ msgstr "kan inte allokera certifikat för TLS-session: %s"
 
 #: src/mtls-gnutls.c:452 src/mtls-libtls.c:312
 #, c-format
-msgid ""
-"cannot set X509 key file %s and/or X509 cert file %s for TLS session: %s"
-msgstr ""
-"kan inte ställa in X509-nyckelfil %s och/eller X509-certifikatfil %s för TLS-"
-"session: %s"
+msgid "cannot set X509 key file %s and/or X509 cert file %s for TLS session: %s"
+msgstr "kan inte ställa in X509-nyckelfil %s och/eller X509-certifikatfil %s för TLS-session: %s"
 
 #: src/mtls-gnutls.c:474 src/mtls-openssl.c:720
 #, c-format
@@ -1298,11 +1211,8 @@ msgstr "okänt fel"
 
 #: src/mtls-openssl.c:92
 #, c-format
-msgid ""
-"no environment variables RANDFILE or HOME, or filename of rand file too long"
-msgstr ""
-"inga miljövariabler RANDFILE eller HOME, eller filnamnet på rand-filen för "
-"långt"
+msgid "no environment variables RANDFILE or HOME, or filename of rand file too long"
+msgstr "inga miljövariabler RANDFILE eller HOME, eller filnamnet på rand-filen för långt"
 
 #: src/mtls-openssl.c:98
 #, c-format
@@ -1312,8 +1222,7 @@ msgstr "%s: inmatningsfel"
 #: src/mtls-openssl.c:120
 #, c-format
 msgid "random file + time + pseudo randomness is not enough, giving up"
-msgstr ""
-"slumpmässig fil + tid + pseudo slumpmässighet är inte tillräckligt, ger upp"
+msgstr "slumpmässig fil + tid + pseudo slumpmässighet är inte tillräckligt, ger upp"
 
 #: src/mtls-openssl.c:293 src/mtls-openssl.c:579
 #, c-format
@@ -1651,18 +1560,13 @@ msgstr "servern skickade ett ogiltigt svar"
 
 #: src/smtp.c:236
 #, c-format
-msgid ""
-"Rejecting server reply that is longer than %d lines. Increase SMTP_MAXLINES."
+msgid "Rejecting server reply that is longer than %d lines. Increase SMTP_MAXLINES."
 msgstr "Avvisar serversvar som är längre än %d rader. Öka SMTP_MAXLINES."
 
 #: src/smtp.c:323
 #, c-format
-msgid ""
-"Cannot send command because it is longer than %d characters. Increase "
-"SMTP_MAXCMDLEN."
-msgstr ""
-"Kan inte skicka kommandot eftersom det är längre än %d tecken. Öka "
-"SMTP_MAXCMDLEN."
+msgid "Cannot send command because it is longer than %d characters. Increase SMTP_MAXCMDLEN."
+msgstr "Kan inte skicka kommandot eftersom det är längre än %d tecken. Öka SMTP_MAXCMDLEN."
 
 #: src/smtp.c:355
 #, c-format
@@ -1779,10 +1683,8 @@ msgstr "ogiltigt argument för \"Remote Message Queue Starting\""
 
 #, c-format
 #~ msgid ""
-#~ "  --undisclosed-recipients[=(on|off)] enable/disable replacement of To/Cc/"
-#~ "Bcc\n"
+#~ "  --undisclosed-recipients[=(on|off)] enable/disable replacement of To/Cc/Bcc\n"
 #~ "                               with To: undisclosed-recipients:;\n"
 #~ msgstr ""
-#~ "  --undisclosed-recipients[=(av|på)] enable/disable aktivera/avaktivera "
-#~ "ersättning av Till/Kopia/Hemlig kopia\n"
+#~ "  --undisclosed-recipients[=(av|på)] enable/disable aktivera/avaktivera ersättning av Till/Kopia/Hemlig kopia\n"
 #~ "                               med till: icke avslöjad mottagare:;\n"

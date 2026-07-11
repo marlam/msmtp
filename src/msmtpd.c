@@ -540,7 +540,7 @@ int msmtpd_session(log_t* log,
                         free(cmd);
                         return 1;
                     }
-                    tmpcmd = realloc(cmd, cmd_blocks * CMD_MAX_BLOCKS);
+                    tmpcmd = realloc(cmd, cmd_blocks * CMD_BLOCK_SIZE);
                     if (!tmpcmd) {
                         fprintf(out, "554 %s\r\n", strerror(ENOMEM));
                         log_msg(log, log_error, "%s, session aborted", strerror(ENOMEM));

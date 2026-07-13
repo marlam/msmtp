@@ -18,6 +18,7 @@
 #ifndef BASE64_H
 #define BASE64_H
 
+#include <stdbool.h>
 #include <stddef.h>
 typedef size_t idx_t;
 

@@ -637,9 +637,10 @@ volatile time_t last_auth_failure_time;
 void sigchld_action(int signum, siginfo_t* si, void* ucontext)
 {
     (void)signum;   /* unused */
+    (void)si;       /* unused */
     (void)ucontext; /* unused */
     int wstatus;
-    if (waitpid(si->si_pid, &wstatus, 0) == si->si_pid) {
+    while (waitpid(-1, &wstatus, WNOHANG) > 0) {
         int child_exit_status = -1;
         if (WIFEXITED(wstatus))
             child_exit_status = WEXITSTATUS(wstatus);

@@ -584,9 +584,9 @@ make_id() {
     # Append -$INC if INC is set
     fqp="$FQP${INC:+-}$INC"
     id="$ID${INC:+-}$INC"
-    [ -f "${FQP}.mail" ] || [ -f "${FQP}.msmtp" ]
+    [ -f "${fqp}.mail" ] || [ -f "${fqp}.msmtp" ]
   do INC=$((INC + 1)); done
-  touch "${FQP}".{mail,msmtp} # Create the queue files already to prevent them
+  touch "${fqp}".{mail,msmtp} # Create the queue files already to prevent them
                               # being picked by another msmtpq instance
   FQP="$fqp"
   ID="$id"

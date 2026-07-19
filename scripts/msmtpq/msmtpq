@@ -582,8 +582,8 @@ make_id() {
   # ensure $FQP.* don't exist
   while
     # Append -$INC if INC is set
-    fqp="$FQP${INC+-}$INC"
-    id="$ID${INC+-}$INC"
+    fqp="$FQP${INC:+-}$INC"
+    id="$ID${INC:+-}$INC"
     [ -f "${FQP}.mail" ] || [ -f "${FQP}.msmtp" ]
   do INC=$((INC + 1)); done
   touch "${FQP}".{mail,msmtp} # Create the queue files already to prevent them

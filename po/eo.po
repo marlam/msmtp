@@ -1,14 +1,14 @@
 # Esperanto translations for msmtp package.
 # Copyright (C) 2020 Martin Lambers <marlam@marlam.de>
 # This file is distributed under the same license as the msmtp package.
-# Keith Bowes <zooplah@gmail.com>, 2020–2025.
+# Keith Bowes <zooplah@gmail.com>, 2020–2026.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: msmtp 1.8.29\n"
+"Project-Id-Version: msmtp 1.8.33\n"
 "Report-Msgid-Bugs-To: marlam@marlam.de\n"
-"POT-Creation-Date: 2025-05-05 09:18+0200\n"
-"PO-Revision-Date: 2025-05-30 13:01-0400\n"
+"POT-Creation-Date: 2026-07-11 13:15+0200\n"
+"PO-Revision-Date: 2026-07-26 11:09-0400\n"
 "Last-Translator: Keith Bowes <zooplah@gmail.com>\n"
 "Language-Team: Esperanto <translation-team-eo@lists.sourceforge.net>\n"
 "Language: eo\n"
@@ -821,12 +821,12 @@ msgstr "ne povas uzi kaj --host kaj --read-envelope-from"
 msgid "unsupported operation mode b%s"
 msgstr "neregata operacia reĝimo b%s"
 
-#: src/msmtp.c:3427 src/msmtp.c:3915 src/msmtp.c:4222
+#: src/msmtp.c:3427 src/msmtp.c:3915 src/msmtp.c:4231
 #, c-format
 msgid "cannot create temporary file: %s"
 msgstr "ne eblas krei provizoran dosieron: %s"
 
-#: src/msmtp.c:3457 src/msmtp.c:3941 src/msmtp.c:4277
+#: src/msmtp.c:3457 src/msmtp.c:3950 src/msmtp.c:4286
 #, c-format
 msgid "cannot rewind temporary file: %s"
 msgstr "ne eblas malantaŭenigi provizoran dosieron: %s"
@@ -924,107 +924,111 @@ msgstr "legas ricevontoj de la komandlinio\n"
 msgid "too many arguments"
 msgstr "tro da argumentoj"
 
-#: src/msmtp.c:3935
+#: src/msmtp.c:3937
 #, c-format
 msgid "envelope from address extracted from mail: %s\n"
 msgstr "envelope-from-retpoŝtadreso eltirita el la retpoŝtaĵo: %s\n"
 
-#: src/msmtp.c:3950
+#: src/msmtp.c:3943
+msgid "no envelope from address found"
+msgstr "neniu envelop-from-retpoŝtadreso trovita"
+
+#: src/msmtp.c:3959
 msgid "no recipients found"
 msgstr "neniuj ricevontoj trovitaj"
 
-#: src/msmtp.c:3980
+#: src/msmtp.c:3989
 #, c-format
 msgid "account chosen by envelope from address %s: %s\n"
 msgstr "konto elektita per envelope-from-retpoŝtadreso %s: %s\n"
 
-#: src/msmtp.c:3994
+#: src/msmtp.c:4003
 #, c-format
 msgid "falling back to default account\n"
 msgstr "anstataŭe uzas aprioran konton\n"
 
-#: src/msmtp.c:4017
+#: src/msmtp.c:4026
 #, c-format
 msgid "using environment variables EMAIL and SMTPSERVER\n"
 msgstr "uzas la medivariablojn EMAIL kaj SMTPSERVER\n"
 
-#: src/msmtp.c:4025
+#: src/msmtp.c:4034
 #, c-format
 msgid "account %s not found in %s and %s"
 msgstr "konto %s ne trovita en %s kaj %s"
 
-#: src/msmtp.c:4031 src/msmtp.c:4036
+#: src/msmtp.c:4040 src/msmtp.c:4045
 #, c-format
 msgid "account %s not found in %s"
 msgstr "konto %s ne trovita en %s"
 
-#: src/msmtp.c:4041
+#: src/msmtp.c:4050
 #, c-format
 msgid "account %s not found: no configuration file available"
 msgstr "konto %s ne trovita: neniu agordo-dosiero disponebla"
 
-#: src/msmtp.c:4063
+#: src/msmtp.c:4072
 #, c-format
 msgid "using account specified on command line\n"
 msgstr "uzas konton specifitan en la komandlinio\n"
 
-#: src/msmtp.c:4128
+#: src/msmtp.c:4137
 #, c-format
 msgid "account %s from %s: %s"
 msgstr "konto %s de %s: %s"
 
-#: src/msmtp.c:4169
+#: src/msmtp.c:4178
 msgid "this platform does not support syslog logging"
 msgstr "ĉi tiu platformo ne regas syslog-protokolado"
 
-#: src/msmtp.c:4178
+#: src/msmtp.c:4187
 #, c-format
 msgid "support for authentication method %s is not compiled in"
 msgstr "rego de aŭtentiga metodo %s ne disponeblas"
 
-#: src/msmtp.c:4186
+#: src/msmtp.c:4195
 #, c-format
 msgid "cannot initialize networking: %s"
 msgstr "ne eblas startigi reton: %s"
 
-#: src/msmtp.c:4197
+#: src/msmtp.c:4206
 #, c-format
 msgid "cannot initialize TLS library: %s"
 msgstr "ne eblas startigi TLS-bibliotekon: %s"
 
-#: src/msmtp.c:4204
+#: src/msmtp.c:4213
 msgid "support for TLS is not compiled in"
 msgstr "rego de TLS ne disponeblas"
 
-#: src/msmtp.c:4306
+#: src/msmtp.c:4315
 #, c-format
 msgid "LMTP server message: %s"
 msgstr "LMTP-servila mesaĝo: %s"
 
-#: src/msmtp.c:4317
+#: src/msmtp.c:4326
 #, c-format
 msgid "could not send mail to all recipients (account %s from %s)"
 msgstr "ne eblas sendi retpoŝtaĵon al ĉiuj ricevontoj (konto %s de %s)"
 
-#: src/msmtp.c:4323
+#: src/msmtp.c:4332
 msgid "could not send mail to all recipients"
 msgstr "ne eblas sendi retpoŝtaĵon al ĉiuj ricevontoj"
 
-#: src/msmtp.c:4338 src/msmtp.c:4393 src/msmtp.c:4414
+#: src/msmtp.c:4347 src/msmtp.c:4402 src/msmtp.c:4423
 #, c-format
 msgid "server message: %s"
 msgstr "servila mesaĝo: %s"
 
-#: src/msmtp.c:4344
+#: src/msmtp.c:4353
 #, c-format
 msgid "could not send mail (account %s from %s)"
 msgstr "ne eblas sendi retpoŝtaĵon (konto %s de %s)"
 
-#: src/msmtp.c:4349
+#: src/msmtp.c:4358
 msgid "could not send mail"
 msgstr "ne eblas sendi retpoŝtaĵon"
 
-#: src/msmtp.c:4359
+#: src/msmtp.c:4368
 #, c-format
 msgid "delivery to one or more recipients failed"
 msgstr "liverado al unu aŭ pli da ricevontoj malsukcesis"
@@ -1578,7 +1582,7 @@ msgid "SMTP server does not accept EHLO or HELO commands"
 msgstr "SMTP servilo ne akceptas la komandojn EHLO kaj HELO"
 
 #: src/smtp.c:440 src/smtp.c:585 src/smtp.c:590 src/smtp.c:663 src/smtp.c:711
-#: src/smtp.c:801 src/smtp.c:892 src/smtp.c:1028 src/smtp.c:2180
+#: src/smtp.c:801 src/smtp.c:892 src/smtp.c:1028 src/smtp.c:2201
 #, c-format
 msgid "command %s failed"
 msgstr "komando %s malsukcesis"
@@ -1645,37 +1649,37 @@ msgstr "aŭtentigo malsukcesis: %s (metodo %s)"
 msgid "authentication method %s not supported"
 msgstr "aŭtentiga metodo %s ne estas regata"
 
-#: src/smtp.c:1760
+#: src/smtp.c:1781
 #, c-format
 msgid "envelope from address %s not accepted by the server"
 msgstr "envelope-from-retpoŝtadreso %s ne estas akceptata de la servilo"
 
-#: src/smtp.c:1779
+#: src/smtp.c:1800
 #, c-format
 msgid "recipient address %s not accepted by the server"
 msgstr "ricevonto-retpoŝtadreso %s ne estas akceptata de la servilo"
 
-#: src/smtp.c:1798
+#: src/smtp.c:1819
 #, c-format
 msgid "the server does not accept mail data"
 msgstr "la servilo ne akceptas retpoŝtajn datumojn"
 
-#: src/smtp.c:2038
+#: src/smtp.c:2059
 #, c-format
 msgid "the server did not accept the mail"
 msgstr "la servilo ne akceptis la retpoŝtaĵon"
 
-#: src/smtp.c:2102
+#: src/smtp.c:2123
 #, c-format
 msgid "the server refuses to send the mail to %s"
 msgstr "la servilo rifuzas sendi la retpoŝtaĵon al %s"
 
-#: src/smtp.c:2166
+#: src/smtp.c:2187
 #, c-format
 msgid "the server is unable to fulfill the request"
 msgstr "la servilo ne kapablas plenumi la peton"
 
-#: src/smtp.c:2174
+#: src/smtp.c:2195
 #, c-format
 msgid "invalid argument for Remote Message Queue Starting"
 msgstr "nevalida argumento por RMQS"

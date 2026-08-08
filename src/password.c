@@ -28,11 +28,19 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <errno.h>
-#ifdef HAVE_LIBSECRET
+#if defined HAVE_LIBSECRET
 # include <libsecret/secret.h>
-#endif
-#ifdef HAVE_MACOSXKEYRING
+#elif defined HAVE_MACOSXKEYRING
 # include <Security/Security.h>
+#elif defined USE_CREDMAN
+# define WIN32_LEAN_AND_MEAN
+# include <windows.h>
+# include <wincred.h>
+# include <objbase.h>
+# ifndef CRED_PACK_GENERIC_CREDENTIALS
+#  define CRED_PACK_GENERIC_CREDENTIALS        0x4
+# endif
+# pragma comment (lib, "credui.lib")
 #endif
 
 #include "gettext.h"
@@ -146,6 +154,89 @@ char *password_get(const char *hostname, const char *user,
         }
     }
 #endif /* HAVE_MACOSXKEYRING */
+
+#ifdef USE_CREDMAN
+    if (!password)
+    {
+        PCREDENTIAL cred = NULL;
+        LPVOID buf = NULL;
+        ULONG buf_len;
+        char target[1025 /* NI_MAXHOST */ + sizeof(PACKAGE_NAME) + 1] = PACKAGE_NAME "_";
+        strcat(target, hostname);
+        BOOL success = CredRead(target, CRED_TYPE_GENERIC, 0, &cred);
+        if (success)
+        {
+            buf = cred->CredentialBlob;
+            buf_len = cred->CredentialBlobSize;
+        }
+        else
+        {
+            DWORD err = GetLastError();
+            if (err == ERROR_NOT_FOUND)
+            {
+                wchar_t caption[CRED_MAX_STRING_LENGTH];
+                wsprintfW(caption, L"Password for %S at %S", user, hostname);
+
+                /* Only -W works https://stackoverflow.com/a/25896444/673826 */
+                CREDUI_INFOW ciw = {
+                    .cbSize = sizeof(CREDUI_INFOW),
+                    .pszCaptionText = caption,
+                    .pszMessageText = L"The user name prefix does not matter."
+                    "Neither does the actual user name. Leave it as is.\n"
+                    "Only one credential per host name can be stored this way.\n"
+                    "Although your password is stored encrypted, any application you run can read that password.\n"
+                    "You can find saved credentials in Credential Manager with " PACKAGE_NAME "_ prefix."
+                };
+                wchar_t user_wide[CRED_MAX_STRING_LENGTH];
+                mbstowcs(user_wide, user, CRED_MAX_STRING_LENGTH);
+
+                char bufin[CRED_MAX_CREDENTIAL_BLOB_SIZE];
+                DWORD inlen = CRED_MAX_CREDENTIAL_BLOB_SIZE;
+                success = CredPackAuthenticationBufferW(CRED_PACK_GENERIC_CREDENTIALS, user_wide, L"", bufin, &inlen);
+                if (success)
+                {
+                    ULONG auth_package = 0;
+                    BOOL should_save = 1;
+                    err = CredUIPromptForWindowsCredentialsW(&ciw, 0, &auth_package, bufin, inlen, &buf, &buf_len, &should_save, CREDUIWIN_GENERIC | CREDUIWIN_CHECKBOX);
+                    if (err == ERROR_SUCCESS)
+                    {
+                        CREDENTIAL c = {
+                            .Type = CRED_TYPE_GENERIC,
+                            .TargetName = target,
+                            .Persist = CRED_PERSIST_ENTERPRISE * should_save,
+                            .CredentialBlob = buf,
+                            .CredentialBlobSize = buf_len,
+                            .UserName = (LPSTR)user
+                        };
+                        CredWrite(&c, 0);
+                    }
+                }
+            }
+        }
+        if (buf)
+        {
+            wchar_t name[CRED_MAX_USERNAME_LENGTH];
+            wchar_t pass[CRED_MAX_STRING_LENGTH];
+            wchar_t domain[CRED_MAX_STRING_LENGTH]; /* not used, will be empty */
+            DWORD name_size = CRED_MAX_USERNAME_LENGTH, pass_size = CRED_MAX_STRING_LENGTH,
+                domain_size = CRED_MAX_STRING_LENGTH;
+            success = CredUnPackAuthenticationBufferW(0, buf, buf_len, name, &name_size, domain, &domain_size, pass, &pass_size);
+            if (success)
+            {
+                size_t len = wcslen(pass) + 1;
+                password = xmalloc(len);
+                wcstombs(password, pass, len);
+            }
+        }
+        if (cred)
+            CredFree(cred);
+        else if (buf)
+        {
+            SecureZeroMemory(buf, buf_len);
+            CoTaskMemFree(buf);
+        }
+    }
+#endif
 
     if (!password && consult_netrc)
     {

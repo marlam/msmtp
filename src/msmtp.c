@@ -71,6 +71,7 @@ extern int optind;
 #ifdef _MSC_VER
 #define SYSCONFFILE     "msmtprc.txt"
 #define USERCONFFILE    "msmtprc.txt"
+#include <locale.h>     /* setlocale for native IDN */
 #else /* UNIX */
 #define SYSCONFFILE     "msmtprc"
 #define USERCONFFILE    ".msmtprc"
@@ -1688,7 +1689,7 @@ void print_error(const char *format, ...)
 
 int msmtp_configure(const char *address, const char *conffile)
 {
-#ifdef HAVE_LIBRESOLV
+#if defined(HAVE_LIBRESOLV) || defined(W32_NATIVE)
 
     int e;
 
@@ -1754,6 +1755,10 @@ int msmtp_configure(const char *address, const char *conffile)
     tmpstr = xasprintf("security add-internet-password -s %s -r smtp -a %s -w", hostname, local_part);
     printf("# - %s\n#   %s\n", _("add your password to the key ring:"), tmpstr);
     free(tmpstr);
+#elif defined USE_CREDMAN
+    tmpstr = xasprintf("cmdkey /add:" PACKAGE_NAME "_%s /user:%s /pass", hostname, address);
+    printf("# - %s\n#   %s\n", _("add your password to the key ring:"), tmpstr);
+    free(tmpstr);
 #else
     printf("# - %s\n#   %s\n", _("encrypt your password:"), "gpg -e -o ~/.msmtp-password.gpg");
 #endif
@@ -1766,7 +1771,7 @@ int msmtp_configure(const char *address, const char *conffile)
     printf("tls_starttls %s\n", starttls ? "on" : "off");
     printf("auth on\n");
     printf("user %s\n", local_part);
-#if !defined HAVE_LIBSECRET && !defined HAVE_MACOSXKEYRING
+#if !defined HAVE_LIBSECRET && !defined HAVE_MACOSXKEYRING && !defined USE_CREDMAN
     printf("passwordeval gpg --no-tty -q -d ~/.msmtp-password.gpg\n");
 #endif
     printf("from %s\n", address);
@@ -2190,7 +2195,7 @@ void msmtp_print_version(void)
 #ifdef HAVE_LIBGNUTLS
             "GnuTLS"
 #elif defined (HAVE_LIBSSL)
-            "OpenSSL"
+            TLS_LIB
 #elif defined (HAVE_LIBTLS)
             "libtls"
 #else
@@ -2235,7 +2240,7 @@ void msmtp_print_version(void)
     printf("\n");
     /* Internationalized Domain Names support */
     printf(_("IDN support: "));
-#if defined(HAVE_LIBIDN) \
+#if defined(HAVE_LIBIDN) || defined(W32_NATIVE) && !defined(_UNICODE) \
         || (defined(HAVE_GAI_IDN) && (!defined(HAVE_TLS) \
             || (defined(HAVE_LIBGNUTLS) && GNUTLS_VERSION_NUMBER >= 0x030400)))
     printf(_("enabled"));
@@ -2253,15 +2258,14 @@ void msmtp_print_version(void)
 #endif
     printf("\n");
     printf(_("Keyring support: "));
-#if !defined HAVE_LIBSECRET && !defined HAVE_MACOSXKEYRING
-    printf(_("none"));
-#else
-# ifdef HAVE_LIBSECRET
+#if defined HAVE_LIBSECRET
     printf(_("Gnome "));
-# endif
-# ifdef HAVE_MACOSXKEYRING
+#elif defined HAVE_MACOSXKEYRING
     printf(_("MacOS "));
-# endif
+#elif defined USE_CREDMAN
+    printf(_("Windows Credential Manager"));
+#else
+    printf(_("none"));
 #endif
     printf("\n");
     sysconfdir = get_sysconfdir();
@@ -3805,6 +3809,15 @@ void msmtp_print_conf(msmtp_cmdline_conf_t conf, account_t *account)
 
 int main(int argc, char *argv[])
 {
+#if defined(W32_NATIVE) && !defined(_UNICODE) && !defined(HAVE_LIBIDN) && !defined(ENABLE_NLS)
+    /* We need this for proper IDN conversion later on using Windows native way
+     * AND proper console output.
+     * > At program startup, the equivalent of the following statement is executed :
+     * > setlocale(LC_ALL, "C");
+     * https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/setlocale-wsetlocale
+     */
+    setlocale(LC_ALL, "");
+#endif
     msmtp_cmdline_conf_t conf;
     /* account information from the configuration file(s) */
     list_t *account_list = NULL;

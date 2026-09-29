@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-QUEUEDIR="$HOME/.msmtpqueue"
+QUEUEDIR="${QUEUEDIR:-$HOME/.msmtpqueue}"
 LOCKFILE="$QUEUEDIR/.lock"
 MAXWAIT=120
 

@@ -2058,6 +2058,7 @@ void msmtp_log_to_file(const char *logfile, const char *logfile_time_format,
     }
     if (f != stdout && fclose(f) != 0)
     {
+        f = NULL; /* prevent another fclose() attempt */
         failure_reason = xstrdup(strerror(errno));
         goto log_failure;
     }

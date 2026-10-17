@@ -14,7 +14,7 @@
 This manual was last updated @value{UPDATED} for version
 @value{VERSION} of msmtp.
 
-Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025
+Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026
 Martin Lambers@*
 Copyright (C) 2011
 Scott Shumate
@@ -140,6 +140,10 @@ and treats that as if it was @samp{on}.
 Commands are organized in accounts. Each account starts with the @samp{account}
 command and defines the settings for one SMTP account.
 
+Settings that apply to all following accounts can be set in a block starting with
+the @samp{defaults} command. It is highly recommended to start the configuration
+file with this command, then define common defaults (e.g. @samp{tls on},
+@samp{port 587}, @samp{auth on}), and then define your accounts.
 @xref{Examples}.
 
 @section General commands
@@ -1282,6 +1286,9 @@ port 587
 # Always use TLS.
 tls on
 
+# Always use authentication
+auth on
+
 # Set a list of trusted CAs for TLS. The default is to use system settings, but
 # you can select your own file.
 #tls_trust_file /etc/ssl/certs/ca-certificates.crt
@@ -1304,7 +1311,6 @@ host smtp.freemail.example
 from joe_smith@@freemail.example
 
 # Authentication. The password is given using one of five methods, see below.
-auth on
 user joe.smith
 
 # Password method 1: Add the password to the system keyring, and let msmtp get
@@ -1340,7 +1346,6 @@ from joey@@freemail.example
 account isp
 host mail.isp.example
 from smithjoe@@isp.example
-auth on
 user 12345
 
 
@@ -1355,15 +1360,18 @@ account default : freemail
 # A system wide configuration file is optional.
 # If it exists, it usually defines a default account.
 # This allows msmtp to be used like /usr/sbin/sendmail.
-account default
 
-# The SMTP smarthost
-host mail.oursite.example
+defaults
 
 # Use TLS on port 465
 port 465
 tls on
 tls_starttls off
+
+account default
+
+# The SMTP smarthost
+host mail.oursite.example
 
 # Construct envelope-from addresses of the form "user@@oursite.example"
 from %U@@oursite.example

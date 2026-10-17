@@ -9,11 +9,12 @@
 # Notification (DSN) settings, and more.
 
 # Set default values: use the mail submission port 587, and always use TLS.
-# On this port, TLS is activated via STARTTLS.
+# On this port, TLS is activated via STARTTLS. Always use authentication.
 defaults
 port 587
 tls on
 tls_starttls on
+auth on
 
 # Define a mail account at a freemail service
 account freemail
@@ -22,7 +23,6 @@ host smtp.freemail.example
 # Envelope-from address
 from joe_smith@freemail.example
 # Authentication
-auth on
 user joe.smith
 # Password method 1: Add the password to the system keyring, and let msmtp get
 # it automatically. To set the keyring password using libsecret:
@@ -46,7 +46,6 @@ from joey@freemail.example
 account company
 host mail.company.example
 from smithjoe@company.example
-auth on
 user company12345
 # this assumes the password is stored in the keyring
 

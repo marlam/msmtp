@@ -1,7 +1,7 @@
 .\" -*-nroff-*-
 .\"
 .\" Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014,
-.\" 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025
+.\" 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026
 .\" Martin Lambers
 .\" Copyright (C) 2011
 .\" Scott Shumate
@@ -10,7 +10,7 @@
 .\" under the terms of the GNU Free Documentation License, Version 1.2 or
 .\" any later version published by the Free Software Foundation; with no
 .\" Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
-.TH MSMTP 1 2024-10
+.TH MSMTP 1 2026-10
 .SH NAME
 msmtp \- An SMTP client
 .SH SYNOPSIS
@@ -279,7 +279,12 @@ and treats that as if it was \fIon\fP.
 .br
 Commands are organized in accounts. Each account starts with the \fBaccount\fP
 command and defines the settings for one SMTP account.
-.PP
+.br
+Settings that apply to all following accounts can be set in a block starting with
+the \fBdefaults\fP command. It is highly recommended to start the configuration
+file with this command, then define common defaults (e.g. \fItls on\fP,
+\fIport 587\fP, \fIauth on\fP), and then define your accounts.
+.br
 Skip to the EXAMPLES section for a quick start.
 .PP
 Commands are as follows:
@@ -776,6 +781,12 @@ tls on
 .br
 
 .br
+# Always use authentication.
+.br
+auth on
+.br
+
+.br
 # Set a list of trusted CAs for TLS. The default is to use system settings, but
 .br
 # you can select your own file.
@@ -817,8 +828,6 @@ from joe_smith@freemail.example
 
 .br
 # Authentication. The password is given using one of five methods, see below.
-.br
-auth on
 .br
 user joe.smith
 .br
@@ -885,8 +894,6 @@ account isp
 host mail.isp.example
 .br
 from smithjoe@isp.example
-.br
-auth on
 .br
 user 12345
 .br

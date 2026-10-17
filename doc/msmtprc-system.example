@@ -3,15 +3,18 @@
 # A system wide configuration file is optional.
 # If it exists, it usually defines a default account.
 # This allows msmtp to be used like /usr/sbin/sendmail.
-account default
 
-# The SMTP smarthost
-host mail.oursite.example
+defaults
 
 # Use TLS on port 465. On this port, TLS starts without STARTTLS.
 port 465
 tls on
 tls_starttls off
+
+account default
+
+# The SMTP smarthost
+host mail.oursite.example
 
 # Construct envelope-from addresses of the form "user@oursite.example"
 from %U@oursite.example

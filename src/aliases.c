@@ -269,9 +269,8 @@ int aliases_replace(const char *aliases, list_t *recipient_list, char **errstr)
     fclose(f);
 
     /* Process all aliases in the recipient list */
-    for (rec_itr = recipient_list;
-         !list_is_empty(rec_itr);
-         rec_itr = rec_itr->next)
+    rec_itr = recipient_list;
+    while (!list_is_empty(rec_itr))
     {
         if (is_alias(rec_itr->next->data))
         {
@@ -295,6 +294,10 @@ int aliases_replace(const char *aliases, list_t *recipient_list, char **errstr)
                 rec_itr = rec_itr->next;
             }
             list_free(addr_list);
+        }
+        else
+        {
+            rec_itr = rec_itr->next;
         }
     }
 
